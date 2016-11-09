@@ -1,0 +1,289 @@
+{
+  "objectType" : "Func",
+  "title" : "MultiChWeightMap",
+  "ports" : [
+    {
+      "objectType" : "ExecPort",
+      "metadata" : {
+        "uiPersistValue" : "true"
+        },
+      "name" : "exec",
+      "nodePortType" : "IO",
+      "defaultValues" : {
+        "Execute" : {}
+        },
+      "execPortType" : "IO",
+      "typeSpec" : "Execute"
+      },
+    {
+      "objectType" : "ExecPort",
+      "metadata" : {
+        "uiPersistValue" : "true"
+        },
+      "name" : "multiChWeihtMap",
+      "nodePortType" : "IO",
+      "defaultValues" : {
+        "MultiChWeightmap" : null
+        },
+      "execPortType" : "IO",
+      "typeSpec" : "MultiChWeightmap"
+      },
+    {
+      "objectType" : "ExecPort",
+      "metadata" : {
+        "uiPersistValue" : "true"
+        },
+      "name" : "mesh",
+      "nodePortType" : "IO",
+      "defaultValues" : {
+        "PolygonMesh" : null
+        },
+      "execPortType" : "IO",
+      "typeSpec" : "PolygonMesh"
+      },
+    {
+      "objectType" : "ExecPort",
+      "metadata" : {
+        "uiPersistValue" : "true"
+        },
+      "name" : "xfo",
+      "nodePortType" : "Out",
+      "defaultValues" : {
+        "Xfo" : {
+          "ori" : {
+            "v" : {
+              "x" : 0,
+              "y" : 0,
+              "z" : 0
+              },
+            "w" : 1
+            },
+          "tr" : {
+            "x" : 0,
+            "y" : 0,
+            "z" : 0
+            },
+          "sc" : {
+            "x" : 1,
+            "y" : 1,
+            "z" : 1
+            }
+          }
+        },
+      "execPortType" : "In",
+      "typeSpec" : "Xfo"
+      },
+    {
+      "objectType" : "ExecPort",
+      "metadata" : {
+        "uiPersistValue" : "true"
+        },
+      "name" : "chnnelCount",
+      "nodePortType" : "Out",
+      "defaultValues" : {
+        "Integer" : 8
+        },
+      "execPortType" : "In",
+      "typeSpec" : "Integer"
+      },
+    {
+      "objectType" : "ExecPort",
+      "metadata" : {
+        "uiPersistValue" : "true",
+        "uiHardRange" : "(0, 0)"
+        },
+      "name" : "activeChnne",
+      "nodePortType" : "Out",
+      "defaultValues" : {
+        "Integer" : 0
+        },
+      "execPortType" : "In",
+      "typeSpec" : "Integer"
+      },
+    {
+      "objectType" : "ExecPort",
+      "metadata" : {
+        "uiPersistValue" : "true",
+        "uiRange" : "(0, 0.99)"
+        },
+      "name" : "paintVluesMin",
+      "nodePortType" : "Out",
+      "defaultValues" : {
+        "Scalar" : 0
+        },
+      "execPortType" : "In",
+      "typeSpec" : "Scalar"
+      },
+    {
+      "objectType" : "ExecPort",
+      "metadata" : {
+        "uiPersistValue" : "true",
+        "uiRange" : "(0.01, 1)"
+        },
+      "name" : "paintVluesMax",
+      "nodePortType" : "Out",
+      "defaultValues" : {
+        "Scalar" : 1
+        },
+      "execPortType" : "In",
+      "typeSpec" : "Scalar"
+      },
+    {
+      "objectType" : "ExecPort",
+      "metadata" : {
+        "uiPersistValue" : "true"
+        },
+      "name" : "mapColors",
+      "nodePortType" : "Out",
+      "defaultValues" : {
+        "Color[]" : []
+        },
+      "execPortType" : "In",
+      "typeSpec" : "Color[]"
+      },
+    {
+      "objectType" : "ExecPort",
+      "metadata" : {
+        "uiPersistValue" : "true"
+        },
+      "name" : "save_Enable",
+      "nodePortType" : "Out",
+      "defaultValues" : {
+        "Boolean" : true
+        },
+      "execPortType" : "In",
+      "typeSpec" : "Boolean"
+      },
+    {
+      "objectType" : "ExecPort",
+      "metadata" : {
+        "uiPersistValue" : "true"
+        },
+      "name" : "save_ExternalFile",
+      "nodePortType" : "Out",
+      "defaultValues" : {
+        "Boolean" : false
+        },
+      "execPortType" : "In",
+      "typeSpec" : "Boolean"
+      },
+    {
+      "objectType" : "ExecPort",
+      "metadata" : {
+        "uiPersistValue" : "true"
+        },
+      "name" : "save_FolderPath",
+      "nodePortType" : "Out",
+      "defaultValues" : {
+        "FilePath" : {
+          "handle" : true
+          }
+        },
+      "execPortType" : "In",
+      "typeSpec" : "FilePath"
+      },
+    {
+      "objectType" : "ExecPort",
+      "metadata" : {
+        "uiPersistValue" : "true"
+        },
+      "name" : "save_FileName",
+      "nodePortType" : "Out",
+      "defaultValues" : {
+        "String" : ""
+        },
+      "execPortType" : "In",
+      "typeSpec" : "String"
+      }
+    ],
+  "extDeps" : {
+    "TKCM" : "*"
+    },
+  "code" : "require TKCM;
+
+dfgEntry {
+  if(multiChWeihtMap == null){
+    multiChWeihtMap = MultiChWeightmap();
+  }
+  multiChWeihtMap.connect(mesh, xfo, chnnelCount, mapColors);
+  multiChWeihtMap.changeActiveCh(activeChnne);
+  multiChWeihtMap.save(save_Enable, save_ExternalFile, save_FolderPath, save_FileName);
+  multiChWeihtMap.activateManipulator();
+  multiChWeihtMap.setLimit(paintVluesMin, paintVluesMax);
+}
+",
+  "args" : [
+    {
+      "type" : "MultiChWeightmap",
+      "value" : null,
+      "ext" : "TKCM"
+      },
+    {
+      "type" : "PolygonMesh",
+      "value" : null,
+      "ext" : "Geometry"
+      },
+    {
+      "type" : "Xfo",
+      "value" : {
+        "ori" : {
+          "v" : {
+            "x" : 0,
+            "y" : 0,
+            "z" : 0
+            },
+          "w" : 1
+          },
+        "tr" : {
+          "x" : 0,
+          "y" : 0,
+          "z" : 0
+          },
+        "sc" : {
+          "x" : 1,
+          "y" : 1,
+          "z" : 1
+          }
+        },
+      "ext" : "Math"
+      },
+    {
+      "type" : "Integer",
+      "value" : 8
+      },
+    {
+      "type" : "Integer",
+      "value" : 0
+      },
+    {
+      "type" : "Scalar",
+      "value" : 0
+      },
+    {
+      "type" : "Scalar",
+      "value" : 1
+      },
+    {
+      "type" : "Color[]",
+      "value" : [],
+      "ext" : "Math"
+      },
+    {
+      "type" : "Boolean",
+      "value" : true
+      },
+    {
+      "type" : "Boolean",
+      "value" : false
+      },
+    {
+      "type" : "FilePath",
+      "value" : null,
+      "ext" : "FileIO"
+      },
+    {
+      "type" : "String",
+      "value" : ""
+      }
+    ]
+  }

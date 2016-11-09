@@ -1,0 +1,12 @@
+{
+  "code": [
+  	"Exts/Manipulation/Painting/MultiCh_SurfaceAttributeValuesDrawing.kl",
+    "Exts/Manipulation/Painting/MultiCh_SurfacePaintManipulator.kl",
+	  "Exts/Manipulation/Painting/MultiCh_SurfaceAttributePaintManipulator.kl",
+	  "Exts/Manipulation/Painting/MultiCh_Weightmap.kl",
+  ],
+  "dfgPresets": {
+    "dir": "DFG",
+    "presetPath": "TKCM"
+  }
+}

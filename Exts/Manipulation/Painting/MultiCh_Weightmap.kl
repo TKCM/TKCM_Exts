@@ -1,0 +1,512 @@
+/*
+ *  Copyright (c) 2010-2016, Fabric Software Inc. All rights reserved.
+ */
+
+require InlineDrawing;
+require FileIO;
+require JSON;
+require FabricInterfaces;
+require Manipulation;
+
+object MultiChWeightmap : Weightmap, Persistable, RTValFromJSONDecoder, RTValToJSONEncoder{
+  String chNames[];
+  Color colors[];
+
+  MultiCh_SurfaceAttributePaintManipulator paintManipulator;
+
+  Size chCount;
+  Size oldChCount;
+  Size activeCh;
+  Size oldActiveCh;
+
+  private Boolean saveEnable;
+  private Boolean saveExternalFile;
+  private FilePath saveFolderPath;
+  private String saveFileName;
+
+  ScalarAttribute temporaryLoadAttr[];
+  Boolean allChConnected;
+};
+
+function MultiChWeightmap(){
+  this.chNames.resize(1);
+  this.chNames[0] = 'weightMap_ch0';
+  this.colors.resize(1);
+  this.colors[0] = mathRandomColor ( 10, 0, 0.05, 0.95 );
+  this.chCount = 1;
+  this.activeCh = 0;
+  this.allChConnected = false;
+}
+
+///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+// prepare to channel
+inline MultiChWeightmap.prepareCh!(Size chCount,  Color colors[]){
+  if(chCount <= 0){
+    setError("count of channel is "+chCount+"!!!!!");
+  }
+  this.chCount = chCount;
+  if(this.chCount != this.oldChCount){
+    this.allChConnected = false;
+  }
+  //if(!this.allChConnected){
+    if(chCount == colors.size()){
+      this.chNames.resize(chCount);
+      this.colors.resize(chCount);
+      for(Integer i=0; i<chCount; i++){
+        this.chNames[i] = 'weightMap_ch'+i;
+        this.colors[i] = colors[i];
+      } 
+    }else{
+      setError("count of channel is not same size fo colorArray!!  channel count = "+chCount+" : colors.size() = "+colors.size() );
+    }
+  //}
+}
+
+inline MultiChWeightmap.prepareCh!(Size chCount){
+  Color colors[];
+  colors.resize(chCount);
+  for(Integer i=0; i<chCount; i++){
+    colors[i] = mathRandomColor ( i+10, i, 0.05, 0.95 );
+  } 
+  this.prepareCh(chCount, colors);
+}
+
+inline MultiChWeightmap.prepareCh!(Color colors[]){
+  Size chCount = colors.size();
+  this.prepareCh(chCount, colors);
+}
+
+inline MultiChWeightmap.setColors!(Color colors[]){
+  if(this.chCount == colors.size()){
+    this.prepareCh(this.chCount, colors);
+  }else{
+    setError("count of channel is not same size fo colorArray!!  channel count = "+this.chCount+" : colors.size() = "+colors.size() );
+  }
+}
+
+inline MultiChWeightmap.changeActiveCh!(Size ch){
+  if(this.chCount < ch){
+    setError("");
+  }
+  this.oldActiveCh = this.activeCh;
+  this.activeCh = ch;
+}
+
+// prepare to channel
+///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+// output
+inline String[] MultiChWeightmap.getChNames(){
+  return this.chNames;
+}
+
+inline Scalar[][] MultiChWeightmap.getAllChValues?(Integer resize){
+  Scalar values[][];
+  values.resize(this.chNames.size());
+  for(Integer i=0; i<this.chNames.size(); i++){
+    Ref<ScalarAttribute> attr = this.mesh.getAttribute(this.chNames[i], ScalarAttribute);
+    values[i] = attr.values.clone();
+    if(resize){
+      values[i].resize(this.mesh.pointCount());
+    }
+  }
+  return values;
+}
+
+inline Scalar[] MultiChWeightmap.getMapValues?(Integer ch, Integer resize){
+  Scalar values[];
+  Ref<ScalarAttribute> attr = this.mesh.getAttribute(this.chNames[ch], ScalarAttribute);
+  values = attr.values.clone();
+  if(resize){
+    values.resize(this.mesh.pointCount());
+  }
+  return values;
+}
+
+inline Color[] MakeRandomColors(Color colors[], Integer count){
+  Color resultColors[];
+  resultColors.resize(colors.size());
+  for(Integer i=0; i<colors.size(); i++){
+    resultColors[i] = colors[i];
+  }
+  resultColors.resize(count);
+  for(Integer i=colors.size(); i<count; i++){
+    resultColors[i] = mathRandomColor ( i+10, i, 0.05, 0.95 );
+  }
+  
+  return resultColors;
+}
+// output
+///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+// brush
+function MultiChWeightmap.setLimit!(Scalar min, Scalar max){
+  this.paintManipulator.paintValLimit[0] = min;
+  this.paintManipulator.paintValLimit[1] = max;
+}
+//
+///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+//
+operator setPointAttributeTask<<<i>>>(io PolygonMeshTopology mesh, io Scalar targetAttrVals[], Scalar setVals[]){
+  mesh.setPointAttribute(i, targetAttrVals, setVals[i]);
+}
+
+inline MultiChWeightmap.connect!( PolygonMesh mesh, Xfo meshTransform){
+  this.meshTransform = meshTransform;
+  
+  if(!this.allChConnected ){
+    if(this.mesh == null){
+      this.mesh = mesh;
+    }
+    if(!this.mesh.getAttributes().has('normals')){
+      this.mesh.recomputePointNormals();
+    }
+    // Add the weightmaps for make to OGLSurfaceOverlayShader
+    this.mesh.getOrCreateAttribute("weightMap", ScalarAttribute);
+    // add ScalarAttributes 
+    for(Integer i=0; i<this.chCount; i++){ 
+      if(this.temporaryLoadAttr.size() != 0 && this.chCount == this.oldChCount){
+      // When loading from disk, the attribute was generated in the load function, 
+      // and now we move to the mesh.(unless it already has)
+        if(this.temporaryLoadAttr[i] != null ){
+          Ref<ScalarAttribute> attr = this.mesh.getOrCreateAttribute(this.chNames[i], ScalarAttribute);
+          setPointAttributeTask<<<this.mesh.pointCount()>>>(this.mesh.topology, attr.values, this.temporaryLoadAttr[i].values);
+          this.temporaryLoadAttr[i] = null;
+        }
+      }
+      else{
+        this.mesh.getOrCreateAttribute(this.chNames[i], ScalarAttribute);
+      }
+    }
+
+    if(this.instance){
+      InlineTransform transform = this.instance.getTransform();
+      if(transform)
+      {
+        transform.setLocalXfo(0, this.meshTransform);
+      }
+      InlineMeshShape shape = this.instance.getShape();
+      if(shape)
+      {
+        shape.setMesh(this.mesh);
+      }
+    }
+    this.allChConnected = true;
+  }
+  this.mesh.setAllPointPositions( mesh.getAllPointPositions() );
+}
+
+inline MultiChWeightmap.connect!( PolygonMesh mesh, Xfo meshTransform, Integer chCount){
+  this.prepareCh(chCount);
+  this.connect(mesh, meshTransform);
+}
+
+inline MultiChWeightmap.connect!( PolygonMesh mesh, Xfo meshTransform, Integer chCount, Color colors[]){
+  this.prepareCh(chCount, colors);
+  this.connect(mesh, meshTransform);
+}
+
+inline MultiChWeightmap.display!(Boolean display){
+  if(!this.mesh)
+    setError("Cannnot display the Weightmap without a geometry assigned");
+  if(display){
+    if(!this.handle){
+      InlineDrawing drawing = OGLInlineDrawing_GetInstance();
+      this.handle = DrawingHandle();
+      InlineShader overlayShader = drawing.registerShader(OGLSurfaceOverlayShader(this.name));
+      this.overlayMaterial = overlayShader.getOrCreateMaterial("weightMap_Mat");
+
+      InlineMeshShape shape = InlineMeshShape(this.name+'Shape', this.mesh);
+      drawing.registerShape(shape);
+      InlineTransform transform = StaticInlineTransform(this.name+'Transform', this.handle.getRootTransform(), this.meshTransform);
+
+      this.instance = InlineInstance(this.name+'Instance', transform, shape);
+      this.instance.setMappedAttributeName("weightMap", this.chNames[this.activeCh]);
+      this.instance.setInstanceUniform(InlineUniform('u_color', this.colors[this.activeCh]));
+      this.instance.addMaterial(this.overlayMaterial); 
+    }
+    else {
+      if(this.instance != null && !this.instance.hasMaterial(this.overlayMaterial)){
+        this.instance.addMaterial(this.overlayMaterial); 
+      }
+      if(this.oldActiveCh != this.activeCh){
+        this.instance.setMappedAttributeName("weightMap", this.chNames[this.activeCh]);
+        this.instance.setInstanceUniform(InlineUniform('u_color', this.colors[this.activeCh]));
+      }
+    }
+  }
+  else {
+    if(this.instance != null && this.instance.hasMaterial(this.overlayMaterial)){
+      this.instance.removeMaterial(this.overlayMaterial); 
+    }
+  }
+}
+
+inline MultiChWeightmap.updateInstanceTransform(){
+  this.instance.getTransform().setLocalXfo(0, this.meshTransform);
+}
+
+inline MultiChWeightmap.activateManipulator!(){
+  if(!this.instance)
+    this.display(true);
+  if(!this.instance){
+    setError("Cannnot activate the Weightmap without a geometry assigned");
+  }
+  Ref<EventDispatcher> eventDispatcher = EventDispatcher_GetInstance();
+  if(this.activeCh < 0 || this.chCount <= this.activeCh){
+    eventDispatcher.deactivateManipulation();
+    setError("paintting channnel is over count of multiChannelWeightMap!!!!!! painting channel = "+this.activeCh+" : channnel count = "+this.chCount);
+  }else{
+    eventDispatcher.activateManipulation();
+    this.display(true);
+  }
+  if(!this.paintManipulator){
+    this.paintManipulator = MultiCh_SurfaceAttributePaintManipulator();
+    this.paintManipulator.paintedChecker.resize(this.mesh.pointCount());
+    eventDispatcher.registerManipulator(this.name+'PaintManipulator', this.paintManipulator);
+    this.paintManipulator.valueDrawing = MultiCh_SurfaceAttributeValuesDrawing();
+    this.paintManipulator.valueDrawing.connect(this.mesh, this.colors[this.activeCh]);
+  }
+  if(this.paintManipulator.attributeName != this.chNames[this.activeCh]){
+    this.paintManipulator.setAttributeName(this.chNames[this.activeCh]);
+  }
+  if(!this.paintManipulator.hasTargetGeometry(this.instance))
+    this.paintManipulator.addTargetGeometry(this.instance);
+  if(eventDispatcher.activeManipulator() != this.name+'PaintManipulator')
+  {
+    // activate the manipulator
+    eventDispatcher.pushManipulator(this.name+'PaintManipulator');
+    this.oldActiveCh = this.activeCh;
+    this.oldChCount = this.chCount;
+  }
+  this.updateInstanceTransform();
+
+  Vec3 pointPositions[] = this.mesh.getAllPointPositions();
+  Ref<ScalarAttribute> attr = this.mesh.getAttribute(this.chNames[this.activeCh], ScalarAttribute);
+  this.paintManipulator.valueDrawing.display(pointPositions, attr, this.colors[this.activeCh], this.meshTransform);
+  this.instance.setInstanceUniform(InlineUniform('u_color', this.colors[this.activeCh]));
+}
+
+// 
+///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+// save & load
+
+inline MultiChWeightmap.save!(Boolean saveEnable, Boolean saveExternalFile, FilePath saveFolderPath, String saveFileName){
+  this.saveEnable = saveEnable;
+  this.saveExternalFile = saveExternalFile;
+  this.saveFolderPath = saveFolderPath;
+  this.saveFileName = saveFileName;
+}
+
+/*
+inline MultiChWeightmap.save!(Boolean saveEnable, Boolean saveExternalFile){
+  this.saveEnable = saveEnable;
+  this.saveExternalFile = saveExternalFile;
+}*/
+
+inline JSONDictValue MultiChWeightmap.saveBin(){
+  JSONDictValue root();
+
+  if(!this.saveFolderPath.exists()){
+    setError("!!!!!!!!!!!!!!!! Could not save !!!!!!!!!!!!!! saveFolderPath is not exists : " + this.saveFolderPath.string() );
+  }else if(!this.saveFileName){
+    setError("!!!!!!!!!!!!!!!! Could not save !!!!!!!!!!!!!! saveFileName is null");
+  }else{
+    // prepare save file path & file name
+    FilePath binCacheFilePath(); 
+    binCacheFilePath = this.saveFolderPath / FilePath(this.saveFileName + '_' + this.name + 'BinCache.bin');
+
+    BinaryBlockWriter blockWriter(binCacheFilePath.string());
+    blockWriter.setNumBlocks(2);
+    BinaryBlockWriter mapChNames = blockWriter.beginWriteBlock('channelNames', this.chNames.size());{
+      for(Integer i=0; i<this.chNames.size(); i++){
+        BinaryBlockWriter mapChNameSub = mapChNames.beginWriteBlock( 'name' + i ); {
+          UInt32 numElements = this.chNames[i].length();
+          mapChNameSub.write(numElements.data(), numElements.dataSize());
+          mapChNameSub.write(this.chNames[i].data(), this.chNames[i].dataSize() );
+        }
+      }
+    }
+    BinaryBlockWriter mapChValues = blockWriter.beginWriteBlock('mapValues', this.chCount);{
+      for(Integer i=0; i<this.chCount; i++){
+        BinaryBlockWriter mapChValSub = mapChValues.beginWriteBlock( 'val' + i );{
+          UInt32 numElements = this.mesh.pointCount();
+          mapChValSub.write(numElements.data(), numElements.dataSize());
+          ScalarAttribute mapValData = this.mesh.getAttribute(this.chNames[i], ScalarAttribute);
+          Scalar data[] = mapValData.values;
+          mapChValSub.write(data.data(), data.dataSize());
+        }
+      }
+    }
+    report('MultiWeightMap value data save to "' + binCacheFilePath.string() +'"');
+    root.setString("saveFolderPath", binCacheFilePath.removeFileName().string() );
+    root.setString("saveFileName", this.saveFileName + '_' + this.name + 'BinCache.bin');
+  }
+  return root;
+}
+
+inline JSONDictValue MultiChWeightmap.saveJSON(){
+  JSONDictValue root();
+  // JSON write
+  JSONArrayValue channelNames();{
+    channelNames.values.resize(this.chNames.size());
+    for(Integer ii=0; ii<this.chNames.size(); ii++){
+      channelNames.values[ii] = JSONStringValue(this.chNames[ii]);
+    }
+  }
+  JSONArrayValue mapValues(); {
+    for(Integer i=0; i<this.chCount; i++){
+      JSONArrayValue mapValue();
+      ScalarAttribute mapValData = this.mesh.getAttribute(this.chNames[i], ScalarAttribute);
+      mapValue.values.resize(mapValData.values.size());
+      for(Integer ii=0; ii<mapValData.values.size(); ii++){
+        mapValue.values[ii] = JSONNumberValue( mapValData.values[ii] );
+      }
+      mapValues.add(mapValue);
+    }
+  }
+  root.set("channelNames", channelNames);
+  root.set("mapValues", mapValues);
+  return root;
+}
+
+inline MultiChWeightmap.loadBinFilePath!(FilePath binCacheFilePath){
+  BinaryBlockReader blockReader(binCacheFilePath.string());
+  BinaryBlockReader mapChNames = blockReader.beginReadBlock('channelNames');
+  if(mapChNames){
+    String readNames[] = mapChNames.getBlockNames();
+    this.chCount = readNames.size();
+    this.chNames.resize(readNames.size());
+    for(Integer i=0; i < readNames.size(); i++){
+      BinaryBlockReader MapChName_reader = mapChNames.beginReadBlock('name' + i );
+      UInt32 numElements = 0.0;
+      MapChName_reader.read(numElements.data(), numElements.dataSize());
+      for(Integer ii=0; ii<numElements; ii++){
+        this.chNames[i] += ' ';
+      }
+      MapChName_reader.read(this.chNames[i].data(), this.chNames[i].dataSize());
+    }
+  }
+  BinaryBlockReader mapChValues = blockReader.beginReadBlock('mapValues');
+  if(mapChValues){   
+    Scalar readVals[] = mapChValues.getBlockNames().size();
+    this.temporaryLoadAttr.resize(readVals.size());
+    for(Integer i=0; i<readVals.size(); i++){
+      BinaryBlockReader mapChValuesSub = mapChValues.beginReadBlock('val' + i );
+      SInt32 numElements = 0;
+      mapChValuesSub.read(numElements.data(), numElements.dataSize());
+      this.temporaryLoadAttr[i] = ScalarAttribute();
+      this.temporaryLoadAttr[i].name = this.chNames[i];
+      this.temporaryLoadAttr[i].resize(numElements);
+      mapChValuesSub.read(this.temporaryLoadAttr[i].values.data(), this.temporaryLoadAttr[i].values.dataSize());
+    }
+  }
+  report('MultiWeightMap value data load from "' + binCacheFilePath.string() +'"');
+  this.allChConnected = false;
+}
+
+inline MultiChWeightmap.loadJSON!(JSONDictValue json){
+  JSONArrayValue channelNames = json.get("channelNames");
+  this.chNames.resize(channelNames.size());
+  for(Integer i=0; i<channelNames.size(); i++){
+    this.chNames[i] = channelNames.getString(i);
+  }
+  JSONArrayValue mapValues = json.get("mapValues");
+  this.temporaryLoadAttr.resize(mapValues.size());
+  for(Integer i=0; i<mapValues.size(); i++){
+    JSONArrayValue mapValue = mapValues.get(i);
+    this.temporaryLoadAttr[i] = ScalarAttribute();
+    this.temporaryLoadAttr[i].name = this.chNames[i];
+    this.temporaryLoadAttr[i].resize(mapValue.size());
+    for(Integer ii=0; ii<mapValue.size(); ii++){
+      this.temporaryLoadAttr[i].values[ii] =  mapValue.getScalar(ii);
+    }
+  }
+}
+
+function String MultiChWeightmap.saveDataToString(PersistenceContext persistenceContext){
+  JSONDoc doc();
+  if(this.saveEnable){
+    if(this.saveExternalFile){
+      // save bin 
+      doc.root = this.saveBin();
+    }else{
+      // save JSON
+      doc.root = this.saveJSON();
+    }
+    doc.root.setBoolean("saved", this.saveEnable);
+    doc.root.setInteger("chCount", this.chCount);
+    doc.root.setString("name", this.name);
+  }
+  String json = doc.write();
+  return json;
+}
+
+function MultiChWeightmap.loadDataFromString!(PersistenceContext persistenceContext, String data){
+  JSONDoc doc();
+  if(doc.parse(data)){
+    if(doc.root.has("saved")){
+      this.name = doc.root.getString("name");
+      this.chCount = doc.root.getInteger("chCount");
+      this.oldChCount = doc.root.getInteger("chCount");
+      // load bin
+      if(doc.root.has("saveFolderPath") && doc.root.has("saveFileName")){
+        this.saveFolderPath = FilePath(doc.root.getString("saveFolderPath"));
+        String loadFileName = doc.root.getString("saveFileName");
+        FilePath loadBinFilePath = this.saveFolderPath / FilePath(loadFileName) ;
+        if(loadBinFilePath.exists()){
+          this.loadBinFilePath(loadBinFilePath);
+        }else{
+          report("ERROR Loading MultiChWeightmap data file. File not found from ----" + loadBinFilePath.string());
+        }
+      }
+      // load JSON
+      if(doc.root.has("mapValues")){
+        this.loadJSON(doc.root);
+      }
+    }
+  }
+}
+
+function String MultiChWeightmap.convertToString!(){
+  JSONDoc doc();
+  if(this.saveEnable){
+    if(this.saveExternalFile){
+      // save bin
+      doc.root = this.saveBin();
+    }else{
+      // save JSON
+      doc.root = this.saveJSON();
+    }
+    doc.root.setBoolean("saved", this.saveEnable);
+    doc.root.setInteger("chCount", this.chCount);
+    doc.root.setString("name", this.name);
+  }
+  String json = doc.write();
+  return json;
+}
+
+function Boolean MultiChWeightmap.convertFromString!(in String data){
+  JSONDoc doc();
+  if(doc.parse(data)){
+    if(doc.root.has("saved")){
+      this.name = doc.root.getString("name");
+      this.chCount = doc.root.getInteger("chCount");
+      this.oldChCount = doc.root.getInteger("chCount");
+      // load bin
+      if(doc.root.has("saveFolderPath") && doc.root.has("saveFileName")){
+        this.saveFolderPath = FilePath(doc.root.getString("saveFolderPath"));
+        String loadFileName = doc.root.getString("saveFileName");
+        FilePath loadBinFilePath = this.saveFolderPath / FilePath(loadFileName) ;
+        if(loadBinFilePath.exists()){
+          this.loadBinFilePath(loadBinFilePath);
+        }else{
+          report("ERROR Loading MultiChWeightmap data file. File not found from ----" + loadBinFilePath.string());
+        }
+      }
+      // load JSON
+      if(doc.root.has("mapValues")){
+        this.loadJSON(doc.root);
+      }
+    }
+  }
+  return true;
+}

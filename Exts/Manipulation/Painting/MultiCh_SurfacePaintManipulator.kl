@@ -1,0 +1,575 @@
+/*
+ *  Copyright (c) 2010-2016, Fabric Software Inc. All rights reserved.
+ */
+
+require Singletons;
+require InlineDrawing;
+//
+//////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+//
+const SurfacePaintManipulator_State SurfacePaintManipulator_State_BrushTypeSelect = 4;
+const SurfacePaintManipulator_State SurfacePaintManipulator_State_valueDrawing = 5;
+
+object MultiCh_SurfacePaintManipulator : SurfacePaintManipulator
+{
+  // brush blur param
+  Scalar brushBlur;
+  Scalar mouseDownBrushBlurSize;
+  InlineMaterial paintBrushBlurMaterial;
+  InlineInstance paintBrushBlur;
+
+  // brush strength param
+  Lines paintBrushStrengthShape;
+  Scalar mouseDownBrushStrengthSize;
+  InlineMaterial paintBrushStrengthMaterial;
+  InlineInstance paintBrushStrength;
+
+  // brushType
+  Integer brushType;
+  Scalar mouseDownBrushType;
+  InlineMaterial brushTypeMaterial;
+  InlineMaterial brushTypeMaterial2[3];
+  InlineInstance brushTypeIcon[3];
+  InlineInstance brushTypeIcon2[3];
+
+  // surface attribute values drawing
+  Scalar mouseDownValDraw;
+  InlineMaterial valDrawMaterial;
+  InlineInstance valDrawIcon;
+  MultiCh_SurfaceAttributeValuesDrawing valueDrawing;
+
+};
+
+function MultiCh_SurfacePaintManipulator.init2!()
+{
+  this.init();
+
+  InlineDrawing drawing = OGLInlineDrawing_GetInstance();
+  InlineShader hudShader = drawing.registerShader(OGLHUDShader('OGLHUDShader'));
+  // brush blur
+  this.brushBlur = 0.25;
+  this.paintBrushBlurMaterial = hudShader.getOrCreateMaterial("PaintBrushBlur_Material");
+  this.paintBrushBlurMaterial.setUniform('u_color', Color(0.65, 0.35, 0.35));
+  Lines lines();
+  lines.addCircle(Xfo(Quat(Vec3(1,0,0), HALF_PI)), 1.0, 20);
+  InlineShape shape = InlineLinesShape('PaintBrushBlur_Shape', lines);
+  drawing.registerShape(shape);
+  InlineTransform transform = StaticInlineTransform('PaintBrush_Transform', Xfo());
+  drawing.getRoot().addChild(transform);
+  this.paintBrushBlur = InlineInstance('PaintBrushBlur_Instance', transform, shape);
+
+  // brush Size base
+  this.paintBrushMaterial = hudShader.getOrCreateMaterial("PaintBrushStrengthBase_Material");
+  this.paintBrushMaterial.setUniform('u_color', Color(0.5, 0.3, 0.1));
+  Lines lines2();
+  lines2.addCircle(Xfo(Quat(Vec3(1,0,0), HALF_PI)), 1.0, 20);
+  InlineTransform transform2 = StaticInlineTransform('PaintBrush_Transform2', Xfo());
+  drawing.getRoot().addChild(transform2);
+  InlineShape shape2 = InlineLinesShape('PaintBrushStrength_Shape', lines.clone());
+  drawing.registerShape(shape2);
+  this.paintBrush = InlineInstance('PaintBrushBase_Instance', transform2, shape2);
+  
+  // brush strength
+  this.paintBrushStrengthMaterial = hudShader.getOrCreateMaterial("PaintBrushStrength_Material");
+  this.paintBrushStrengthMaterial.setUniform('u_color', Color(1.0, 0.0, 0.0));
+  this.paintBrushStrengthShape = Lines();
+  this.paintBrushStrengthShape.addPoints(22);
+  for(Size i=0; i<=10; i++){
+    this.paintBrushStrengthShape.setPosition(i, lines2.getPosition(10-i)+Vec3(0.0, 0.0, -0.1));
+  }
+  for(Size i=11; i<21; i++){
+    this.paintBrushStrengthShape.setPosition(i, lines2.getPosition(30-i)+Vec3(0.0, 0.0, -0.1));
+  }
+  this.paintBrushStrengthShape.setPosition(20, lines2.getPosition(10));
+  this.paintBrushStrengthShape.setPosition(21, Vec3(0));
+  Lines lines3();
+  lines3 = this.paintBrushStrengthShape.clone();
+  lines3.addLine(0, 20);
+  InlineShape shape3 = InlineLinesShape('PaintBrushStrength_Shape', lines3);
+  drawing.registerShape(shape3);
+  this.paintBrushStrength = InlineInstance('PaintBrushStrength_Instance', transform2, shape3);
+
+  // brush type
+  this.brushTypeMaterial = hudShader.getOrCreateMaterial("BrushType_Material");
+  this.brushTypeMaterial.setUniform('u_color', Color(1.0, 0.0, 0.0));
+  for(Integer i=0; i<3; i++){
+    this.brushTypeMaterial2[i] = hudShader.getOrCreateMaterial("BrushType_Material2"+i);
+    this.brushTypeMaterial2[i].setUniform('u_color', Color(0.25, 0.25, 0.25));
+  }
+  // brush type transform
+  InlineTransform brushTypetransform[4];
+  for(Integer i=0; i<4; i++){
+    brushTypetransform[i] = StaticInlineTransform('brushTypeTransform'+i, Xfo());
+    drawing.getRoot().addChild( brushTypetransform[i] );
+  }
+  // brush type shape
+  Lines linesMake0();
+  linesMake0.addCircle(Xfo(Quat(Vec3(1,0,0), HALF_PI)), 1.0, 20);
+  this.brushTypeIcon[0] = InlineInstance();{
+    Lines lines4();
+    lines4.addPoints(42);
+    for(Integer i=0; i<20; i++){
+      lines4.setPosition(i, linesMake0.getPosition(i)*0.0075+Vec3(-0.002, 0.0035, -0.02));}
+    lines4.setPosition(20, linesMake0.getPosition(0)*0.0075+Vec3(-0.002, 0.0035, -0.02));
+    for(Integer i=21; i<41; i++){
+      lines4.setPosition(i, linesMake0.getPosition(i-21)*0.005+Vec3(+0.013, -0.0185, -0.015));}
+    lines4.setPosition(41, linesMake0.getPosition(0)*0.005+Vec3(+0.013, -0.0185, -0.015));
+    lines4.addLine(0, 20);
+    lines4.addLine(21, 41);
+    InlineShape shape4 = InlineLinesShape('BrushType_Shape', lines4);
+    drawing.registerShape(shape4);
+    this.brushTypeIcon[0] = InlineInstance('BrushType_Instance', brushTypetransform[0], shape4);
+  }
+  this.brushTypeIcon[1] = InlineInstance();{
+    Lines lines5();
+    lines5.addPoints(21);
+    for(Integer i=0; i<20; i++){
+      lines5.setPosition(i, linesMake0.getPosition(i)*Vec3(0.0085, 0.01, 0.01)+Vec3(0.0, 0.0, -0.02));}
+    lines5.setPosition(20, linesMake0.getPosition(0)*Vec3(0.0085, 0.01, 0.01)+Vec3(0.0, 0.0, -0.02));
+    lines5.addLine(0, 20);
+    InlineShape shape5 = InlineLinesShape('BrushType_Shape', lines5);
+    drawing.registerShape(shape5);
+    this.brushTypeIcon[1] = InlineInstance('BrushType_Instance', brushTypetransform[1], shape5);
+  }
+  this.brushTypeIcon[2] = InlineInstance();{
+    InlineDebugShape icon = InlineDebugShape().drawTrianglesSphere(Xfo(Vec3(0.0, 0.0, -0.02)), 0.03, 20);
+    drawing.registerShape(icon);
+    this.brushTypeIcon[2] = InlineInstance('BrushType_Instance', brushTypetransform[2], icon);
+  }
+  for(Integer i=0; i<3; i++){
+    InlineDebugShape panel = InlineDebugShape().drawTrianglesCube(Xfo(), 0.08, 0.08, 0.01);
+    drawing.registerShape(panel);
+    this.brushTypeIcon2[i] = InlineInstance('BrushType_Instance'+i, brushTypetransform[i], panel);
+  }
+
+  // value drawing
+  this.valDrawMaterial = hudShader.getOrCreateMaterial("valDrawDrawingWire");
+  this.valDrawMaterial.setUniform('u_color', Color(1.0, 0.0, 0.0));
+  Lines lines6();
+  lines6.addPoints(15);
+  Scalar s = 0.004;
+  lines6.setPosition(0, Vec3(-s,  s, 0.0));
+  lines6.setPosition(1, Vec3( s,  s, 0.0));
+  lines6.setPosition(2, Vec3( s, -s, 0.0));
+  lines6.setPosition(3, Vec3(-s, -s, 0.0));
+  lines6.setPosition(4, Vec3(-s,  s, 0.0));
+  for(Integer i=5; i<10; i++){
+    lines6.setPosition(i, lines6.getPosition(i-5)*1.3+Vec3(-0.025, 0.0, 0.0));
+  }
+  for(Integer i=10; i<15; i++){
+    lines6.setPosition(i, lines6.getPosition(i-10)*0.7+Vec3(0.023, 0.0, 0.0));
+  }
+  lines6.addLine(0, 4);
+  lines6.addLine(5, 9);
+  lines6.addLine(10, 14);
+  InlineShape shape6 = InlineLinesShape('BrushType_Shape', lines6);
+  drawing.registerShape(shape6);
+  this.valDrawIcon = InlineInstance('valDrawIcon_Instance0', brushTypetransform[3], shape6);
+
+
+}
+
+function MultiCh_SurfacePaintManipulator.onEnable!()
+{
+  if(!this.paintBrush.hasMaterial(this.paintBrushMaterial)){
+    this.paintBrush.addMaterial(this.paintBrushMaterial);
+    this.paintBrushStrength.addMaterial(this.paintBrushStrengthMaterial);
+  }
+  if(this.brushType == 0){
+    this.paintBrushBlur.addMaterial(this.paintBrushBlurMaterial);
+  }else{
+    this.paintBrushBlur.removeMaterial(this.paintBrushBlurMaterial);
+  }
+}
+
+function MultiCh_SurfacePaintManipulator.onDisable!()
+{
+  if(this.paintBrush.hasMaterial(this.paintBrushMaterial)){
+    this.paintBrush.removeMaterial(this.paintBrushMaterial);
+    this.paintBrushBlur.removeMaterial(this.paintBrushBlurMaterial);
+    this.paintBrushStrength.removeMaterial(this.paintBrushStrengthMaterial);
+  }
+}
+
+function MultiCh_SurfacePaintManipulator.updateBrush2!(io Event event, Vec2 mousePos)
+{
+  Vec2 viewportDim = event.getViewport().getDimensions();
+  Scalar viewportAspectRatio = viewportDim.x / viewportDim.y;
+
+  // brush size & strengthUI
+  this.updateBrush(event, mousePos);
+  // brush blur UI
+  Xfo  brushBlurXfo = this.paintBrush.getTransform().getLocalXfo(0);
+  brushBlurXfo.sc = Vec3(this.brushSize / viewportAspectRatio, this.brushSize, this.brushSize) * Vec3(0.98*this.brushBlur); 
+  this.paintBrushBlur.getTransform().setLocalXfo(0, brushBlurXfo);
+  // brush strength shape
+  Lines lines();
+  lines = this.paintBrushStrengthShape.clone();
+  lines.addLine(0, this.brushStrength*20);
+  lines.addSegment(this.brushStrength*20, 21);
+  lines.addSegment(0, 21);
+  InlineShape shape = InlineLinesShape('PaintBrushStrength_Shape', lines);
+  this.paintBrushStrength.setShape(shape);
+
+  this.valueDrawing.updateValueDrawing();
+}
+
+// Updates brushType panels transform 
+function MultiCh_SurfacePaintManipulator.updateBrush3!(io Event event, Vec2 mousePos, Scalar drag){
+  Vec2 viewportDim = event.getViewport().getDimensions();
+  Scalar viewportAspectRatio = viewportDim.x / viewportDim.y;
+  Scalar resize = Math_clamp( viewportDim.y / viewportDim.x, 1.0, 2.0);
+  Vec3 setVec[3];
+    setVec[0] = Vec3(-0.05, 0.0, 0.0) *resize;
+    setVec[1] = Vec3(0.0, 0.0, 0.0) *resize;
+    setVec[2] = Vec3(0.05, 0.0, 0.0) *resize;
+  Scalar s[3];
+  Xfo selectPanelXfo[3];
+  Scalar dragClamp = Math_clamp(drag, -1.0, 1.0);
+  for(Integer i=0; i<3; i++){
+    selectPanelXfo[i] = Xfo(
+      Vec3( ((mousePos.x / viewportDim.x) - 0.5) * 2.0 - dragClamp*0.05,  ((mousePos.y / viewportDim.y) - 0.5) * -2.0,  0.01) + setVec[i], 
+      Quat(), 
+      Vec3(0.75 / viewportAspectRatio, 0.75, 0.75) * Math_min( viewportDim.x/viewportDim.y, 1.0 )
+    );
+    if(i == this.brushType){
+      selectPanelXfo[i].sc *= Vec3(1.5);
+      this.brushTypeMaterial2[i].setUniform('u_color', Color(0.85, 0.85, 0.85));
+    }else{
+      Scalar sc = abs(this.brushType - i) - 1;
+      selectPanelXfo[i].sc *= Vec3(1.0 - sc*0.2);
+      this.brushTypeMaterial2[i].setUniform('u_color', Color(0.25, 0.25, 0.25));
+    }
+    this.brushTypeIcon[i].getTransform().setLocalXfo(0, selectPanelXfo[i]);
+    this.brushTypeIcon2[i].getTransform().setLocalXfo(0, selectPanelXfo[i]);
+  }
+}
+
+function MultiCh_SurfacePaintManipulator.updateBrush4!(io Event event, Vec2 mousePos)
+{
+  Vec2 viewportDim = event.getViewport().getDimensions();
+  Scalar viewportAspectRatio = viewportDim.x / viewportDim.y;
+  Xfo valDrawXfo = Xfo(
+    Vec3(),
+    Quat(), 
+    Vec3(10/viewportAspectRatio, 10, 10) * Math_min( viewportDim.x/viewportDim.y, 1.0 )
+  );
+  this.valDrawIcon.getTransform().setLocalXfo(0, valDrawXfo);
+
+}
+
+inline MultiCh_SurfacePaintManipulator.setBrushParams!(Scalar brushSize, Scalar brushStrength, Scalar brushBlur)
+{
+  this.brushSize = brushSize;
+  this.brushStrength = brushStrength;
+  this.brushBlur = brushBlur;
+}
+
+struct CollectPointsSharedData2 : CollectPointsSharedData
+{
+  Scalar brushBlur;
+  //
+};
+
+inline Boolean MultiCh_SurfacePaintManipulator.raycastTargetGeometries!(io MouseEvent mouseEvent)
+{
+  // We cast to InlineViewport to access the method calcRayFromScreenPos
+  Ref<InlineViewport> viewport = mouseEvent.getViewport();
+  Ray ray = viewport.calcRayFromScreenPos(mouseEvent.pos);
+  Scalar distance = BIGSCALAR_POSITIVE;
+
+  SurfacePaintManipulator_StrokePoint strokePoint = null;
+  for(Integer i=0; i< this.targetGeometries.size(); i++){
+    this.raycastInstance(ray, this.targetGeometries[i], distance, strokePoint);
+  }
+
+  if(strokePoint != null){
+    this.strokePath.push(strokePoint);
+    this.collectGeometryPointsFromStrokePoint(mouseEvent, strokePoint, ray, mouseEvent.getViewport().getCamera().getFovY());
+    return true;
+  }
+  return false;
+}
+
+/// An operator for collecting points during surface painting.
+operator collectPointsProduce2(io CollectPointsMapOutput result, Index index, Size count, CollectPointsSharedData2 sharedData)
+{
+  Vec3 pos = sharedData.mesh.getPointPosition(index); 
+  if(sharedData.strokePath.size() == 1){
+    Scalar dist = pos.distanceTo(sharedData.strokePath[0].objectSpacePoint);
+    if(dist < sharedData.brushSize){
+      result.collected = true;
+      result.pointIndex = index;
+      result.distance = dist;
+      result.weight = Math_linearInterpolate( ((cos(PI * (dist / sharedData.brushSize)) * 0.5) + 0.5), 1.0, sharedData.brushBlur) * sharedData.brushStrength;
+      return;
+    }
+  }
+  else {
+    Vec3 p1 = sharedData.strokePath[sharedData.strokePath.size()-2].objectSpacePoint;
+    Vec3 p2 = sharedData.strokePath[sharedData.strokePath.size()-1].objectSpacePoint;
+    Scalar dist = distFromPointToSegment(pos, p1, p2);
+    if(dist < sharedData.brushSize){
+      result.collected = true;
+      result.pointIndex = index;
+      result.distance = dist;
+      result.weight = Math_linearInterpolate( ((cos(PI * (dist / sharedData.brushSize)) * 0.5) + 0.5), 1.0, sharedData.brushBlur) * sharedData.brushStrength;
+      return;
+    }
+  }
+  result.collected = false;
+}
+
+operator collectPointsReduce2(CollectPointsMapOutput input, io SurfacePaintManipulator_PointCollection output, Index index, Size count)
+{
+  if(input.collected){
+    output.pointIds.push(input.pointIndex);
+    output.distances.push(input.distance);
+    output.weights.push(input.weight);
+  }
+}
+
+inline MultiCh_SurfacePaintManipulator.collectGeometryPointsFromStrokePoint!(io MouseEvent mouseEvent, SurfacePaintManipulator_StrokePoint strokePoint, Ray ray, Scalar fovY)
+{
+  InlineInstance instance = this.strokePath[this.strokePath.size()-1].instance;
+  InlineTransform transform = instance.getTransform();
+  InlineShape shape = instance.getShape();
+  PolygonMesh mesh = shape.getGeometry();
+  if(!mesh)
+    return;
+
+  Scalar dist = strokePoint.worldSpacePoint.distanceTo(ray.start);
+
+  CollectPointsSharedData2 collectPointsSharedData2;
+  collectPointsSharedData2.mesh = mesh;
+  Float32 scale = instance.getTransform().getGlobalXfo(0).sc.x;
+  if(scale == 0.0)
+    scale = 1.0;
+  collectPointsSharedData2.brushSize = 2.0 * this.brushSize * dist * fovY / scale;
+  collectPointsSharedData2.brushStrength = this.brushStrength;
+  collectPointsSharedData2.strokePath = this.strokePath;
+  collectPointsSharedData2.brushBlur = this.brushBlur;
+  ValueProducer<SurfacePaintManipulator_PointCollection> reducer = createReduce( 
+    createArrayGenerator(
+      createConstValue( mesh.pointCount() ),
+      collectPointsProduce2,
+      createConstValue( collectPointsSharedData2 )
+    ),
+    collectPointsReduce2
+  );
+  SurfacePaintManipulator_PointCollection collectedPoints = reducer.produce();
+  
+  collectedPoints.mesh = mesh;
+  collectedPoints.ray = ray;
+
+  // Cast this to the ISurfacePaintManipulator so that we can invoke the virtual method
+  // Note: when the 'virtual' keyword is introduced into KL, we can eliminate this step.
+  Ref<ISurfacePaintManipulator> ipainter = this;
+  ipainter.onPaint( mouseEvent, collectedPoints);
+}
+
+function MultiCh_SurfacePaintManipulator.onEvent!(io Event event)
+{
+  // Cast this to the MultiCh_ISurfacePaintManipulator so that we can invoke the virtual method
+  // Note: when the 'virtual' keyword is introduced into KL, we can eliminate this step.
+  Ref<ISurfacePaintManipulator> ipainter = this;
+  Ref<EventDispatcher> eventDispatcher = EventDispatcher_GetInstance();
+  Boolean fireCustomCommand = false;
+   if(event.eventType() == Event_MouseButtonPress){
+    MouseEvent mouseEvent = event;
+    switch(this.state){
+    case SurfacePaintManipulator_State_Active:
+      // Avoid disabling camera manipulation in Maya
+      // Note: testing the host name is casing a crash that doesn't make sense.
+      if(mouseEvent.host.hostName == "Maya" && (mouseEvent.modifiers & ModiferKey_Alt) != 0){
+        // While the camera manipulation is occuring, hide the
+        // paint brush and do not accept the events.
+        this.state = SurfacePaintManipulator_State_Suspended;
+        this.onDisable();
+      }
+      else if((mouseEvent.modifiers & ModiferKey_Ctrl) != 0 ){
+        // While the camera manipulation is occuring, hide the
+        // paint brush and do not accept the events.
+        this.state = SurfacePaintManipulator_State_ResizingBrush;
+        this.mouseDownBrushSize = this.brushSize;
+        this.mouseDownBrushBlurSize = this.brushBlur;
+        this.mouseDownScreenPos = mouseEvent.pos;
+        this.mouseDownBrushStrengthSize = this.brushStrength;
+        event.accept();
+      }
+      else if((mouseEvent.modifiers & ModiferKey_Shift) != 0 ){
+        if(mouseEvent.buttons == MouseButton_RightButton){
+          for(Integer i=0; i<3; i++){
+            this.brushTypeIcon[i].addMaterial(this.brushTypeMaterial);
+            this.brushTypeIcon2[i].addMaterial(this.brushTypeMaterial2[i]);
+          }
+          this.state = SurfacePaintManipulator_State_BrushTypeSelect;
+          this.mouseDownBrushType = this.brushType;
+          this.updateBrush3(event, mouseEvent.pos, Scalar(this.brushType-1+this.mouseDownBrushType));
+        }else if(mouseEvent.buttons == MouseButton_MiddleButton){
+          this.mouseDownValDraw = this.valueDrawing.drawSize;
+          this.state = SurfacePaintManipulator_State_valueDrawing;
+          this.valDrawIcon.addMaterial(this.valDrawMaterial);
+          this.mouseDownScreenPos = mouseEvent.pos;
+          this.updateBrush4(event, mouseEvent.pos);
+        }
+        this.mouseDownScreenPos = mouseEvent.pos;
+        event.accept();
+      }
+      else{
+        this.strokePath.resize(0);
+        ipainter.onStrokeBegin(mouseEvent);
+        this.state = SurfacePaintManipulator_State_Painting;
+        if(this.raycastTargetGeometries(mouseEvent)){
+          event.getHost().requestRedraw();
+        }
+        event.accept();
+        fireCustomCommand = true;
+      }
+      break;
+    }
+  }
+  else if(event.eventType() == Event_MouseMove){
+    // suspend event handling while manipulating the camera. 
+    MouseEvent mouseEvent = event;
+    switch(this.state){
+      case SurfacePaintManipulator_State_Suspended: 
+        return;
+      case SurfacePaintManipulator_State_Active:
+        this.updateBrush2(event, mouseEvent.pos);
+        break;
+      case SurfacePaintManipulator_State_Painting:
+        // On drag
+        this.updateBrush2(event, mouseEvent.pos);
+        this.raycastTargetGeometries(mouseEvent);
+        fireCustomCommand = true;
+        break;
+      case SurfacePaintManipulator_State_ResizingBrush:
+        Scalar drag = this.mouseDownScreenPos.x - mouseEvent.pos.x;
+        String args[];
+        if(mouseEvent.buttons == MouseButton_LeftButton){
+          Scalar rest = this.mouseDownBrushStrengthSize + drag * Scalar(0.01) * this.brushScaleSpeed;
+          this.brushStrength = Math_clamp( rest, 0.1, 1.0);
+        }else if(mouseEvent.buttons == MouseButton_MiddleButton){
+          this.brushSize = this.mouseDownBrushSize + drag * Scalar(0.001) * this.brushScaleSpeed;
+          this.brushSize = Math_max(0.01, this.brushSize);
+        }else if(mouseEvent.buttons == MouseButton_RightButton){
+          Scalar rest = this.mouseDownBrushBlurSize + drag * Scalar(0.01) * this.brushScaleSpeed;
+          this.brushBlur = Math_clamp( rest, 0.1, 1.0);
+        }
+        this.updateBrush2(event, mouseEvent.pos);
+        break;
+      case SurfacePaintManipulator_State_BrushTypeSelect:
+        this.onDisable();
+        Scalar drag = this.mouseDownScreenPos.x - mouseEvent.pos.x;
+        drag = drag * Scalar(-0.005) * this.brushScaleSpeed;
+        this.brushType = Math_clamp( this.mouseDownBrushType + (drag*10+1), 0, 2);
+        this.updateBrush3(event, mouseEvent.pos, Scalar(drag*10+this.mouseDownBrushType));
+        break;
+      case SurfacePaintManipulator_State_valueDrawing:
+        this.onDisable();
+        Scalar drag = this.mouseDownScreenPos.x - mouseEvent.pos.x;
+        Scalar rest = this.mouseDownValDraw + drag * Scalar(0.5) * this.brushScaleSpeed;
+        this.valueDrawing.drawSize = Math_max( rest, 0.0);
+        if(this.valueDrawing.drawSize > 0.5){
+          this.valueDrawing.draw = true;
+          this.valueDrawing.updateValueDrawing();
+        }
+        this.updateBrush4(event, mouseEvent.pos);
+        break;
+    }
+    event.getHost().requestRedraw();
+    event.accept();
+  }
+  else if(event.eventType() == Event_MouseButtonRelease){
+    MouseEvent mouseEvent = event;
+    switch(this.state){
+    case SurfacePaintManipulator_State_Suspended:
+      // reenable event handling now that camera manipulation is over. 
+      this.state = SurfacePaintManipulator_State_Active;
+      this.onEnable();
+      event.getHost().requestRedraw();
+      break;
+    case SurfacePaintManipulator_State_Active:
+      event.accept();
+      break;
+    case SurfacePaintManipulator_State_Painting:
+      // On release, end the stroke(which should cause an undo to be generated in the callback)
+      this.state = SurfacePaintManipulator_State_Active;
+      ipainter.onStrokeEnd(mouseEvent);
+      event.getHost().requestRedraw();
+      event.accept();
+      break;
+    case SurfacePaintManipulator_State_ResizingBrush:
+      this.state = SurfacePaintManipulator_State_Active;
+      event.accept();
+      break;
+    case SurfacePaintManipulator_State_BrushTypeSelect:
+      for(Integer i=0; i<3; i++){
+        this.brushTypeIcon[i].removeMaterial(this.brushTypeMaterial);
+        this.brushTypeIcon2[i].removeMaterial(this.brushTypeMaterial2[i]);
+      }
+      this.state = SurfacePaintManipulator_State_Active;
+      this.onEnable();
+      event.accept();
+      break;
+    case SurfacePaintManipulator_State_valueDrawing:
+      this.valDrawIcon.removeMaterial(this.valDrawMaterial);
+      this.state = SurfacePaintManipulator_State_Active;
+      if(this.valueDrawing.drawSize > 0.5){
+        this.valueDrawing.draw = true;
+      }
+      this.onEnable();
+      event.accept();
+    }
+  }
+  else if(event.eventType() == Event_Wheel){
+    // Use the mouse wheel to reize the brush. 
+    if(this.state != SurfacePaintManipulator_State_Suspended){
+      MouseWheelEvent mouseWheelEvent = event;
+      this.brushSize = this.brushSize + mouseWheelEvent.delta * Scalar(0.0001) * this.brushScaleSpeed;
+      if(this.brushSize < 0.001)
+        this.brushSize = 0.001;
+      this.updateBrush2(event, mouseWheelEvent.pos);
+      event.getHost().requestRedraw();
+      event.accept();
+    }
+  }
+  else if(event.eventType() == Event_Leave){
+    if(this.state != SurfacePaintManipulator_State_Suspended){
+      // When the mouse leaves the viewport, hide the brush. 
+      this.onDisable();
+      event.getHost().requestRedraw();
+    }
+  }
+  else if(event.eventType() == Event_Enter){
+    if(this.state != SurfacePaintManipulator_State_Suspended){
+      // When the mouse enters the viewport, show the brush. 
+      this.onEnable();
+      event.getHost().requestRedraw();
+    }
+  }
+
+  // update the dcc's host
+  if(fireCustomCommand){
+    if(this.portToDrive.length() > 0 &&
+      this.hostName.length() > 0 &&
+      this.graphName.length() > 0){
+      Host host = event.getHost();
+      this.evalID++;
+      if(this.hostName == 'Maya') {
+        String attr = this.graphName + '.' + this.portToDrive;
+        String args[];
+        args.push(attr);
+        args.push(this.evalID);
+        host.callCustomCommand('setAttr', args);
+      } else if(this.hostName == 'Softimage') {
+        String attr = this.graphName + '.' + this.portToDrive;
+        String args[];
+        args.push(attr);
+        args.push(this.evalID);
+        host.callCustomCommand('SetValue', args);
+      }
+    }
+  }
+}

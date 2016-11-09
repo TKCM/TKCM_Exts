@@ -1,0 +1,142 @@
+require InlineDrawing;
+require FabricInterfaces;
+require Singletons;
+require Math;
+
+object MultiCh_SurfaceAttributeValuesDrawing : Detachable {
+  Boolean draw;
+  String name;
+  Integer type; // 0 = box, 1 = sphere,
+  Color color;
+  Scalar drawSize;
+  Xfo meshTransform;
+
+  DrawingHandle handle;
+  InlineMaterial attributeValueDrawingWireMaterial;
+  InlineMaterial attributeValueDrawingMaterial;
+  InlineDebugShape shapes[2];
+  InlineInstance instanceDrawingWire[];
+  InlineInstance instanceDrawing[];
+
+  Ref<ScalarAttribute> attr;
+  Vec3 pointPositions[];
+};
+
+function MultiCh_SurfaceAttributeValuesDrawing(){
+  this.name = 'MultiCh_SurfaceAttributeValuesDrawing';
+  this.color = Color(1.0,0.0,0.0);
+  this.type = 0;
+} 
+
+function MultiCh_SurfaceAttributeValuesDrawing.connect!( 
+    in PolygonMesh mesh,
+    in Color color,
+    ){
+  // setup the scene
+  InlineDrawing drawing = OGLInlineDrawing_GetInstance();
+  this.color = color;
+  if(!this.handle){
+    this.handle = DrawingHandle();
+    // setup shader & material
+    InlineShader attributeValueDrawingShader = drawing.registerShader(OGLFlatShader( this.name+"DrawingShader"));
+    this.attributeValueDrawingMaterial = attributeValueDrawingShader.getOrCreateMaterial("attributeValueDrawing");
+    InlineShader attributeValueDrawingWireShader = drawing.registerShader(OGLWireFrameShader('wireframe', OGLFlatShader()));
+    this.attributeValueDrawingWireMaterial = attributeValueDrawingWireShader.getOrCreateMaterial("attributeValueDrawingWire");
+
+    // create a shape for the mesh
+    this.shapes[0] = InlineDebugShape('shape_box').drawTrianglesCube(Xfo(), 1.0, 1.0, 1.0);
+    drawing.registerShape(this.shapes[0]);
+
+    this.shapes[1] = InlineDebugShape('shape_sphere').drawTrianglesSphere(Xfo(), 0.5, 3);
+    drawing.registerShape(this.shapes[1]);
+
+    // set vetexValueDrawings
+    this.instanceDrawing.resize(mesh.pointCount());
+    this.instanceDrawingWire.resize(mesh.pointCount());
+    for(Size i=0; i<this.instanceDrawing.size(); i++){
+      ConstantScreenSizeTransform hudTransformWire(this.name+'attributeValueDrawingWireTr'+i, Xfo() );
+      drawing.getRoot().addChild(hudTransformWire);
+      this.instanceDrawingWire[i] = InlineInstance(this.name+'InstanceDrawingWire'+i, hudTransformWire, this.shapes[0]);
+      ConstantScreenSizeTransform hudTransform(this.name+'attributeValueDrawingTr'+i, Xfo() );
+      drawing.getRoot().addChild(hudTransform);
+      this.instanceDrawing[i] = InlineInstance(this.name+'InstanceDrawing'+i, hudTransform, this.shapes[0]);
+    }
+  }
+}
+
+function MultiCh_SurfaceAttributeValuesDrawing.display!( 
+    in Vec3 pointPositions[],
+    in Ref<ScalarAttribute> activeWeiMapVal,
+    in Color color,
+    in Xfo meshTransform,
+    ){
+  this.meshTransform = meshTransform;
+  Mat44 meshTransformM44 = meshTransform.toMat44();
+  this.color = color;
+  if(this.instanceDrawing[0] != null){
+    for(Size i=0; i<this.instanceDrawing.size(); i++){
+      this.instanceDrawingWire[i].setShape(this.shapes[this.type]);
+      this.instanceDrawing[i].setShape(this.shapes[this.type]);
+    }
+  }
+  for(Size i=0; i<this.instanceDrawing.size(); i++){
+    Xfo rest;
+    this.instanceDrawingWire[i].setInstanceUniform(InlineUniform('u_color', this.color*pow(activeWeiMapVal.values[i], 3)) );
+    rest = this.instanceDrawingWire[i].getTransform().getLocalXfo(0);
+    rest.tr = meshTransformM44.multiplyVector3(pointPositions[i]);
+    rest.sc = Vec3(this.drawSize) * Integer(Boolean(Math_max(activeWeiMapVal.values[i]-0.0001, 0.0)));
+    this.instanceDrawingWire[i].getTransform().setLocalXfo(0, rest);
+
+    this.instanceDrawing[i].setInstanceUniform(InlineUniform('u_color', this.color));
+    rest = this.instanceDrawing[i].getTransform().getLocalXfo(0);
+    rest.tr = meshTransformM44.multiplyVector3(pointPositions[i]);
+    rest.sc = Vec3(this.drawSize) * activeWeiMapVal.values[i];
+    this.instanceDrawing[i].getTransform().setLocalXfo(0, rest);
+  }
+  this.attr = activeWeiMapVal;
+  this.pointPositions = pointPositions;
+
+  if(this.drawSize > 0.5){
+    if(!this.instanceDrawing[0].hasMaterial(this.attributeValueDrawingMaterial)){
+      for(Size i=0; i<this.instanceDrawing.size(); i++){
+        this.instanceDrawingWire[i].addMaterial(this.attributeValueDrawingWireMaterial);
+        this.instanceDrawing[i].addMaterial(this.attributeValueDrawingMaterial);
+      }
+    }
+  }
+  else {
+    if(this.instanceDrawing[0] != null && this.instanceDrawing[0].hasMaterial(this.attributeValueDrawingMaterial)){
+			for(Size i=0; i<this.instanceDrawing.size(); i++){
+        this.instanceDrawingWire[i].removeMaterial(this.attributeValueDrawingWireMaterial);
+        this.instanceDrawing[i].removeMaterial(this.attributeValueDrawingMaterial);
+      }
+    }
+  }
+}
+
+function MultiCh_SurfaceAttributeValuesDrawing.updateValueDrawing!(){
+  this.display(this.pointPositions, this.attr, this.color, this.meshTransform);
+}
+
+function MultiCh_SurfaceAttributeValuesDrawing.setColor!(in Color color){
+  this.color = color;
+}
+
+function MultiCh_SurfaceAttributeValuesDrawing.setType!(in Integer type){
+  this.type = Math_clamp(type, 0, 1);
+  for(Size i=0; i<this.instanceDrawing.size(); i++){
+    if(this.type != type){
+      this.instanceDrawingWire[i].setShape(this.shapes[type]);
+      this.instanceDrawing[i].setShape(this.shapes[type]);
+      this.type = type;
+    }
+  }
+}
+
+function MultiCh_SurfaceAttributeValuesDrawing.detach!(){
+  this.handle.detach();
+}
+
+function MultiCh_SurfaceAttributeValuesDrawing.attach!(){
+  this.handle.attach();
+}

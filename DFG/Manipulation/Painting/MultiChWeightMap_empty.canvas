@@ -1,0 +1,157 @@
+{
+  "objectType" : "Graph",
+  "metadata" : {
+    "uiGraphZoom" : "{\n  \"value\" : 1.0\n  }",
+    "uiGraphPan" : "{\n  \"x\" : -524.0134887695313,\n  \"y\" : 239.8335418701172\n  }"
+    },
+  "title" : "Empty Weightmap",
+  "ports" : [
+    {
+      "objectType" : "ExecPort",
+      "metadata" : {
+        "uiPersistValue" : "true"
+        },
+      "name" : "exec",
+      "nodePortType" : "IO",
+      "defaultValues" : {
+        "Execute" : {}
+        },
+      "execPortType" : "IO",
+      "typeSpec" : "Execute"
+      },
+    {
+      "objectType" : "ExecPort",
+      "metadata" : {
+        "uiPersistValue" : "true"
+        },
+      "name" : "name",
+      "nodePortType" : "Out",
+      "defaultValues" : {
+        "String" : "weightMap"
+        },
+      "execPortType" : "In",
+      "typeSpec" : "String"
+      },
+    {
+      "objectType" : "ExecPort",
+      "metadata" : {
+        "uiPersistValue" : "true"
+        },
+      "name" : "value",
+      "nodePortType" : "In",
+      "defaultValues" : {
+        "MultiChWeightmap" : null
+        },
+      "execPortType" : "Out",
+      "typeSpec" : "MultiChWeightmap"
+      }
+    ],
+  "extDeps" : {
+    "TKCM" : "*"
+    },
+  "nodes" : [
+    {
+      "objectType" : "Inst",
+      "metadata" : {
+        "uiGraphPos" : "{\"x\":749.117,\"y\":41.3329}"
+        },
+      "name" : "MultiChWeightmap",
+      "ports" : [
+        {
+          "objectType" : "InstPort",
+          "name" : "exec",
+          "nodePortType" : "IO"
+          },
+        {
+          "objectType" : "InstPort",
+          "name" : "result",
+          "nodePortType" : "Out"
+          },
+        {
+          "objectType" : "InstPort",
+          "name" : "name",
+          "nodePortType" : "In"
+          }
+        ],
+      "definition" : {
+        "objectType" : "Func",
+        "metadata" : {
+          "uiDocUrl" : "http://docs.fabric-engine.com/FabricEngine/2.3.0/HTML/KLExtensionsGuide/Manipulation/Weightmap.html",
+          "uiTooltip" : "Supported types:\n  result: Weightmap\n"
+          },
+        "title" : "Weightmap",
+        "ports" : [
+          {
+            "objectType" : "ExecPort",
+            "name" : "exec",
+            "nodePortType" : "IO",
+            "execPortType" : "IO",
+            "typeSpec" : "Execute"
+            },
+          {
+            "objectType" : "ExecPort",
+            "name" : "result",
+            "nodePortType" : "In",
+            "execPortType" : "Out",
+            "typeSpec" : "MultiChWeightmap"
+            },
+          {
+            "objectType" : "ExecPort",
+            "name" : "name",
+            "nodePortType" : "Out",
+            "execPortType" : "In",
+            "typeSpec" : "String"
+            }
+          ],
+        "extDeps" : {
+          "Manipulation" : "*"
+          },
+        "code" : "require Manipulation;
+
+dfgEntry {
+  result = MultiChWeightmap();
+  result.name = name;
+}
+"
+        }
+      },
+    {
+      "objectType" : "Var",
+      "metadata" : {
+        "uiGraphPos" : "{\"x\":958.013,\"y\":59.1665}"
+        },
+      "name" : "multiChWeightmap",
+      "ports" : [
+        {
+          "objectType" : "VarPort",
+          "name" : "value",
+          "nodePortType" : "IO"
+          }
+        ],
+      "dataType" : "MultiChWeightmap",
+      "extDep" : "TKCM:*"
+      }
+    ],
+  "connections" : {
+    "name" : [
+      "MultiChWeightmap.name"
+      ],
+    "MultiChWeightmap.result" : [
+      "multiChWeightmap.value"
+      ],
+    "multiChWeightmap.value" : [
+      "value"
+      ]
+    },
+  "args" : [
+    {
+      "type" : "String",
+      "value" : "weightMap"
+      },
+    {
+      "type" : "MultiChWeightmap",
+      "value" : null,
+      "ext" : "TKCM"
+      }
+    ]
+  }

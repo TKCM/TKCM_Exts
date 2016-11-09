@@ -1,0 +1,341 @@
+
+require Singletons;
+require InlineDrawing;
+
+struct MultiCh_SurfaceAttributePaintManipulator_PaintData {
+  PolygonMesh mesh;
+  ScalarAttribute attribute;
+  Integer pointIds[];
+
+  Scalar oldValues[];
+  Scalar newValues[];
+};
+
+function MultiCh_SurfaceAttributePaintManipulator_PaintData(PolygonMesh mesh, ScalarAttribute attribute){
+  this.mesh = mesh;
+  this.attribute = attribute;
+}
+
+function MultiCh_SurfaceAttributePaintManipulator_PaintData.mergeIn!(MultiCh_SurfaceAttributePaintManipulator_PaintData paintData){
+  for (Integer i = 0; i < paintData.pointIds.size(); i++) {
+    Integer id = -1;
+    for (Integer j = 0; j < this.pointIds.size(); j++) {
+      if(paintData.pointIds[i] == this.pointIds[j]){
+        id = j;
+        break;
+      }
+    }
+    if(id != -1){
+      this.newValues[id] = paintData.newValues[i];
+    }
+    else{
+      this.pointIds.push(paintData.pointIds[i]);
+      this.oldValues.push(paintData.oldValues[i]);
+      this.newValues.push(paintData.newValues[i]);
+    }
+  }
+}
+
+function MultiCh_SurfaceAttributePaintManipulator_PaintData.doAction!(){
+  Ref<ScalarAttribute> attrRef = this.attribute;
+  for (Integer i = 0; i < this.pointIds.size(); i++) {
+    this.mesh.setPointAttribute(this.pointIds[i], attrRef, this.newValues[i]);
+  }
+  attrRef.incrementVersion();
+}
+
+function MultiCh_SurfaceAttributePaintManipulator_PaintData.undoAction!(){
+  Ref<ScalarAttribute> attrRef = this.attribute;
+  for (Integer i = 0; i < this.pointIds.size(); i++) {
+    this.mesh.setPointAttribute(this.pointIds[i], attrRef, this.oldValues[i]);
+  }
+  attrRef.incrementVersion();
+}
+
+// data
+/////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+// comamnd
+
+object MultiCh_SurfaceAttributePaintCommand : UndoRedoCommand {
+  MultiCh_SurfaceAttributePaintManipulator_PaintData paintData[PolygonMesh];
+};
+
+function MultiCh_SurfaceAttributePaintCommand(){
+}
+
+function String MultiCh_SurfaceAttributePaintCommand.getDesc(){
+  String desc;
+  for(mesh in this.paintData){
+    desc += this.paintData[mesh].attribute.getName();
+    break;
+  }
+  return "Paint Surface attribute:" + desc;
+}
+
+function MultiCh_SurfaceAttributePaintCommand.doAction!(){
+  for(mesh in this.paintData){
+    this.paintData[mesh].doAction();
+  }
+}
+
+function MultiCh_SurfaceAttributePaintCommand.undoAction!(){
+  for(mesh in this.paintData){
+    this.paintData[mesh].undoAction();
+  }
+}
+
+function MultiCh_SurfaceAttributePaintCommand.addPaintData!(MultiCh_SurfaceAttributePaintManipulator_PaintData paintData){
+  if(this.paintData.has(paintData.mesh)){
+    this.paintData[paintData.mesh].mergeIn(paintData); 
+  }
+  else{
+    this.paintData[paintData.mesh] = paintData;
+  }
+}
+
+// command
+/////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+//
+
+object MultiCh_SurfaceAttributePaintManipulator : MultiCh_SurfacePaintManipulator {
+  String attributeName;
+
+  Integer paintMode; // 0=Paint, 1=Erase. 2=Smooth
+  Scalar paintValLimit[2]; // [0]=min, [1]=max
+  Boolean paintedChecker[];
+
+  MultiCh_SurfaceAttributePaintCommand command;
+};
+
+function MultiCh_SurfaceAttributePaintManipulator(){
+  this.init2();
+  this.attributeName = "weightMap_ch0";
+  this.paintValLimit[0] = 0.0;
+  this.paintValLimit[1] = 1.0;
+}
+
+function MultiCh_SurfaceAttributePaintManipulator.setAttributeName!(String attributeName){
+  this.attributeName = attributeName;
+}
+
+function MultiCh_SurfaceAttributePaintManipulator.addTargetGeometry!(InlineInstance instance){
+  InlineShape shape = instance.getShape();
+  PolygonMesh mesh = shape.getGeometry();
+  if(mesh == null){
+    report("WARNING: InlineInstance's geometry is not a PolygonMesh:" + instance.getName() );
+    return;
+  }
+  mesh.getOrCreateAttribute(this.attributeName, ScalarAttribute);
+
+  this.parent.addTargetGeometry(instance);
+}
+
+function MultiCh_SurfaceAttributePaintManipulator.onStrokeBegin!(io MouseEvent mouseEvent){
+  // On MouseMove/Mousedown.
+  if(mouseEvent.button == MouseButton_LeftButton){
+    if((mouseEvent.modifiers & ModiferKey_Alt) != 0)
+      this.paintMode = 1; // Erase
+    else if((mouseEvent.modifiers & ModiferKey_Shift) != 0)
+      this.paintMode = 2; // Smooth
+    else
+      this.paintMode = 0; // Paint
+  }
+  else if(mouseEvent.button == MouseButton_RightButton)
+    this.paintMode = 1; // Erase
+  else if(mouseEvent.button == MouseButton_MiddleButton)
+    this.paintMode = 2; // Smooth
+
+  this.command = MultiCh_SurfaceAttributePaintCommand();
+  mouseEvent.accept();
+}
+
+/// Called when the stroke ends when the user releases the mouse button
+/// Adds the generated command to the Host undo stack.
+function MultiCh_SurfaceAttributePaintManipulator.onStrokeEnd!(io MouseEvent mouseEvent){
+  // Register a command only if painting actually occured.
+  // There should be at least one geometry added to the paint data. 
+  if(this.command.paintData.size() > 0)
+    mouseEvent.getHost().addUndoRedoCommand(this.command);
+  // paintedChecker reset
+  Size s = this.paintedChecker.size();
+  this.paintedChecker.resize(0);
+  this.paintedChecker.resize(s);
+}
+
+/// \internal
+operator MultiCh_SurfaceSculptManipulator_paint<<<index>>>(
+  SurfacePaintManipulator_PointCollection collectedPoints,
+  Ref<ScalarAttribute> weightMapAttr,
+  io MultiCh_SurfaceAttributePaintManipulator_PaintData paintData,
+  Integer brushType, // 0=Paint, 1=Erase. 2=Smooth
+  Scalar paintValLimit[2], // [0]=min, [1]=max
+  io Boolean paintedChecker[],
+  Scalar brushStrength
+ ) {
+  Scalar weight = collectedPoints.weights[index];
+  Integer pointId = collectedPoints.pointIds[index];
+  Scalar oldScalar = weightMapAttr.values[pointId];
+  Scalar newScalar = oldScalar;
+  switch (brushType){
+    case 0: //airbrush
+      if(oldScalar<paintValLimit[1]){
+        newScalar = Math_linearInterpolate(oldScalar, Scalar(1.0), weight);
+        newScalar = Math_min(newScalar, paintValLimit[1]);
+      }
+      break;
+    case 1: //stamp
+      if(!paintedChecker[pointId]){
+        if(oldScalar<paintValLimit[1]){
+          newScalar = Math_min(oldScalar+brushStrength, paintValLimit[1]);
+        }
+      }
+      paintedChecker[pointId] = true;
+      break;
+    case 2: //bucket
+      if(!paintedChecker[pointId]){
+        if(oldScalar<paintValLimit[1]){
+          Scalar s = Math_max(oldScalar, brushStrength);
+          newScalar = Math_min(s, paintValLimit[1]);
+        }
+      }
+      paintedChecker[pointId] = true;
+      break;
+  }
+  paintData.oldValues[index] = oldScalar;
+  paintData.newValues[index] = newScalar;
+}
+
+/// \internal
+operator MultiCh_SurfaceSculptManipulator_erase<<<index>>>(
+  SurfacePaintManipulator_PointCollection collectedPoints,
+  Ref<ScalarAttribute> weightMapAttr,
+  io MultiCh_SurfaceAttributePaintManipulator_PaintData paintData,
+  Integer brushType, // 0=Paint, 1=Erase. 2=Smooth
+  Scalar paintValLimit[2], // [0]=min, [1]=max
+  io Boolean paintedChecker[],
+  Scalar brushStrength
+ ) {
+    Scalar weight = collectedPoints.weights[index];
+    Integer pointId = collectedPoints.pointIds[index];
+    Scalar oldScalar = weightMapAttr.values[pointId];
+    Scalar newScalar = oldScalar;
+    switch (brushType){
+      case 0: //airbrush
+        if(oldScalar>paintValLimit[0]){
+          newScalar = Math_linearInterpolate(oldScalar, Scalar(0.0), weight);
+          newScalar = Math_max(newScalar, paintValLimit[0]);
+        }
+        break;
+      case 1: //stamp
+        if(!paintedChecker[pointId]){
+          if(oldScalar>paintValLimit[0]){
+            newScalar = Math_max(oldScalar-brushStrength, paintValLimit[0]);
+          }
+        }
+        paintedChecker[pointId] = true;
+        break;
+      case 2: //bucket
+        if(!paintedChecker[pointId]){
+          if(oldScalar>paintValLimit[0]){
+            Scalar s = Math_min(oldScalar, brushStrength);
+            newScalar = Math_max(s, paintValLimit[0]);
+          }
+        }
+        paintedChecker[pointId] = true;
+        break;
+    }
+
+    paintData.oldValues[index] = oldScalar;
+    paintData.newValues[index] = newScalar;
+
+    paintData.oldValues[index] = oldScalar;
+    paintData.newValues[index] = newScalar;
+}
+
+/// Smooth Points
+/// \internal
+operator MultiCh_SurfaceAttributePaintManipulator_smoothAttributeData<<<index>>>(
+  Scalar weightMapValues[],
+  SurfacePaintManipulator_PointCollection collectedPoints,
+  io Scalar results[]
+ ) {
+
+  //Pseudo-gaussian: center weight = 0.5, neighbor weights sum = 0.5
+  Index pointId = collectedPoints.pointIds[index];
+  Scalar weight = collectedPoints.weights[index];
+  Scalar value = weightMapValues[pointId];
+
+  LocalL16UInt32Array surroundingPoints;
+  collectedPoints.mesh.getPointSurroundingPoints(pointId, false, surroundingPoints);
+  UInt32 nbNei = surroundingPoints.size();
+  
+  if( nbNei ) {
+    Scalar neiSum = 0.0;
+    for( UInt32 i = 0; i < nbNei; ++i ) {
+      UInt32 neiPt = surroundingPoints.get(i);
+      neiSum += weightMapValues[neiPt];
+    }
+    neiSum /= Scalar(nbNei);
+    value = Math_linearInterpolate(value, (value + neiSum) * 0.5, weight);
+  }
+  results[index] = value;
+}
+
+/// Called during the paint stroke for each mouse move event.
+function MultiCh_SurfaceAttributePaintManipulator.onPaint!(io MouseEvent mouseEvent, SurfacePaintManipulator_PointCollection collectedPoints){
+  Ref<ScalarAttribute> weightMapAttr = collectedPoints.mesh.getAttribute(this.attributeName);
+
+  if(weightMapAttr == null){
+    report("ERROR: Geometry Does not have the attribute:" + this.attributeName );
+    return;
+  }
+  UInt32 nbPoints = collectedPoints.pointIds.size();
+
+  MultiCh_SurfaceAttributePaintManipulator_PaintData paintData(collectedPoints.mesh, weightMapAttr);
+  paintData.pointIds = collectedPoints.pointIds;
+  paintData.oldValues.resize(collectedPoints.pointIds.size());
+  paintData.newValues.resize(collectedPoints.pointIds.size());
+
+  switch(this.paintMode){
+  case 0: // Paint
+    MultiCh_SurfaceSculptManipulator_paint<<<nbPoints>>>(
+      collectedPoints,
+      weightMapAttr,
+      paintData,
+      this.brushType,
+      this.paintValLimit,
+      this.paintedChecker,
+      this.brushStrength
+    );
+    break;
+  case 1: // Erase
+    MultiCh_SurfaceSculptManipulator_erase<<<nbPoints>>>(
+      collectedPoints,
+      weightMapAttr,
+      paintData,
+      this.brushType,
+      this.paintValLimit,
+      this.paintedChecker,
+      this.brushStrength
+    );
+    break;
+  case 2: // Smooth
+    Scalar smoothedValues[];
+    smoothedValues.resize(nbPoints);
+    MultiCh_SurfaceAttributePaintManipulator_smoothAttributeData<<<nbPoints>>>(
+      weightMapAttr.values,
+      collectedPoints,
+      smoothedValues
+    );
+    for(Integer i = 0; i < nbPoints; ++i ) {
+      paintData.oldValues[i] = weightMapAttr.values[ collectedPoints.pointIds[i] ];
+      paintData.newValues[i] = smoothedValues[i];
+    }
+    break;
+  }
+  // do the command immedietly...
+  paintData.doAction();
+  // Merge this paintData with the command so that we only generate one undo command 
+  // for the entire paint stroke, even if we cross multipel geometries. 
+  this.command.addPaintData(paintData);
+}
