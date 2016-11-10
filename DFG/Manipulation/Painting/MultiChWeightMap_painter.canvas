@@ -78,7 +78,7 @@
       "metadata" : {
         "uiPersistValue" : "true"
         },
-      "name" : "chnnelCount",
+      "name" : "channelCount",
       "nodePortType" : "Out",
       "defaultValues" : {
         "Integer" : 8
@@ -92,7 +92,7 @@
         "uiPersistValue" : "true",
         "uiHardRange" : "(0, 0)"
         },
-      "name" : "activeChnne",
+      "name" : "activeChannel",
       "nodePortType" : "Out",
       "defaultValues" : {
         "Integer" : 0
@@ -205,8 +205,8 @@ dfgEntry {
   if(multiChWeihtMap == null){
     multiChWeihtMap = MultiChWeightmap();
   }
-  multiChWeihtMap.connect(mesh, xfo, chnnelCount, mapColors);
-  multiChWeihtMap.changeActiveCh(activeChnne);
+  multiChWeihtMap.connect(mesh, xfo, channelCount, mapColors);
+  multiChWeihtMap.changeActiveCh(activeChannel);
   multiChWeihtMap.save(save_Enable, save_ExternalFile, save_FolderPath, save_FileName);
   multiChWeihtMap.activateManipulator();
   multiChWeihtMap.setLimit(paintVluesMin, paintVluesMax);

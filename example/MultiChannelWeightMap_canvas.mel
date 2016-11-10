@@ -10,9 +10,9 @@ FabricCanvasConnect -m "canvasNode1" -e "" -s "SetFromMat44_1.this" -d "MultiChW
 FabricCanvasInstPreset -m "canvasNode1" -e "" -p "TKCM.Manipulation.Painting.MakeRandomColors" -x "63" -y "320";
 FabricCanvasAddPort -m "canvasNode1" -e "" -d "mapColors" -p "In" -t "Color[]" -c "MakeRandomColors_1.fixedColors";
 FabricCanvasAddPort -m "canvasNode1" -e "" -d "channelCount" -p "In" -t "Integer" -c "MakeRandomColors_1.count";
-FabricCanvasConnect -m "canvasNode1" -e "" -s "MakeRandomColors_1.count" -d "MultiChWeightMap_painter_1.chnnelCount";
+FabricCanvasConnect -m "canvasNode1" -e "" -s "MakeRandomColors_1.count" -d "MultiChWeightMap_painter_1.channelCount";
 FabricCanvasConnect -m "canvasNode1" -e "" -s "MakeRandomColors_1.result" -d "MultiChWeightMap_painter_1.mapColors";
-FabricCanvasAddPort -m "canvasNode1" -e "" -d "activeChnne" -p "In" -t "Integer" -c "MultiChWeightMap_painter_1.activeChnne";
+FabricCanvasAddPort -m "canvasNode1" -e "" -d "activeChnne" -p "In" -t "Integer" -c "MultiChWeightMap_painter_1.activeChannel";
 FabricCanvasConnect -m "canvasNode1" -e "" -s "MultiChWeightMap_painter_1.multiChWeihtMap" -d "multiChWeightMap";
 FabricCanvasInstPreset -m "canvasNode1" -e "" -p "Fabric.Exts.Math.Vec3.Vec3" -x "673.365" -y "271.403";
 FabricCanvasAddPort -m "canvasNode1" -e "" -d "result" -p "Out" -t "Vec3" -c "Vec3_1.result";
