@@ -1,0 +1,398 @@
+{
+  "objectType" : "Func",
+  "title" : "SkinWeight_painter",
+  "ports" : [
+    {
+      "objectType" : "ExecPort",
+      "metadata" : {
+        "uiPersistValue" : "true"
+        },
+      "name" : "exec",
+      "nodePortType" : "IO",
+      "defaultValues" : {
+        "Execute" : {}
+        },
+      "execPortType" : "IO",
+      "typeSpec" : "Execute"
+      },
+    {
+      "objectType" : "ExecPort",
+      "metadata" : {
+        "uiPersistValue" : "true"
+        },
+      "name" : "multiChWeightmap",
+      "nodePortType" : "IO",
+      "defaultValues" : {
+        "MultiChWeightmap" : null
+        },
+      "execPortType" : "IO",
+      "typeSpec" : "MultiChWeightmap"
+      },
+    {
+      "objectType" : "ExecPort",
+      "metadata" : {
+        "uiPersistValue" : "true"
+        },
+      "name" : "mesh",
+      "nodePortType" : "IO",
+      "defaultValues" : {
+        "PolygonMesh" : null
+        },
+      "execPortType" : "IO",
+      "typeSpec" : "PolygonMesh"
+      },
+    {
+      "objectType" : "ExecPort",
+      "metadata" : {
+        "uiPersistValue" : "true"
+        },
+      "name" : "xfo",
+      "nodePortType" : "Out",
+      "defaultValues" : {
+        "Xfo" : {
+          "ori" : {
+            "v" : {
+              "x" : 0,
+              "y" : 0,
+              "z" : 0
+              },
+            "w" : 1
+            },
+          "tr" : {
+            "x" : 0,
+            "y" : 0,
+            "z" : 0
+            },
+          "sc" : {
+            "x" : 1,
+            "y" : 1,
+            "z" : 1
+            }
+          }
+        },
+      "execPortType" : "In",
+      "typeSpec" : "Xfo"
+      },
+    {
+      "objectType" : "ExecPort",
+      "metadata" : {
+        "uiPersistValue" : "true"
+        },
+      "name" : "jointNames",
+      "nodePortType" : "Out",
+      "defaultValues" : {
+        "String[]" : []
+        },
+      "execPortType" : "In",
+      "typeSpec" : "String[]"
+      },
+    {
+      "objectType" : "ExecPort",
+      "metadata" : {
+        "uiPersistValue" : "true",
+        "uiHardRange" : "(0, 0)"
+        },
+      "name" : "activeJointName",
+      "nodePortType" : "Out",
+      "defaultValues" : {
+        "Integer" : 0,
+        "String" : ""
+        },
+      "execPortType" : "In",
+      "typeSpec" : "String"
+      },
+    {
+      "objectType" : "ExecPort",
+      "metadata" : {
+        "uiPersistValue" : "true"
+        },
+      "name" : "weightValues",
+      "nodePortType" : "Out",
+      "defaultValues" : {
+        "Scalar[][]" : []
+        },
+      "execPortType" : "In",
+      "typeSpec" : "Scalar[][]"
+      },
+    {
+      "objectType" : "ExecPort",
+      "metadata" : {
+        "uiPersistValue" : "true"
+        },
+      "name" : "parentJointId",
+      "nodePortType" : "Out",
+      "defaultValues" : {
+        "String[]" : [],
+        "Size[]" : []
+        },
+      "execPortType" : "In",
+      "typeSpec" : "Size[]"
+      },
+    {
+      "objectType" : "ExecPort",
+      "metadata" : {
+        "uiPersistValue" : "true",
+        "uiRange" : "(0, 0.99)"
+        },
+      "name" : "paintVluesMin",
+      "nodePortType" : "Out",
+      "defaultValues" : {
+        "Scalar" : 0
+        },
+      "execPortType" : "In",
+      "typeSpec" : "Scalar"
+      },
+    {
+      "objectType" : "ExecPort",
+      "metadata" : {
+        "uiPersistValue" : "true",
+        "uiRange" : "(0.01, 1)"
+        },
+      "name" : "paintVluesMax",
+      "nodePortType" : "Out",
+      "defaultValues" : {
+        "Scalar" : 1
+        },
+      "execPortType" : "In",
+      "typeSpec" : "Scalar"
+      },
+    {
+      "objectType" : "ExecPort",
+      "metadata" : {
+        "uiPersistValue" : "true"
+        },
+      "name" : "jointColors",
+      "nodePortType" : "Out",
+      "defaultValues" : {
+        "Color[]" : []
+        },
+      "execPortType" : "In",
+      "typeSpec" : "Color[]"
+      }
+    ],
+  "extDeps" : {
+    "TKCM" : "*"
+    },
+  "presetGUID" : "9B72CC2CD9825B5BF373F11648B1D7C1",
+  "code" : "dfgEntry {
+  if(multiChWeightmap == null){
+    multiChWeightmap = MultiChWeightmap();
+  }
+  multiChWeightmap.connectSkinWeight(mesh, weightValues, xfo, jointColors);
+  multiChWeightmap.setJointNames(jointNames);
+  multiChWeightmap.setParentJointId(parentJointId);
+  
+  Size activeJoint;
+  for(Integer i=0; i<jointNames.size(); i++){
+    if(jointNames[i] == activeJointName){
+      multiChWeightmap.changeActiveCh(i);
+      break;
+    }
+  }
+  
+  multiChWeightmap.activateManipulator();
+  multiChWeightmap.setLimit(paintVluesMin, paintVluesMax);
+  multiChWeightmap.normalize(true);
+}
+",
+  "requiredPresets" : {
+    "TKCM.Manipulation.Painting.SkinWeight_painter" : {
+      "objectType" : "Func",
+      "title" : "SkinWeight_painter",
+      "ports" : [
+        {
+          "objectType" : "ExecPort",
+          "metadata" : {
+            "uiPersistValue" : "true"
+            },
+          "name" : "exec",
+          "nodePortType" : "IO",
+          "defaultValues" : {
+            "Execute" : {}
+            },
+          "execPortType" : "IO",
+          "typeSpec" : "Execute"
+          },
+        {
+          "objectType" : "ExecPort",
+          "metadata" : {
+            "uiPersistValue" : "true"
+            },
+          "name" : "multiChWeightmap",
+          "nodePortType" : "IO",
+          "defaultValues" : {
+            "MultiChWeightmap" : null
+            },
+          "execPortType" : "IO",
+          "typeSpec" : "MultiChWeightmap"
+          },
+        {
+          "objectType" : "ExecPort",
+          "metadata" : {
+            "uiPersistValue" : "true"
+            },
+          "name" : "mesh",
+          "nodePortType" : "IO",
+          "defaultValues" : {
+            "PolygonMesh" : null
+            },
+          "execPortType" : "IO",
+          "typeSpec" : "PolygonMesh"
+          },
+        {
+          "objectType" : "ExecPort",
+          "metadata" : {
+            "uiPersistValue" : "true"
+            },
+          "name" : "xfo",
+          "nodePortType" : "Out",
+          "defaultValues" : {
+            "Xfo" : {
+              "ori" : {
+                "v" : {
+                  "x" : 0,
+                  "y" : 0,
+                  "z" : 0
+                  },
+                "w" : 1
+                },
+              "tr" : {
+                "x" : 0,
+                "y" : 0,
+                "z" : 0
+                },
+              "sc" : {
+                "x" : 1,
+                "y" : 1,
+                "z" : 1
+                }
+              }
+            },
+          "execPortType" : "In",
+          "typeSpec" : "Xfo"
+          },
+        {
+          "objectType" : "ExecPort",
+          "metadata" : {
+            "uiPersistValue" : "true"
+            },
+          "name" : "jointNames",
+          "nodePortType" : "Out",
+          "defaultValues" : {
+            "String[]" : []
+            },
+          "execPortType" : "In",
+          "typeSpec" : "String[]"
+          },
+        {
+          "objectType" : "ExecPort",
+          "metadata" : {
+            "uiPersistValue" : "true",
+            "uiHardRange" : "(0, 0)"
+            },
+          "name" : "activeJointName",
+          "nodePortType" : "Out",
+          "defaultValues" : {
+            "Integer" : 0,
+            "String" : ""
+            },
+          "execPortType" : "In",
+          "typeSpec" : "String"
+          },
+        {
+          "objectType" : "ExecPort",
+          "metadata" : {
+            "uiPersistValue" : "true"
+            },
+          "name" : "weightValues",
+          "nodePortType" : "Out",
+          "defaultValues" : {
+            "Scalar[][]" : []
+            },
+          "execPortType" : "In",
+          "typeSpec" : "Scalar[][]"
+          },
+        {
+          "objectType" : "ExecPort",
+          "metadata" : {
+            "uiPersistValue" : "true"
+            },
+          "name" : "parentJointId",
+          "nodePortType" : "Out",
+          "defaultValues" : {
+            "String[]" : [],
+            "Size[]" : []
+            },
+          "execPortType" : "In",
+          "typeSpec" : "Size[]"
+          },
+        {
+          "objectType" : "ExecPort",
+          "metadata" : {
+            "uiPersistValue" : "true",
+            "uiRange" : "(0, 0.99)"
+            },
+          "name" : "paintVluesMin",
+          "nodePortType" : "Out",
+          "defaultValues" : {
+            "Scalar" : 0
+            },
+          "execPortType" : "In",
+          "typeSpec" : "Scalar"
+          },
+        {
+          "objectType" : "ExecPort",
+          "metadata" : {
+            "uiPersistValue" : "true",
+            "uiRange" : "(0.01, 1)"
+            },
+          "name" : "paintVluesMax",
+          "nodePortType" : "Out",
+          "defaultValues" : {
+            "Scalar" : 1
+            },
+          "execPortType" : "In",
+          "typeSpec" : "Scalar"
+          },
+        {
+          "objectType" : "ExecPort",
+          "metadata" : {
+            "uiPersistValue" : "true"
+            },
+          "name" : "jointColors",
+          "nodePortType" : "Out",
+          "defaultValues" : {
+            "Color[]" : []
+            },
+          "execPortType" : "In",
+          "typeSpec" : "Color[]"
+          }
+        ],
+      "extDeps" : {
+        "TKCM" : "*"
+        },
+      "presetGUID" : "9B72CC2CD9825B5BF373F11648B1D7C1",
+      "code" : "dfgEntry {
+  if(multiChWeightmap == null){
+    multiChWeightmap = MultiChWeightmap();
+  }
+  multiChWeightmap.connectSkinWeight(mesh, weightValues, xfo, jointColors);
+  multiChWeightmap.setJointNames(jointNames);
+  multiChWeightmap.setParentJointId(parentJointId);
+  
+  Size activeJoint;
+  for(Integer i=0; i<jointNames.size(); i++){
+    if(jointNames[i] == activeJointName){
+      multiChWeightmap.changeActiveCh(i);
+      break;
+    }
+  }
+  
+  multiChWeightmap.activateManipulator();
+  multiChWeightmap.setLimit(paintVluesMin, paintVluesMax);
+  multiChWeightmap.normalize(true);
+}
+"
+      }
+    }
+  }

@@ -99,12 +99,19 @@ function MultiCh_SurfaceAttributePaintCommand.addPaintData!(MultiCh_SurfaceAttri
 
 object MultiCh_SurfaceAttributePaintManipulator : MultiCh_SurfacePaintManipulator {
   String attributeName;
+  String normalizeChNames[];
+  Size activeCh;
+  Boolean weightLock[];
 
   Integer paintMode; // 0=Paint, 1=Erase. 2=Smooth
   Scalar paintValLimit[2]; // [0]=min, [1]=max
   Boolean paintedChecker[];
 
   MultiCh_SurfaceAttributePaintCommand command;
+
+  Boolean normalize;
+  LocalL16UInt32Array IDs[];
+  LocalL16ScalarArray Weights[];
 };
 
 function MultiCh_SurfaceAttributePaintManipulator(){
@@ -112,6 +119,7 @@ function MultiCh_SurfaceAttributePaintManipulator(){
   this.attributeName = "weightMap_ch0";
   this.paintValLimit[0] = 0.0;
   this.paintValLimit[1] = 1.0;
+  this.normalize = false;
 }
 
 function MultiCh_SurfaceAttributePaintManipulator.setAttributeName!(String attributeName){
@@ -170,7 +178,7 @@ operator MultiCh_SurfaceSculptManipulator_paint<<<index>>>(
   Integer brushType, // 0=Paint, 1=Erase. 2=Smooth
   Scalar paintValLimit[2], // [0]=min, [1]=max
   io Boolean paintedChecker[],
-  Scalar brushStrength
+  Scalar brushStrength,
  ) {
   Scalar weight = collectedPoints.weights[index];
   Integer pointId = collectedPoints.pointIds[index];
@@ -281,12 +289,86 @@ operator MultiCh_SurfaceAttributePaintManipulator_smoothAttributeData<<<index>>>
   results[index] = value;
 }
 
+operator Normalize<<<ii>>>(
+  io MultiCh_SurfaceAttributePaintManipulator_PaintData paintData, 
+  Integer pointIds[],
+  String normalizeChNames[], 
+  Size activeCh, 
+  Boolean weightLock[], 
+  Boolean paintedChecker[],
+  io LocalL16UInt32Array IDs[],
+  io LocalL16ScalarArray Weights[],
+  ){
+  Size i = pointIds[ii];
+  Scalar sum;
+  Scalar sumLock;
+  Scalar otherValue;
+  Size s = 0;
+  //prepare sum values
+  for(Size j=0; j<normalizeChNames.size(); j++){
+    if(j != activeCh){
+      Ref<ScalarAttribute> attr = paintData.mesh.getAttribute(normalizeChNames[j], ScalarAttribute);
+      otherValue = attr.values[i];
+      if(weightLock[j] == false){
+        sum += otherValue;
+      }else{
+        sumLock += otherValue;
+      }
+    }
+  }
+  //rest SkinValues
+  if(paintData.newValues[ii]+sumLock == 1.0){
+    for(Size j=0; j<normalizeChNames.size(); j++){
+      if(j != activeCh){
+        Ref<ScalarAttribute> attr = paintData.mesh.getAttribute(normalizeChNames[j], ScalarAttribute);
+        otherValue = attr.values[i];
+        if(otherValue > 0){
+          IDs[i].first16[s] = j;
+          IDs[i].count = s+1;
+          Weights[i].first16[s] = otherValue/sum;
+          Weights[i].count = s+1;
+          s += 1;
+        }
+      }
+    }
+  }
+  //set Values
+  for(Size j=0; j<normalizeChNames.size(); j++){
+    Ref<ScalarAttribute> attr = paintData.mesh.getAttribute(normalizeChNames[j], ScalarAttribute);
+    otherValue = attr.values[i];
+    Ref<ScalarAttribute> settingCh = paintData.mesh.getAttribute(normalizeChNames[j], ScalarAttribute);
+    if(j != activeCh && weightLock[j] == false){
+      Scalar set = 0.0;
+      if(otherValue > 0){
+        set =  (1.0-paintData.newValues[ii]-sumLock) * otherValue/sum;
+        paintData.mesh.setPointAttribute(i, settingCh,  set);
+      }
+    }else if(j == activeCh){
+      paintData.mesh.setPointAttribute(i, settingCh, paintData.newValues[ii]);
+    }else if(weightLock[j] == true){ // lock value
+      paintData.mesh.setPointAttribute(i, settingCh, otherValue);
+    } 
+  }
+  //set from restSkinValues
+  if(sum == 0.0 && paintData.newValues[ii] != 1.0){ 
+    for(Size j=0; j<IDs[i].count; j++){
+      Ref<ScalarAttribute> reset = paintData.mesh.getAttribute(normalizeChNames[IDs[i].first16[j]]);
+      paintData.mesh.setPointAttribute(i, reset, (1.0-paintData.newValues[ii]-sumLock)*Weights[i].first16[j]);
+      
+    }
+  }
+}
+
 /// Called during the paint stroke for each mouse move event.
 function MultiCh_SurfaceAttributePaintManipulator.onPaint!(io MouseEvent mouseEvent, SurfacePaintManipulator_PointCollection collectedPoints){
   Ref<ScalarAttribute> weightMapAttr = collectedPoints.mesh.getAttribute(this.attributeName);
 
   if(weightMapAttr == null){
     report("ERROR: Geometry Does not have the attribute:" + this.attributeName );
+    return;
+  }
+  if(this.weightLock[this.activeCh]){
+    report("this channel is locked :" + this.attributeName );
     return;
   }
   UInt32 nbPoints = collectedPoints.pointIds.size();
@@ -332,6 +414,10 @@ function MultiCh_SurfaceAttributePaintManipulator.onPaint!(io MouseEvent mouseEv
       paintData.newValues[i] = smoothedValues[i];
     }
     break;
+  }
+
+  if(this.normalize){
+    Normalize<<<nbPoints>>>(paintData, collectedPoints.pointIds, this.normalizeChNames, this.activeCh, this.weightLock, this.paintedChecker, this.IDs, this.Weights);
   }
   // do the command immedietly...
   paintData.doAction();

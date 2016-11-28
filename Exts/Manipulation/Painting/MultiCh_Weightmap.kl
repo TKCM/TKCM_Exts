@@ -10,6 +10,8 @@ require Manipulation;
 
 object MultiChWeightmap : Weightmap, Persistable, RTValFromJSONDecoder, RTValToJSONEncoder{
   String chNames[];
+  String chSubNames[];
+  Size parentMapID[];
   Color colors[];
 
   MultiCh_SurfaceAttributePaintManipulator paintManipulator;
@@ -19,6 +21,8 @@ object MultiChWeightmap : Weightmap, Persistable, RTValFromJSONDecoder, RTValToJ
   Size activeCh;
   Size oldActiveCh;
 
+  Boolean weightLock[];
+
   private Boolean saveEnable;
   private Boolean saveExternalFile;
   private FilePath saveFolderPath;
@@ -26,6 +30,7 @@ object MultiChWeightmap : Weightmap, Persistable, RTValFromJSONDecoder, RTValToJ
 
   ScalarAttribute temporaryLoadAttr[];
   Boolean allChConnected;
+  Boolean externalValuesConnected;
 };
 
 function MultiChWeightmap(){
@@ -36,6 +41,7 @@ function MultiChWeightmap(){
   this.chCount = 1;
   this.activeCh = 0;
   this.allChConnected = false;
+  this.externalValuesConnected = false;
 }
 
 ///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -48,10 +54,11 @@ inline MultiChWeightmap.prepareCh!(Size chCount,  Color colors[]){
   if(this.chCount != this.oldChCount){
     this.allChConnected = false;
   }
-  //if(!this.allChConnected){
+  if(!this.allChConnected){
     if(chCount == colors.size()){
       this.chNames.resize(chCount);
       this.colors.resize(chCount);
+      this.weightLock.resize(chCount);
       for(Integer i=0; i<chCount; i++){
         this.chNames[i] = 'weightMap_ch'+i;
         this.colors[i] = colors[i];
@@ -59,7 +66,7 @@ inline MultiChWeightmap.prepareCh!(Size chCount,  Color colors[]){
     }else{
       setError("count of channel is not same size fo colorArray!!  channel count = "+chCount+" : colors.size() = "+colors.size() );
     }
-  //}
+  }
 }
 
 inline MultiChWeightmap.prepareCh!(Size chCount){
@@ -142,6 +149,14 @@ function MultiChWeightmap.setLimit!(Scalar min, Scalar max){
   this.paintManipulator.paintValLimit[0] = min;
   this.paintManipulator.paintValLimit[1] = max;
 }
+
+function MultiChWeightmap.lock!(Boolean weightLock[]){
+  if(this.weightLock.size() == weightLock.size()){
+    this.weightLock = weightLock;
+  }else{
+    setError("lock count is not same joint count : lock = "+weightLock.size()+" , joint count = "+this.weightLock.size());
+  }
+}
 //
 ///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 //
@@ -151,7 +166,6 @@ operator setPointAttributeTask<<<i>>>(io PolygonMeshTopology mesh, io Scalar tar
 
 inline MultiChWeightmap.connect!( PolygonMesh mesh, Xfo meshTransform){
   this.meshTransform = meshTransform;
-  
   if(!this.allChConnected ){
     if(this.mesh == null){
       this.mesh = mesh;
@@ -267,6 +281,7 @@ inline MultiChWeightmap.activateManipulator!(){
   }
   if(this.paintManipulator.attributeName != this.chNames[this.activeCh]){
     this.paintManipulator.setAttributeName(this.chNames[this.activeCh]);
+    this.paintManipulator.activeCh = this.activeCh;
   }
   if(!this.paintManipulator.hasTargetGeometry(this.instance))
     this.paintManipulator.addTargetGeometry(this.instance);
@@ -283,8 +298,21 @@ inline MultiChWeightmap.activateManipulator!(){
   Ref<ScalarAttribute> attr = this.mesh.getAttribute(this.chNames[this.activeCh], ScalarAttribute);
   this.paintManipulator.valueDrawing.display(pointPositions, attr, this.colors[this.activeCh], this.meshTransform);
   this.instance.setInstanceUniform(InlineUniform('u_color', this.colors[this.activeCh]));
+  this.paintManipulator.weightLock = this.weightLock;
 }
 
+function MultiChWeightmap.normalize!(Boolean enable, String normalizeChNames[]){
+  if(enable){
+    this.paintManipulator.normalizeChNames = normalizeChNames;
+    this.paintManipulator.IDs.resize(this.mesh.pointCount());
+    this.paintManipulator.Weights.resize(this.mesh.pointCount());
+  }
+  this.paintManipulator.normalize = enable;
+}
+
+function MultiChWeightmap.normalize!(Boolean enable){
+  this.normalize(enable, this.chNames);
+}
 // 
 ///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 // save & load

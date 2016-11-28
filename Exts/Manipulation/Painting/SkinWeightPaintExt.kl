@@ -1,0 +1,81 @@
+require Geometry;
+require Math;
+require TKCM;
+
+////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+operator StringArrayToSkinWeightValues_Task<<<i>>>(io Scalar values[][], String str[]){
+  for(Integer j=0; j<values.size(); j++){
+    values[j][i] = str[j + i*values.size()].toScalar();
+  }
+}
+
+function Scalar[][] StringArrayToSkinWeightValues(String str[], Size jointCount, Size pointCount){
+  Scalar result[][];
+  result.resize(jointCount);
+  for(Integer i=0; i<jointCount; i++){
+    result[i].resize(pointCount);
+  }
+  if(pointCount > 1000){
+    StringArrayToSkinWeightValues_Task<<<pointCount>>>(result, str);
+  }else{
+    for(Integer i=0; i<pointCount; i++){
+      StringArrayToSkinWeightValues_Task(i, result, str);
+    }
+  }
+  return result;
+}
+
+function Size[] StringToSizeArray(String str[]){
+  Size result[];
+  result.resize(str.size());
+  for(Integer i=0; i<str.size(); i++){
+    result[i] = Size(str[i].toScalar());
+  }
+  return result;
+}
+
+////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+/*operator  WeightMapFromSkinWeight_Task<<<i>>>(Scalar values[][], io Ref<MultiChWeightmap> maps){
+  for(Integer j=0; j<values.size(); j++){
+    Ref<ScalarAttribute> attr = maps.mesh.getAttribute(maps.chNames[j], ScalarAttribute);
+    maps.mesh.setPointAttribute(i, attr, values[j][i]);
+  }
+}*/
+
+function MultiChWeightmap.connectSkinWeight!(io PolygonMesh mesh, Scalar values[][], Xfo meshTransform,  Color colors[]){
+  this.prepareCh(values.size(), colors);
+  this.oldChCount = this.chCount;
+
+  if(!this.externalValuesConnected){
+    this.temporaryLoadAttr.resize(values.size());
+    for(Integer i=0; i<values.size(); i++){
+      if(mesh.pointCount() != values[i].size()){
+        setError("not same!! mesh point count is "+mesh.pointCount()+" : values["+i+"] count is "+values[i].size());
+        return;
+      }
+      this.temporaryLoadAttr[i] = ScalarAttribute();
+      this.temporaryLoadAttr[i].name = this.chNames[i];
+      this.temporaryLoadAttr[i].values = values[i];
+    }
+    this.externalValuesConnected = true;
+  }
+  
+  this.connect(mesh, meshTransform);
+}
+
+////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+function MultiChWeightmap.setJointNames!(String jointNames[]){
+  if(this.chNames.size() == jointNames.size()){
+    this.chSubNames = jointNames;
+  }else{
+    setError("Count of WeightMaps is "+this.chNames.size()+", count of JointNames is "+jointNames.size());
+  }
+}
+
+function MultiChWeightmap.setParentJointId!(Size parentJointID[]){
+  if(this.chNames.size() == parentJointID.size()){
+    this.parentMapID = parentJointID;
+  }else{
+    setError("Count of WeightMaps is "+this.chNames.size()+", count of parentJointId is "+parentJointID.size());
+  }
+}

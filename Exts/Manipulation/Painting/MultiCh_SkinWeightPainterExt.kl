@@ -1,0 +1,13 @@
+require InlineDrawing;
+require FileIO;
+require JSON;
+require FabricInterfaces;
+require Manipulation;
+
+object SkinWeightPaintExt{
+	Boolean enable;
+};
+
+function SkinWeightPaintExt(){
+	enable = false;
+}

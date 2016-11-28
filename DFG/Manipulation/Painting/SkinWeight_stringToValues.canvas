@@ -1,0 +1,234 @@
+{
+  "objectType" : "Func",
+  "title" : "SkinWeight_stringToValues",
+  "ports" : [
+    {
+      "objectType" : "ExecPort",
+      "metadata" : {
+        "uiPersistValue" : "true"
+        },
+      "name" : "exec",
+      "nodePortType" : "IO",
+      "defaultValues" : {
+        "Execute" : {}
+        },
+      "execPortType" : "IO",
+      "typeSpec" : "Execute"
+      },
+    {
+      "objectType" : "ExecPort",
+      "metadata" : {
+        "uiPersistValue" : "true"
+        },
+      "name" : "mesh",
+      "nodePortType" : "IO",
+      "defaultValues" : {
+        "PolygonMesh" : null
+        },
+      "execPortType" : "IO",
+      "typeSpec" : "PolygonMesh"
+      },
+    {
+      "objectType" : "ExecPort",
+      "metadata" : {
+        "uiPersistValue" : "true"
+        },
+      "name" : "WeightStr",
+      "nodePortType" : "Out",
+      "defaultValues" : {
+        "String[]" : []
+        },
+      "execPortType" : "In",
+      "typeSpec" : "String[]"
+      },
+    {
+      "objectType" : "ExecPort",
+      "name" : "jointNames",
+      "nodePortType" : "Out",
+      "defaultValues" : {
+        "String[]" : []
+        },
+      "execPortType" : "In",
+      "typeSpec" : "String[]"
+      },
+    {
+      "objectType" : "ExecPort",
+      "metadata" : {
+        "uiPersistValue" : "true"
+        },
+      "name" : "jointCount",
+      "nodePortType" : "Out",
+      "defaultValues" : {
+        "Size" : 0
+        },
+      "execPortType" : "In",
+      "typeSpec" : "Size"
+      },
+    {
+      "objectType" : "ExecPort",
+      "metadata" : {
+        "uiPersistValue" : "true"
+        },
+      "name" : "weighttValues",
+      "nodePortType" : "In",
+      "defaultValues" : {
+        "Scalar[][]" : []
+        },
+      "execPortType" : "Out",
+      "typeSpec" : "Scalar[][]"
+      },
+    {
+      "objectType" : "ExecPort",
+      "metadata" : {
+        "uiPersistValue" : "true"
+        },
+      "name" : "parentJointStr",
+      "nodePortType" : "Out",
+      "defaultValues" : {
+        "String[]" : []
+        },
+      "execPortType" : "In",
+      "typeSpec" : "String[]"
+      },
+    {
+      "objectType" : "ExecPort",
+      "metadata" : {
+        "uiPersistValue" : "true"
+        },
+      "name" : "parentJointId",
+      "nodePortType" : "In",
+      "defaultValues" : {
+        "Size[]" : []
+        },
+      "execPortType" : "Out",
+      "typeSpec" : "Size[]"
+      }
+    ],
+  "extDeps" : {
+    "TKCM" : "*"
+    },
+  "presetGUID" : "1C62C5E99F852EB88CF3F27EA84D647A",
+  "code" : "dfgEntry {
+  weighttValues = StringArrayToSkinWeightValues(WeightStr, jointCount, mesh.pointCount());
+  parentJointId = StringToSizeArray(parentJointStr);
+}
+",
+  "requiredPresets" : {
+    "TKCM.Manipulation.Painting.SkinWeight_stringToValues" : {
+      "objectType" : "Func",
+      "title" : "SkinWeight_stringToValues",
+      "ports" : [
+        {
+          "objectType" : "ExecPort",
+          "metadata" : {
+            "uiPersistValue" : "true"
+            },
+          "name" : "exec",
+          "nodePortType" : "IO",
+          "defaultValues" : {
+            "Execute" : {}
+            },
+          "execPortType" : "IO",
+          "typeSpec" : "Execute"
+          },
+        {
+          "objectType" : "ExecPort",
+          "metadata" : {
+            "uiPersistValue" : "true"
+            },
+          "name" : "mesh",
+          "nodePortType" : "IO",
+          "defaultValues" : {
+            "PolygonMesh" : null
+            },
+          "execPortType" : "IO",
+          "typeSpec" : "PolygonMesh"
+          },
+        {
+          "objectType" : "ExecPort",
+          "metadata" : {
+            "uiPersistValue" : "true"
+            },
+          "name" : "WeightStr",
+          "nodePortType" : "Out",
+          "defaultValues" : {
+            "String[]" : []
+            },
+          "execPortType" : "In",
+          "typeSpec" : "String[]"
+          },
+        {
+          "objectType" : "ExecPort",
+          "name" : "jointNames",
+          "nodePortType" : "Out",
+          "defaultValues" : {
+            "String[]" : []
+            },
+          "execPortType" : "In",
+          "typeSpec" : "String[]"
+          },
+        {
+          "objectType" : "ExecPort",
+          "metadata" : {
+            "uiPersistValue" : "true"
+            },
+          "name" : "jointCount",
+          "nodePortType" : "Out",
+          "defaultValues" : {
+            "Size" : 0
+            },
+          "execPortType" : "In",
+          "typeSpec" : "Size"
+          },
+        {
+          "objectType" : "ExecPort",
+          "metadata" : {
+            "uiPersistValue" : "true"
+            },
+          "name" : "weighttValues",
+          "nodePortType" : "In",
+          "defaultValues" : {
+            "Scalar[][]" : []
+            },
+          "execPortType" : "Out",
+          "typeSpec" : "Scalar[][]"
+          },
+        {
+          "objectType" : "ExecPort",
+          "metadata" : {
+            "uiPersistValue" : "true"
+            },
+          "name" : "parentJointStr",
+          "nodePortType" : "Out",
+          "defaultValues" : {
+            "String[]" : []
+            },
+          "execPortType" : "In",
+          "typeSpec" : "String[]"
+          },
+        {
+          "objectType" : "ExecPort",
+          "metadata" : {
+            "uiPersistValue" : "true"
+            },
+          "name" : "parentJointId",
+          "nodePortType" : "In",
+          "defaultValues" : {
+            "Size[]" : []
+            },
+          "execPortType" : "Out",
+          "typeSpec" : "Size[]"
+          }
+        ],
+      "extDeps" : {
+        "TKCM" : "*"
+        },
+      "presetGUID" : "1C62C5E99F852EB88CF3F27EA84D647A",
+      "code" : "dfgEntry {
+  weighttValues = StringArrayToSkinWeightValues(WeightStr, jointCount, mesh.pointCount());
+  parentJointId = StringToSizeArray(parentJointStr);
+}
+"
+      }
+    }
+  }

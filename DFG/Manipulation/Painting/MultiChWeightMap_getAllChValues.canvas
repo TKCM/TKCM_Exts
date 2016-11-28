@@ -1,6 +1,6 @@
 {
   "objectType" : "Func",
-  "title" : "MultiChWeightMap_getValues",
+  "title" : "MultiChWeightMap_getAllChValues",
   "ports" : [
     {
       "objectType" : "ExecPort",
@@ -59,23 +59,78 @@
   "extDeps" : {
     "TKCM" : "*"
     },
+  "presetGUID" : "26063133C532699FEDB91122D33CF5C5",
   "code" : "dfgEntry {
   allChValues_2Darray = multiChWeightmap.getAllChValues(valuesCutoff);
 }
 ",
-  "args" : [
-    {
-      "type" : "MultiChWeightmap",
-      "value" : null,
-      "ext" : "TKCM"
-      },
-    {
-      "type" : "Integer",
-      "value" : 0
-      },
-    {
-      "type" : "Scalar[][]",
-      "value" : []
+  "requiredPresets" : {
+    "TKCM.Manipulation.Painting.MultiChWeightMap_getAllChValues" : {
+      "objectType" : "Func",
+      "title" : "MultiChWeightMap_getAllChValues",
+      "ports" : [
+        {
+          "objectType" : "ExecPort",
+          "metadata" : {
+            "uiPersistValue" : "true"
+            },
+          "name" : "exec",
+          "nodePortType" : "IO",
+          "defaultValues" : {
+            "Execute" : {}
+            },
+          "execPortType" : "IO",
+          "typeSpec" : "Execute"
+          },
+        {
+          "objectType" : "ExecPort",
+          "metadata" : {
+            "uiPersistValue" : "true"
+            },
+          "name" : "multiChWeightmap",
+          "nodePortType" : "Out",
+          "defaultValues" : {
+            "MultiChWeightmap" : null
+            },
+          "execPortType" : "In",
+          "typeSpec" : "MultiChWeightmap"
+          },
+        {
+          "objectType" : "ExecPort",
+          "metadata" : {
+            "uiPersistValue" : "true",
+            "uiCombo" : "(\"AttributeCount\", \"PolygonPointCount\")"
+            },
+          "name" : "valuesCutoff",
+          "nodePortType" : "Out",
+          "defaultValues" : {
+            "Integer" : 0
+            },
+          "execPortType" : "In",
+          "typeSpec" : "Integer"
+          },
+        {
+          "objectType" : "ExecPort",
+          "metadata" : {
+            "uiPersistValue" : "true"
+            },
+          "name" : "allChValues_2Darray",
+          "nodePortType" : "In",
+          "defaultValues" : {
+            "Scalar[][]" : []
+            },
+          "execPortType" : "Out",
+          "typeSpec" : "Scalar[][]"
+          }
+        ],
+      "extDeps" : {
+        "TKCM" : "*"
+        },
+      "presetGUID" : "26063133C532699FEDB91122D33CF5C5",
+      "code" : "dfgEntry {
+  allChValues_2Darray = multiChWeightmap.getAllChValues(valuesCutoff);
+}
+"
       }
-    ]
+    }
   }

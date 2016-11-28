@@ -1,0 +1,194 @@
+{
+  "objectType" : "Func",
+  "title" : "MultiChWeightMap_save",
+  "ports" : [
+    {
+      "objectType" : "ExecPort",
+      "metadata" : {
+        "uiPersistValue" : "true"
+        },
+      "name" : "exec",
+      "nodePortType" : "IO",
+      "defaultValues" : {
+        "Execute" : {}
+        },
+      "execPortType" : "IO",
+      "typeSpec" : "Execute"
+      },
+    {
+      "objectType" : "ExecPort",
+      "metadata" : {
+        "uiPersistValue" : "true"
+        },
+      "name" : "multiChWeightmap",
+      "nodePortType" : "IO",
+      "defaultValues" : {
+        "MultiChWeightmap" : null
+        },
+      "execPortType" : "IO",
+      "typeSpec" : "MultiChWeightmap"
+      },
+    {
+      "objectType" : "ExecPort",
+      "metadata" : {
+        "uiPersistValue" : "true"
+        },
+      "name" : "save_Enable",
+      "nodePortType" : "Out",
+      "defaultValues" : {
+        "Boolean" : true
+        },
+      "execPortType" : "In",
+      "typeSpec" : "Boolean"
+      },
+    {
+      "objectType" : "ExecPort",
+      "metadata" : {
+        "uiPersistValue" : "true"
+        },
+      "name" : "save_ExternalFile",
+      "nodePortType" : "Out",
+      "defaultValues" : {
+        "Boolean" : false
+        },
+      "execPortType" : "In",
+      "typeSpec" : "Boolean"
+      },
+    {
+      "objectType" : "ExecPort",
+      "metadata" : {
+        "uiPersistValue" : "true"
+        },
+      "name" : "save_FolderPath",
+      "nodePortType" : "Out",
+      "defaultValues" : {
+        "FilePath" : {
+          "handle" : true
+          }
+        },
+      "execPortType" : "In",
+      "typeSpec" : "FilePath"
+      },
+    {
+      "objectType" : "ExecPort",
+      "metadata" : {
+        "uiPersistValue" : "true"
+        },
+      "name" : "save_FileName",
+      "nodePortType" : "Out",
+      "defaultValues" : {
+        "String" : ""
+        },
+      "execPortType" : "In",
+      "typeSpec" : "String"
+      }
+    ],
+  "extDeps" : {
+    "TKCM" : "*"
+    },
+  "presetGUID" : "D692B4F47FCB4D684F57BB5B9DC78E59",
+  "code" : "require TKCM;
+
+dfgEntry {
+  multiChWeightmap.save(save_Enable, save_ExternalFile, save_FolderPath, save_FileName);
+}
+",
+  "requiredPresets" : {
+    "TKCM.Manipulation.Painting.MultiChWeightMap_save" : {
+      "objectType" : "Func",
+      "title" : "MultiChWeightMap_save",
+      "ports" : [
+        {
+          "objectType" : "ExecPort",
+          "metadata" : {
+            "uiPersistValue" : "true"
+            },
+          "name" : "exec",
+          "nodePortType" : "IO",
+          "defaultValues" : {
+            "Execute" : {}
+            },
+          "execPortType" : "IO",
+          "typeSpec" : "Execute"
+          },
+        {
+          "objectType" : "ExecPort",
+          "metadata" : {
+            "uiPersistValue" : "true"
+            },
+          "name" : "multiChWeightmap",
+          "nodePortType" : "IO",
+          "defaultValues" : {
+            "MultiChWeightmap" : null
+            },
+          "execPortType" : "IO",
+          "typeSpec" : "MultiChWeightmap"
+          },
+        {
+          "objectType" : "ExecPort",
+          "metadata" : {
+            "uiPersistValue" : "true"
+            },
+          "name" : "save_Enable",
+          "nodePortType" : "Out",
+          "defaultValues" : {
+            "Boolean" : true
+            },
+          "execPortType" : "In",
+          "typeSpec" : "Boolean"
+          },
+        {
+          "objectType" : "ExecPort",
+          "metadata" : {
+            "uiPersistValue" : "true"
+            },
+          "name" : "save_ExternalFile",
+          "nodePortType" : "Out",
+          "defaultValues" : {
+            "Boolean" : false
+            },
+          "execPortType" : "In",
+          "typeSpec" : "Boolean"
+          },
+        {
+          "objectType" : "ExecPort",
+          "metadata" : {
+            "uiPersistValue" : "true"
+            },
+          "name" : "save_FolderPath",
+          "nodePortType" : "Out",
+          "defaultValues" : {
+            "FilePath" : {
+              "handle" : true
+              }
+            },
+          "execPortType" : "In",
+          "typeSpec" : "FilePath"
+          },
+        {
+          "objectType" : "ExecPort",
+          "metadata" : {
+            "uiPersistValue" : "true"
+            },
+          "name" : "save_FileName",
+          "nodePortType" : "Out",
+          "defaultValues" : {
+            "String" : ""
+            },
+          "execPortType" : "In",
+          "typeSpec" : "String"
+          }
+        ],
+      "extDeps" : {
+        "TKCM" : "*"
+        },
+      "presetGUID" : "D692B4F47FCB4D684F57BB5B9DC78E59",
+      "code" : "require TKCM;
+
+dfgEntry {
+  multiChWeightmap.save(save_Enable, save_ExternalFile, save_FolderPath, save_FileName);
+}
+"
+      }
+    }
+  }

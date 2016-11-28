@@ -81,10 +81,9 @@ function MultiCh_SurfacePaintManipulator.init2!()
     this.paintBrushStrengthShape.setPosition(i, lines2.getPosition(30-i)+Vec3(0.0, 0.0, -0.1));
   }
   this.paintBrushStrengthShape.setPosition(20, lines2.getPosition(10));
-  this.paintBrushStrengthShape.setPosition(21, Vec3(0));
+  this.paintBrushStrengthShape.setPosition(21, Vec3(0.0));
   Lines lines3();
   lines3 = this.paintBrushStrengthShape.clone();
-  lines3.addLine(0, 20);
   InlineShape shape3 = InlineLinesShape('PaintBrushStrength_Shape', lines3);
   drawing.registerShape(shape3);
   this.paintBrushStrength = InlineInstance('PaintBrushStrength_Instance', transform2, shape3);
@@ -207,7 +206,7 @@ function MultiCh_SurfacePaintManipulator.updateBrush2!(io Event event, Vec2 mous
   lines = this.paintBrushStrengthShape.clone();
   lines.addLine(0, this.brushStrength*20);
   lines.addSegment(this.brushStrength*20, 21);
-  lines.addSegment(0, 21);
+  lines.addSegment(21, 0);
   InlineShape shape = InlineLinesShape('PaintBrushStrength_Shape', lines);
   this.paintBrushStrength.setShape(shape);
 
