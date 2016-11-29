@@ -40,10 +40,6 @@ createNode "canvasNode";
     FabricCanvasConnect -m "canvasNode1" -e "" -s "Split_3.result" -d "SkinWeight_stringToValues_1.parentJointStr";
 
 // connect
-    FabricCanvasInstPreset -m "canvasNode1" -e "" -p "Fabric.Core.Array.Size" -x "-70" -y "625";
-    FabricCanvasConnect -m "canvasNode1" -e "" -s "Split_3.result" -d "Size_1.array";
-    FabricCanvasConnect -m "canvasNode1" -e "" -s "Size_1.count" -d "SkinWeight_stringToValues_1.jointCount";
-    
     FabricCanvasConnect -m "canvasNode1" -e "" -s "SkinWeight_stringToValues_1.weighttValues" -d "SkinWeight_painter_1.weightValues";
     FabricCanvasConnect -m "canvasNode1" -e "" -s "SkinWeight_stringToValues_1.parentJointId" -d "SkinWeight_painter_1.parentJointId";
     

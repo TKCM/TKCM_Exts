@@ -56,19 +56,6 @@
       "metadata" : {
         "uiPersistValue" : "true"
         },
-      "name" : "jointCount",
-      "nodePortType" : "Out",
-      "defaultValues" : {
-        "Size" : 0
-        },
-      "execPortType" : "In",
-      "typeSpec" : "Size"
-      },
-    {
-      "objectType" : "ExecPort",
-      "metadata" : {
-        "uiPersistValue" : "true"
-        },
       "name" : "weighttValues",
       "nodePortType" : "In",
       "defaultValues" : {
@@ -107,9 +94,9 @@
   "extDeps" : {
     "TKCM" : "*"
     },
-  "presetGUID" : "1C62C5E99F852EB88CF3F27EA84D647A",
+  "presetGUID" : "5AF7EAC8DC051A964BFBD069691F3725",
   "code" : "dfgEntry {
-  weighttValues = StringArrayToSkinWeightValues(WeightStr, jointCount, mesh.pointCount());
+  weighttValues = StringArrayToSkinWeightValues(WeightStr, jointNames.size(), mesh.pointCount());
   parentJointId = StringToSizeArray(parentJointStr);
 }
 ",
@@ -172,19 +159,6 @@
           "metadata" : {
             "uiPersistValue" : "true"
             },
-          "name" : "jointCount",
-          "nodePortType" : "Out",
-          "defaultValues" : {
-            "Size" : 0
-            },
-          "execPortType" : "In",
-          "typeSpec" : "Size"
-          },
-        {
-          "objectType" : "ExecPort",
-          "metadata" : {
-            "uiPersistValue" : "true"
-            },
           "name" : "weighttValues",
           "nodePortType" : "In",
           "defaultValues" : {
@@ -223,9 +197,9 @@
       "extDeps" : {
         "TKCM" : "*"
         },
-      "presetGUID" : "1C62C5E99F852EB88CF3F27EA84D647A",
+      "presetGUID" : "5AF7EAC8DC051A964BFBD069691F3725",
       "code" : "dfgEntry {
-  weighttValues = StringArrayToSkinWeightValues(WeightStr, jointCount, mesh.pointCount());
+  weighttValues = StringArrayToSkinWeightValues(WeightStr, jointNames.size(), mesh.pointCount());
   parentJointId = StringToSizeArray(parentJointStr);
 }
 "
