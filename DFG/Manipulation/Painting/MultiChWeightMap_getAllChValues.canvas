@@ -32,9 +32,9 @@
       "objectType" : "ExecPort",
       "metadata" : {
         "uiPersistValue" : "true",
-        "uiCombo" : "(\"AttributeCount\", \"PolygonPointCount\")"
+        "uiCombo" : "(\"Per Vertex\", \"Per Face Corner\")"
         },
-      "name" : "valuesCutoff",
+      "name" : "mode",
       "nodePortType" : "Out",
       "defaultValues" : {
         "Integer" : 0
@@ -59,9 +59,9 @@
   "extDeps" : {
     "TKCM" : "*"
     },
-  "presetGUID" : "26063133C532699FEDB91122D33CF5C5",
+  "presetGUID" : "CBC14AA59D93A6909C343389AD29A421",
   "code" : "dfgEntry {
-  allChValues_2Darray = multiChWeightmap.getAllChValues(valuesCutoff);
+  allChValues_2Darray = multiChWeightmap.getAllChValues(mode);
 }
 ",
   "requiredPresets" : {
@@ -99,9 +99,9 @@
           "objectType" : "ExecPort",
           "metadata" : {
             "uiPersistValue" : "true",
-            "uiCombo" : "(\"AttributeCount\", \"PolygonPointCount\")"
+            "uiCombo" : "(\"Per Vertex\", \"Per Face Corner\")"
             },
-          "name" : "valuesCutoff",
+          "name" : "mode",
           "nodePortType" : "Out",
           "defaultValues" : {
             "Integer" : 0
@@ -126,9 +126,9 @@
       "extDeps" : {
         "TKCM" : "*"
         },
-      "presetGUID" : "26063133C532699FEDB91122D33CF5C5",
+      "presetGUID" : "CBC14AA59D93A6909C343389AD29A421",
       "code" : "dfgEntry {
-  allChValues_2Darray = multiChWeightmap.getAllChValues(valuesCutoff);
+  allChValues_2Darray = multiChWeightmap.getAllChValues(mode);
 }
 "
       }

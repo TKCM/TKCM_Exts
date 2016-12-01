@@ -45,12 +45,12 @@
       "objectType" : "ExecPort",
       "metadata" : {
         "uiPersistValue" : "true",
-        "uiCombo" : "(\"attributeCount\", \"polygonPointCount\")"
+        "uiCombo" : "(\"Per Vertex\", \"Per Face Corner\")"
         },
-      "name" : "valuesCutoff",
+      "name" : "mode",
       "nodePortType" : "Out",
       "defaultValues" : {
-        "Integer" : 0
+        "Integer" : 1
         },
       "execPortType" : "In",
       "typeSpec" : "Integer"
@@ -72,27 +72,91 @@
   "extDeps" : {
     "TKCM" : "*"
     },
+  "presetGUID" : "F8E618C444816F413E0372A9F65BD8A6",
   "code" : "dfgEntry {
-  values = multiChWeightmap.getMapValues(channel, valuesCutoff);
+  values = multiChWeightmap.getMapValues(channel, mode);
 }
 ",
-  "args" : [
-    {
-      "type" : "MultiChWeightmap",
-      "value" : null,
-      "ext" : "TKCM"
-      },
-    {
-      "type" : "Integer",
-      "value" : 0
-      },
-    {
-      "type" : "Integer",
-      "value" : 0
-      },
-    {
-      "type" : "Scalar[]",
-      "value" : []
+  "requiredPresets" : {
+    "TKCM.Manipulation.Painting.MultiChWeightMap_getValues" : {
+      "objectType" : "Func",
+      "title" : "MultiChWeightMap_getValues",
+      "ports" : [
+        {
+          "objectType" : "ExecPort",
+          "metadata" : {
+            "uiPersistValue" : "true"
+            },
+          "name" : "exec",
+          "nodePortType" : "IO",
+          "defaultValues" : {
+            "Execute" : {}
+            },
+          "execPortType" : "IO",
+          "typeSpec" : "Execute"
+          },
+        {
+          "objectType" : "ExecPort",
+          "metadata" : {
+            "uiPersistValue" : "true"
+            },
+          "name" : "multiChWeightmap",
+          "nodePortType" : "Out",
+          "defaultValues" : {
+            "MultiChWeightmap" : null
+            },
+          "execPortType" : "In",
+          "typeSpec" : "MultiChWeightmap"
+          },
+        {
+          "objectType" : "ExecPort",
+          "metadata" : {
+            "uiPersistValue" : "true"
+            },
+          "name" : "channel",
+          "nodePortType" : "Out",
+          "defaultValues" : {
+            "Integer" : 0
+            },
+          "execPortType" : "In",
+          "typeSpec" : "Integer"
+          },
+        {
+          "objectType" : "ExecPort",
+          "metadata" : {
+            "uiPersistValue" : "true",
+            "uiCombo" : "(\"Per Vertex\", \"Per Face Corner\")"
+            },
+          "name" : "mode",
+          "nodePortType" : "Out",
+          "defaultValues" : {
+            "Integer" : 1
+            },
+          "execPortType" : "In",
+          "typeSpec" : "Integer"
+          },
+        {
+          "objectType" : "ExecPort",
+          "metadata" : {
+            "uiPersistValue" : "true"
+            },
+          "name" : "values",
+          "nodePortType" : "In",
+          "defaultValues" : {
+            "Scalar[]" : []
+            },
+          "execPortType" : "Out",
+          "typeSpec" : "Scalar[]"
+          }
+        ],
+      "extDeps" : {
+        "TKCM" : "*"
+        },
+      "presetGUID" : "F8E618C444816F413E0372A9F65BD8A6",
+      "code" : "dfgEntry {
+  values = multiChWeightmap.getMapValues(channel, mode);
+}
+"
       }
-    ]
+    }
   }
