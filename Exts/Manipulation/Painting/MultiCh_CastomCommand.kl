@@ -1,0 +1,164 @@
+require Math;
+require Geometry;
+
+//SkinWeightPaintTools based MultiChannelWeightMap
+
+object MultiCh_CastomCommand {
+	PolygonMesh mesh;
+	Boolean initialized;
+	Size extMode; // 0=non, 1=skinWeightPaint, 2=SkinWeightBlend
+	String attrPath;	// skinCluster path
+	String meshName;
+	String chNames[];
+	String chSubNames[];	// jointName
+	
+	Integer chNameConv[]; // this array values are ids that blend skin list joint name
+	Integer blendTargetJointCount;
+	String blendTargetWeights[];
+
+	Integer pointIds[];
+};
+
+function MultiCh_CastomCommand(){
+	this.extMode = 0;
+}
+
+function MultiCh_CastomCommand.init!(
+		PolygonMesh mesh, 
+		String attrPath, 
+		String meshName, 
+		String chNames[], 
+		String jointNames[], 
+		Integer chNameConv[],
+		Integer blendTargetJointCount,
+		String blendTargetWeights[],
+	){
+	if(!this.initialized 
+		&& mesh != null 
+		&& attrPath.length() !=0 
+		&& meshName.length() !=0 
+		&& chNames.size() !=0 
+		&& jointNames.size() !=0 
+		&& chNameConv.size() !=0
+		&& blendTargetJointCount !=0
+		&& blendTargetWeights.size() !=0)
+		{
+		this.mesh = mesh;
+		this.attrPath = attrPath;
+		this.meshName = meshName;
+		this.chNames = chNames;
+		this.chSubNames = jointNames;
+		this.chNameConv = chNameConv;
+		this.blendTargetJointCount = blendTargetJointCount;
+		this.blendTargetWeights = blendTargetWeights;
+
+		this.initialized = true;
+	}
+}
+
+function MultiCh_CastomCommand.setMode!(Size mode){
+	this.extMode = mode;
+}
+
+////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+//skinWeight Data organize after painted (normalize & set restValues)
+//modify earch point.
+
+function MultiCh_CastomCommand.call!(
+  io MouseEvent mouseEvent,
+){
+	switch (this.extMode){
+		case 0: 
+			break;
+
+		case 1:
+			String args[];
+			for(Integer i=0; i<this.pointIds.size(); i++){
+				for(Integer j=0; j<this.chNames.size(); j++){
+					Ref<ScalarAttribute> mapValData = this.mesh.getAttribute(this.chNames[j], ScalarAttribute);
+					String val;
+					if(mapValData.values[ this.pointIds[i] ] > 0){
+						args.push('-transformValue ');
+						args.push(this.chSubNames[j]); //jointName
+						val = mapValData.values[ this.pointIds[i] ];	//weightValue
+						if(val.startsWith('+')){
+							val = val.leftStrip(1);
+						}
+						args.push(val);
+					}
+				}
+				args.push('-normalize off ');
+				args.push(this.attrPath);	//skinCluster path
+				args.push(this.meshName + '.vtx[' + this.pointIds[i] + ']');	//vartex ID
+				if(i != this.pointIds.size()-1){
+					args.push('; skinPercent ');
+				}
+			}
+			mouseEvent.getHost().callCustomCommand('skinPercent', args);
+			break;
+
+		case 2:
+			for(Integer i=0; i<this.pointIds.size(); i++){
+				Integer poiID = this.pointIds[i];
+				String args[];
+				Scalar sum;
+				Scalar sum2;
+				Scalar sumArray[];  sumArray.resize(this.chNames.size());
+				Ref<ScalarAttribute> blendMapValData = this.mesh.getAttribute("weightMap_ch"+(this.chNames.size()), ScalarAttribute);
+				for(Integer j=0; j<this.chNames.size(); j++){
+					Scalar baseValue = this.mesh.getOrCreateScalarAttribute(this.chNames[j]).values[poiID].clone();
+					Scalar targetValue = 0.0;
+					if(this.chNameConv[j] != -1){
+						targetValue = this.blendTargetWeights[ (this.blendTargetJointCount*poiID) + this.chNameConv[j] ].toScalar();
+					}
+					String sVal;
+					if(blendMapValData.values[poiID] > 0.001){
+						if(baseValue > 0.001){
+							Scalar added = baseValue + targetValue * blendMapValData.values[poiID];
+							sum += added;
+							sumArray[j] = added;
+						}else{
+							sum2 = targetValue * blendMapValData.values[poiID];
+							sVal = round(sum2*100)/100;
+							if(sVal.startsWith('+')){
+								sVal = sVal.leftStrip(1);
+							}
+							args.push('-transformValue ');
+							args.push(this.chSubNames[j]);
+							args.push(sVal);
+						}
+					}else{
+						sVal = round(baseValue*100)/100;
+						if(sVal.startsWith('+')){
+							sVal = sVal.leftStrip(1);
+						}
+						args.push('-transformValue ');
+						args.push(this.chSubNames[j]);
+						args.push(sVal);
+					}
+				}
+				for(Integer j=0; j<sumArray.size(); j++){
+					String sVal;
+					Scalar scaVal;
+					if(sumArray[j] > 0){
+						scaVal = round((sumArray[j] / sum)*(1.0-sum2) *100)/100;
+					}
+					if(scaVal > 0){
+						sVal = scaVal;
+						if(sVal.startsWith('+')){
+							sVal = sVal.leftStrip(1);
+						}
+						args.push('-transformValue ');
+						args.push(this.chSubNames[j]);
+						args.push(sVal);
+					}
+				}
+				args.push('-normalize on ');
+				args.push(this.attrPath);	//skinCluster path
+				args.push(this.meshName + '.vtx[' + this.pointIds[i] + ']');	//vartex ID
+				mouseEvent.getHost().callCustomCommand('skinPercent', args);
+			}
+			break;
+	}
+  
+}
