@@ -95,7 +95,6 @@ function MultiCh_SurfaceAttributeValuesDrawing.display!(
   }
   this.attr = activeWeiMapVal;
   this.pointPositions = pointPositions;
-
   if(this.drawSize > 0.5){
     if(!this.instanceDrawing[0].hasMaterial(this.attributeValueDrawingMaterial)){
       for(Size i=0; i<this.instanceDrawing.size(); i++){

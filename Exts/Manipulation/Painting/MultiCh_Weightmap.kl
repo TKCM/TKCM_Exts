@@ -1,6 +1,4 @@
-/*
- *  Copyright (c) 2010-2016, Fabric Software Inc. All rights reserved.
- */
+//"2.4.0対策"　シーンロード時に何故かconvertToStringでセーブが走るため、ロードが必要なデータを改めてセーブしデータが保持されるように対応
 
 require InlineDrawing;
 require FileIO;
@@ -10,7 +8,6 @@ require Manipulation;
 
 object MultiChWeightmap : Weightmap, Persistable, RTValFromJSONDecoder, RTValToJSONEncoder{
   String chNames[];
-  String chSubNames[];
   Size parentMapID[];
   Color colors[];
 
@@ -20,6 +17,7 @@ object MultiChWeightmap : Weightmap, Persistable, RTValFromJSONDecoder, RTValToJ
   Size oldChCount;
   Size activeCh;
   Size oldActiveCh;
+  Size extMode; //0=normal, 1=SkinWeightPaint, 2=SkinWeightBlend
 
   Boolean weightLock[];
 
@@ -31,6 +29,7 @@ object MultiChWeightmap : Weightmap, Persistable, RTValFromJSONDecoder, RTValToJ
   ScalarAttribute temporaryLoadAttr[];
   Boolean allChConnected;
   Boolean externalValuesConnected;
+  Boolean colorSetted;
 };
 
 function MultiChWeightmap(){
@@ -42,6 +41,7 @@ function MultiChWeightmap(){
   this.activeCh = 0;
   this.allChConnected = false;
   this.externalValuesConnected = false;
+  this.extMode = 0;
 }
 
 ///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -62,10 +62,17 @@ inline MultiChWeightmap.prepareCh!(Size chCount,  Color colors[]){
       for(Integer i=0; i<chCount; i++){
         this.chNames[i] = 'weightMap_ch'+i;
         this.colors[i] = colors[i];
-      } 
+      }
+      this.colorSetted = true;
     }else{
       setError("count of channel is not same size fo colorArray!!  channel count = "+chCount+" : colors.size() = "+colors.size() );
     }
+  }
+  if(!this.colorSetted){
+    for(Integer i=0; i<chCount; i++){
+      this.colors[i] = colors[i];
+    }
+    this.colorSetted = true;
   }
 }
 
@@ -175,8 +182,8 @@ inline MultiChWeightmap.connect!( PolygonMesh mesh, Xfo meshTransform){
     }
     // Add the weightmaps for make to OGLSurfaceOverlayShader
     this.mesh.getOrCreateAttribute("weightMap", ScalarAttribute);
-    // add ScalarAttributes 
-    for(Integer i=0; i<this.chCount; i++){ 
+    // add ScalarAttributes
+    for(Integer i=0; i<this.chCount; i++){
       if(this.temporaryLoadAttr.size() != 0 && this.chCount == this.oldChCount){
       // When loading from disk, the attribute was generated in the load function, 
       // and now we move to the mesh.(unless it already has)
@@ -302,7 +309,7 @@ inline MultiChWeightmap.activateManipulator!(){
 }
 
 function MultiChWeightmap.normalize!(Boolean enable, String normalizeChNames[]){
-  if(enable){
+  if(enable && !this.paintManipulator.normalize && normalizeChNames.size()!=0){
     this.paintManipulator.normalizeChNames = normalizeChNames;
     this.paintManipulator.IDs.resize(this.mesh.pointCount());
     this.paintManipulator.Weights.resize(this.mesh.pointCount());
@@ -332,7 +339,6 @@ inline MultiChWeightmap.save!(Boolean saveEnable, Boolean saveExternalFile){
 
 inline JSONDictValue MultiChWeightmap.saveBin(){
   JSONDictValue root();
-
   if(!this.saveFolderPath.exists()){
     setError("!!!!!!!!!!!!!!!! Could not save !!!!!!!!!!!!!! saveFolderPath is not exists : " + this.saveFolderPath.string() );
   }else if(!this.saveFileName){
@@ -356,10 +362,19 @@ inline JSONDictValue MultiChWeightmap.saveBin(){
     BinaryBlockWriter mapChValues = blockWriter.beginWriteBlock('mapValues', this.chCount);{
       for(Integer i=0; i<this.chCount; i++){
         BinaryBlockWriter mapChValSub = mapChValues.beginWriteBlock( 'val' + i );{
-          UInt32 numElements = this.mesh.pointCount();
-          mapChValSub.write(numElements.data(), numElements.dataSize());
-          ScalarAttribute mapValData = this.mesh.getAttribute(this.chNames[i], ScalarAttribute);
+          UInt32 numElements;
+          ScalarAttribute mapValData();
+          //2.4.0対策
+            if(this.mesh == null){
+              mapValData = this.temporaryLoadAttr[i];
+              numElements = this.temporaryLoadAttr[i].size();
+            }
+          else{
+            mapValData = this.mesh.getAttribute(this.chNames[i], ScalarAttribute);
+            numElements = this.mesh.pointCount();
+          }
           Scalar data[] = mapValData.values;
+          mapChValSub.write(numElements.data(), numElements.dataSize());
           mapChValSub.write(data.data(), data.dataSize());
         }
       }
@@ -367,6 +382,7 @@ inline JSONDictValue MultiChWeightmap.saveBin(){
     report('MultiWeightMap value data save to "' + binCacheFilePath.string() +'"');
     root.setString("saveFolderPath", binCacheFilePath.removeFileName().string() );
     root.setString("saveFileName", this.saveFileName + '_' + this.name + 'BinCache.bin');
+    root.setString("saveFileNameOrig", this.saveFileName);
   }
   return root;
 }
@@ -383,7 +399,13 @@ inline JSONDictValue MultiChWeightmap.saveJSON(){
   JSONArrayValue mapValues(); {
     for(Integer i=0; i<this.chCount; i++){
       JSONArrayValue mapValue();
-      ScalarAttribute mapValData = this.mesh.getAttribute(this.chNames[i], ScalarAttribute);
+      ScalarAttribute mapValData();
+      //2.4.0対策
+        if(this.mesh == null){
+          mapValData = this.temporaryLoadAttr[i];
+        }else{
+          mapValData = this.mesh.getAttribute(this.chNames[i], ScalarAttribute);
+        }
       mapValue.values.resize(mapValData.values.size());
       for(Integer ii=0; ii<mapValData.values.size(); ii++){
         mapValue.values[ii] = JSONNumberValue( mapValData.values[ii] );
@@ -393,6 +415,7 @@ inline JSONDictValue MultiChWeightmap.saveJSON(){
   }
   root.set("channelNames", channelNames);
   root.set("mapValues", mapValues);
+  report("save weightMaps in this scean");
   return root;
 }
 
@@ -445,7 +468,7 @@ inline MultiChWeightmap.loadJSON!(JSONDictValue json){
     this.temporaryLoadAttr[i].name = this.chNames[i];
     this.temporaryLoadAttr[i].resize(mapValue.size());
     for(Integer ii=0; ii<mapValue.size(); ii++){
-      this.temporaryLoadAttr[i].values[ii] =  mapValue.getScalar(ii);
+      this.temporaryLoadAttr[i].values[ii] = mapValue.getScalar(ii);
     }
   }
 }
@@ -474,7 +497,10 @@ function MultiChWeightmap.loadDataFromString!(PersistenceContext persistenceCont
     if(doc.root.has("saved")){
       this.name = doc.root.getString("name");
       this.chCount = doc.root.getInteger("chCount");
-      this.oldChCount = doc.root.getInteger("chCount");
+      this.oldChCount = this.chCount;
+      this.allChConnected = false;
+      this.externalValuesConnected = true;
+      this.saveEnable = true;
       // load bin
       if(doc.root.has("saveFolderPath") && doc.root.has("saveFileName")){
         this.saveFolderPath = FilePath(doc.root.getString("saveFolderPath"));
@@ -507,6 +533,7 @@ function String MultiChWeightmap.convertToString!(){
     doc.root.setBoolean("saved", this.saveEnable);
     doc.root.setInteger("chCount", this.chCount);
     doc.root.setString("name", this.name);
+    doc.root.setBoolean("saved", this.saveEnable);
   }
   String json = doc.write();
   return json;
@@ -518,16 +545,20 @@ function Boolean MultiChWeightmap.convertFromString!(in String data){
     if(doc.root.has("saved")){
       this.name = doc.root.getString("name");
       this.chCount = doc.root.getInteger("chCount");
-      this.oldChCount = doc.root.getInteger("chCount");
+      this.oldChCount = this.chCount;
+      this.externalValuesConnected = true;
+      this.saveEnable = true;
       // load bin
       if(doc.root.has("saveFolderPath") && doc.root.has("saveFileName")){
+        this.saveExternalFile = true;
         this.saveFolderPath = FilePath(doc.root.getString("saveFolderPath"));
+        this.saveFileName = doc.root.getString("saveFileNameOrig"); 
         String loadFileName = doc.root.getString("saveFileName");
         FilePath loadBinFilePath = this.saveFolderPath / FilePath(loadFileName) ;
         if(loadBinFilePath.exists()){
           this.loadBinFilePath(loadBinFilePath);
         }else{
-          report("ERROR Loading MultiChWeightmap data file. File not found from ----" + loadBinFilePath.string());
+          report("!!!!!!!!!!!!!!!! can not load MultiChWeightmap data file. File don't found from ----" + loadBinFilePath.string());
         }
       }
       // load JSON

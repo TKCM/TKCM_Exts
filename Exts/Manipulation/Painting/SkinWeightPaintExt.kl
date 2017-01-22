@@ -22,6 +22,14 @@ function Scalar[][] StringArrayToSkinWeightValues(String str[], Size jointCount,
       StringArrayToSkinWeightValues_Task(i, result, str);
     }
   }
+
+  // blendMap
+  result.resize(jointCount+1);
+  result[jointCount].resize(pointCount);
+  for(Integer i=0; i<pointCount; i++){
+    result[jointCount][i] = 0.0;
+  }
+
   return result;
 }
 
@@ -45,8 +53,7 @@ function Size[] StringToSizeArray(String str[]){
 function MultiChWeightmap.connectSkinWeight!(io PolygonMesh mesh, Scalar values[][], Xfo meshTransform,  Color colors[]){
   this.prepareCh(values.size(), colors);
   this.oldChCount = this.chCount;
-
-  if(!this.externalValuesConnected){
+  if(!this.externalValuesConnected && this.temporaryLoadAttr.size() != 0){
     this.temporaryLoadAttr.resize(values.size());
     for(Integer i=0; i<values.size(); i++){
       if(mesh.pointCount() != values[i].size()){
@@ -59,23 +66,18 @@ function MultiChWeightmap.connectSkinWeight!(io PolygonMesh mesh, Scalar values[
     }
     this.externalValuesConnected = true;
   }
-  
   this.connect(mesh, meshTransform);
 }
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-function MultiChWeightmap.setJointNames!(String jointNames[]){
-  if(this.chNames.size() == jointNames.size()){
-    this.chSubNames = jointNames;
-  }else{
-    setError("Count of WeightMaps is "+this.chNames.size()+", count of JointNames is "+jointNames.size());
-  }
-}
-
 function MultiChWeightmap.setParentJointId!(Size parentJointID[]){
   if(this.chNames.size() == parentJointID.size()){
     this.parentMapID = parentJointID;
   }else{
     setError("Count of WeightMaps is "+this.chNames.size()+", count of parentJointId is "+parentJointID.size());
   }
+}
+
+function MultiChWeightmap.setCallHostCommandMode!(Size mode){
+  this.paintManipulator.callHostCommand.setMode(mode);
 }

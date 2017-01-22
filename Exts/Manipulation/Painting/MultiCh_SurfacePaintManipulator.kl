@@ -1,6 +1,4 @@
-/*
- *  Copyright (c) 2010-2016, Fabric Software Inc. All rights reserved.
- */
+//"2.4.0対策"　ペイントバリューの描画サイズ変更用UIとペイントタイプ変更用UIのラインモデルについて、removeMaterialで描画OFFにならないのでスケールを0.0に設定して対応
 
 require Singletons;
 require InlineDrawing;
@@ -38,6 +36,9 @@ object MultiCh_SurfacePaintManipulator : SurfacePaintManipulator
   InlineInstance valDrawIcon;
   MultiCh_SurfaceAttributeValuesDrawing valueDrawing;
 
+  //v2.4.0対策
+  Scalar sc;
+  Scalar sc2;
 };
 
 function MultiCh_SurfacePaintManipulator.init2!()
@@ -174,9 +175,11 @@ function MultiCh_SurfacePaintManipulator.onEnable!()
     this.paintBrush.addMaterial(this.paintBrushMaterial);
     this.paintBrushStrength.addMaterial(this.paintBrushStrengthMaterial);
   }
-  if(this.brushType == 0){
+  if(this.brushType != 2){
+    this.sc2 = 1.0;
     this.paintBrushBlur.addMaterial(this.paintBrushBlurMaterial);
   }else{
+    this.sc2 = 0.0;
     this.paintBrushBlur.removeMaterial(this.paintBrushBlurMaterial);
   }
 }
@@ -200,6 +203,9 @@ function MultiCh_SurfacePaintManipulator.updateBrush2!(io Event event, Vec2 mous
   // brush blur UI
   Xfo  brushBlurXfo = this.paintBrush.getTransform().getLocalXfo(0);
   brushBlurXfo.sc = Vec3(this.brushSize / viewportAspectRatio, this.brushSize, this.brushSize) * Vec3(0.98*this.brushBlur); 
+  //2.4.0対策
+    brushBlurXfo.sc *= this.sc2;
+
   this.paintBrushBlur.getTransform().setLocalXfo(0, brushBlurXfo);
   // brush strength shape
   Lines lines();
@@ -229,7 +235,7 @@ function MultiCh_SurfacePaintManipulator.updateBrush3!(io Event event, Vec2 mous
     selectPanelXfo[i] = Xfo(
       Vec3( ((mousePos.x / viewportDim.x) - 0.5) * 2.0 - dragClamp*0.05,  ((mousePos.y / viewportDim.y) - 0.5) * -2.0,  0.01) + setVec[i], 
       Quat(), 
-      Vec3(0.75 / viewportAspectRatio, 0.75, 0.75) * Math_min( viewportDim.x/viewportDim.y, 1.0 )
+      Vec3(0.75 / viewportAspectRatio, 0.75, 0.75) * Math_min( viewportDim.x/viewportDim.y, 1.0 ) *this.sc
     );
     if(i == this.brushType){
       selectPanelXfo[i].sc *= Vec3(1.5);
@@ -251,7 +257,7 @@ function MultiCh_SurfacePaintManipulator.updateBrush4!(io Event event, Vec2 mous
   Xfo valDrawXfo = Xfo(
     Vec3(),
     Quat(), 
-    Vec3(10/viewportAspectRatio, 10, 10) * Math_min( viewportDim.x/viewportDim.y, 1.0 )
+    Vec3(10/viewportAspectRatio, 10, 10) * Math_min( viewportDim.x/viewportDim.y, 1.0 ) *this.sc
   );
   this.valDrawIcon.getTransform().setLocalXfo(0, valDrawXfo);
 
@@ -373,8 +379,7 @@ function MultiCh_SurfacePaintManipulator.onEvent!(io Event event)
   // Note: when the 'virtual' keyword is introduced into KL, we can eliminate this step.
   Ref<ISurfacePaintManipulator> ipainter = this;
   Ref<EventDispatcher> eventDispatcher = EventDispatcher_GetInstance();
-  Boolean fireCustomCommand = false;
-   if(event.eventType() == Event_MouseButtonPress){
+  if(event.eventType() == Event_MouseButtonPress){
     MouseEvent mouseEvent = event;
     switch(this.state){
     case SurfacePaintManipulator_State_Active:
@@ -397,6 +402,7 @@ function MultiCh_SurfacePaintManipulator.onEvent!(io Event event)
         event.accept();
       }
       else if((mouseEvent.modifiers & ModiferKey_Shift) != 0 ){
+        this.sc = 1.0;
         if(mouseEvent.buttons == MouseButton_RightButton){
           for(Integer i=0; i<3; i++){
             this.brushTypeIcon[i].addMaterial(this.brushTypeMaterial);
@@ -423,7 +429,6 @@ function MultiCh_SurfacePaintManipulator.onEvent!(io Event event)
           event.getHost().requestRedraw();
         }
         event.accept();
-        fireCustomCommand = true;
       }
       break;
     }
@@ -441,14 +446,13 @@ function MultiCh_SurfacePaintManipulator.onEvent!(io Event event)
         // On drag
         this.updateBrush2(event, mouseEvent.pos);
         this.raycastTargetGeometries(mouseEvent);
-        fireCustomCommand = true;
         break;
       case SurfacePaintManipulator_State_ResizingBrush:
         Scalar drag = this.mouseDownScreenPos.x - mouseEvent.pos.x;
         String args[];
         if(mouseEvent.buttons == MouseButton_LeftButton){
           Scalar rest = this.mouseDownBrushStrengthSize + drag * Scalar(0.01) * this.brushScaleSpeed;
-          this.brushStrength = Math_clamp( rest, 0.1, 1.0);
+          this.brushStrength = Math_clamp( rest, 0.05, 1.0);
         }else if(mouseEvent.buttons == MouseButton_MiddleButton){
           this.brushSize = this.mouseDownBrushSize + drag * Scalar(0.001) * this.brushScaleSpeed;
           this.brushSize = Math_max(0.01, this.brushSize);
@@ -504,6 +508,10 @@ function MultiCh_SurfacePaintManipulator.onEvent!(io Event event)
       event.accept();
       break;
     case SurfacePaintManipulator_State_BrushTypeSelect:
+      //2.4.0対策　
+        this.sc = 0.0;
+        this.updateBrush3(event, mouseEvent.pos, 0.0);
+      
       for(Integer i=0; i<3; i++){
         this.brushTypeIcon[i].removeMaterial(this.brushTypeMaterial);
         this.brushTypeIcon2[i].removeMaterial(this.brushTypeMaterial2[i]);
@@ -513,12 +521,17 @@ function MultiCh_SurfacePaintManipulator.onEvent!(io Event event)
       event.accept();
       break;
     case SurfacePaintManipulator_State_valueDrawing:
+      //2.4.0対策　
+        this.sc = 0.0;
+        this.updateBrush4(event, mouseEvent.pos);
+
       this.valDrawIcon.removeMaterial(this.valDrawMaterial);
       this.state = SurfacePaintManipulator_State_Active;
       if(this.valueDrawing.drawSize > 0.5){
         this.valueDrawing.draw = true;
       }
       this.onEnable();
+      this.updateBrush4(event, mouseEvent.pos);
       event.accept();
     }
   }
@@ -546,29 +559,6 @@ function MultiCh_SurfacePaintManipulator.onEvent!(io Event event)
       // When the mouse enters the viewport, show the brush. 
       this.onEnable();
       event.getHost().requestRedraw();
-    }
-  }
-
-  // update the dcc's host
-  if(fireCustomCommand){
-    if(this.portToDrive.length() > 0 &&
-      this.hostName.length() > 0 &&
-      this.graphName.length() > 0){
-      Host host = event.getHost();
-      this.evalID++;
-      if(this.hostName == 'Maya') {
-        String attr = this.graphName + '.' + this.portToDrive;
-        String args[];
-        args.push(attr);
-        args.push(this.evalID);
-        host.callCustomCommand('setAttr', args);
-      } else if(this.hostName == 'Softimage') {
-        String attr = this.graphName + '.' + this.portToDrive;
-        String args[];
-        args.push(attr);
-        args.push(this.evalID);
-        host.callCustomCommand('SetValue', args);
-      }
     }
   }
 }
