@@ -1,5 +1,6 @@
 {
   "code": [
+    "Exts/Manipulation/Painting/MultiCh_CastomCommand.kl",
   	"Exts/Manipulation/Painting/MultiCh_SurfaceAttributeValuesDrawing.kl",
     "Exts/Manipulation/Painting/MultiCh_SurfacePaintManipulator.kl",
 	  "Exts/Manipulation/Painting/MultiCh_SurfaceAttributePaintManipulator.kl",

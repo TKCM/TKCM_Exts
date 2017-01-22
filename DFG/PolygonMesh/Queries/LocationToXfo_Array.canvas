@@ -1,8 +1,8 @@
 {
   "objectType" : "Graph",
   "metadata" : {
-    "uiGraphZoom" : "{\n  \"value\" : 1.0\n  }",
-    "uiGraphPan" : "{\n  \"x\" : 255.75,\n  \"y\" : -353.5\n  }"
+    "uiGraphZoom" : "{\n  \"value\" : 0.7989642024040222\n  }",
+    "uiGraphPan" : "{\n  \"x\" : -51.92343139648438,\n  \"y\" : -237.2187347412109\n  }"
     },
   "title" : "LocationToXfo_Array",
   "ports" : [
@@ -63,7 +63,6 @@
       },
     {
       "objectType" : "ExecPort",
-      "metadata" : {},
       "name" : "location",
       "nodePortType" : "Out",
       "defaultValues" : {
@@ -74,14 +73,13 @@
       },
     {
       "objectType" : "ExecPort",
-      "metadata" : {},
       "name" : "upvector",
       "nodePortType" : "Out",
       "defaultValues" : {
         "Vec3[]" : [
           {
             "x" : 0,
-            "y" : 0,
+            "y" : 1,
             "z" : 0
             }
           ]
@@ -101,12 +99,12 @@
       }
     ],
   "extDeps" : {},
-  "presetGUID" : "DEAE7ABE39233607433136639CF7DDA2",
+  "presetGUID" : "22D4F62F4AF6DEF411B035FE5D774CF1",
   "nodes" : [
     {
       "objectType" : "Inst",
       "metadata" : {
-        "uiGraphPos" : "{\"x\":177.0,\"y\":547.0}"
+        "uiGraphPos" : "{\"x\":199.529,\"y\":714.718}"
         },
       "name" : "LocationToPositionArray_1",
       "ports" : [
@@ -142,7 +140,7 @@
     {
       "objectType" : "Inst",
       "metadata" : {
-        "uiGraphPos" : "{\"x\":180.0,\"y\":705.0}"
+        "uiGraphPos" : "{\"x\":197.523,\"y\":414.624}"
         },
       "name" : "LocationToNormalArray_1",
       "ports" : [
@@ -260,10 +258,10 @@
       "SetFromDirectionAndUpvectorArray_1.upvector"
       ],
     "LocationToPositionArray_1.position" : [
-      "SetFromDirectionAndUpvectorArray_1.direction"
+      "XfoArray_1.tr"
       ],
     "LocationToNormalArray_1.normal" : [
-      "XfoArray_1.tr"
+      "SetFromDirectionAndUpvectorArray_1.direction"
       ],
     "SetFromDirectionAndUpvectorArray_1.result" : [
       "XfoArray_1.ori"
@@ -276,8 +274,8 @@
     "TKCM.PolygonMesh.Queries.LocationToXfo_Array" : {
       "objectType" : "Graph",
       "metadata" : {
-        "uiGraphZoom" : "{\n  \"value\" : 1.0\n  }",
-        "uiGraphPan" : "{\n  \"x\" : 255.75,\n  \"y\" : -353.5\n  }"
+        "uiGraphZoom" : "{\n  \"value\" : 0.7989642024040222\n  }",
+        "uiGraphPan" : "{\n  \"x\" : -51.92343139648438,\n  \"y\" : -237.2187347412109\n  }"
         },
       "title" : "LocationToXfo_Array",
       "ports" : [
@@ -338,7 +336,6 @@
           },
         {
           "objectType" : "ExecPort",
-          "metadata" : {},
           "name" : "location",
           "nodePortType" : "Out",
           "defaultValues" : {
@@ -349,14 +346,13 @@
           },
         {
           "objectType" : "ExecPort",
-          "metadata" : {},
           "name" : "upvector",
           "nodePortType" : "Out",
           "defaultValues" : {
             "Vec3[]" : [
               {
                 "x" : 0,
-                "y" : 0,
+                "y" : 1,
                 "z" : 0
                 }
               ]
@@ -376,12 +372,12 @@
           }
         ],
       "extDeps" : {},
-      "presetGUID" : "DEAE7ABE39233607433136639CF7DDA2",
+      "presetGUID" : "22D4F62F4AF6DEF411B035FE5D774CF1",
       "nodes" : [
         {
           "objectType" : "Inst",
           "metadata" : {
-            "uiGraphPos" : "{\"x\":177.0,\"y\":547.0}"
+            "uiGraphPos" : "{\"x\":199.529,\"y\":714.718}"
             },
           "name" : "LocationToPositionArray_1",
           "ports" : [
@@ -417,7 +413,7 @@
         {
           "objectType" : "Inst",
           "metadata" : {
-            "uiGraphPos" : "{\"x\":180.0,\"y\":705.0}"
+            "uiGraphPos" : "{\"x\":197.523,\"y\":414.624}"
             },
           "name" : "LocationToNormalArray_1",
           "ports" : [
@@ -535,10 +531,10 @@
           "SetFromDirectionAndUpvectorArray_1.upvector"
           ],
         "LocationToPositionArray_1.position" : [
-          "SetFromDirectionAndUpvectorArray_1.direction"
+          "XfoArray_1.tr"
           ],
         "LocationToNormalArray_1.normal" : [
-          "XfoArray_1.tr"
+          "SetFromDirectionAndUpvectorArray_1.direction"
           ],
         "SetFromDirectionAndUpvectorArray_1.result" : [
           "XfoArray_1.ori"

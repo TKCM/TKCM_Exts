@@ -1,8 +1,8 @@
 {
   "objectType" : "Graph",
   "metadata" : {
-    "uiGraphZoom" : "{\n  \"value\" : 0.5249409079551697\n  }",
-    "uiGraphPan" : "{\n  \"x\" : 108.9512610299262,\n  \"y\" : 228.2622327631129\n  }"
+    "uiGraphZoom" : "{\n  \"value\" : 1.039586424827576\n  }",
+    "uiGraphPan" : "{\n  \"x\" : 156.5626220703125,\n  \"y\" : -75.72102355957031\n  }"
     },
   "title" : "MultiChWeightMap_painter",
   "ports" : [
@@ -18,7 +18,6 @@
       },
     {
       "objectType" : "ExecPort",
-      "metadata" : {},
       "name" : "multiChWeightmap",
       "nodePortType" : "IO",
       "defaultValues" : {
@@ -29,7 +28,6 @@
       },
     {
       "objectType" : "ExecPort",
-      "metadata" : {},
       "name" : "mesh",
       "nodePortType" : "IO",
       "defaultValues" : {
@@ -139,7 +137,7 @@
       }
     ],
   "extDeps" : {},
-  "presetGUID" : "18B6E47A65656012D00281C88C64C53F",
+  "presetGUID" : "DA820354C0D8285863EB4F6BEEA33B07",
   "nodes" : [
     {
       "objectType" : "Inst",
@@ -341,7 +339,6 @@
         "extDeps" : {
           "TKCM" : "*"
           },
-        "origPresetGUID" : "9DEF45611A611D9D115C835F9217F167",
         "code" : "require TKCM;
 
 dfgEntry {
@@ -359,9 +356,9 @@ dfgEntry {
     {
       "objectType" : "Inst",
       "metadata" : {
-        "uiGraphPos" : "{\"x\":-47.5675,\"y\":461.673}"
+        "uiGraphPos" : "{\"x\":-18.8176,\"y\":455.683}"
         },
-      "name" : "MakeRandomColors_1",
+      "name" : "MakeRandomColors_2",
       "ports" : [
         {
           "objectType" : "InstPort",
@@ -384,7 +381,7 @@ dfgEntry {
           "nodePortType" : "Out"
           }
         ],
-      "executable" : "TKCM.Manipulation.Painting.MakeRandomColors"
+      "executable" : "TKCM.Math.Color.MakeRandomColors"
       }
     ],
   "connections" : {
@@ -399,7 +396,7 @@ dfgEntry {
       ],
     "channelCount" : [
       "MultiChWeightMap_painter_1.channelCount",
-      "MakeRandomColors_1.count"
+      "MakeRandomColors_2.count"
       ],
     "activeChannel" : [
       "MultiChWeightMap_painter_1.activeChannel"
@@ -411,7 +408,7 @@ dfgEntry {
       "MultiChWeightMap_painter_1.paintVluesMax"
       ],
     "fixedColors" : [
-      "MakeRandomColors_1.fixedColors"
+      "MakeRandomColors_2.fixedColors"
       ],
     "MultiChWeightMap_painter_1.multiChWeightmap" : [
       "multiChWeightmap"
@@ -419,7 +416,7 @@ dfgEntry {
     "MultiChWeightMap_painter_1.mesh" : [
       "mesh"
       ],
-    "MakeRandomColors_1.result" : [
+    "MakeRandomColors_2.result" : [
       "MultiChWeightMap_painter_1.mapColors"
       ]
     },
@@ -427,8 +424,8 @@ dfgEntry {
     "TKCM.Manipulation.Painting.MultiChWeightMap_painter" : {
       "objectType" : "Graph",
       "metadata" : {
-        "uiGraphZoom" : "{\n  \"value\" : 0.5249409079551697\n  }",
-        "uiGraphPan" : "{\n  \"x\" : 108.9512610299262,\n  \"y\" : 228.2622327631129\n  }"
+        "uiGraphZoom" : "{\n  \"value\" : 1.039586424827576\n  }",
+        "uiGraphPan" : "{\n  \"x\" : 156.5626220703125,\n  \"y\" : -75.72102355957031\n  }"
         },
       "title" : "MultiChWeightMap_painter",
       "ports" : [
@@ -444,7 +441,6 @@ dfgEntry {
           },
         {
           "objectType" : "ExecPort",
-          "metadata" : {},
           "name" : "multiChWeightmap",
           "nodePortType" : "IO",
           "defaultValues" : {
@@ -455,7 +451,6 @@ dfgEntry {
           },
         {
           "objectType" : "ExecPort",
-          "metadata" : {},
           "name" : "mesh",
           "nodePortType" : "IO",
           "defaultValues" : {
@@ -565,7 +560,7 @@ dfgEntry {
           }
         ],
       "extDeps" : {},
-      "presetGUID" : "18B6E47A65656012D00281C88C64C53F",
+      "presetGUID" : "DA820354C0D8285863EB4F6BEEA33B07",
       "nodes" : [
         {
           "objectType" : "Inst",
@@ -767,7 +762,6 @@ dfgEntry {
             "extDeps" : {
               "TKCM" : "*"
               },
-            "origPresetGUID" : "9DEF45611A611D9D115C835F9217F167",
             "code" : "require TKCM;
 
 dfgEntry {
@@ -785,9 +779,9 @@ dfgEntry {
         {
           "objectType" : "Inst",
           "metadata" : {
-            "uiGraphPos" : "{\"x\":-47.5675,\"y\":461.673}"
+            "uiGraphPos" : "{\"x\":-18.8176,\"y\":455.683}"
             },
-          "name" : "MakeRandomColors_1",
+          "name" : "MakeRandomColors_2",
           "ports" : [
             {
               "objectType" : "InstPort",
@@ -810,7 +804,7 @@ dfgEntry {
               "nodePortType" : "Out"
               }
             ],
-          "executable" : "TKCM.Manipulation.Painting.MakeRandomColors"
+          "executable" : "TKCM.Math.Color.MakeRandomColors"
           }
         ],
       "connections" : {
@@ -825,7 +819,7 @@ dfgEntry {
           ],
         "channelCount" : [
           "MultiChWeightMap_painter_1.channelCount",
-          "MakeRandomColors_1.count"
+          "MakeRandomColors_2.count"
           ],
         "activeChannel" : [
           "MultiChWeightMap_painter_1.activeChannel"
@@ -837,7 +831,7 @@ dfgEntry {
           "MultiChWeightMap_painter_1.paintVluesMax"
           ],
         "fixedColors" : [
-          "MakeRandomColors_1.fixedColors"
+          "MakeRandomColors_2.fixedColors"
           ],
         "MultiChWeightMap_painter_1.multiChWeightmap" : [
           "multiChWeightmap"
@@ -845,12 +839,12 @@ dfgEntry {
         "MultiChWeightMap_painter_1.mesh" : [
           "mesh"
           ],
-        "MakeRandomColors_1.result" : [
+        "MakeRandomColors_2.result" : [
           "MultiChWeightMap_painter_1.mapColors"
           ]
         }
       },
-    "TKCM.Manipulation.Painting.MakeRandomColors" : {
+    "TKCM.Math.Color.MakeRandomColors" : {
       "objectType" : "Func",
       "title" : "MakeRandomColors",
       "ports" : [
