@@ -7,6 +7,8 @@ require FabricInterfaces;
 require Manipulation;
 
 object MultiChWeightmap : Weightmap, Persistable, RTValFromJSONDecoder, RTValToJSONEncoder{
+  String MCWMapName;
+
   String chNames[];
   Size parentMapID[];
   Color colors[];
@@ -171,7 +173,7 @@ operator setPointAttributeTask<<<i>>>(io PolygonMeshTopology mesh, io Scalar tar
   mesh.setPointAttribute(i, targetAttrVals, setVals[i]);
 }
 
-inline MultiChWeightmap.connect!( PolygonMesh mesh, Xfo meshTransform){
+inline MultiChWeightmap.connect!(PolygonMesh mesh, Xfo meshTransform){
   this.meshTransform = meshTransform;
   if(!this.allChConnected ){
     if(this.mesh == null){
@@ -215,12 +217,12 @@ inline MultiChWeightmap.connect!( PolygonMesh mesh, Xfo meshTransform){
   this.mesh.setAllPointPositions( mesh.getAllPointPositions() );
 }
 
-inline MultiChWeightmap.connect!( PolygonMesh mesh, Xfo meshTransform, Integer chCount){
+inline MultiChWeightmap.connect!(PolygonMesh mesh, Xfo meshTransform, Integer chCount){
   this.prepareCh(chCount);
   this.connect(mesh, meshTransform);
 }
 
-inline MultiChWeightmap.connect!( PolygonMesh mesh, Xfo meshTransform, Integer chCount, Color colors[]){
+inline MultiChWeightmap.connect!(PolygonMesh mesh, Xfo meshTransform, Integer chCount, Color colors[]){
   this.prepareCh(chCount, colors);
   this.connect(mesh, meshTransform);
 }
@@ -533,7 +535,7 @@ function String MultiChWeightmap.convertToString!(){
     doc.root.setBoolean("saved", this.saveEnable);
     doc.root.setInteger("chCount", this.chCount);
     doc.root.setString("name", this.name);
-    doc.root.setBoolean("saved", this.saveEnable);
+    doc.root.setBoolean("saved"+this.MCWMapName, this.saveEnable);
   }
   String json = doc.write();
   return json;
@@ -542,7 +544,7 @@ function String MultiChWeightmap.convertToString!(){
 function Boolean MultiChWeightmap.convertFromString!(in String data){
   JSONDoc doc();
   if(doc.parse(data)){
-    if(doc.root.has("saved")){
+    if(doc.root.has("saved"+this.MCWMapName)){
       this.name = doc.root.getString("name");
       this.chCount = doc.root.getInteger("chCount");
       this.oldChCount = this.chCount;
