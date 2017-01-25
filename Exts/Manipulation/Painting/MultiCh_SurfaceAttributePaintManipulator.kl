@@ -427,9 +427,20 @@ function MultiCh_SurfaceAttributePaintManipulator.onPaint!(io MouseEvent mouseEv
     // for the entire paint stroke, even if we cross multipel geometries. 
     this.command.addPaintData(paintData);
 
-    if(this.callHostCommand.extMode != 0){
-      this.callHostCommand.pointIds = paintData.pointIds;
-      this.callHostCommand.call(mouseEvent);
+    switch(this.callHostCommand.extMode){
+      case 0:
+        break;
+      case 1: // evalCanvasNord
+        this.callHostCommand.call(mouseEvent);
+        break;
+      case 2: // skinWeightPaintTool
+        this.callHostCommand.pointIds = paintData.pointIds;
+        this.callHostCommand.call(mouseEvent);
+        break;
+      case 3: // skinWeightBlendTool
+        this.callHostCommand.pointIds = paintData.pointIds;
+        this.callHostCommand.call(mouseEvent);
+        break;
     }
   }
 }

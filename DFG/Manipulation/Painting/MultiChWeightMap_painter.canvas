@@ -1,8 +1,8 @@
 {
   "objectType" : "Graph",
   "metadata" : {
-    "uiGraphZoom" : "{\n  \"value\" : 1.039586424827576\n  }",
-    "uiGraphPan" : "{\n  \"x\" : 156.5626220703125,\n  \"y\" : -75.72102355957031\n  }"
+    "uiGraphZoom" : "{\n  \"value\" : 0.7517156004905701\n  }",
+    "uiGraphPan" : "{\n  \"x\" : -7.821548461914063,\n  \"y\" : -21.11228942871094\n  }"
     },
   "title" : "MultiChWeightMap_painter",
   "ports" : [
@@ -134,17 +134,81 @@
         },
       "execPortType" : "In",
       "typeSpec" : "Color[]"
+      },
+    {
+      "objectType" : "ExecPort",
+      "metadata" : {
+        "uiCombo" : "(\"addMapAttributes\", \"inputMesh\")"
+        },
+      "name" : "outputMesh",
+      "nodePortType" : "Out",
+      "defaultValues" : {
+        "Integer" : 0
+        },
+      "execPortType" : "In",
+      "typeSpec" : "Integer"
+      },
+    {
+      "objectType" : "ExecPort",
+      "metadata" : {
+        "uiCombo" : "(\"non\", \"evalCavasNord\")"
+        },
+      "name" : "callCommand",
+      "nodePortType" : "Out",
+      "defaultValues" : {
+        "Integer" : 0
+        },
+      "execPortType" : "In",
+      "typeSpec" : "Integer"
+      },
+    {
+      "objectType" : "ExecPort",
+      "metadata" : {
+        "uiPersistValue" : "true"
+        },
+      "name" : "canvasGraphName",
+      "nodePortType" : "Out",
+      "defaultValues" : {
+        "String" : "canvasNode1"
+        },
+      "execPortType" : "In",
+      "typeSpec" : "String"
+      },
+    {
+      "objectType" : "ExecPort",
+      "metadata" : {
+        "uiPersistValue" : "true"
+        },
+      "name" : "portName",
+      "nodePortType" : "Out",
+      "defaultValues" : {
+        "String" : "eval"
+        },
+      "execPortType" : "In",
+      "typeSpec" : "String"
+      },
+    {
+      "objectType" : "ExecPort",
+      "name" : "eval",
+      "nodePortType" : "Out",
+      "defaultValues" : {
+        "UInt32" : 0
+        },
+      "execPortType" : "In",
+      "typeSpec" : "UInt32"
       }
     ],
-  "extDeps" : {},
-  "presetGUID" : "DA820354C0D8285863EB4F6BEEA33B07",
+  "extDeps" : {
+    "TKCM" : "*"
+    },
+  "presetGUID" : "05456C804B93C55931101EDFFF00E84A",
   "nodes" : [
     {
       "objectType" : "Inst",
       "metadata" : {
-        "uiGraphPos" : "{\"x\":279.657,\"y\":163.594}"
+        "uiGraphPos" : "{\"x\":217.133,\"y\":192.451}"
         },
-      "name" : "MultiChWeightMap_painter_1",
+      "name" : "MultiChWeightMap_core",
       "ports" : [
         {
           "objectType" : "InstPort",
@@ -356,7 +420,7 @@ dfgEntry {
     {
       "objectType" : "Inst",
       "metadata" : {
-        "uiGraphPos" : "{\"x\":-18.8176,\"y\":455.683}"
+        "uiGraphPos" : "{\"x\":-25.5511,\"y\":364.59}"
         },
       "name" : "MakeRandomColors_2",
       "ports" : [
@@ -382,468 +446,289 @@ dfgEntry {
           }
         ],
       "executable" : "TKCM.Math.Color.MakeRandomColors"
+      },
+    {
+      "objectType" : "Inst",
+      "metadata" : {
+        "uiGraphPos" : "{\"x\":537.353,\"y\":97.1388}"
+        },
+      "name" : "getMultiChWeightMapMesh",
+      "ports" : [
+        {
+          "objectType" : "InstPort",
+          "name" : "exec",
+          "nodePortType" : "IO"
+          },
+        {
+          "objectType" : "InstPort",
+          "name" : "multiChWeightMap",
+          "nodePortType" : "In"
+          },
+        {
+          "objectType" : "InstPort",
+          "name" : "mesh",
+          "nodePortType" : "Out"
+          }
+        ],
+      "definition" : {
+        "objectType" : "Func",
+        "title" : "getMultiChWeightMapMesh",
+        "ports" : [
+          {
+            "objectType" : "ExecPort",
+            "name" : "exec",
+            "nodePortType" : "IO",
+            "execPortType" : "IO",
+            "typeSpec" : "Execute"
+            },
+          {
+            "objectType" : "ExecPort",
+            "name" : "multiChWeightMap",
+            "nodePortType" : "Out",
+            "execPortType" : "In",
+            "typeSpec" : "MultiChWeightmap"
+            },
+          {
+            "objectType" : "ExecPort",
+            "name" : "mesh",
+            "nodePortType" : "In",
+            "execPortType" : "Out",
+            "typeSpec" : "PolygonMesh"
+            }
+          ],
+        "extDeps" : {},
+        "code" : "dfgEntry {
+  mesh = multiChWeightMap.mesh;
+}
+"
+        }
+      },
+    {
+      "objectType" : "Inst",
+      "metadata" : {
+        "uiGraphPos" : "{\"x\":1082.13,\"y\":353.514}"
+        },
+      "name" : "If_1",
+      "ports" : [
+        {
+          "objectType" : "InstPort",
+          "name" : "exec",
+          "nodePortType" : "IO"
+          },
+        {
+          "objectType" : "InstPort",
+          "name" : "cond",
+          "nodePortType" : "In"
+          },
+        {
+          "objectType" : "InstPort",
+          "name" : "if_true",
+          "nodePortType" : "In"
+          },
+        {
+          "objectType" : "InstPort",
+          "name" : "if_false",
+          "nodePortType" : "In"
+          },
+        {
+          "objectType" : "InstPort",
+          "name" : "result",
+          "nodePortType" : "Out"
+          }
+        ],
+      "executable" : "Fabric.Core.Control.If",
+      "presetGUID" : "3182A478A21643455D549E483D35F831"
+      },
+    {
+      "objectType" : "Inst",
+      "metadata" : {
+        "uiGraphPos" : "{\"x\":339.017,\"y\":432.596}"
+        },
+      "name" : "Eq_1",
+      "ports" : [
+        {
+          "objectType" : "InstPort",
+          "name" : "exec",
+          "nodePortType" : "IO"
+          },
+        {
+          "objectType" : "InstPort",
+          "name" : "lhs",
+          "nodePortType" : "In"
+          },
+        {
+          "objectType" : "InstPort",
+          "name" : "rhs",
+          "nodePortType" : "In"
+          },
+        {
+          "objectType" : "InstPort",
+          "name" : "result",
+          "nodePortType" : "Out"
+          }
+        ],
+      "executable" : "Fabric.Core.Logic.Eq",
+      "presetGUID" : "EE5CD58CD54E7460D6011FA855D8C6EB"
+      },
+    {
+      "objectType" : "Inst",
+      "metadata" : {
+        "uiGraphPos" : "{\"x\":544.813,\"y\":237.777}"
+        },
+      "name" : "MultiChWeightMap_castomCommand",
+      "ports" : [
+        {
+          "objectType" : "InstPort",
+          "name" : "exec",
+          "nodePortType" : "IO"
+          },
+        {
+          "objectType" : "InstPort",
+          "name" : "multiChWeightmap",
+          "nodePortType" : "IO"
+          },
+        {
+          "objectType" : "InstPort",
+          "name" : "portName",
+          "nodePortType" : "In"
+          },
+        {
+          "objectType" : "InstPort",
+          "name" : "canvasGraphName",
+          "nodePortType" : "In"
+          },
+        {
+          "objectType" : "InstPort",
+          "name" : "extMode",
+          "nodePortType" : "In"
+          }
+        ],
+      "definition" : {
+        "objectType" : "Func",
+        "title" : "MultiChWeightMap_castomCommand",
+        "ports" : [
+          {
+            "objectType" : "ExecPort",
+            "name" : "exec",
+            "nodePortType" : "IO",
+            "defaultValues" : {
+              "Execute" : {}
+              },
+            "execPortType" : "IO",
+            "typeSpec" : "Execute"
+            },
+          {
+            "objectType" : "ExecPort",
+            "name" : "multiChWeightmap",
+            "nodePortType" : "IO",
+            "defaultValues" : {
+              "MultiChWeightmap" : null
+              },
+            "execPortType" : "IO",
+            "typeSpec" : "MultiChWeightmap"
+            },
+          {
+            "objectType" : "ExecPort",
+            "name" : "portName",
+            "nodePortType" : "Out",
+            "defaultValues" : {
+              "String" : ""
+              },
+            "execPortType" : "In",
+            "typeSpec" : "String"
+            },
+          {
+            "objectType" : "ExecPort",
+            "name" : "canvasGraphName",
+            "nodePortType" : "Out",
+            "defaultValues" : {
+              "String" : ""
+              },
+            "execPortType" : "In",
+            "typeSpec" : "String"
+            },
+          {
+            "objectType" : "ExecPort",
+            "metadata" : {
+              "uiCombo" : "(\"normal\", \"evalCavasNord\")"
+              },
+            "name" : "extMode",
+            "nodePortType" : "Out",
+            "execPortType" : "In",
+            "typeSpec" : "Integer"
+            }
+          ],
+        "extDeps" : {},
+        "code" : "dfgEntry {
+  multiChWeightmap.paintManipulator.callHostCommand.setEvalCanvasNode(canvasGraphName, portName);
+  multiChWeightmap.setCallHostCommandMode(extMode);
+}
+"
+        }
       }
     ],
   "connections" : {
     "multiChWeightmap" : [
-      "MultiChWeightMap_painter_1.multiChWeightmap"
+      "MultiChWeightMap_core.multiChWeightmap"
       ],
     "mesh" : [
-      "MultiChWeightMap_painter_1.mesh"
+      "MultiChWeightMap_core.mesh"
       ],
     "xfo" : [
-      "MultiChWeightMap_painter_1.xfo"
+      "MultiChWeightMap_core.xfo"
       ],
     "channelCount" : [
-      "MultiChWeightMap_painter_1.channelCount",
+      "MultiChWeightMap_core.channelCount",
       "MakeRandomColors_2.count"
       ],
     "activeChannel" : [
-      "MultiChWeightMap_painter_1.activeChannel"
+      "MultiChWeightMap_core.activeChannel"
       ],
     "paintVluesMin" : [
-      "MultiChWeightMap_painter_1.paintVluesMin"
+      "MultiChWeightMap_core.paintVluesMin"
       ],
     "paintVluesMax" : [
-      "MultiChWeightMap_painter_1.paintVluesMax"
+      "MultiChWeightMap_core.paintVluesMax"
       ],
     "fixedColors" : [
       "MakeRandomColors_2.fixedColors"
       ],
-    "MultiChWeightMap_painter_1.multiChWeightmap" : [
-      "multiChWeightmap"
+    "outputMesh" : [
+      "Eq_1.lhs"
       ],
-    "MultiChWeightMap_painter_1.mesh" : [
-      "mesh"
+    "callCommand" : [
+      "MultiChWeightMap_castomCommand.extMode"
+      ],
+    "canvasGraphName" : [
+      "MultiChWeightMap_castomCommand.canvasGraphName"
+      ],
+    "portName" : [
+      "MultiChWeightMap_castomCommand.portName"
+      ],
+    "MultiChWeightMap_core.multiChWeightmap" : [
+      "getMultiChWeightMapMesh.multiChWeightMap",
+      "MultiChWeightMap_castomCommand.multiChWeightmap"
+      ],
+    "MultiChWeightMap_core.mesh" : [
+      "If_1.if_false"
       ],
     "MakeRandomColors_2.result" : [
-      "MultiChWeightMap_painter_1.mapColors"
+      "MultiChWeightMap_core.mapColors"
+      ],
+    "getMultiChWeightMapMesh.mesh" : [
+      "If_1.if_true"
+      ],
+    "If_1.result" : [
+      "mesh"
+      ],
+    "Eq_1.result" : [
+      "If_1.cond"
+      ],
+    "MultiChWeightMap_castomCommand.multiChWeightmap" : [
+      "multiChWeightmap"
       ]
     },
   "requiredPresets" : {
-    "TKCM.Manipulation.Painting.MultiChWeightMap_painter" : {
-      "objectType" : "Graph",
-      "metadata" : {
-        "uiGraphZoom" : "{\n  \"value\" : 1.039586424827576\n  }",
-        "uiGraphPan" : "{\n  \"x\" : 156.5626220703125,\n  \"y\" : -75.72102355957031\n  }"
-        },
-      "title" : "MultiChWeightMap_painter",
-      "ports" : [
-        {
-          "objectType" : "ExecPort",
-          "name" : "exec",
-          "nodePortType" : "IO",
-          "defaultValues" : {
-            "Execute" : {}
-            },
-          "execPortType" : "IO",
-          "typeSpec" : "Execute"
-          },
-        {
-          "objectType" : "ExecPort",
-          "name" : "multiChWeightmap",
-          "nodePortType" : "IO",
-          "defaultValues" : {
-            "MultiChWeightmap" : null
-            },
-          "execPortType" : "IO",
-          "typeSpec" : "MultiChWeightmap"
-          },
-        {
-          "objectType" : "ExecPort",
-          "name" : "mesh",
-          "nodePortType" : "IO",
-          "defaultValues" : {
-            "PolygonMesh" : null
-            },
-          "execPortType" : "IO",
-          "typeSpec" : "PolygonMesh"
-          },
-        {
-          "objectType" : "ExecPort",
-          "metadata" : {
-            "uiPersistValue" : "true"
-            },
-          "name" : "xfo",
-          "nodePortType" : "Out",
-          "defaultValues" : {
-            "Xfo" : {
-              "ori" : {
-                "v" : {
-                  "x" : 0,
-                  "y" : 0,
-                  "z" : 0
-                  },
-                "w" : 1
-                },
-              "tr" : {
-                "x" : 0,
-                "y" : 0,
-                "z" : 0
-                },
-              "sc" : {
-                "x" : 1,
-                "y" : 1,
-                "z" : 1
-                }
-              }
-            },
-          "execPortType" : "In",
-          "typeSpec" : "Xfo"
-          },
-        {
-          "objectType" : "ExecPort",
-          "metadata" : {
-            "uiPersistValue" : "true"
-            },
-          "name" : "channelCount",
-          "nodePortType" : "Out",
-          "defaultValues" : {
-            "Integer" : 10
-            },
-          "execPortType" : "In",
-          "typeSpec" : "Integer"
-          },
-        {
-          "objectType" : "ExecPort",
-          "metadata" : {
-            "uiPersistValue" : "true"
-            },
-          "name" : "activeChannel",
-          "nodePortType" : "Out",
-          "defaultValues" : {
-            "Integer" : 0
-            },
-          "execPortType" : "In",
-          "typeSpec" : "Integer"
-          },
-        {
-          "objectType" : "ExecPort",
-          "metadata" : {
-            "uiPersistValue" : "true",
-            "uiRange" : "(0, 0.99)"
-            },
-          "name" : "paintVluesMin",
-          "nodePortType" : "Out",
-          "defaultValues" : {
-            "Scalar" : 0
-            },
-          "execPortType" : "In",
-          "typeSpec" : "Scalar"
-          },
-        {
-          "objectType" : "ExecPort",
-          "metadata" : {
-            "uiPersistValue" : "true",
-            "uiRange" : "(0.01, 1)"
-            },
-          "name" : "paintVluesMax",
-          "nodePortType" : "Out",
-          "defaultValues" : {
-            "Scalar" : 1
-            },
-          "execPortType" : "In",
-          "typeSpec" : "Scalar"
-          },
-        {
-          "objectType" : "ExecPort",
-          "metadata" : {
-            "uiPersistValue" : "true"
-            },
-          "name" : "fixedColors",
-          "nodePortType" : "Out",
-          "defaultValues" : {
-            "Color[]" : []
-            },
-          "execPortType" : "In",
-          "typeSpec" : "Color[]"
-          }
-        ],
-      "extDeps" : {},
-      "presetGUID" : "DA820354C0D8285863EB4F6BEEA33B07",
-      "nodes" : [
-        {
-          "objectType" : "Inst",
-          "metadata" : {
-            "uiGraphPos" : "{\"x\":279.657,\"y\":163.594}"
-            },
-          "name" : "MultiChWeightMap_painter_1",
-          "ports" : [
-            {
-              "objectType" : "InstPort",
-              "name" : "exec",
-              "nodePortType" : "IO"
-              },
-            {
-              "objectType" : "InstPort",
-              "name" : "multiChWeightmap",
-              "nodePortType" : "IO"
-              },
-            {
-              "objectType" : "InstPort",
-              "name" : "mesh",
-              "nodePortType" : "IO"
-              },
-            {
-              "objectType" : "InstPort",
-              "name" : "xfo",
-              "nodePortType" : "In"
-              },
-            {
-              "objectType" : "InstPort",
-              "name" : "channelCount",
-              "nodePortType" : "In"
-              },
-            {
-              "objectType" : "InstPort",
-              "name" : "activeChannel",
-              "nodePortType" : "In"
-              },
-            {
-              "objectType" : "InstPort",
-              "name" : "paintVluesMin",
-              "nodePortType" : "In"
-              },
-            {
-              "objectType" : "InstPort",
-              "name" : "paintVluesMax",
-              "nodePortType" : "In"
-              },
-            {
-              "objectType" : "InstPort",
-              "name" : "mapColors",
-              "nodePortType" : "In"
-              }
-            ],
-          "definition" : {
-            "objectType" : "Func",
-            "title" : "MultiChWeightMap_painter",
-            "ports" : [
-              {
-                "objectType" : "ExecPort",
-                "metadata" : {
-                  "uiPersistValue" : "true"
-                  },
-                "name" : "exec",
-                "nodePortType" : "IO",
-                "defaultValues" : {
-                  "Execute" : {}
-                  },
-                "execPortType" : "IO",
-                "typeSpec" : "Execute"
-                },
-              {
-                "objectType" : "ExecPort",
-                "metadata" : {
-                  "uiPersistValue" : "true"
-                  },
-                "name" : "multiChWeightmap",
-                "nodePortType" : "IO",
-                "defaultValues" : {
-                  "MultiChWeightmap" : null
-                  },
-                "execPortType" : "IO",
-                "typeSpec" : "MultiChWeightmap"
-                },
-              {
-                "objectType" : "ExecPort",
-                "metadata" : {
-                  "uiPersistValue" : "true"
-                  },
-                "name" : "mesh",
-                "nodePortType" : "IO",
-                "defaultValues" : {
-                  "PolygonMesh" : null
-                  },
-                "execPortType" : "IO",
-                "typeSpec" : "PolygonMesh"
-                },
-              {
-                "objectType" : "ExecPort",
-                "metadata" : {
-                  "uiPersistValue" : "true"
-                  },
-                "name" : "xfo",
-                "nodePortType" : "Out",
-                "defaultValues" : {
-                  "Xfo" : {
-                    "ori" : {
-                      "v" : {
-                        "x" : 0,
-                        "y" : 0,
-                        "z" : 0
-                        },
-                      "w" : 1
-                      },
-                    "tr" : {
-                      "x" : 0,
-                      "y" : 0,
-                      "z" : 0
-                      },
-                    "sc" : {
-                      "x" : 1,
-                      "y" : 1,
-                      "z" : 1
-                      }
-                    }
-                  },
-                "execPortType" : "In",
-                "typeSpec" : "Xfo"
-                },
-              {
-                "objectType" : "ExecPort",
-                "metadata" : {
-                  "uiPersistValue" : "true"
-                  },
-                "name" : "channelCount",
-                "nodePortType" : "Out",
-                "defaultValues" : {
-                  "Integer" : 8
-                  },
-                "execPortType" : "In",
-                "typeSpec" : "Integer"
-                },
-              {
-                "objectType" : "ExecPort",
-                "metadata" : {
-                  "uiPersistValue" : "true",
-                  "uiHardRange" : "(0, 0)"
-                  },
-                "name" : "activeChannel",
-                "nodePortType" : "Out",
-                "defaultValues" : {
-                  "Integer" : 0
-                  },
-                "execPortType" : "In",
-                "typeSpec" : "Integer"
-                },
-              {
-                "objectType" : "ExecPort",
-                "metadata" : {
-                  "uiPersistValue" : "true",
-                  "uiRange" : "(0, 0.99)"
-                  },
-                "name" : "paintVluesMin",
-                "nodePortType" : "Out",
-                "defaultValues" : {
-                  "Scalar" : 0
-                  },
-                "execPortType" : "In",
-                "typeSpec" : "Scalar"
-                },
-              {
-                "objectType" : "ExecPort",
-                "metadata" : {
-                  "uiPersistValue" : "true",
-                  "uiRange" : "(0.01, 1)"
-                  },
-                "name" : "paintVluesMax",
-                "nodePortType" : "Out",
-                "defaultValues" : {
-                  "Scalar" : 1
-                  },
-                "execPortType" : "In",
-                "typeSpec" : "Scalar"
-                },
-              {
-                "objectType" : "ExecPort",
-                "metadata" : {
-                  "uiPersistValue" : "true"
-                  },
-                "name" : "mapColors",
-                "nodePortType" : "Out",
-                "defaultValues" : {
-                  "Color[]" : []
-                  },
-                "execPortType" : "In",
-                "typeSpec" : "Color[]"
-                }
-              ],
-            "extDeps" : {
-              "TKCM" : "*"
-              },
-            "code" : "require TKCM;
-
-dfgEntry {
-  if(multiChWeightmap == null){
-    multiChWeightmap = MultiChWeightmap();
-  }
-  multiChWeightmap.connect(mesh, xfo, channelCount, mapColors);
-  multiChWeightmap.changeActiveCh(activeChannel);
-  multiChWeightmap.activateManipulator();
-  multiChWeightmap.setLimit(paintVluesMin, paintVluesMax);
-}
-"
-            }
-          },
-        {
-          "objectType" : "Inst",
-          "metadata" : {
-            "uiGraphPos" : "{\"x\":-18.8176,\"y\":455.683}"
-            },
-          "name" : "MakeRandomColors_2",
-          "ports" : [
-            {
-              "objectType" : "InstPort",
-              "name" : "exec",
-              "nodePortType" : "IO"
-              },
-            {
-              "objectType" : "InstPort",
-              "name" : "fixedColors",
-              "nodePortType" : "In"
-              },
-            {
-              "objectType" : "InstPort",
-              "name" : "count",
-              "nodePortType" : "In"
-              },
-            {
-              "objectType" : "InstPort",
-              "name" : "result",
-              "nodePortType" : "Out"
-              }
-            ],
-          "executable" : "TKCM.Math.Color.MakeRandomColors"
-          }
-        ],
-      "connections" : {
-        "multiChWeightmap" : [
-          "MultiChWeightMap_painter_1.multiChWeightmap"
-          ],
-        "mesh" : [
-          "MultiChWeightMap_painter_1.mesh"
-          ],
-        "xfo" : [
-          "MultiChWeightMap_painter_1.xfo"
-          ],
-        "channelCount" : [
-          "MultiChWeightMap_painter_1.channelCount",
-          "MakeRandomColors_2.count"
-          ],
-        "activeChannel" : [
-          "MultiChWeightMap_painter_1.activeChannel"
-          ],
-        "paintVluesMin" : [
-          "MultiChWeightMap_painter_1.paintVluesMin"
-          ],
-        "paintVluesMax" : [
-          "MultiChWeightMap_painter_1.paintVluesMax"
-          ],
-        "fixedColors" : [
-          "MakeRandomColors_2.fixedColors"
-          ],
-        "MultiChWeightMap_painter_1.multiChWeightmap" : [
-          "multiChWeightmap"
-          ],
-        "MultiChWeightMap_painter_1.mesh" : [
-          "mesh"
-          ],
-        "MakeRandomColors_2.result" : [
-          "MultiChWeightMap_painter_1.mapColors"
-          ]
-        }
-      },
     "TKCM.Math.Color.MakeRandomColors" : {
       "objectType" : "Func",
       "title" : "MakeRandomColors",
@@ -906,6 +791,95 @@ dfgEntry {
         },
       "code" : "dfgEntry {
   result = MakeRandomColors(fixedColors, count);
+}
+"
+      },
+    "Fabric.Core.Control.If" : {
+      "objectType" : "Func",
+      "title" : "If",
+      "ports" : [
+        {
+          "objectType" : "ExecPort",
+          "name" : "exec",
+          "nodePortType" : "IO",
+          "execPortType" : "IO",
+          "typeSpec" : "Execute"
+          },
+        {
+          "objectType" : "ExecPort",
+          "name" : "cond",
+          "nodePortType" : "Out",
+          "execPortType" : "In",
+          "typeSpec" : "Boolean"
+          },
+        {
+          "objectType" : "ExecPort",
+          "name" : "if_true",
+          "nodePortType" : "Out",
+          "execPortType" : "In",
+          "typeSpec" : "$TYPE$"
+          },
+        {
+          "objectType" : "ExecPort",
+          "name" : "if_false",
+          "nodePortType" : "Out",
+          "execPortType" : "In",
+          "typeSpec" : "$TYPE$"
+          },
+        {
+          "objectType" : "ExecPort",
+          "name" : "result",
+          "nodePortType" : "In",
+          "execPortType" : "Out",
+          "typeSpec" : "$TYPE$"
+          }
+        ],
+      "extDeps" : {},
+      "presetGUID" : "3182A478A21643455D549E483D35F831",
+      "code" : "
+dfgEntry {
+	result = cond ? if_true : if_false;
+}
+"
+      },
+    "Fabric.Core.Logic.Eq" : {
+      "objectType" : "Func",
+      "title" : "Eq ==",
+      "ports" : [
+        {
+          "objectType" : "ExecPort",
+          "name" : "exec",
+          "nodePortType" : "IO",
+          "execPortType" : "IO",
+          "typeSpec" : "Execute"
+          },
+        {
+          "objectType" : "ExecPort",
+          "name" : "lhs",
+          "nodePortType" : "Out",
+          "execPortType" : "In",
+          "typeSpec" : "$TYPE$"
+          },
+        {
+          "objectType" : "ExecPort",
+          "name" : "rhs",
+          "nodePortType" : "Out",
+          "execPortType" : "In",
+          "typeSpec" : "$TYPE$"
+          },
+        {
+          "objectType" : "ExecPort",
+          "name" : "result",
+          "nodePortType" : "In",
+          "execPortType" : "Out",
+          "typeSpec" : "Boolean"
+          }
+        ],
+      "extDeps" : {},
+      "presetGUID" : "EE5CD58CD54E7460D6011FA855D8C6EB",
+      "code" : "
+dfgEntry {
+	result = lhs == rhs;
 }
 "
       }

@@ -17,6 +17,10 @@ object MultiCh_CastomCommand {
 	String blendTargetWeights[];
 
 	Integer pointIds[];
+
+	String portToDrive;	// Maya sttribute port name
+	String graphName;
+	UInt32 evalID;
 };
 
 function MultiCh_CastomCommand(){
@@ -60,6 +64,11 @@ function MultiCh_CastomCommand.setMode!(Size mode){
 	this.extMode = mode;
 }
 
+function MultiCh_CastomCommand.setEvalCanvasNode!(String graphName, String portName){
+	this.graphName = graphName;
+	this.portToDrive = portName;
+}
+
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 //skinWeight Data organize after painted (normalize & set restValues)
 //modify earch point.
@@ -68,10 +77,21 @@ function MultiCh_CastomCommand.call!(
   io MouseEvent mouseEvent,
 ){
 	switch (this.extMode){
-		case 0: 
+		case 0:
 			break;
-
 		case 1:
+			if(this.portToDrive.length()>0 && this.graphName.length()>0){
+				this.evalID++;
+				String attr = this.graphName + '.' + this.portToDrive;
+        String args[];
+        args.push(attr);
+        args.push(this.evalID);
+				mouseEvent.getHost().callCustomCommand('setAttr', args);
+			}else{
+				setError("canvasGraphName or portName parameter is empty");
+			}
+			break;
+		case 2:
 			String args[];
 			for(Integer i=0; i<this.pointIds.size(); i++){
 				for(Integer j=0; j<this.chNames.size(); j++){
@@ -97,7 +117,7 @@ function MultiCh_CastomCommand.call!(
 			mouseEvent.getHost().callCustomCommand('skinPercent', args);
 			break;
 
-		case 2:
+		case 3:
 			for(Integer i=0; i<this.pointIds.size(); i++){
 				Integer poiID = this.pointIds[i];
 				String args[];
