@@ -4,7 +4,7 @@
     "uiGraphZoom" : "{\n  \"value\" : 1.0\n  }",
     "uiGraphPan" : "{\n  \"x\" : -524.0134887695313,\n  \"y\" : 239.8335418701172\n  }"
     },
-  "title" : "Empty Weightmap",
+  "title" : "MultiChWeightMap_empty",
   "ports" : [
     {
       "objectType" : "ExecPort",
@@ -21,23 +21,8 @@
       },
     {
       "objectType" : "ExecPort",
-      "metadata" : {
-        "uiPersistValue" : "true"
-        },
-      "name" : "name",
-      "nodePortType" : "Out",
-      "defaultValues" : {
-        "String" : "weightMap"
-        },
-      "execPortType" : "In",
-      "typeSpec" : "String"
-      },
-    {
-      "objectType" : "ExecPort",
-      "metadata" : {
-        "uiPersistValue" : "true"
-        },
-      "name" : "value",
+      "metadata" : {},
+      "name" : "multiChWeightmap_empty",
       "nodePortType" : "In",
       "defaultValues" : {
         "MultiChWeightmap" : null
@@ -49,6 +34,7 @@
   "extDeps" : {
     "TKCM" : "*"
     },
+  "presetGUID" : "5AE065249D2D46C467E57F85D017C2AE",
   "nodes" : [
     {
       "objectType" : "Inst",
@@ -118,7 +104,7 @@ dfgEntry {
     {
       "objectType" : "Var",
       "metadata" : {
-        "uiGraphPos" : "{\"x\":958.013,\"y\":59.1665}"
+        "uiGraphPos" : "{\"x\":1008.01,\"y\":46.1665}"
         },
       "name" : "multiChWeightmap",
       "ports" : [
@@ -133,25 +119,12 @@ dfgEntry {
       }
     ],
   "connections" : {
-    "name" : [
-      "MultiChWeightmap.name"
-      ],
     "MultiChWeightmap.result" : [
       "multiChWeightmap.value"
       ],
     "multiChWeightmap.value" : [
-      "value"
+      "multiChWeightmap_empty"
       ]
     },
-  "args" : [
-    {
-      "type" : "String",
-      "value" : "weightMap"
-      },
-    {
-      "type" : "MultiChWeightmap",
-      "value" : null,
-      "ext" : "TKCM"
-      }
-    ]
+  "requiredPresets" : {}
   }
