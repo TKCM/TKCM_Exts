@@ -151,6 +151,109 @@ inline Color[] MakeRandomColors(Color colors[], Integer count){
   
   return resultColors;
 }
+
+//　MultiChWeightmap.getIndices用　i=頂点or面の数
+operator getIndicesTask<<<i>>>(
+  io Boolean hasVal[], 
+  in Integer mode, 
+  in MultiChWeightmap map, 
+  in String mapNames[], 
+  in Integer logic, 
+  in Scalar border
+  ){
+  Scalar sum = 0.0; // 各マップのペイント値の合計値の受け皿を準備
+  Integer nonMapValPointCount = 0; // ポリゴン面を構成する各頂点のペイント値が存在するかどうかの判別用データを準備
+  
+  // "mode"が0なら頂点の各マップのペイント値の合計、1or2ならポリゴン面を構成する頂点の各マップのペイント値の合計平均値をsumで出力
+  if(mode == 0){
+    for(Integer j=0; j<mapNames.size(); j++){
+      Ref<ScalarAttribute> attr = map.mesh.getAttribute(mapNames[j], ScalarAttribute);
+      sum += attr.values[i];
+    }
+  }else{
+    LocalL8UInt32Array points;
+    map.mesh.getPolygonPoints(i, points); // ポリゴン面を構成する頂点番号を取得
+    for(Integer j=0; j<points.count; j++){ // ポリゴン面を構成する頂点数だけループ処理
+      Scalar poiSum = 0.0; // ポリゴン面の各頂点のペイント値を合計する受け皿を準備
+      for(Integer k=0; k<mapNames.size(); k++){
+        Ref<ScalarAttribute> attr = map.mesh.getAttribute(mapNames[k], ScalarAttribute);
+        poiSum += attr.values[points.first8[j]];
+      }
+      if(poiSum == 0.0 && mode == 1){
+        nonMapValPointCount += 1; // "mode"が1でペイント値の合計が0.0だった場合、以降の処理でfalseを戻すために+1を実行しておく
+      }else{
+        sum += poiSum; // "mode"が0か2の場合、次の処理でペイント値の平均値を出すためにsumにペイント値を合計しておく
+      }
+    }
+    sum /= points.count; // ポリゴン面の各頂点のペイント合計値を頂点数で平均化
+  }
+
+  // "mode"が1で1つでもペイント値の無い頂点が存在する場合はfalse、それ以外はロジックに沿ってtrue or falseの結果を返す
+  if(nonMapValPointCount != 0){
+    hasVal[i] = false;
+  }else{
+    hasVal[i] = false;
+    if(logic == 0){ if(sum >  border){  hasVal[i] = true; } }
+    if(logic == 1){ if(sum >= border){  hasVal[i] = true; } }
+    if(logic == 2){ if(sum == border){  hasVal[i] = true; } }
+    if(logic == 3){ if(sum <= border){  hasVal[i] = true; } }
+    if(logic == 4){ if(sum <  border){  hasVal[i] = true; } }
+  }
+}
+
+//　ウェイトマップが塗られている頂点、ポリゴン面のIDを取得する
+function Index[] MultiChWeightmap.getIndices?(
+  in Integer mode, // 0:頂点　1:ポリゴン面（ポリゴンポイント全てが塗られている）　2:ポリゴン面（ポリゴンポイントで1つ以上が塗られている）
+  in Integer mapAttrSelect,
+  in String mapAttr_IDs,
+  in String[] mapAttr_Names,
+  in Integer logic,
+  in Scalar border
+  ){
+  Index indices[]; // ID格納用データの準備　＝　戻り値
+
+  // 検出対象にするマップ名のリストを作成する
+  String mapNames[];
+  switch(mapAttrSelect){
+    case 0: // "mapAttr_IDs"に入力されたマップIDリストからマップアトリビュート名のリストを生成する
+      String ch[];
+      ch = mapAttr_IDs.split(',');
+      mapNames.resize(ch.size());
+      for(Integer i=0; i<ch.size(); i++){
+        if(this.chNames[ ch[i].toScalar() ] == null){
+          setError("mapAttrId "+ch[i]+" is nothing");
+        }else{
+          mapNames[i] = this.chNames[ ch[i].toScalar() ];
+        }
+      }
+    case 1: // "mapAttr_Names"に入力されたマップアトリビュート名リストをそのまま使用
+      mapNames = mapAttr_Names;
+  }
+  
+  // 並列処理で行った検出結果を戻すために頂点orポリゴン面の数のリストを準備
+  Boolean hasVal[];
+  switch(mode){
+    case 0:
+      hasVal.resize(this.mesh.pointCount());
+      break;
+    case 1:
+      hasVal.resize(this.mesh.polygonCount());
+      break;
+    case 2:
+      hasVal.resize(this.mesh.polygonCount());
+      break;
+  }
+  // 検出　上記オペレータを使用
+  getIndicesTask<<<hasVal.size()>>>(hasVal, mode, this, mapNames, logic, border);
+  
+  // 検出結果からtrueのIDのみのリストを作成
+  indices.resize(0);
+  for(Integer i=0; i<hasVal.size(); i++){
+    if(hasVal[i]){ indices.push(i); }
+  }
+  return indices;
+}
+
 // output
 ///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 // brush

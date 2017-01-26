@@ -1,0 +1,380 @@
+{
+  "objectType" : "Graph",
+  "metadata" : {
+    "uiGraphZoom" : "{\n  \"value\" : 1.0\n  }",
+    "uiGraphPan" : "{\n  \"x\" : -156.0,\n  \"y\" : -322.0\n  }"
+    },
+  "title" : "MultiChWeightMap_getIndices",
+  "ports" : [
+    {
+      "objectType" : "ExecPort",
+      "name" : "exec",
+      "nodePortType" : "IO",
+      "defaultValues" : {
+        "Execute" : {}
+        },
+      "execPortType" : "IO",
+      "typeSpec" : "Execute"
+      },
+    {
+      "objectType" : "ExecPort",
+      "name" : "multiChWeightmap",
+      "nodePortType" : "Out",
+      "defaultValues" : {
+        "MultiChWeightmap" : null
+        },
+      "execPortType" : "In"
+      },
+    {
+      "objectType" : "ExecPort",
+      "metadata" : {
+        "uiCombo" : "(\"Per Vertex                     \", \"Per Face (paint all point)\", \"Per Face (paint 1 or more point)\")"
+        },
+      "name" : "mode",
+      "nodePortType" : "Out",
+      "defaultValues" : {
+        "Integer" : 2
+        },
+      "execPortType" : "In",
+      "typeSpec" : "Integer"
+      },
+    {
+      "objectType" : "ExecPort",
+      "metadata" : {
+        "uiCombo" : "(\"IDs\", \"Names\")"
+        },
+      "name" : "mapAttrSelect",
+      "nodePortType" : "Out",
+      "defaultValues" : {
+        "Integer" : 0
+        },
+      "execPortType" : "In",
+      "typeSpec" : "Integer"
+      },
+    {
+      "objectType" : "ExecPort",
+      "metadata" : {
+        "uiPersistValue" : "true"
+        },
+      "name" : "mapAttr_IDs",
+      "nodePortType" : "Out",
+      "defaultValues" : {
+        "String" : "0,1,2"
+        },
+      "execPortType" : "In",
+      "typeSpec" : "String"
+      },
+    {
+      "objectType" : "ExecPort",
+      "metadata" : {
+        "uiPersistValue" : "true"
+        },
+      "name" : "mapAttr_Names",
+      "nodePortType" : "Out",
+      "defaultValues" : {
+        "String[]" : [
+          "weightMap_ch0",
+          "weightMap_ch1",
+          "weightMap_ch2"
+          ]
+        },
+      "execPortType" : "In",
+      "typeSpec" : "String[]"
+      },
+    {
+      "objectType" : "ExecPort",
+      "metadata" : {
+        "uiCombo" : "(\"border <   \", \"border <=\", \"border ==\", \"border >=\", \"border >   \")"
+        },
+      "name" : "logic",
+      "nodePortType" : "Out",
+      "defaultValues" : {
+        "Integer" : 0
+        },
+      "execPortType" : "In",
+      "typeSpec" : "Integer"
+      },
+    {
+      "objectType" : "ExecPort",
+      "metadata" : {
+        "uiRange" : "(0, 1)"
+        },
+      "name" : "border",
+      "nodePortType" : "Out",
+      "defaultValues" : {
+        "Scalar" : 0
+        },
+      "execPortType" : "In",
+      "typeSpec" : "Scalar"
+      },
+    {
+      "objectType" : "ExecPort",
+      "name" : "indices",
+      "nodePortType" : "In",
+      "defaultValues" : {
+        "Index[]" : []
+        },
+      "execPortType" : "Out",
+      "typeSpec" : "Index[]"
+      }
+    ],
+  "extDeps" : {},
+  "presetGUID" : "08F6C8937FECB513CA504D13EAA19EBE",
+  "nodes" : [
+    {
+      "objectType" : "Inst",
+      "metadata" : {
+        "uiGraphPos" : "{\"x\":481.0,\"y\":441.0}"
+        },
+      "name" : "MultiChWeightMap_getIndices",
+      "ports" : [
+        {
+          "objectType" : "InstPort",
+          "name" : "exec",
+          "nodePortType" : "IO"
+          },
+        {
+          "objectType" : "InstPort",
+          "name" : "multiChWeightMap",
+          "nodePortType" : "In"
+          },
+        {
+          "objectType" : "InstPort",
+          "name" : "mode",
+          "nodePortType" : "In",
+          "defaultValues" : {
+            "Integer" : 1
+            }
+          },
+        {
+          "objectType" : "InstPort",
+          "name" : "mapAttrSelect",
+          "nodePortType" : "In",
+          "defaultValues" : {
+            "Integer" : 0
+            }
+          },
+        {
+          "objectType" : "InstPort",
+          "name" : "mapAttr_IDs",
+          "nodePortType" : "In",
+          "defaultValues" : {
+            "String" : "0,1,2"
+            }
+          },
+        {
+          "objectType" : "InstPort",
+          "name" : "mapAttr_Names",
+          "nodePortType" : "In",
+          "defaultValues" : {
+            "String[]" : [
+              "weightMap_ch0",
+              "weightMap_ch1",
+              "weightMap_ch2"
+              ]
+            }
+          },
+        {
+          "objectType" : "InstPort",
+          "name" : "logic",
+          "nodePortType" : "In",
+          "defaultValues" : {
+            "Integer" : 0
+            }
+          },
+        {
+          "objectType" : "InstPort",
+          "name" : "border",
+          "nodePortType" : "In",
+          "defaultValues" : {
+            "Scalar" : 0
+            }
+          },
+        {
+          "objectType" : "InstPort",
+          "name" : "indices",
+          "nodePortType" : "Out"
+          }
+        ],
+      "definition" : {
+        "objectType" : "Func",
+        "title" : "MultiChWeightMap_getIndies",
+        "ports" : [
+          {
+            "objectType" : "ExecPort",
+            "name" : "exec",
+            "nodePortType" : "IO",
+            "execPortType" : "IO",
+            "typeSpec" : "Execute"
+            },
+          {
+            "objectType" : "ExecPort",
+            "name" : "multiChWeightMap",
+            "nodePortType" : "Out",
+            "execPortType" : "In",
+            "typeSpec" : "MultiChWeightmap"
+            },
+          {
+            "objectType" : "ExecPort",
+            "metadata" : {
+              "uiCombo" : "(\"Per Vertex\", \"Per Face\")"
+              },
+            "name" : "mode",
+            "nodePortType" : "Out",
+            "execPortType" : "In",
+            "typeSpec" : "Integer"
+            },
+          {
+            "objectType" : "ExecPort",
+            "metadata" : {
+              "uiCombo" : "(\"IDs\", \"Names\")"
+              },
+            "name" : "mapAttrSelect",
+            "nodePortType" : "Out",
+            "execPortType" : "In",
+            "typeSpec" : "Integer"
+            },
+          {
+            "objectType" : "ExecPort",
+            "metadata" : {
+              "uiPersistValue" : "true"
+              },
+            "name" : "mapAttr_IDs",
+            "nodePortType" : "Out",
+            "execPortType" : "In",
+            "typeSpec" : "String"
+            },
+          {
+            "objectType" : "ExecPort",
+            "metadata" : {
+              "uiPersistValue" : "true"
+              },
+            "name" : "mapAttr_Names",
+            "nodePortType" : "Out",
+            "execPortType" : "In",
+            "typeSpec" : "String[]"
+            },
+          {
+            "objectType" : "ExecPort",
+            "metadata" : {
+              "uiCombo" : "(\"border <   \", \"border <=\", \"border ==\", \"border >=\", \"border >   \")"
+              },
+            "name" : "logic",
+            "nodePortType" : "Out",
+            "execPortType" : "In",
+            "typeSpec" : "Integer"
+            },
+          {
+            "objectType" : "ExecPort",
+            "metadata" : {
+              "uiRange" : "(0, 1)"
+              },
+            "name" : "border",
+            "nodePortType" : "Out",
+            "execPortType" : "In",
+            "typeSpec" : "Scalar"
+            },
+          {
+            "objectType" : "ExecPort",
+            "name" : "indices",
+            "nodePortType" : "In",
+            "execPortType" : "Out",
+            "typeSpec" : "Index[]"
+            }
+          ],
+        "extDeps" : {
+          "TKCM" : "*"
+          },
+        "code" : "dfgEntry {
+  indices = multiChWeightMap.getIndices(mode, mapAttrSelect, mapAttr_IDs, mapAttr_Names, logic, border);
+}"
+        }
+      },
+    {
+      "objectType" : "Inst",
+      "metadata" : {
+        "uiGraphPos" : "{\"x\":882.0,\"y\":372.0}"
+        },
+      "name" : "Cache_1",
+      "ports" : [
+        {
+          "objectType" : "InstPort",
+          "name" : "exec",
+          "nodePortType" : "IO"
+          },
+        {
+          "objectType" : "InstPort",
+          "name" : "value",
+          "nodePortType" : "In"
+          }
+        ],
+      "executable" : "Fabric.Core.Data.Cache",
+      "presetGUID" : "D903AFD981FE9214C69943F542D5FD60"
+      }
+    ],
+  "connections" : {
+    "exec" : [
+      "Cache_1.exec"
+      ],
+    "multiChWeightmap" : [
+      "MultiChWeightMap_getIndices.multiChWeightMap"
+      ],
+    "mode" : [
+      "MultiChWeightMap_getIndices.mode"
+      ],
+    "mapAttrSelect" : [
+      "MultiChWeightMap_getIndices.mapAttrSelect"
+      ],
+    "mapAttr_IDs" : [
+      "MultiChWeightMap_getIndices.mapAttr_IDs"
+      ],
+    "mapAttr_Names" : [
+      "MultiChWeightMap_getIndices.mapAttr_Names"
+      ],
+    "logic" : [
+      "MultiChWeightMap_getIndices.logic"
+      ],
+    "border" : [
+      "MultiChWeightMap_getIndices.border"
+      ],
+    "MultiChWeightMap_getIndices.indices" : [
+      "Cache_1.value"
+      ],
+    "Cache_1.value" : [
+      "indices"
+      ]
+    },
+  "requiredPresets" : {
+    "Fabric.Core.Data.Cache" : {
+      "objectType" : "Func",
+      "metadata" : {
+        "uiNodeColor" : "{\n  \"r\" : 214,\n  \"g\" : 191,\n  \"b\" : 103\n  }",
+        "uiAlwaysShowDaisyChainPorts" : "true",
+        "uiHeaderColor" : "{\n  \"r\" : 188,\n  \"g\" : 129,\n  \"b\" : 83\n  }"
+        },
+      "title" : "Cache",
+      "cacheRule" : "always",
+      "ports" : [
+        {
+          "objectType" : "ExecPort",
+          "name" : "exec",
+          "nodePortType" : "IO",
+          "execPortType" : "IO",
+          "typeSpec" : "Execute"
+          },
+        {
+          "objectType" : "ExecPort",
+          "name" : "value",
+          "nodePortType" : "Out",
+          "execPortType" : "In",
+          "typeSpec" : "$TYPE$"
+          }
+        ],
+      "extDeps" : {},
+      "presetGUID" : "D903AFD981FE9214C69943F542D5FD60",
+      "code" : "dfgEntry {
+}
+"
+      }
+    }
+  }
