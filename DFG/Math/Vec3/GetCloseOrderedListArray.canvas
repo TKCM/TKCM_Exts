@@ -1,0 +1,177 @@
+{
+  "objectType" : "Func",
+  "title" : "GetCloseOrderedListArray",
+  "ports" : [
+    {
+      "objectType" : "ExecPort",
+      "name" : "exec",
+      "nodePortType" : "IO",
+      "defaultValues" : {
+        "Execute" : {}
+        },
+      "execPortType" : "IO",
+      "typeSpec" : "Execute"
+      },
+    {
+      "objectType" : "ExecPort",
+      "name" : "source",
+      "nodePortType" : "Out",
+      "defaultValues" : {
+        "Vec3" : {
+          "x" : 0,
+          "y" : 0,
+          "z" : 0
+          },
+        "Vec3[]" : []
+        },
+      "execPortType" : "In",
+      "typeSpec" : "Vec3[]"
+      },
+    {
+      "objectType" : "ExecPort",
+      "name" : "target",
+      "nodePortType" : "Out",
+      "defaultValues" : {
+        "Vec3[]" : []
+        },
+      "execPortType" : "In",
+      "typeSpec" : "Vec3[]"
+      },
+    {
+      "objectType" : "ExecPort",
+      "metadata" : {
+        "uiPersistValue" : "true"
+        },
+      "name" : "maxDistance",
+      "nodePortType" : "Out",
+      "defaultValues" : {
+        "Scalar" : 10
+        },
+      "execPortType" : "In",
+      "typeSpec" : "Scalar"
+      },
+    {
+      "objectType" : "ExecPort",
+      "metadata" : {
+        "uiPersistValue" : "true",
+        "uiHardRange" : "(1, 16)"
+        },
+      "name" : "maxCount",
+      "nodePortType" : "Out",
+      "defaultValues" : {
+        "Integer" : 3
+        },
+      "execPortType" : "In",
+      "typeSpec" : "Integer"
+      },
+    {
+      "objectType" : "ExecPort",
+      "name" : "orderedIndex",
+      "nodePortType" : "In",
+      "defaultValues" : {
+        "Index[]" : [],
+        "LocalL16UInt32Array" : {
+          "first16" : [
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0
+            ],
+          "others" : [],
+          "count" : 0
+          },
+        "LocalL16UInt32Array[]" : []
+        },
+      "execPortType" : "Out",
+      "typeSpec" : "LocalL16UInt32Array[]"
+      },
+    {
+      "objectType" : "ExecPort",
+      "name" : "orderedDistance",
+      "nodePortType" : "In",
+      "defaultValues" : {
+        "Scalar[]" : [],
+        "LocalL16ScalarArray" : {
+          "first16" : [
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0
+            ],
+          "others" : [],
+          "count" : 0
+          },
+        "LocalL16ScalarArray[]" : []
+        },
+      "execPortType" : "Out",
+      "typeSpec" : "LocalL16ScalarArray[]"
+      },
+    {
+      "objectType" : "ExecPort",
+      "name" : "weights",
+      "nodePortType" : "In",
+      "defaultValues" : {
+        "Scalar[]" : [],
+        "LocalL16ScalarArray" : {
+          "first16" : [
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0
+            ],
+          "others" : [],
+          "count" : 0
+          },
+        "LocalL16ScalarArray[]" : []
+        },
+      "execPortType" : "Out",
+      "typeSpec" : "LocalL16ScalarArray[]"
+      }
+    ],
+  "extDeps" : {
+    "Geometry" : "*",
+    "TKCM" : "*"
+    },
+  "presetGUID" : "B8B51C09B621FA451C35DEAF1E982289",
+  "code" : "dfgEntry {
+  GetCloseOrderedListArray(source, target, maxDistance, maxCount, orderedIndex, orderedDistance, weights);
+}
+",
+  "requiredPresets" : {}
+  }

@@ -1,0 +1,183 @@
+
+//////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+// GetDistanceList ///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+// ある座標から複数の座標[]に対して近しい座標のインデックス、距離、ウェイト値のリストを取得する
+
+operator GetDistanceListTask<<<i>>>(io Scalar distance[], Vec3 source, Vec3 target[]){
+  distance[i] = source.distanceTo(target[i]);
+}
+
+function GetCloseOrderedList(
+	in Vec3 source,
+	in Vec3 target[],
+	in Scalar maxDistance,
+	in Integer maxCount,
+	io LocalL16UInt32Array orderedIndex,
+	io LocalL16ScalarArray orderedDistance,
+	io LocalL16ScalarArray weights
+	){
+	// ターゲット[]への距離を取得
+  Scalar distance[];
+  distance.resize(target.size());  
+  if(target.size() < 1000){
+    for(Integer i=0; i<target.size(); i++){
+      GetDistanceListTask(i, distance, source, target);
+    }
+  }else{
+    GetDistanceListTask<<<target.size()>>>(distance, source, target);
+  }
+  
+  // 上で取得した距離のリストを昇順にし、ターゲットのIDも同じく並び替える
+  Index targetID[];
+  targetID.resize(target.size());
+  for(Integer i=0; i<target.size(); i++){
+    targetID[i] = i;
+  }
+  Scalar tmpS;
+  Index tmpID;
+  for(Integer i=0; i<distance.size(); i++){
+    for(Integer j=i+1; j<distance.size(); j++) {
+      if (distance[i] > distance[j]) {
+        tmpS =  distance[i];
+        tmpID = targetID[i];
+        distance[i] = distance[j];
+        targetID[i] = targetID[j];
+        distance[j] = tmpS;
+        targetID[j] = tmpID;
+      }
+    }
+  }
+  
+  // 指定した検出距離、もしくは検出個数でカットオフする
+  // 昇順にしているので前から順番に判別処理すればいい
+  Scalar sum;
+  Integer outPutCount = 0;
+  for(Integer i=0; i<distance.size(); i++){
+    if(distance[i] < maxDistance && maxCount > i){
+      sum += distance[i]; // ウェイトの計算用に距離の合計値を作る
+      outPutCount += 1; // 条件によってターゲットから検出される数が変わるので、条件に合った数を数えておく
+    }else{
+      break;
+    }
+  }
+  
+  // 近しい距離で並び変えたターゲット[]の上位のインデックスリスト、距離リスト、ウェイトリストを出力
+  // 距離からウェイト値への変換は、(距離/合計)で出した比率の逆比を使い(逆比/逆比合計)で算出している
+  Scalar sum2;
+  orderedIndex.resize(outPutCount);
+  orderedDistance.resize(outPutCount);
+  weights.resize(outPutCount);
+  for(Integer i=0; i<outPutCount; i++){
+    orderedIndex.set(i, targetID[i]);
+    orderedDistance.set(i,distance[i]);
+    sum2 += 1/(distance[i]/sum); // 逆比の合計を作る
+  }
+  for(Integer i=0; i<outPutCount; i++){
+    weights.set(i, 1/(distance[i]/sum) / sum2); //逆比から改めて比（ウェイト値）を算出
+  }
+}
+
+//////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+// GetDistanceListArray //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+// ある座標[]から複数の座標[]に対して近しい座標のインデックス、距離、ウェイト値のリストを取得する
+// 計算等の説明は上記の"GetDistanceList"を参照
+operator getDistanceListArrayTask<<<i>>>(io Scalar distance[][], Vec3 source[], Vec3 target[]){
+  for(Integer j=0; j<source.size(); j++){
+    distance[j][i] = source[j].distanceTo(target[i]);
+  }
+}
+
+operator getDistanceListArrayTask2<<<j>>>(io Scalar distance[][], Vec3 source[], Vec3 target[]){
+  for(Integer i=0; i<target.size(); i++){
+    distance[j][i] = source[j].distanceTo(target[i]);
+  }
+}
+
+function GetCloseOrderedListArray(
+	in Vec3 source[],
+	in Vec3 target[],
+	in Scalar maxDistance,
+	in Integer maxCount,
+	io LocalL16UInt32Array orderedIndex[],
+	io LocalL16ScalarArray orderedDistance[],
+	io LocalL16ScalarArray weights[]
+	){
+  Scalar distance[][];
+  distance.resize(source.size());
+  for(Integer i=0; i<source.size(); i++){
+    distance[i].resize(target.size());  
+  }
+  if(source.size() < 1000 && target.size() < 1000){
+    for(Integer i=0; i<target.size(); i++){
+      getDistanceListArrayTask(i, distance, source, target);
+    }
+  }else{
+    if(source.size() > target.size()){
+      getDistanceListArrayTask2<<<source.size()>>>(distance, source, target);
+    }else{
+      getDistanceListArrayTask<<<target.size()>>>(distance, source, target);
+    }
+  }
+  Index targetID[][];
+  targetID.resize(source.size());
+  for(Integer i=0; i<source.size(); i++){
+    distance[i].resize(target.size());
+    targetID[i].resize(target.size());
+    for(Integer j=0; j<target.size(); j++){
+      targetID[i][j] = j;
+    }
+  }
+  
+  for(Integer k=0; k<source.size(); k++){
+    Scalar tmpS;
+    Index tmpID;
+    for(Integer i=0; i<distance[k].size(); i++){
+      for(Integer j=i+1; j<distance[k].size(); j++) {
+        if (distance[k][i] > distance[k][j]) {
+          tmpS =  distance[k][i];
+          tmpID = targetID[k][i];
+          distance[k][i] = distance[k][j];
+          targetID[k][i] = targetID[k][j];
+          distance[k][j] = tmpS;
+          targetID[k][j] = tmpID;
+        }
+      }
+    }
+  }
+  
+  Scalar sum[];
+  sum.resize(source.size());
+  Integer outPutCount[];
+  outPutCount.resize(source.size());
+  for(Integer k=0; k<source.size(); k++){
+    for(Integer i=0; i<distance[k].size(); i++){
+      if(distance[k][i] < maxDistance && maxCount > i){
+        sum[k] += distance[k][i];
+        outPutCount[k] += 1;
+      }else{
+        break;
+      }
+    }
+  }
+  
+  Scalar sum2[];
+  sum2.resize(source.size());
+  orderedIndex.resize(source.size());
+  orderedDistance.resize(source.size());
+  weights.resize(source.size());
+  
+  for(Integer k=0; k<source.size(); k++){
+    orderedIndex[k].resize(outPutCount[k]);
+    orderedDistance[k].resize(outPutCount[k]);
+    weights[k].resize(outPutCount[k]);
+    for(Integer i=0; i<outPutCount[k]; i++){
+      orderedIndex[k].set(i, targetID[k][i]);
+      orderedDistance[k].set(i,distance[k][i]);
+      sum2[k] += 1/(distance[k][i]/sum[k]);
+    }
+    for(Integer i=0; i<outPutCount[k]; i++){
+      weights[k].set(i, 1/(distance[k][i]/sum[k]) / sum2[k]);
+    }
+  }
+
+}
