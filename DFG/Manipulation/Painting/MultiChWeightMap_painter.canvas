@@ -2,7 +2,7 @@
   "objectType" : "Graph",
   "metadata" : {
     "uiGraphZoom" : "{\n  \"value\" : 0.7517156004905701\n  }",
-    "uiGraphPan" : "{\n  \"x\" : -7.821548461914063,\n  \"y\" : -21.11228942871094\n  }"
+    "uiGraphPan" : "{\n  \"x\" : -99.82154846191406,\n  \"y\" : 3.887710571289063\n  }"
     },
   "title" : "MultiChWeightMap_painter",
   "ports" : [
@@ -196,12 +196,66 @@
         },
       "execPortType" : "In",
       "typeSpec" : "UInt32"
+      },
+    {
+      "objectType" : "ExecPort",
+      "metadata" : {
+        "uiPersistValue" : "true"
+        },
+      "name" : "save_Enable",
+      "nodePortType" : "Out",
+      "defaultValues" : {
+        "Boolean" : true
+        },
+      "execPortType" : "In",
+      "typeSpec" : "Boolean"
+      },
+    {
+      "objectType" : "ExecPort",
+      "metadata" : {
+        "uiPersistValue" : "true"
+        },
+      "name" : "save_ExternalFile",
+      "nodePortType" : "Out",
+      "defaultValues" : {
+        "Boolean" : false
+        },
+      "execPortType" : "In",
+      "typeSpec" : "Boolean"
+      },
+    {
+      "objectType" : "ExecPort",
+      "metadata" : {
+        "uiPersistValue" : "true"
+        },
+      "name" : "save_FolderPath",
+      "nodePortType" : "Out",
+      "defaultValues" : {
+        "FilePath" : {
+          "handle" : true
+          }
+        },
+      "execPortType" : "In",
+      "typeSpec" : "FilePath"
+      },
+    {
+      "objectType" : "ExecPort",
+      "metadata" : {
+        "uiPersistValue" : "true"
+        },
+      "name" : "save_FileName",
+      "nodePortType" : "Out",
+      "defaultValues" : {
+        "String" : ""
+        },
+      "execPortType" : "In",
+      "typeSpec" : "String"
       }
     ],
   "extDeps" : {
     "TKCM" : "*"
     },
-  "presetGUID" : "05456C804B93C55931101EDFFF00E84A",
+  "presetGUID" : "2843C6CE8DD19308373DD07109C410BE",
   "nodes" : [
     {
       "objectType" : "Inst",
@@ -665,6 +719,47 @@ dfgEntry {
 }
 "
         }
+      },
+    {
+      "objectType" : "Inst",
+      "metadata" : {
+        "uiGraphPos" : "{\"x\":1013.44,\"y\":186.389}"
+        },
+      "name" : "MultiChWeightMap_save_1",
+      "ports" : [
+        {
+          "objectType" : "InstPort",
+          "name" : "exec",
+          "nodePortType" : "IO"
+          },
+        {
+          "objectType" : "InstPort",
+          "name" : "multiChWeightmap",
+          "nodePortType" : "IO"
+          },
+        {
+          "objectType" : "InstPort",
+          "name" : "save_Enable",
+          "nodePortType" : "In"
+          },
+        {
+          "objectType" : "InstPort",
+          "name" : "save_ExternalFile",
+          "nodePortType" : "In"
+          },
+        {
+          "objectType" : "InstPort",
+          "name" : "save_FolderPath",
+          "nodePortType" : "In"
+          },
+        {
+          "objectType" : "InstPort",
+          "name" : "save_FileName",
+          "nodePortType" : "In"
+          }
+        ],
+      "executable" : "TKCM.Manipulation.Painting.MultiChWeightMap_save",
+      "presetGUID" : "1257EAB61741D8254A222C299D6364AE"
       }
     ],
   "connections" : {
@@ -705,6 +800,18 @@ dfgEntry {
     "portName" : [
       "MultiChWeightMap_castomCommand.portName"
       ],
+    "save_Enable" : [
+      "MultiChWeightMap_save_1.save_Enable"
+      ],
+    "save_ExternalFile" : [
+      "MultiChWeightMap_save_1.save_ExternalFile"
+      ],
+    "save_FolderPath" : [
+      "MultiChWeightMap_save_1.save_FolderPath"
+      ],
+    "save_FileName" : [
+      "MultiChWeightMap_save_1.save_FileName"
+      ],
     "MultiChWeightMap_core.multiChWeightmap" : [
       "getMultiChWeightMapMesh.multiChWeightMap",
       "MultiChWeightMap_castomCommand.multiChWeightmap"
@@ -725,6 +832,9 @@ dfgEntry {
       "If_1.cond"
       ],
     "MultiChWeightMap_castomCommand.multiChWeightmap" : [
+      "MultiChWeightMap_save_1.multiChWeightmap"
+      ],
+    "MultiChWeightMap_save_1.multiChWeightmap" : [
       "multiChWeightmap"
       ]
     },
@@ -880,6 +990,103 @@ dfgEntry {
       "code" : "
 dfgEntry {
 	result = lhs == rhs;
+}
+"
+      },
+    "TKCM.Manipulation.Painting.MultiChWeightMap_save" : {
+      "objectType" : "Func",
+      "title" : "MultiChWeightMap_save",
+      "ports" : [
+        {
+          "objectType" : "ExecPort",
+          "metadata" : {
+            "uiPersistValue" : "true"
+            },
+          "name" : "exec",
+          "nodePortType" : "IO",
+          "defaultValues" : {
+            "Execute" : {}
+            },
+          "execPortType" : "IO",
+          "typeSpec" : "Execute"
+          },
+        {
+          "objectType" : "ExecPort",
+          "metadata" : {
+            "uiPersistValue" : "true"
+            },
+          "name" : "multiChWeightmap",
+          "nodePortType" : "IO",
+          "defaultValues" : {
+            "MultiChWeightmap" : null
+            },
+          "execPortType" : "IO",
+          "typeSpec" : "MultiChWeightmap"
+          },
+        {
+          "objectType" : "ExecPort",
+          "metadata" : {
+            "uiPersistValue" : "true"
+            },
+          "name" : "save_Enable",
+          "nodePortType" : "Out",
+          "defaultValues" : {
+            "Boolean" : true
+            },
+          "execPortType" : "In",
+          "typeSpec" : "Boolean"
+          },
+        {
+          "objectType" : "ExecPort",
+          "metadata" : {
+            "uiPersistValue" : "true"
+            },
+          "name" : "save_ExternalFile",
+          "nodePortType" : "Out",
+          "defaultValues" : {
+            "Boolean" : false
+            },
+          "execPortType" : "In",
+          "typeSpec" : "Boolean"
+          },
+        {
+          "objectType" : "ExecPort",
+          "metadata" : {
+            "uiPersistValue" : "true"
+            },
+          "name" : "save_FolderPath",
+          "nodePortType" : "Out",
+          "defaultValues" : {
+            "FilePath" : {
+              "handle" : true
+              }
+            },
+          "execPortType" : "In",
+          "typeSpec" : "FilePath"
+          },
+        {
+          "objectType" : "ExecPort",
+          "metadata" : {
+            "uiPersistValue" : "true"
+            },
+          "name" : "save_FileName",
+          "nodePortType" : "Out",
+          "defaultValues" : {
+            "String" : ""
+            },
+          "execPortType" : "In",
+          "typeSpec" : "String"
+          }
+        ],
+      "extDeps" : {
+        "TKCM" : "*"
+        },
+      "presetGUID" : "1257EAB61741D8254A222C299D6364AE",
+      "code" : "dfgEntry {
+  if(multiChWeightmap == null){
+    multiChWeightmap = MultiChWeightmap();
+  }
+  multiChWeightmap.save(save_Enable, save_ExternalFile, save_FolderPath, save_FileName);
 }
 "
       }
