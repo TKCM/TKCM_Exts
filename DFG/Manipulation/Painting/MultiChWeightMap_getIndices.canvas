@@ -33,7 +33,7 @@
       "name" : "mode",
       "nodePortType" : "Out",
       "defaultValues" : {
-        "Integer" : 2
+        "Integer" : 1
         },
       "execPortType" : "In",
       "typeSpec" : "Integer"
@@ -41,7 +41,7 @@
     {
       "objectType" : "ExecPort",
       "metadata" : {
-        "uiCombo" : "(\"IDs\", \"Names\")"
+        "uiCombo" : "(\"Ch\", \"Name\")"
         },
       "name" : "mapAttrSelect",
       "nodePortType" : "Out",
@@ -56,7 +56,7 @@
       "metadata" : {
         "uiPersistValue" : "true"
         },
-      "name" : "mapAttr_IDs",
+      "name" : "mapAttr_Ch",
       "nodePortType" : "Out",
       "defaultValues" : {
         "String" : "0,1,2"
@@ -69,7 +69,7 @@
       "metadata" : {
         "uiPersistValue" : "true"
         },
-      "name" : "mapAttr_Names",
+      "name" : "mapAttr_Name",
       "nodePortType" : "Out",
       "defaultValues" : {
         "String[]" : [
@@ -119,7 +119,7 @@
       }
     ],
   "extDeps" : {},
-  "presetGUID" : "08F6C8937FECB513CA504D13EAA19EBE",
+  "presetGUID" : "4BACB0C407719C8420338238331C3386",
   "nodes" : [
     {
       "objectType" : "Inst",
@@ -325,10 +325,10 @@
     "mapAttrSelect" : [
       "MultiChWeightMap_getIndices.mapAttrSelect"
       ],
-    "mapAttr_IDs" : [
+    "mapAttr_Ch" : [
       "MultiChWeightMap_getIndices.mapAttr_IDs"
       ],
-    "mapAttr_Names" : [
+    "mapAttr_Name" : [
       "MultiChWeightMap_getIndices.mapAttr_Names"
       ],
     "logic" : [
