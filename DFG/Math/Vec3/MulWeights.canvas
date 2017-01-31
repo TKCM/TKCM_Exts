@@ -1,0 +1,111 @@
+{
+  "objectType" : "Func",
+  "title" : "MulWeights",
+  "ports" : [
+    {
+      "objectType" : "ExecPort",
+      "name" : "exec",
+      "nodePortType" : "IO",
+      "defaultValues" : {
+        "Execute" : {}
+        },
+      "execPortType" : "IO",
+      "typeSpec" : "Execute"
+      },
+    {
+      "objectType" : "ExecPort",
+      "name" : "target",
+      "nodePortType" : "Out",
+      "defaultValues" : {
+        "Vec3[]" : []
+        },
+      "execPortType" : "In",
+      "typeSpec" : "Vec3[]"
+      },
+    {
+      "objectType" : "ExecPort",
+      "name" : "indexList",
+      "nodePortType" : "Out",
+      "defaultValues" : {
+        "LocalL16UInt32Array" : {
+          "first16" : [
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0
+            ],
+          "others" : [],
+          "count" : 0
+          }
+        },
+      "execPortType" : "In",
+      "typeSpec" : "LocalL16UInt32Array"
+      },
+    {
+      "objectType" : "ExecPort",
+      "name" : "weights",
+      "nodePortType" : "Out",
+      "defaultValues" : {
+        "LocalL16ScalarArray" : {
+          "first16" : [
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0
+            ],
+          "others" : [],
+          "count" : 0
+          }
+        },
+      "execPortType" : "In",
+      "typeSpec" : "LocalL16ScalarArray"
+      },
+    {
+      "objectType" : "ExecPort",
+      "name" : "result",
+      "nodePortType" : "In",
+      "defaultValues" : {
+        "Vec3" : {
+          "x" : 0,
+          "y" : 0,
+          "z" : 0
+          }
+        },
+      "execPortType" : "Out",
+      "typeSpec" : "Vec3"
+      }
+    ],
+  "extDeps" : {},
+  "presetGUID" : "5977B5EDAD5F1866537CB6E49A6800E0",
+  "code" : "dfgEntry {
+  for(Integer i=0; i<indexList.count; i++){
+    result += target[indexList.first16[i]] * weights.first16[i];
+  }
+}
+",
+  "requiredPresets" : {}
+  }

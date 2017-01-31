@@ -1,0 +1,119 @@
+{
+  "objectType" : "Func",
+  "title" : "MulWeightsArray",
+  "ports" : [
+    {
+      "objectType" : "ExecPort",
+      "name" : "exec",
+      "nodePortType" : "IO",
+      "defaultValues" : {
+        "Execute" : {}
+        },
+      "execPortType" : "IO",
+      "typeSpec" : "Execute"
+      },
+    {
+      "objectType" : "ExecPort",
+      "name" : "target",
+      "nodePortType" : "Out",
+      "defaultValues" : {
+        "Vec3[]" : []
+        },
+      "execPortType" : "In",
+      "typeSpec" : "Vec3[]"
+      },
+    {
+      "objectType" : "ExecPort",
+      "name" : "indexList",
+      "nodePortType" : "Out",
+      "defaultValues" : {
+        "LocalL16UInt32Array" : {
+          "first16" : [
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0
+            ],
+          "others" : [],
+          "count" : 0
+          },
+        "LocalL16UInt32Array[]" : []
+        },
+      "execPortType" : "In",
+      "typeSpec" : "LocalL16UInt32Array[]"
+      },
+    {
+      "objectType" : "ExecPort",
+      "name" : "weights",
+      "nodePortType" : "Out",
+      "defaultValues" : {
+        "LocalL16ScalarArray" : {
+          "first16" : [
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0
+            ],
+          "others" : [],
+          "count" : 0
+          },
+        "LocalL16ScalarArray[]" : []
+        },
+      "execPortType" : "In",
+      "typeSpec" : "LocalL16ScalarArray[]"
+      },
+    {
+      "objectType" : "ExecPort",
+      "name" : "result",
+      "nodePortType" : "In",
+      "defaultValues" : {
+        "Vec3" : {
+          "x" : 0,
+          "y" : 0,
+          "z" : 0
+          },
+        "Vec3[]" : []
+        },
+      "execPortType" : "Out",
+      "typeSpec" : "Vec3[]"
+      }
+    ],
+  "extDeps" : {},
+  "presetGUID" : "4ED5758D0F868ECCC38C38710237EA70",
+  "code" : "operator MulWeightArrayTask<<<i>>>(io Vec3 result[], in Vec3 target[], in LocalL16UInt32Array indexList[], in LocalL16ScalarArray weights[]){
+  for(Integer j=0; j<indexList[i].count; j++){
+    result[i] += target[indexList[i].first16[j]] * weights[i].first16[j];
+  }
+}
+
+dfgEntry {
+  result.resize(indexList.size());
+  MulWeightArrayTask<<<indexList.size()>>>(result, target, indexList, weights);
+}
+",
+  "requiredPresets" : {}
+  }
