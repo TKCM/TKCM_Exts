@@ -65,7 +65,7 @@
       },
     {
       "objectType" : "ExecPort",
-      "name" : "orderedIndex",
+      "name" : "indexList",
       "nodePortType" : "In",
       "defaultValues" : {
         "Index[]" : [],
@@ -97,7 +97,7 @@
       },
     {
       "objectType" : "ExecPort",
-      "name" : "orderedDistance",
+      "name" : "distance",
       "nodePortType" : "In",
       "defaultValues" : {
         "Scalar[]" : [],
@@ -164,9 +164,9 @@
     "Geometry" : "*",
     "TKCM" : "*"
     },
-  "presetGUID" : "553FCA97BE24C6B1F3D4D0E61519ED57",
+  "presetGUID" : "09E8D74A99042B8CB2111BECAC2C3FB9",
   "code" : "dfgEntry {
-  GetCloseOrderedList(source, target, maxDistance, maxCount, orderedIndex, orderedDistance, weights);
+  GetCloseOrderedList(source, target, maxDistance, maxCount, indexList, distance, weights);
 }
 ",
   "requiredPresets" : {}
