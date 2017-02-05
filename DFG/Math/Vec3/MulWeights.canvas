@@ -48,10 +48,20 @@
             ],
           "others" : [],
           "count" : 0
+          },
+        "LocalL4UInt32Array" : {
+          "first4" : [
+            0,
+            0,
+            0,
+            0
+            ],
+          "others" : [],
+          "count" : 0
           }
         },
       "execPortType" : "In",
-      "typeSpec" : "LocalL16UInt32Array"
+      "typeSpec" : "LocalL4UInt32Array"
       },
     {
       "objectType" : "ExecPort",
@@ -79,10 +89,20 @@
             ],
           "others" : [],
           "count" : 0
+          },
+        "LocalL4ScalarArray" : {
+          "first4" : [
+            0,
+            0,
+            0,
+            0
+            ],
+          "others" : [],
+          "count" : 0
           }
         },
       "execPortType" : "In",
-      "typeSpec" : "LocalL16ScalarArray"
+      "typeSpec" : "LocalL4ScalarArray"
       },
     {
       "objectType" : "ExecPort",
@@ -100,10 +120,10 @@
       }
     ],
   "extDeps" : {},
-  "presetGUID" : "5977B5EDAD5F1866537CB6E49A6800E0",
+  "presetGUID" : "FD4224B0CDF9E420DBE1E40256847963",
   "code" : "dfgEntry {
   for(Integer i=0; i<indexList.count; i++){
-    result += target[indexList.first16[i]] * weights.first16[i];
+    result += target[indexList.first4[i]] * weights.first4[i];
   }
 }
 ",

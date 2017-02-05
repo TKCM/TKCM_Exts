@@ -14,7 +14,7 @@
       },
     {
       "objectType" : "ExecPort",
-      "name" : "source",
+      "name" : "position",
       "nodePortType" : "Out",
       "defaultValues" : {
         "Vec3" : {
@@ -44,7 +44,7 @@
       "name" : "maxDistance",
       "nodePortType" : "Out",
       "defaultValues" : {
-        "Scalar" : 10
+        "Scalar" : 1000
         },
       "execPortType" : "In",
       "typeSpec" : "Scalar"
@@ -58,7 +58,7 @@
       "name" : "maxCount",
       "nodePortType" : "Out",
       "defaultValues" : {
-        "Integer" : 16
+        "Integer" : 3
         },
       "execPortType" : "In",
       "typeSpec" : "Integer"
@@ -90,10 +90,20 @@
             ],
           "others" : [],
           "count" : 0
+          },
+        "LocalL4UInt32Array" : {
+          "first4" : [
+            0,
+            0,
+            0,
+            0
+            ],
+          "others" : [],
+          "count" : 0
           }
         },
       "execPortType" : "Out",
-      "typeSpec" : "LocalL16UInt32Array"
+      "typeSpec" : "LocalL4UInt32Array"
       },
     {
       "objectType" : "ExecPort",
@@ -122,10 +132,20 @@
             ],
           "others" : [],
           "count" : 0
+          },
+        "LocalL4ScalarArray" : {
+          "first4" : [
+            0,
+            0,
+            0,
+            0
+            ],
+          "others" : [],
+          "count" : 0
           }
         },
       "execPortType" : "Out",
-      "typeSpec" : "LocalL16ScalarArray"
+      "typeSpec" : "LocalL4ScalarArray"
       },
     {
       "objectType" : "ExecPort",
@@ -154,19 +174,29 @@
             ],
           "others" : [],
           "count" : 0
+          },
+        "LocalL4ScalarArray" : {
+          "first4" : [
+            0,
+            0,
+            0,
+            0
+            ],
+          "others" : [],
+          "count" : 0
           }
         },
       "execPortType" : "Out",
-      "typeSpec" : "LocalL16ScalarArray"
+      "typeSpec" : "LocalL4ScalarArray"
       }
     ],
   "extDeps" : {
     "Geometry" : "*",
     "TKCM" : "*"
     },
-  "presetGUID" : "09E8D74A99042B8CB2111BECAC2C3FB9",
+  "presetGUID" : "6AA0EAB1024B35363D7EF63479C0AC19",
   "code" : "dfgEntry {
-  GetCloseOrderedList(source, target, maxDistance, maxCount, indexList, distance, weights);
+  GetCloseOrderedList(position, target, maxDistance, maxCount, indexList, distance, weights);
 }
 ",
   "requiredPresets" : {}

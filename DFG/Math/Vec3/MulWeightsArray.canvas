@@ -49,10 +49,11 @@
           "others" : [],
           "count" : 0
           },
-        "LocalL16UInt32Array[]" : []
+        "LocalL16UInt32Array[]" : [],
+        "LocalL4UInt32Array[]" : []
         },
       "execPortType" : "In",
-      "typeSpec" : "LocalL16UInt32Array[]"
+      "typeSpec" : "LocalL4UInt32Array[]"
       },
     {
       "objectType" : "ExecPort",
@@ -81,10 +82,11 @@
           "others" : [],
           "count" : 0
           },
-        "LocalL16ScalarArray[]" : []
+        "LocalL16ScalarArray[]" : [],
+        "LocalL4ScalarArray[]" : []
         },
       "execPortType" : "In",
-      "typeSpec" : "LocalL16ScalarArray[]"
+      "typeSpec" : "LocalL4ScalarArray[]"
       },
     {
       "objectType" : "ExecPort",
@@ -103,10 +105,10 @@
       }
     ],
   "extDeps" : {},
-  "presetGUID" : "4ED5758D0F868ECCC38C38710237EA70",
-  "code" : "operator MulWeightArrayTask<<<i>>>(io Vec3 result[], in Vec3 target[], in LocalL16UInt32Array indexList[], in LocalL16ScalarArray weights[]){
+  "presetGUID" : "C78101BF3D31C623FFCA3072A961810F",
+  "code" : "operator MulWeightArrayTask<<<i>>>(io Vec3 result[], in Vec3 target[], in LocalL4UInt32Array indexList[], in LocalL4ScalarArray weights[]){
   for(Integer j=0; j<indexList[i].count; j++){
-    result[i] += target[indexList[i].first16[j]] * weights[i].first16[j];
+    result[i] += target[indexList[i].first4[j]] * weights[i].first4[j];
   }
 }
 

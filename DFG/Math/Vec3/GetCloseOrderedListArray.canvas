@@ -14,7 +14,7 @@
       },
     {
       "objectType" : "ExecPort",
-      "name" : "source",
+      "name" : "positions",
       "nodePortType" : "Out",
       "defaultValues" : {
         "Vec3" : {
@@ -45,7 +45,7 @@
       "name" : "maxDistance",
       "nodePortType" : "Out",
       "defaultValues" : {
-        "Scalar" : 10
+        "Scalar" : 1000
         },
       "execPortType" : "In",
       "typeSpec" : "Scalar"
@@ -92,10 +92,11 @@
           "others" : [],
           "count" : 0
           },
-        "LocalL16UInt32Array[]" : []
+        "LocalL16UInt32Array[]" : [],
+        "LocalL4UInt32Array[]" : []
         },
       "execPortType" : "Out",
-      "typeSpec" : "LocalL16UInt32Array[]"
+      "typeSpec" : "LocalL4UInt32Array[]"
       },
     {
       "objectType" : "ExecPort",
@@ -125,10 +126,11 @@
           "others" : [],
           "count" : 0
           },
-        "LocalL16ScalarArray[]" : []
+        "LocalL16ScalarArray[]" : [],
+        "LocalL4ScalarArray[]" : []
         },
       "execPortType" : "Out",
-      "typeSpec" : "LocalL16ScalarArray[]"
+      "typeSpec" : "LocalL4ScalarArray[]"
       },
     {
       "objectType" : "ExecPort",
@@ -158,19 +160,20 @@
           "others" : [],
           "count" : 0
           },
-        "LocalL16ScalarArray[]" : []
+        "LocalL16ScalarArray[]" : [],
+        "LocalL4ScalarArray[]" : []
         },
       "execPortType" : "Out",
-      "typeSpec" : "LocalL16ScalarArray[]"
+      "typeSpec" : "LocalL4ScalarArray[]"
       }
     ],
   "extDeps" : {
     "Geometry" : "*",
     "TKCM" : "*"
     },
-  "presetGUID" : "120814829C646799FB3E8559678BD00D",
+  "presetGUID" : "CF8FFF109154AE7958F8964E9B0528E7",
   "code" : "dfgEntry {
-  GetCloseOrderedListArray(source, target, maxDistance, maxCount, indexList, distance, weights);
+  GetCloseOrderedListArray(positions, target, maxDistance, maxCount, indexList, distance, weights);
 }
 ",
   "requiredPresets" : {}
