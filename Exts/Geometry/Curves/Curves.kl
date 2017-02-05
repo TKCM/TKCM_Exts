@@ -1,0 +1,129 @@
+
+//////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+//  getSamplePointPositions //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+//  描画されているCurveと同じ見た目のLinesを構築できるVec3[]を取得する
+//  (出来上がったLinesはあくまで見た目を合わせるだけなので、Curve != Lines　であることに注意)
+function Vec3[] Curves.getSamplePointPositions?(Index curveIndex){
+  Vec3 result[];
+  switch(this.getCurveType(curveIndex) -1){
+    case 0:  //  linear
+    {
+      break;
+    }
+    case 1:  //  Bezier
+    {
+      break;
+    }
+    case 2:  //  NURBS
+    {
+      if(this.isClosed(curveIndex)){  //  閉じたNURBS
+        result.resize(this.drawSamplesPerSpan*5);
+        for(Integer i=0; i<result.size(); i++){
+          result[i] = this.getPositionAtNormalizedParam(curveIndex, i/Scalar(result.size()) );
+        }
+      }else{  //  開いたNURBS
+        result.resize(this.drawSamplesPerSpan*3+1);
+        for(Integer i=0; i<result.size(); i++){
+          result[i] = this.getPositionAtNormalizedParam(curveIndex, i/Scalar(result.size()-1) );
+        }
+      }
+      break;
+    }
+  }
+  return result;
+}
+
+//////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+//  GetCloseOrderedListArray /////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+//  ある座標[]からCurvesに対して近い座標のインデックス、ノーマライズドパラメータ、ウェイト値のリストを取得する
+//  リストは近い順で最大１６個まで
+
+//  空間分析用に準備したLinesを使用し、各種パラメータを取得する
+operator getClosestTask<<<index>>>(
+  io Lines target[],
+  in Curves targetCurves, 
+  in Vec3 position[], 
+  io LocalL4UInt32Array orderedIndex[],
+  io LocalL4ScalarArray normalizedParam[], 
+  io LocalL4ScalarArray resultWeights[], 
+  in Scalar length[],
+  in Scalar maxDistance, 
+  in Size maxCount) 
+  {
+  //  Curves内の複数のCurveそれぞれへの最も近いポジションを格納する配列を準備
+  Vec3 closestPosition[]; 
+  closestPosition.resize(target.size());
+  //  Curves内の複数のCurveそれぞれへの最も近いポジションについて、Lineの長さに対する比率を格納する配列を準備
+  Scalar ratio[]; 
+  ratio.resize(target.size());
+ 
+  for(Integer j=0; j<target.size(); j++){ //  Curve（空間分析用にLineに変換されているが）の本数だけループ
+    UInt32 attrIDs[2];  //  近いlineのポイントインデックス（始点と終点）を取得するための配列を準備
+    Scalar weight[2]; //  近いlineのポイントインデックスへのウェイト値を取得するための配列を準備
+    //  空間分析　最も近いポジションを取得し配列に格納していく
+    Ref<SpatialQuery> query = target[j].beginSpatialQuery();
+      GeometryLocation location = query.getClosest(position[index], Vec3(1.0), SCALAR_INFINITE);
+      target[j].getLocationAttributeIndicesAndWeights(location, attrIDs, weight);
+      closestPosition[j] = target[j].getPointPosition(attrIDs[0]).linearInterpolate( target[j].getPointPosition(attrIDs[1]), weight[1]);
+    target[j].endSpatialQuery(query);
+    //  取得したポジションについてLineの長さに対する比率を取得し配列に格納していく
+    Scalar segmentLengthSum;
+    for(Integer k=0; k<attrIDs[0]; k++){
+      segmentLengthSum += target[j].getPointPosition(k).distanceTo( target[j].getPointPosition(k+1) );
+    }
+    segmentLengthSum += target[j].getPointPosition(attrIDs[0]).distanceTo( target[j].getPointPosition(attrIDs[1]) ) * weight[1];
+    ratio[j] = segmentLengthSum / length[j];
+  }
+  LocalL4ScalarArray orderedDistance_notUse; //  GetCloseOrderedListを実行するためのダミーデータを準備
+  //  各Curveへの近いポジションの配列Vec3[]に対し、近い順でリストを作る
+  GetCloseOrderedList(position[index], closestPosition, maxDistance, maxCount, orderedIndex[index], orderedDistance_notUse, resultWeights[index]);
+  //  リストに沿って近いポジション値をCurveのノーマライズドパラメータに変換しリストにする
+  normalizedParam[index].resize( orderedIndex[index].count );
+  for(Integer k=0; k<orderedIndex[index].count; k++){
+    Scalar param = targetCurves.getNormalizedParameterFromLengthRatio(orderedIndex[index].first4[k], ratio[ orderedIndex[index].first4[k] ]);
+    normalizedParam[index].set(k, param);
+  }
+}
+
+function Curves.getCloseOrderedListArray(
+  in Vec3 positions[],  
+  in Scalar maxDistance,
+  in Size maxCount,
+  io LocalL4UInt32Array indexList[],
+  io LocalL4ScalarArray normalizedParam[],
+  io LocalL4ScalarArray weights[],
+  ){
+  //  これから作る各Linesの長さを取得しておくための配列を準備
+  //  配列の数 = Curveの数 = Linesの数
+  Scalar length[];
+  length.resize(this.curveCount());
+  //  CurveをLinesに変換するためのデータを準備
+  //  Linesに変換するのはCurveに空間分析メソッドが無いため
+  Lines lines[];
+  lines.resize(this.curveCount());
+  //  各CurveをLinesに変換し、空間分析の準備を行う
+  for(Integer i=0; i<lines.size(); i++){
+    lines[i] = Lines();
+    Vec3 linesPoi[] = this.getSamplePointPositions(i);  //  上記カスタムメソッドを使用
+    lines[i].addLineStrip( linesPoi );
+    //  Linesの長さを取得
+    for(Integer j=0; j<linesPoi.size()-1; j++){
+      length[i] += linesPoi[j].distanceTo(linesPoi[j+1]);
+    }
+    //  クローズカーブ対応
+    if(this.isClosed(i)){
+      lines[i].addClosedLine(linesPoi.size()-1, 0);
+      length[i] += linesPoi[linesPoi.size()-1].distanceTo(linesPoi[0]);
+    }
+    lines[i].prepareForSpatialQueries(1, null);
+  }
+  //  上記オペレータを実行
+  //  検索位置が3００個より多ければ並列処理
+  if(positions.size() > 300){
+    getClosestTask<<<positions.size()>>>(lines, this, positions, indexList, normalizedParam, weights, length, maxDistance, maxCount);
+  }else{
+    for(Integer i=0; i<positions.size(); i++){
+      getClosestTask(i, lines, this, positions, indexList, normalizedParam, weights, length, maxDistance, maxCount);
+    }
+  }
+}
