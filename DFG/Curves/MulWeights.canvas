@@ -1,0 +1,198 @@
+{
+  "objectType" : "Func",
+  "title" : "MulWeights",
+  "ports" : [
+    {
+      "objectType" : "ExecPort",
+      "name" : "exec",
+      "nodePortType" : "IO",
+      "defaultValues" : {
+        "Execute" : {}
+        },
+      "execPortType" : "IO",
+      "typeSpec" : "Execute"
+      },
+    {
+      "objectType" : "ExecPort",
+      "name" : "target",
+      "nodePortType" : "Out",
+      "defaultValues" : {
+        "Vec3[]" : [],
+        "Curves" : null
+        },
+      "execPortType" : "In",
+      "typeSpec" : "Curves"
+      },
+    {
+      "objectType" : "ExecPort",
+      "metadata" : {
+        "uiCombo" : "(\"position\", \"tangent\", \"normal\")"
+        },
+      "name" : "getValueType",
+      "nodePortType" : "Out",
+      "defaultValues" : {
+        "Integer" : 0
+        },
+      "execPortType" : "In",
+      "typeSpec" : "Integer"
+      },
+    {
+      "objectType" : "ExecPort",
+      "name" : "indexList",
+      "nodePortType" : "Out",
+      "defaultValues" : {
+        "LocalL16UInt32Array" : {
+          "first16" : [
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0
+            ],
+          "others" : [],
+          "count" : 0
+          },
+        "LocalL4UInt32Array" : {
+          "first4" : [
+            0,
+            0,
+            0,
+            0
+            ],
+          "others" : [],
+          "count" : 0
+          }
+        },
+      "execPortType" : "In",
+      "typeSpec" : "LocalL4UInt32Array"
+      },
+    {
+      "objectType" : "ExecPort",
+      "name" : "normalizedParam",
+      "nodePortType" : "Out",
+      "defaultValues" : {
+        "LocalL16ScalarArray" : {
+          "first16" : [
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0
+            ],
+          "others" : [],
+          "count" : 0
+          },
+        "LocalL4ScalarArray" : {
+          "first4" : [
+            0,
+            0,
+            0,
+            0
+            ],
+          "others" : [],
+          "count" : 0
+          }
+        },
+      "execPortType" : "In",
+      "typeSpec" : "LocalL4ScalarArray"
+      },
+    {
+      "objectType" : "ExecPort",
+      "name" : "weights",
+      "nodePortType" : "Out",
+      "defaultValues" : {
+        "LocalL16ScalarArray" : {
+          "first16" : [
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0
+            ],
+          "others" : [],
+          "count" : 0
+          },
+        "LocalL4ScalarArray" : {
+          "first4" : [
+            0,
+            0,
+            0,
+            0
+            ],
+          "others" : [],
+          "count" : 0
+          }
+        },
+      "execPortType" : "In",
+      "typeSpec" : "LocalL4ScalarArray"
+      },
+    {
+      "objectType" : "ExecPort",
+      "name" : "result",
+      "nodePortType" : "In",
+      "defaultValues" : {
+        "Vec3" : {
+          "x" : 0,
+          "y" : 0,
+          "z" : 0
+          }
+        },
+      "execPortType" : "Out",
+      "typeSpec" : "Vec3"
+      }
+    ],
+  "extDeps" : {
+    "TKCM" : "*"
+    },
+  "presetGUID" : "6B722DC87BF16C06FB6792054C96EBD9",
+  "code" : "dfgEntry {
+  Vec3 rest();
+  switch(getValueType){
+    case 0:
+      for(Integer i=0; i<indexList.count; i++){  rest += target.getPositionAtNormalizedParam(indexList.first4[i], normalizedParam.first4[i]) * weights.first4[i];  }
+      break;
+    case 1:
+      for(Integer i=0; i<indexList.count; i++){  rest += target.getTangentAtNormalizedParam(indexList.first4[i], normalizedParam.first4[i]) * weights.first4[i];  }
+      break;
+    case 2:
+      for(Integer i=0; i<indexList.count; i++){  rest += target.getNormalAtNormalizedParam(indexList.first4[i], normalizedParam.first4[i]) * weights.first4[i];  } 
+      break;
+  }
+  result = rest;
+}
+",
+  "requiredPresets" : {}
+  }
