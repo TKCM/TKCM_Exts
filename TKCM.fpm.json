@@ -6,6 +6,10 @@
 	  "Exts/Manipulation/Painting/MultiCh_SurfaceAttributePaintManipulator.kl",
 	  "Exts/Manipulation/Painting/MultiCh_Weightmap.kl",
     "Exts/Manipulation/Painting/SkinWeightPaintExt.kl",
+
+    "Exts/Math/Vec3.kl",
+
+    "Exts/Geometry/Curves/Curves.kl",
   ],
   "dfgPresets": {
     "dir": "DFG",

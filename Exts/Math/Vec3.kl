@@ -1,8 +1,8 @@
 
 //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-// GetDistanceList ///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-// ある座標から複数の座標[]に対して近しい座標のインデックス、距離、ウェイト値のリストを取得する
-
+// GetCloseOrderedList ///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+// ある座標から複数の座標[]に対して近い座標のインデックス、距離、ウェイト値のリストを取得する
+//  リストは近い順、取得の１６個まで
 operator GetDistanceListTask<<<i>>>(io Scalar distance[], Vec3 source, Vec3 target[]){
   distance[i] = source.distanceTo(target[i]);
 }
@@ -12,9 +12,9 @@ function GetCloseOrderedList(
 	in Vec3 target[],
 	in Scalar maxDistance,
 	in Integer maxCount,
-	io LocalL16UInt32Array orderedIndex,
-	io LocalL16ScalarArray orderedDistance,
-	io LocalL16ScalarArray weights
+	io LocalL4UInt32Array orderedIndex,
+	io LocalL4ScalarArray orderedDistance,
+	io LocalL4ScalarArray weights
 	){
 	// ターゲット[]への距離を取得
   Scalar distance[];
@@ -78,8 +78,8 @@ function GetCloseOrderedList(
 }
 
 //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-// GetDistanceListArray //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-// ある座標[]から複数の座標[]に対して近しい座標のインデックス、距離、ウェイト値のリストを取得する
+// GetCloseOrderedListArray //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+// ある座標[]から複数の座標[]に対して近い座標のインデックス、距離、ウェイト値のリストを取得する
 // 計算等の説明は上記の"GetDistanceList"を参照
 operator getDistanceListArrayTask<<<i>>>(io Scalar distance[][], Vec3 source[], Vec3 target[]){
   for(Integer j=0; j<source.size(); j++){
@@ -98,9 +98,9 @@ function GetCloseOrderedListArray(
 	in Vec3 target[],
 	in Scalar maxDistance,
 	in Integer maxCount,
-	io LocalL16UInt32Array orderedIndex[],
-	io LocalL16ScalarArray orderedDistance[],
-	io LocalL16ScalarArray weights[]
+	io LocalL4UInt32Array orderedIndex[],
+	io LocalL4ScalarArray orderedDistance[],
+	io LocalL4ScalarArray weights[]
 	){
   Scalar distance[][];
   distance.resize(source.size());
