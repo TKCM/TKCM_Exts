@@ -1,0 +1,395 @@
+require Math;
+require Geometry;
+//////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+// BlendShape ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+/*sample
+operator test(
+  io PolygonMesh applyMesh, 
+  in PolygonMesh baseMesh, 
+  in PolygonMesh blendShapeTargets[], 
+  in Vec3 ctrl
+) {
+  BlendShape blendShape();
+  
+  blendShape.setBaseMeshAndSymmetryMap(baseMesh);
+  
+  blendShape.setTargetCount(6);
+  
+  blendShape.addTargetMesh     (0, blendShapeTargets[0]);
+  blendShape.addTargetMesh     (1, blendShapeTargets[1]);
+  blendShape.makeSymmetryTarget(2, 0);
+  blendShape.makeSymmetryTarget(3, 1);
+  const Scalar PoiPickUp04[] = [116, 117, 118];
+  blendShape.addTargetMesh     (4, blendShapeTargets[2], PoiPickUp04);
+  const Scalar PoiPickUp05[] = [110, 111.5, 112.25];
+  blendShape.addTargetMesh     (5, blendShapeTargets[2], PoiPickUp05);
+
+  Scalar anim[];
+  anim.resize(6);
+  anim[0] = ctrl.y;
+  anim[1] = ctrl.z;
+  anim[2] = ctrl.x;
+  anim[3] = 1 + ctrl.x;
+  anim[4] = -0.25;
+  anim[5] = 1;
+  
+  blendShape.applyTo(applyMesh, anim);
+  
+}
+//sample*/
+
+// シェイプターゲット（1つ）の情報格納場所
+// ベースメッシュと比較して変形している頂点の情報のみ格納する
+struct BlendShape_Target {
+  UInt32 indices[]; // シェイプターゲットのメッシュ頂点IDリスト
+  Vec3 deltas[]; // ベースメッシュからの変化の差分を格納（↑indicesの頂点のみ）
+};
+
+function BlendShape_Target.prepare!() {
+  this.indices.resize(0);
+  this.deltas.resize(0);
+}
+
+// BlendShape本体
+object BlendShape {
+  PolygonMesh baseMesh;
+  Integer symmetryPointIndicesMap[]; // 対称位置にある頂点番号を格納する　＝　対称マップ　（左右反転ターゲットを作る際に使用）
+  Scalar threshold; //　ターゲットを登録する際にベースメッシュから変化したと判断する最低変化量
+  Boolean haveSymMap;
+  BlendShape_Target targets[]; // ブレンドシェイプターゲットの登録場所
+  BlendShape_Target targetsReverse[]; // ↑targets[]の反転ターゲットの登録場所
+};
+
+function BlendShape(){
+  this.threshold = 0.001;
+}
+
+// .addTargetMeshで使用するMap&Redius用のオペレータ群　ここから
+struct BlendShape_collectMeshPointsSharedData {
+  PolygonMesh mesh;
+  Vec3 refpositions[];
+  Scalar threshold;
+};
+
+struct BlendShape_CollectPointsMapOutput {
+  Boolean collected;
+  Integer index;
+  Vec3 delta;
+};
+
+operator BlendShape_collectMeshPointsProduce(
+        io BlendShape_CollectPointsMapOutput result,
+        in Size index,
+        in UInt32 count,
+        in BlendShape_collectMeshPointsSharedData sharedData
+        ) {
+  Vec3 delta = sharedData.refpositions[index] - sharedData.mesh.getPointPosition(index); // ターゲットメッシュの頂点座標-ベースメッシュの頂点座標
+  if(delta.length() > sharedData.threshold){ // 判定用の値より変化量が大きい場合
+    result.collected = true;
+    result.index = index;
+    result.delta = delta;
+  }else{ // 変化していないと判断された場合
+    result.collected = false;
+  }
+}
+
+operator BlendShape_collectPointsReduce(
+        in BlendShape_CollectPointsMapOutput input,
+        io BlendShape_Target output,
+        in Index index,
+        in UInt32 count
+        ) {
+  if(input.collected){
+    output.indices.push(input.index);
+    output.deltas.push(input.delta);
+  }
+}
+// .addTargetMeshで使用するMap&Redius用のオペレータ群　ここまで
+
+//　.setBaseMeshAndSymmetryMap作成用のオペレータ
+operator setSymmetryMap<<<index>>>(
+  io Ref<BlendShape> this, 
+  in Points baseMeshPoints, 
+  in Ref<SpatialQueryable> sqbaseMeshPoints,
+	in Size poiCount
+  ){
+  Ref<SpatialQuery> query = sqbaseMeshPoints.beginSpatialQuery();
+  GeometryLocation loc = query.getClosest( this.baseMesh.getPointPosition(index)*Vec3(-1,1,1), Vec3(1.0), 1); // 頂点のX座標を-1した位置から一番近いポイントを検出する
+  if(loc.isValid()){ //　空間分析で何か検出できた場合
+		Size symmetryPoiIndex = baseMeshPoints.getLocationPointIndex(loc); // ロケーションにあるポイントIDを取得
+		this.symmetryPointIndicesMap[index] = symmetryPoiIndex; // リストに登録する
+  }else{ //　何も検出できなかった場合
+    this.symmetryPointIndicesMap[index] = -1; // 対称になるポイントがなかった結果を”-1”で登録しておく
+  }
+}
+
+function BlendShape.setBaseMeshAndSymmetryMap!(in PolygonMesh baseMesh){
+  if(this.haveSymMap != true){
+    this.baseMesh = baseMesh;
+  
+  	this.symmetryPointIndicesMap.resize(baseMesh.pointCount());
+  	// 空間分析を行うためにメッシュの頂点位置をPoints型のデータにしておく　
+    Points baseMeshPoints();
+  	baseMeshPoints.addPoints(baseMesh.getAllPointPositions());
+    // 左右対称のポイントを探すための空間分析の準備
+  	baseMeshPoints.prepareForSpatialQueries(baseMesh.pointCount(), null);
+    // 左右対称位置の頂点IDリストを作成
+  	setSymmetryMap<<<baseMesh.pointCount()>>>(this, baseMeshPoints, baseMeshPoints, baseMesh.pointCount());
+  	baseMeshPoints.removeSpatialQueryAcceleration();
+  	this.haveSymMap = true;
+  }
+}
+
+// 登録するターゲットの数を変更する
+function BlendShape.setTargetCount!(UInt32 count){
+  if(count != this.targets.size()){ // 登録済みのターゲットと数が異なる場合
+    if(count > this.targets.size()){ // 登録済みのターゲットより増える場合
+      Size add = count-this.targets.size(); // 増やすターゲット数を計算（この後Pushで追加していくため、for内でターゲットサイズを取得するとおかしくなるため）
+      for(Integer i=0; i<add ; i++){
+        BlendShape_Target new;
+        new.prepare();
+        this.targets.push(new);
+        this.targetsReverse.push(new);
+      }
+    }else{ // 登録済みのターゲットより減る場合
+      this.targets.resize(count);
+      this.targetsReverse.resize(count);
+    }
+  }
+}
+
+// targetIndexにtargetMeshをシェイプターゲットとして格納する
+function BlendShape.registerTargetMesh!(in UInt32 targetIndex, in PolygonMesh targetMesh){
+  if(targetMesh.pointCount() > 0 && targetMesh != null){
+    Ref<Vec3Attribute> basePosAttribute = targetMesh.getAttributes().positionsAttribute;
+    BlendShape_collectMeshPointsSharedData sharedData;
+    sharedData.mesh = this.baseMesh;
+    sharedData.refpositions = basePosAttribute.values;
+    sharedData.threshold = this.threshold;
+
+    ValueProducer<BlendShape_Target> reducer = createReduce( 
+      createArrayGenerator(
+        createConstValue( targetMesh.pointCount() ),
+        BlendShape_collectMeshPointsProduce,
+        createConstValue( sharedData )
+      ),
+      BlendShape_collectPointsReduce
+    );
+    this.targets[targetIndex] = reducer.produce();
+  }else{
+    setError("BlendShape.registerTargetMesh or .registerAllTargetMesh node : targetMesh is empty or null !!!!!!");
+  }
+}
+
+// targetMeshを一括で格納する　
+// ターゲット番号 = targetMeshの配列番号
+function BlendShape.registerAllTargetMesh!(in PolygonMesh targetMesh[]){
+  this.setTargetCount(targetMesh.size());
+  for(Integer i=0; i<targetMesh.size(); i++){
+    this.registerTargetMesh(i, targetMesh[i]);
+  }
+}
+/*
+// targetIndexにtargetMeshをシェイプターゲットとして格納する
+// poiMapの値0.0～1.0によって、格納するターゲットの頂点ごとの強さを制御可能　（1.0＝変化量そのままで登録）
+// 例：1つの笑顔のターゲットメッシュから、”小鼻横”口角上”口角下”のように範囲を分割して登録が可能
+// 　　更に分割する境界線付近は0～1のグラデーションで馴染ませることも出来る
+// 　　poiMapはウェイトマップから入力すると直感的かも
+function BlendShape.addTargetMesh!(in UInt32 targetIndex, in PolygonMesh targetMesh, in Scalar poiMap[]){
+  BlendShape_Target targetPicUp;
+  for(Integer i = 0; i < poiMap.size(); i++){
+    Vec3 delta = targetMesh.getPointPosition(i) - this.baseMesh.getPointPosition(i);
+    if(delta.length() > this.threshold){
+      targetPicUp.indices.push(i);
+      targetPicUp.deltas.push(delta * poiMap[i]);
+    }
+  }
+  this.targets[targetIndex] = targetPicUp;
+}
+
+// すでに登録済みのターゲットをX軸で反転させてtargetIndexに格納する
+function BlendShape.makeReverseTarget!(in UInt32 targetIndex, in UInt32 baseTargetIndex){
+  BlendShape_Target symmetryTarget;
+  for(Integer i=0; i < this.targets[baseTargetIndex].indices.size(); i++){
+    Integer targetPointIndex = this.targets[baseTargetIndex].indices[i];
+  	if(this.symmetryPointIndicesMap[targetPointIndex] != -1){
+  		symmetryTarget.indices.push( this.symmetryPointIndicesMap[targetPointIndex] );
+  		symmetryTarget.deltas.push( this.targets[baseTargetIndex].deltas[i]*Vec3(-1,1,1) );
+  		this.targets[targetIndex] = symmetryTarget;
+  	}
+  }
+}
+*/
+// targets[]に登録済みのターゲット全てに対してX軸で反転させてtargetsReverse[]に格納する
+operator MakeAllReverseTargetTask<<<index>>>(io Ref<BlendShape> this, Index targetID){
+  Integer targetPointIndex = this.targets[targetID].indices[index];
+  if(this.symmetryPointIndicesMap[targetPointIndex] != -1){
+    this.targetsReverse[targetID].indices[index] = this.symmetryPointIndicesMap[targetPointIndex];
+    this.targetsReverse[targetID].deltas[index] = this.targets[targetID].deltas[index]*Vec3(-1,1,1);
+  }else{
+    this.targetsReverse[targetID].indices[index] = this.targets[targetID].indices[index];
+    this.targetsReverse[targetID].deltas[index] = this.targets[targetID].deltas[index];
+  }
+}
+function BlendShape.makeAllReverseTarget!(){
+  for(Integer i=0; i<this.targets.size(); i++){
+    BlendShape_Target symmetryTarget;
+    this.targetsReverse[i] = symmetryTarget;
+    this.targetsReverse[i].indices.resize(this.targets[i].indices.size());
+    this.targetsReverse[i].deltas.resize(this.targets[i].deltas.size());
+    if(this.targets[i].indices.size() > 1000){
+      MakeAllReverseTargetTask<<<this.targets[i].indices.size()>>>(this, i);
+    }else{
+      for(Integer j=0; j<this.targets[i].indices.size(); j++){
+        MakeAllReverseTargetTask(j, this, i);
+      }
+    }
+  }
+}
+
+function BlendShape.makeReverseTarget!(Index targetID){
+  for(Integer i=0; i<this.targets[targetID].indices.size(); i++){
+    MakeAllReverseTargetTask(i, this, targetID);
+  }
+}
+/*
+// targetIndexのターゲットをX軸で反転させる
+function BlendShape.modifySymmetry!(in UInt32 targetIndex){
+  BlendShape_Target symmetryTarget;
+  for(Integer i=0; i < this.targets[targetIndex].indices.size(); i++){
+    Vec3 delta = this.targets[targetIndex].deltas[i];
+    Size id = this.targets[targetIndex].indices[i];
+    if(this.symmetryPointIndicesMap[id] != id && this.baseMesh.getPointPosition(id).x < 0 && this.symmetryPointIndicesMap[id] != -1){
+      symmetryTarget.indices.push(id);
+      symmetryTarget.deltas.push(delta);
+      symmetryTarget.indices.push(this.symmetryPointIndicesMap[id] );
+      symmetryTarget.deltas.push(delta*Vec3(-1,1,1) );
+    }
+    if(this.symmetryPointIndicesMap[id] == id && this.symmetryPointIndicesMap[id] != -1){
+      symmetryTarget.indices.push(id);
+      symmetryTarget.deltas.push(delta);
+    }
+  }
+  this.targets[targetIndex] = symmetryTarget.clone();
+}
+*/
+// targetIndexのターゲットとリバースターゲットの登録を空っぽにする
+function BlendShape.setEmptyTarget!(in Integer targetIndex, in Boolean applyToReverse){
+  this.targets[targetIndex].prepare();
+  if(applyToReverse){
+    this.targetsReverse[targetIndex].prepare();
+  }
+}
+//prepare same param
+////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+// .applyTo用のオペレータ
+// meshの頂点位置に対し、ターゲットのデータ（差分情報）にウェイトを掛けた値を足す
+operator BlendShape_applyMeshDeltas<<<index>>>(
+        in PolygonMeshTopology mesh,
+        io Vec3 positions[],
+        in BlendShape_Target target,
+        in Scalar weight,
+        ){
+  UInt32 poiID = target.indices[index];
+  Vec3 pos = positions[poiID];
+  mesh.setPointAttribute(poiID, positions, pos + (target.deltas[index] * weight));
+}
+
+// blendShapeを実行する
+// weight.xはtargetsのブレンド値、weight.yはtargetsReverseのブレンド値、
+function BlendShape.applyTo(io PolygonMesh applyMesh, in Scalar weights[], in Scalar weightsRev[]){
+  if(weights.size() == this.targets.size() && weightsRev.size() == this.targets.size()){
+    Ref<Vec3Attribute> posAttribute = applyMesh.getAttributes().positionsAttribute;
+    for(Integer i=0; i<this.targets.size(); i++){
+      if(weights[i] != 0){ 
+        if(this.targets[i].indices.size() > 1000){
+          BlendShape_applyMeshDeltas<<<this.targets[i].indices.size()>>>(applyMesh.topology, posAttribute.values, this.targets[i],  weights[i]);
+        }else{
+          for(Integer j=0; j<this.targets[i].indices.size(); j++){
+            BlendShape_applyMeshDeltas(j, applyMesh.topology, posAttribute.values, this.targets[i], weights[i]);
+          }
+        }
+      }
+      if(weightsRev[i] != 0){ 
+        if(this.targetsReverse[i].indices.size() > 1000){
+          BlendShape_applyMeshDeltas<<<this.targetsReverse[i].indices.size()>>>(applyMesh.topology, posAttribute.values, this.targetsReverse[i], weightsRev[i]);
+        }else{
+          for(Integer j=0; j<this.targetsReverse[i].indices.size(); j++){
+            BlendShape_applyMeshDeltas(j, applyMesh.topology, posAttribute.values, this.targetsReverse[i], weightsRev[i]);
+          }
+        }
+      }
+    }
+  }else{
+    setError("target count is "+this.targets.size()+": weight count is "+weights.size()+", weightsRev count is "+ weights.size());
+  }
+}
+/*
+//make target meshes 
+operator makeTargetMesh<<<index>>>(    //index = point count of a blendShapeTargetMesh 
+		in PolygonMeshTopology newTargetMesh,
+		io Vec3 newTargetPositions[],
+		in Vec3 newTargetDirectionPoint,
+		in Vec3 basePositions[],
+		in Vec3 baseTargetDirectionPoint,
+		in UInt32 deltaIndices[],
+		in Vec3 deltas[],
+		in Vec3 upV_GMat,
+		){
+  UInt32 poiID = deltaIndices[index];
+  
+  Vec3 baseGMat_0 = basePositions[poiID];
+  Vec3 baseGMat_1 = baseTargetDirectionPoint;
+  Vec3 baseLMat_2 = deltas[index];
+  Quat qu;
+  qu.setFromDirectionAndUpvector(Xfo(baseGMat_1).tr - Xfo(baseGMat_0).tr,(Xfo(upV_GMat).tr-Xfo(baseGMat_0).tr));
+  Xfo locAxis(Xfo(baseGMat_0).tr, qu,Vec3(1,1,1));
+  Vec3 locAxisPos = (locAxis.inverse() * (Xfo(baseLMat_2)*Xfo(baseGMat_0)) ).tr;
+  
+  Vec3 targetGMat_0 = newTargetPositions[poiID];
+  Vec3 targetGMat_1 = newTargetDirectionPoint;
+  Quat setQu;
+  setQu.setFromDirectionAndUpvector(Xfo(targetGMat_1).tr - Xfo(targetGMat_0).tr,(Xfo(upV_GMat).tr-Xfo(targetGMat_0).tr));
+  Xfo setAxis(Xfo(targetGMat_0).tr, setQu,Vec3(1,1,1));
+  Scalar setScl = (Xfo(targetGMat_1).tr- Xfo(targetGMat_0).tr).length() / (Xfo(baseGMat_1).tr- Xfo(baseGMat_0).tr).length();
+  Mat44 multi = setAxis.toMat44();
+  setAxis.tr = multi.multiplyVector3(locAxisPos * setScl);
+  
+  newTargetMesh.setPointAttribute(poiID, newTargetPositions, setAxis.tr);
+}
+
+// BlendShapeに登録されたターゲット情報を元に、新しいベースメッシュでターゲットメッシュを再現する
+ 
+function BlendShape.makeTargetMeshes(in PolygonMesh newBaseMesh, io PolygonMesh applyMeshes[], in Vec2 directionPointIDsOfTarget[], in Vec3 upV_GMat){
+  if(applyMeshes.size() == this.targets.size() && newBaseMesh.pointCount() == this.baseMesh.pointCount() ){
+	for(Size i=0; i<applyMeshes.size(); i++){
+	  applyMeshes[i] = newBaseMesh.clone();
+	  Ref<Vec3Attribute> newTargetPositions = applyMeshes[i].getAttributes().positionsAttribute;
+	  Ref<Vec3Attribute> basePositions = this.baseMesh.getAttributes().positionsAttribute;
+	  Vec3 applyMeshesDirectionPoint;
+	  Vec3 baseTargetDirectionPoint;
+	  if(directionPointIDsOfTarget[i].x != -1){
+		if(directionPointIDsOfTarget[i].y != -1){
+		  applyMeshesDirectionPoint = newBaseMesh.getPointPosition(directionPointIDsOfTarget[i].x).linearInterpolate(newBaseMesh.getPointPosition(directionPointIDsOfTarget[i].y), 0.5);
+		  baseTargetDirectionPoint  =  this.baseMesh.getPointPosition(directionPointIDsOfTarget[i].x).linearInterpolate(this.baseMesh.getPointPosition(directionPointIDsOfTarget[i].y), 0.5);
+		}else{
+		  applyMeshesDirectionPoint = newBaseMesh.getPointPosition(directionPointIDsOfTarget[i].x);
+		  baseTargetDirectionPoint  =  this.baseMesh.getPointPosition(directionPointIDsOfTarget[i].x);
+		}
+	  }else{
+	    break;
+	  }
+	  makeTargetMesh<<<this.targets[i].deltas.size()>>>(
+			applyMeshes[i].topology,
+			newTargetPositions.values,
+			applyMeshesDirectionPoint,
+			basePositions.values,
+			baseTargetDirectionPoint,
+			this.targets[i].indices,
+			this.targets[i].deltas,
+			upV_GMat,
+	  );
+	}
+  }
+}*/

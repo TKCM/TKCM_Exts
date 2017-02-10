@@ -1,0 +1,407 @@
+{
+  "objectType" : "Graph",
+  "metadata" : {
+    "uiGraphZoom" : "{\n  \"value\" : 1.0\n  }",
+    "uiGraphPan" : "{\n  \"x\" : 544.3524627685547,\n  \"y\" : 44.39950180053711\n  }"
+    },
+  "title" : "BlendShape",
+  "ports" : [
+    {
+      "objectType" : "ExecPort",
+      "name" : "exec",
+      "nodePortType" : "IO",
+      "defaultValues" : {
+        "Execute" : {}
+        },
+      "execPortType" : "IO",
+      "typeSpec" : "Execute"
+      },
+    {
+      "objectType" : "ExecPort",
+      "name" : "blendShape",
+      "nodePortType" : "IO",
+      "defaultValues" : {
+        "BlendShape" : null
+        },
+      "execPortType" : "IO",
+      "typeSpec" : "BlendShape"
+      },
+    {
+      "objectType" : "ExecPort",
+      "name" : "base",
+      "nodePortType" : "Out",
+      "defaultValues" : {
+        "PolygonMesh" : null
+        },
+      "execPortType" : "In"
+      },
+    {
+      "objectType" : "ExecPort",
+      "name" : "target",
+      "nodePortType" : "Out",
+      "defaultValues" : {
+        "PolygonMesh[]" : []
+        },
+      "execPortType" : "In"
+      },
+    {
+      "objectType" : "ExecPort",
+      "name" : "weight",
+      "nodePortType" : "Out",
+      "defaultValues" : {
+        "Scalar[]" : [
+          0,
+          0,
+          0
+          ]
+        },
+      "execPortType" : "In",
+      "typeSpec" : "Scalar[]"
+      },
+    {
+      "objectType" : "ExecPort",
+      "name" : "weightRev",
+      "nodePortType" : "Out",
+      "defaultValues" : {
+        "Scalar[]" : [
+          0,
+          0,
+          0
+          ]
+        },
+      "execPortType" : "In",
+      "typeSpec" : "Scalar[]"
+      },
+    {
+      "objectType" : "ExecPort",
+      "name" : "result",
+      "nodePortType" : "In",
+      "defaultValues" : {
+        "PolygonMesh" : null
+        },
+      "execPortType" : "Out"
+      }
+    ],
+  "extDeps" : {},
+  "presetGUID" : "A5D065067233A77A37E831BBFA19DB8E",
+  "nodes" : [
+    {
+      "objectType" : "Inst",
+      "metadata" : {
+        "uiGraphPos" : "{\"x\":-110.404,\"y\":-4.0}"
+        },
+      "name" : "SetBaseMeshAndSymmetryMap",
+      "ports" : [
+        {
+          "objectType" : "InstPort",
+          "name" : "exec",
+          "nodePortType" : "IO"
+          },
+        {
+          "objectType" : "InstPort",
+          "name" : "blendShape",
+          "nodePortType" : "IO"
+          },
+        {
+          "objectType" : "InstPort",
+          "name" : "baseMesh",
+          "nodePortType" : "In"
+          }
+        ],
+      "definition" : {
+        "objectType" : "Func",
+        "title" : "RegisterTargetMesh",
+        "ports" : [
+          {
+            "objectType" : "ExecPort",
+            "name" : "exec",
+            "nodePortType" : "IO",
+            "defaultValues" : {
+              "Execute" : {}
+              },
+            "execPortType" : "IO",
+            "typeSpec" : "Execute"
+            },
+          {
+            "objectType" : "ExecPort",
+            "name" : "blendShape",
+            "nodePortType" : "IO",
+            "defaultValues" : {
+              "BlendShape" : null
+              },
+            "execPortType" : "IO",
+            "typeSpec" : "BlendShape"
+            },
+          {
+            "objectType" : "ExecPort",
+            "name" : "baseMesh",
+            "nodePortType" : "Out",
+            "defaultValues" : {
+              "PolygonMesh" : null
+              },
+            "execPortType" : "In",
+            "typeSpec" : "PolygonMesh"
+            }
+          ],
+        "extDeps" : {},
+        "code" : "dfgEntry {
+  if(blendShape == null){
+    blendShape = BlendShape();
+  }
+  blendShape.setBaseMeshAndSymmetryMap(baseMesh);
+}
+"
+        }
+      },
+    {
+      "objectType" : "Inst",
+      "metadata" : {
+        "uiGraphPos" : "{\"x\":256.756,\"y\":23.939}"
+        },
+      "name" : "RegisterAllTargetMesh_1",
+      "ports" : [
+        {
+          "objectType" : "InstPort",
+          "name" : "exec",
+          "nodePortType" : "IO"
+          },
+        {
+          "objectType" : "InstPort",
+          "name" : "blendShape",
+          "nodePortType" : "IO"
+          },
+        {
+          "objectType" : "InstPort",
+          "name" : "shapeTargetMesh",
+          "nodePortType" : "In"
+          },
+        {
+          "objectType" : "InstPort",
+          "name" : "makeReverseTarget",
+          "nodePortType" : "In",
+          "defaultValues" : {
+            "Boolean" : true
+            }
+          }
+        ],
+      "executable" : "TKCM.PolygonMesh.BlendShape.RegisterAllTargetMesh",
+      "presetGUID" : "640E7C3D8A187139F93A25A81F8E6D5C"
+      },
+    {
+      "objectType" : "Inst",
+      "metadata" : {
+        "uiGraphPos" : "{\"x\":519.699,\"y\":102.201}"
+        },
+      "name" : "ApplyTo_2",
+      "ports" : [
+        {
+          "objectType" : "InstPort",
+          "name" : "exec",
+          "nodePortType" : "IO"
+          },
+        {
+          "objectType" : "InstPort",
+          "name" : "blendShape",
+          "nodePortType" : "IO"
+          },
+        {
+          "objectType" : "InstPort",
+          "name" : "mesh",
+          "nodePortType" : "In"
+          },
+        {
+          "objectType" : "InstPort",
+          "name" : "weight",
+          "nodePortType" : "In"
+          },
+        {
+          "objectType" : "InstPort",
+          "name" : "weightRev",
+          "nodePortType" : "In"
+          },
+        {
+          "objectType" : "InstPort",
+          "name" : "result",
+          "nodePortType" : "Out"
+          }
+        ],
+      "executable" : "TKCM.PolygonMesh.BlendShape.ApplyTo",
+      "presetGUID" : "316FA21638FB7524163C8917DADEFC63"
+      }
+    ],
+  "connections" : {
+    "blendShape" : [
+      "SetBaseMeshAndSymmetryMap.blendShape"
+      ],
+    "base" : [
+      "SetBaseMeshAndSymmetryMap.baseMesh"
+      ],
+    "target" : [
+      "RegisterAllTargetMesh_1.shapeTargetMesh"
+      ],
+    "weight" : [
+      "ApplyTo_2.weight"
+      ],
+    "weightRev" : [
+      "ApplyTo_2.weightRev"
+      ],
+    "SetBaseMeshAndSymmetryMap.blendShape" : [
+      "RegisterAllTargetMesh_1.blendShape"
+      ],
+    "SetBaseMeshAndSymmetryMap.baseMesh" : [
+      "ApplyTo_2.mesh"
+      ],
+    "RegisterAllTargetMesh_1.blendShape" : [
+      "ApplyTo_2.blendShape"
+      ],
+    "ApplyTo_2.blendShape" : [
+      "blendShape"
+      ],
+    "ApplyTo_2.result" : [
+      "result"
+      ]
+    },
+  "requiredPresets" : {
+    "TKCM.PolygonMesh.BlendShape.RegisterAllTargetMesh" : {
+      "objectType" : "Func",
+      "title" : "RegisterAllTargetMesh",
+      "ports" : [
+        {
+          "objectType" : "ExecPort",
+          "name" : "exec",
+          "nodePortType" : "IO",
+          "defaultValues" : {
+            "Execute" : {}
+            },
+          "execPortType" : "IO",
+          "typeSpec" : "Execute"
+          },
+        {
+          "objectType" : "ExecPort",
+          "name" : "blendShape",
+          "nodePortType" : "IO",
+          "defaultValues" : {
+            "BlendShape" : null
+            },
+          "execPortType" : "IO",
+          "typeSpec" : "BlendShape"
+          },
+        {
+          "objectType" : "ExecPort",
+          "name" : "shapeTargetMesh",
+          "nodePortType" : "Out",
+          "defaultValues" : {
+            "PolygonMesh" : null,
+            "PolygonMesh[]" : []
+            },
+          "execPortType" : "In",
+          "typeSpec" : "PolygonMesh[]"
+          },
+        {
+          "objectType" : "ExecPort",
+          "name" : "makeReverseTarget",
+          "nodePortType" : "Out",
+          "defaultValues" : {
+            "Boolean" : true
+            },
+          "execPortType" : "In",
+          "typeSpec" : "Boolean"
+          }
+        ],
+      "extDeps" : {
+        "TKCM" : "*"
+        },
+      "presetGUID" : "640E7C3D8A187139F93A25A81F8E6D5C",
+      "code" : "dfgEntry {
+  blendShape.registerAllTargetMesh(shapeTargetMesh);
+  if(makeReverseTarget){
+    blendShape.makeAllReverseTarget();
+  }
+}
+"
+      },
+    "TKCM.PolygonMesh.BlendShape.ApplyTo" : {
+      "objectType" : "Func",
+      "title" : "ApplyTo",
+      "ports" : [
+        {
+          "objectType" : "ExecPort",
+          "name" : "exec",
+          "nodePortType" : "IO",
+          "defaultValues" : {
+            "Execute" : {}
+            },
+          "execPortType" : "IO",
+          "typeSpec" : "Execute"
+          },
+        {
+          "objectType" : "ExecPort",
+          "name" : "blendShape",
+          "nodePortType" : "IO",
+          "defaultValues" : {
+            "BlendShape" : null
+            },
+          "execPortType" : "IO",
+          "typeSpec" : "BlendShape"
+          },
+        {
+          "objectType" : "ExecPort",
+          "name" : "mesh",
+          "nodePortType" : "Out",
+          "defaultValues" : {
+            "PolygonMesh" : null
+            },
+          "execPortType" : "In",
+          "typeSpec" : "PolygonMesh"
+          },
+        {
+          "objectType" : "ExecPort",
+          "name" : "weight",
+          "nodePortType" : "Out",
+          "defaultValues" : {
+            "Scalar[]" : [
+              0,
+              0,
+              1.5
+              ]
+            },
+          "execPortType" : "In",
+          "typeSpec" : "Scalar[]"
+          },
+        {
+          "objectType" : "ExecPort",
+          "name" : "weightRev",
+          "nodePortType" : "Out",
+          "defaultValues" : {
+            "Scalar[]" : [
+              0,
+              0,
+              1
+              ]
+            },
+          "execPortType" : "In",
+          "typeSpec" : "Scalar[]"
+          },
+        {
+          "objectType" : "ExecPort",
+          "name" : "result",
+          "nodePortType" : "In",
+          "defaultValues" : {
+            "PolygonMesh" : null
+            },
+          "execPortType" : "Out",
+          "typeSpec" : "PolygonMesh"
+          }
+        ],
+      "extDeps" : {
+        "TKCM" : "*"
+        },
+      "presetGUID" : "316FA21638FB7524163C8917DADEFC63",
+      "code" : "dfgEntry {
+  result = mesh.clone();
+  blendShape.applyTo(result, weight, weightRev);
+}
+"
+      }
+    }
+  }

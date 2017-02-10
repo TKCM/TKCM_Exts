@@ -1,0 +1,66 @@
+{
+  "objectType" : "Func",
+  "title" : "RegisterTargetMesh",
+  "ports" : [
+    {
+      "objectType" : "ExecPort",
+      "name" : "exec",
+      "nodePortType" : "IO",
+      "defaultValues" : {
+        "Execute" : {}
+        },
+      "execPortType" : "IO",
+      "typeSpec" : "Execute"
+      },
+    {
+      "objectType" : "ExecPort",
+      "name" : "blendShape",
+      "nodePortType" : "IO",
+      "defaultValues" : {
+        "BlendShape" : null
+        },
+      "execPortType" : "IO",
+      "typeSpec" : "BlendShape"
+      },
+    {
+      "objectType" : "ExecPort",
+      "name" : "shapeTargetMesh",
+      "nodePortType" : "Out",
+      "defaultValues" : {
+        "PolygonMesh" : null
+        },
+      "execPortType" : "In",
+      "typeSpec" : "PolygonMesh"
+      },
+    {
+      "objectType" : "ExecPort",
+      "name" : "registIndex",
+      "nodePortType" : "Out",
+      "defaultValues" : {
+        "Index" : 0
+        },
+      "execPortType" : "In",
+      "typeSpec" : "Index"
+      },
+    {
+      "objectType" : "ExecPort",
+      "name" : "makeReverseTarget",
+      "nodePortType" : "Out",
+      "defaultValues" : {
+        "Boolean" : false
+        },
+      "execPortType" : "In",
+      "typeSpec" : "Boolean"
+      }
+    ],
+  "extDeps" : {},
+  "presetGUID" : "AA14B15761C9A0E030E42B5B5D24E4DD",
+  "code" : "dfgEntry {
+  blendShape.registerTargetMesh(registIndex, shapeTargetMesh);
+  if(makeReverseTarget){
+    blendShape.makeReverseTarget(registIndex);
+  }
+}
+",
+  "requiredPresets" : {}
+  }

@@ -1,0 +1,35 @@
+{
+  "objectType" : "Func",
+  "title" : "EmptyBlendShape",
+  "ports" : [
+    {
+      "objectType" : "ExecPort",
+      "name" : "exec",
+      "nodePortType" : "IO",
+      "defaultValues" : {
+        "Execute" : {}
+        },
+      "execPortType" : "IO",
+      "typeSpec" : "Execute"
+      },
+    {
+      "objectType" : "ExecPort",
+      "name" : "blendShape",
+      "nodePortType" : "In",
+      "defaultValues" : {
+        "BlendShape" : null
+        },
+      "execPortType" : "Out",
+      "typeSpec" : "BlendShape"
+      }
+    ],
+  "extDeps" : {
+    "TKCM" : "*"
+    },
+  "presetGUID" : "9521FE44FEA5AC8067E785ABE5498664",
+  "code" : "dfgEntry {
+  blendShape = BlendShape();
+}
+",
+  "requiredPresets" : {}
+  }

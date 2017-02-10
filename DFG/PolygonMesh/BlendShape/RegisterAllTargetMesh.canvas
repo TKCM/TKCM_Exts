@@ -1,0 +1,59 @@
+{
+  "objectType" : "Func",
+  "title" : "RegisterAllTargetMesh",
+  "ports" : [
+    {
+      "objectType" : "ExecPort",
+      "name" : "exec",
+      "nodePortType" : "IO",
+      "defaultValues" : {
+        "Execute" : {}
+        },
+      "execPortType" : "IO",
+      "typeSpec" : "Execute"
+      },
+    {
+      "objectType" : "ExecPort",
+      "name" : "blendShape",
+      "nodePortType" : "IO",
+      "defaultValues" : {
+        "BlendShape" : null
+        },
+      "execPortType" : "IO",
+      "typeSpec" : "BlendShape"
+      },
+    {
+      "objectType" : "ExecPort",
+      "name" : "shapeTargetMesh",
+      "nodePortType" : "Out",
+      "defaultValues" : {
+        "PolygonMesh" : null,
+        "PolygonMesh[]" : []
+        },
+      "execPortType" : "In",
+      "typeSpec" : "PolygonMesh[]"
+      },
+    {
+      "objectType" : "ExecPort",
+      "name" : "makeReverseTarget",
+      "nodePortType" : "Out",
+      "defaultValues" : {
+        "Boolean" : true
+        },
+      "execPortType" : "In",
+      "typeSpec" : "Boolean"
+      }
+    ],
+  "extDeps" : {
+    "TKCM" : "*"
+    },
+  "presetGUID" : "640E7C3D8A187139F93A25A81F8E6D5C",
+  "code" : "dfgEntry {
+  blendShape.registerAllTargetMesh(shapeTargetMesh);
+  if(makeReverseTarget){
+    blendShape.makeAllReverseTarget();
+  }
+}
+",
+  "requiredPresets" : {}
+  }
