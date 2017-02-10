@@ -10,6 +10,9 @@
     "Exts/Math/Vec3.kl",
 
     "Exts/Geometry/Curves/Curves.kl",
+    "Exts/Geometry/PolygonMesh/BlendShape.kl",
+
+    "Exts/Util/Valve.kl"
   ],
   "dfgPresets": {
     "dir": "DFG",

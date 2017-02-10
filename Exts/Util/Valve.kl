@@ -1,0 +1,56 @@
+require Singletons;
+
+//////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+// Valve ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+// Booleanの入力に対し、一度だけtrueに切り替える
+/*sample
+Boolean inBool; // 入力
+Valve sample = Valve();
+sample.name = "valve"; // オリジナル名を設定
+
+sample.turnOnlyOnce(inBool);
+  if(sample.open){ // 入力がtrueの場合sample.openが一度だけtrueに切り替わり、####を実行する。以降はfalseに戻る
+    ##### // inBoolがtrueになった際に一度だけ行う処理
+  }
+  if(sample.close){ // 入力がfalseの場合sample.closeが一度だけtrueに切り替わり、####を実行する。以降はfalseに戻る
+    ##### // inBoolがfalseになった際に一度だけ行う処理
+  }
+*/
+/////////////////////////////
+object Valve {
+  String name;
+  Boolean open;
+  Boolean close;
+};
+
+/*object ValvedDummy{
+  Index index;
+};*/
+
+function Valve.set(){
+  Valve dummy();
+  Singleton_set("runOnlyOnceWhenSceanOpen", dummy);
+}
+
+// 必ずオリジナル名をつける
+function Valve.setName!(String name){
+  this.name = name;
+  this.open = false;
+  this.close = false;
+}
+
+// inBoolがtrueになるとthis.openが一度だけtrueになり、以降はfalseに戻る
+// inBoolがfalseになるとthis.closeが一度だけtrueになり、以降はfalseに戻る
+function Valve.turnOnlyOnce!(in Boolean inBool){
+  this.open = false;
+  this.close = false;
+  
+  if(inBool && Singleton_has (this.name)){
+    Singleton_remove(this.name);
+    this.open = true;   
+  }
+  if(!inBool && !Singleton_has (this.name)){
+    Singleton_set(this.name, this);
+    this.close = true;
+  }
+}

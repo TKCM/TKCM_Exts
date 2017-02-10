@@ -1,0 +1,320 @@
+{
+  "objectType" : "Graph",
+  "metadata" : {
+    "uiGraphZoom" : "{\n  \"value\" : 1.0\n  }",
+    "uiGraphPan" : "{\n  \"x\" : 60.5,\n  \"y\" : 69.5\n  }"
+    },
+  "title" : "If",
+  "ports" : [
+    {
+      "objectType" : "ExecPort",
+      "name" : "exec",
+      "nodePortType" : "IO",
+      "defaultValues" : {
+        "Execute" : {}
+        },
+      "execPortType" : "IO",
+      "typeSpec" : "Execute"
+      },
+    {
+      "objectType" : "ExecPort",
+      "metadata" : {
+        "uiPersistValue" : "true"
+        },
+      "name" : "origName",
+      "nodePortType" : "Out",
+      "defaultValues" : {
+        "String" : "valve"
+        },
+      "execPortType" : "In",
+      "typeSpec" : "String"
+      },
+    {
+      "objectType" : "ExecPort",
+      "name" : "cond",
+      "nodePortType" : "Out",
+      "defaultValues" : {
+        "Boolean" : false
+        },
+      "execPortType" : "In",
+      "typeSpec" : "Boolean"
+      },
+    {
+      "objectType" : "ExecPort",
+      "name" : "execOnlyOnce_if_true",
+      "nodePortType" : "Out",
+      "execPortType" : "In",
+      "typeSpec" : "$TYPE$"
+      },
+    {
+      "objectType" : "ExecPort",
+      "name" : "execOnlyOnce_if_false",
+      "nodePortType" : "Out",
+      "execPortType" : "In"
+      },
+    {
+      "objectType" : "ExecPort",
+      "name" : "default_Value",
+      "nodePortType" : "Out",
+      "execPortType" : "In",
+      "typeSpec" : "$TYPE$"
+      },
+    {
+      "objectType" : "ExecPort",
+      "name" : "result",
+      "nodePortType" : "In",
+      "execPortType" : "Out"
+      }
+    ],
+  "extDeps" : {},
+  "presetGUID" : "905FCFC7ED27D0E0B2492FB6ED1D951E",
+  "nodes" : [
+    {
+      "objectType" : "Inst",
+      "metadata" : {
+        "uiGraphPos" : "{\"x\":191.0,\"y\":105.0}"
+        },
+      "name" : "Valve",
+      "ports" : [
+        {
+          "objectType" : "InstPort",
+          "name" : "exec",
+          "nodePortType" : "IO"
+          },
+        {
+          "objectType" : "InstPort",
+          "name" : "origName",
+          "nodePortType" : "In",
+          "defaultValues" : {
+            "String" : "valve"
+            }
+          },
+        {
+          "objectType" : "InstPort",
+          "name" : "turnOnlyOnce",
+          "nodePortType" : "In"
+          },
+        {
+          "objectType" : "InstPort",
+          "name" : "valve",
+          "nodePortType" : "Out"
+          }
+        ],
+      "definition" : {
+        "objectType" : "Func",
+        "title" : "Valve",
+        "ports" : [
+          {
+            "objectType" : "ExecPort",
+            "name" : "exec",
+            "nodePortType" : "IO",
+            "defaultValues" : {
+              "Execute" : {}
+              },
+            "execPortType" : "IO",
+            "typeSpec" : "Execute"
+            },
+          {
+            "objectType" : "ExecPort",
+            "metadata" : {
+              "uiPersistValue" : "true"
+              },
+            "name" : "origName",
+            "nodePortType" : "Out",
+            "defaultValues" : {
+              "String" : "valve"
+              },
+            "execPortType" : "In",
+            "typeSpec" : "String"
+            },
+          {
+            "objectType" : "ExecPort",
+            "name" : "turnOnlyOnce",
+            "nodePortType" : "Out",
+            "defaultValues" : {
+              "Boolean" : false
+              },
+            "execPortType" : "In",
+            "typeSpec" : "Boolean"
+            },
+          {
+            "objectType" : "ExecPort",
+            "name" : "valve",
+            "nodePortType" : "In",
+            "defaultValues" : {
+              "Valve" : null
+              },
+            "execPortType" : "Out",
+            "typeSpec" : "Valve"
+            }
+          ],
+        "extDeps" : {
+          "TKCM" : "*"
+          },
+        "origPresetGUID" : "48C821AFB1CF6658D01CFA235C2BF3B8",
+        "code" : "dfgEntry {
+  valve = Valve();
+  valve.setName(origName);
+  valve.turnOnlyOnce(turnOnlyOnce);
+}
+"
+        }
+      },
+    {
+      "objectType" : "Inst",
+      "metadata" : {
+        "uiGraphPos" : "{\"x\":370.0,\"y\":183.0}"
+        },
+      "name" : "If",
+      "ports" : [
+        {
+          "objectType" : "InstPort",
+          "name" : "exec",
+          "nodePortType" : "IO"
+          },
+        {
+          "objectType" : "InstPort",
+          "name" : "valve",
+          "nodePortType" : "In"
+          },
+        {
+          "objectType" : "InstPort",
+          "name" : "execOnlyOnce_if_true",
+          "nodePortType" : "In"
+          },
+        {
+          "objectType" : "InstPort",
+          "name" : "execOnlyOnce_if_false",
+          "nodePortType" : "In"
+          },
+        {
+          "objectType" : "InstPort",
+          "name" : "default_value",
+          "nodePortType" : "In"
+          },
+        {
+          "objectType" : "InstPort",
+          "name" : "result",
+          "nodePortType" : "Out"
+          }
+        ],
+      "definition" : {
+        "objectType" : "Func",
+        "title" : "If",
+        "ports" : [
+          {
+            "objectType" : "ExecPort",
+            "name" : "exec",
+            "nodePortType" : "IO",
+            "defaultValues" : {
+              "Execute" : {}
+              },
+            "execPortType" : "IO",
+            "typeSpec" : "Execute"
+            },
+          {
+            "objectType" : "ExecPort",
+            "name" : "valve",
+            "nodePortType" : "Out",
+            "defaultValues" : {
+              "Valve" : null
+              },
+            "execPortType" : "In",
+            "typeSpec" : "Valve"
+            },
+          {
+            "objectType" : "ExecPort",
+            "name" : "execOnlyOnce_if_true",
+            "nodePortType" : "Out",
+            "defaultValues" : {
+              "Vec3" : {
+                "x" : 0,
+                "y" : 0,
+                "z" : 0
+                }
+              },
+            "execPortType" : "In",
+            "typeSpec" : "$TYPE$"
+            },
+          {
+            "objectType" : "ExecPort",
+            "name" : "execOnlyOnce_if_false",
+            "nodePortType" : "Out",
+            "defaultValues" : {
+              "Vec3" : {
+                "x" : 0,
+                "y" : 0,
+                "z" : 0
+                }
+              },
+            "execPortType" : "In",
+            "typeSpec" : "$TYPE$"
+            },
+          {
+            "objectType" : "ExecPort",
+            "name" : "default_value",
+            "nodePortType" : "Out",
+            "defaultValues" : {
+              "Vec3" : {
+                "x" : 0,
+                "y" : 0,
+                "z" : 0
+                }
+              },
+            "execPortType" : "In",
+            "typeSpec" : "$TYPE$"
+            },
+          {
+            "objectType" : "ExecPort",
+            "name" : "result",
+            "nodePortType" : "In",
+            "defaultValues" : {
+              "Vec3" : {
+                "x" : 0,
+                "y" : 0,
+                "z" : 0
+                }
+              },
+            "execPortType" : "Out",
+            "typeSpec" : "$TYPE$"
+            }
+          ],
+        "extDeps" : {},
+        "code" : "dfgEntry {
+  if(valve.open){
+    result = execOnlyOnce_if_true;
+  }else if(valve.close){
+    result = execOnlyOnce_if_false;
+  }else{
+    result = default_value;
+  }
+}
+"
+        }
+      }
+    ],
+  "connections" : {
+    "origName" : [
+      "Valve.origName"
+      ],
+    "cond" : [
+      "Valve.turnOnlyOnce"
+      ],
+    "execOnlyOnce_if_true" : [
+      "If.execOnlyOnce_if_true"
+      ],
+    "execOnlyOnce_if_false" : [
+      "If.execOnlyOnce_if_false"
+      ],
+    "default_Value" : [
+      "If.default_value"
+      ],
+    "Valve.valve" : [
+      "If.valve"
+      ],
+    "If.result" : [
+      "result"
+      ]
+    },
+  "requiredPresets" : {}
+  }
