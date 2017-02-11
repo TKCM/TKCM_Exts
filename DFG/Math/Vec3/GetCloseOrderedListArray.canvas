@@ -1,5 +1,5 @@
 {
-  "objectType" : "Func",
+  "objectType" : "Graph",
   "title" : "GetCloseOrderedListArray",
   "ports" : [
     {
@@ -14,14 +14,10 @@
       },
     {
       "objectType" : "ExecPort",
+      "metadata" : {},
       "name" : "positions",
       "nodePortType" : "Out",
       "defaultValues" : {
-        "Vec3" : {
-          "x" : 0,
-          "y" : 0,
-          "z" : 0
-          },
         "Vec3[]" : []
         },
       "execPortType" : "In",
@@ -29,6 +25,7 @@
       },
     {
       "objectType" : "ExecPort",
+      "metadata" : {},
       "name" : "target",
       "nodePortType" : "Out",
       "defaultValues" : {
@@ -53,46 +50,22 @@
     {
       "objectType" : "ExecPort",
       "metadata" : {
-        "uiPersistValue" : "true",
-        "uiHardRange" : "(1, 16)"
+        "uiPersistValue" : "true"
         },
       "name" : "maxCount",
       "nodePortType" : "Out",
       "defaultValues" : {
-        "Integer" : 3
+        "Integer" : 2
         },
       "execPortType" : "In",
       "typeSpec" : "Integer"
       },
     {
       "objectType" : "ExecPort",
+      "metadata" : {},
       "name" : "indexList",
       "nodePortType" : "In",
       "defaultValues" : {
-        "Index[]" : [],
-        "LocalL16UInt32Array" : {
-          "first16" : [
-            0,
-            0,
-            0,
-            0,
-            0,
-            0,
-            0,
-            0,
-            0,
-            0,
-            0,
-            0,
-            0,
-            0,
-            0,
-            0
-            ],
-          "others" : [],
-          "count" : 0
-          },
-        "LocalL16UInt32Array[]" : [],
         "LocalL4UInt32Array[]" : []
         },
       "execPortType" : "Out",
@@ -100,33 +73,10 @@
       },
     {
       "objectType" : "ExecPort",
+      "metadata" : {},
       "name" : "distance",
       "nodePortType" : "In",
       "defaultValues" : {
-        "Scalar[]" : [],
-        "LocalL16ScalarArray" : {
-          "first16" : [
-            0,
-            0,
-            0,
-            0,
-            0,
-            0,
-            0,
-            0,
-            0,
-            0,
-            0,
-            0,
-            0,
-            0,
-            0,
-            0
-            ],
-          "others" : [],
-          "count" : 0
-          },
-        "LocalL16ScalarArray[]" : [],
         "LocalL4ScalarArray[]" : []
         },
       "execPortType" : "Out",
@@ -134,47 +84,379 @@
       },
     {
       "objectType" : "ExecPort",
+      "metadata" : {},
       "name" : "weights",
       "nodePortType" : "In",
       "defaultValues" : {
-        "Scalar[]" : [],
-        "LocalL16ScalarArray" : {
-          "first16" : [
-            0,
-            0,
-            0,
-            0,
-            0,
-            0,
-            0,
-            0,
-            0,
-            0,
-            0,
-            0,
-            0,
-            0,
-            0,
-            0
-            ],
-          "others" : [],
-          "count" : 0
-          },
-        "LocalL16ScalarArray[]" : [],
         "LocalL4ScalarArray[]" : []
         },
       "execPortType" : "Out",
       "typeSpec" : "LocalL4ScalarArray[]"
       }
     ],
-  "extDeps" : {
-    "Geometry" : "*",
-    "TKCM" : "*"
-    },
-  "presetGUID" : "CF8FFF109154AE7958F8964E9B0528E7",
-  "code" : "dfgEntry {
+  "extDeps" : {},
+  "presetGUID" : "E7938294D05A08614D421900DAAE7133",
+  "nodes" : [
+    {
+      "objectType" : "Inst",
+      "metadata" : {
+        "uiGraphPos" : "{\"x\":259.233,\"y\":101.009}"
+        },
+      "name" : "GetCloseOrderedListArrayCore",
+      "ports" : [
+        {
+          "objectType" : "InstPort",
+          "name" : "exec",
+          "nodePortType" : "IO"
+          },
+        {
+          "objectType" : "InstPort",
+          "name" : "positions",
+          "nodePortType" : "In"
+          },
+        {
+          "objectType" : "InstPort",
+          "name" : "target",
+          "nodePortType" : "In"
+          },
+        {
+          "objectType" : "InstPort",
+          "name" : "maxDistance",
+          "nodePortType" : "In",
+          "defaultValues" : {
+            "Scalar" : 1000
+            }
+          },
+        {
+          "objectType" : "InstPort",
+          "name" : "maxCount",
+          "nodePortType" : "In"
+          },
+        {
+          "objectType" : "InstPort",
+          "name" : "indexList",
+          "nodePortType" : "Out"
+          },
+        {
+          "objectType" : "InstPort",
+          "name" : "distance",
+          "nodePortType" : "Out"
+          },
+        {
+          "objectType" : "InstPort",
+          "name" : "weights",
+          "nodePortType" : "Out"
+          }
+        ],
+      "definition" : {
+        "objectType" : "Func",
+        "title" : "GetCloseOrderedListArray",
+        "ports" : [
+          {
+            "objectType" : "ExecPort",
+            "name" : "exec",
+            "nodePortType" : "IO",
+            "defaultValues" : {
+              "Execute" : {}
+              },
+            "execPortType" : "IO",
+            "typeSpec" : "Execute"
+            },
+          {
+            "objectType" : "ExecPort",
+            "name" : "positions",
+            "nodePortType" : "Out",
+            "defaultValues" : {
+              "Vec3" : {
+                "x" : 0,
+                "y" : 0,
+                "z" : 0
+                },
+              "Vec3[]" : []
+              },
+            "execPortType" : "In",
+            "typeSpec" : "Vec3[]"
+            },
+          {
+            "objectType" : "ExecPort",
+            "name" : "target",
+            "nodePortType" : "Out",
+            "defaultValues" : {
+              "Vec3[]" : []
+              },
+            "execPortType" : "In",
+            "typeSpec" : "Vec3[]"
+            },
+          {
+            "objectType" : "ExecPort",
+            "metadata" : {
+              "uiPersistValue" : "true"
+              },
+            "name" : "maxDistance",
+            "nodePortType" : "Out",
+            "defaultValues" : {
+              "Scalar" : 1000
+              },
+            "execPortType" : "In",
+            "typeSpec" : "Scalar"
+            },
+          {
+            "objectType" : "ExecPort",
+            "metadata" : {
+              "uiPersistValue" : "true",
+              "uiHardRange" : "(1, 16)"
+              },
+            "name" : "maxCount",
+            "nodePortType" : "Out",
+            "defaultValues" : {
+              "Integer" : 3
+              },
+            "execPortType" : "In",
+            "typeSpec" : "Integer"
+            },
+          {
+            "objectType" : "ExecPort",
+            "name" : "indexList",
+            "nodePortType" : "In",
+            "defaultValues" : {
+              "Index[]" : [],
+              "LocalL16UInt32Array" : {
+                "first16" : [
+                  0,
+                  0,
+                  0,
+                  0,
+                  0,
+                  0,
+                  0,
+                  0,
+                  0,
+                  0,
+                  0,
+                  0,
+                  0,
+                  0,
+                  0,
+                  0
+                  ],
+                "others" : [],
+                "count" : 0
+                },
+              "LocalL16UInt32Array[]" : [],
+              "LocalL4UInt32Array[]" : []
+              },
+            "execPortType" : "Out",
+            "typeSpec" : "LocalL4UInt32Array[]"
+            },
+          {
+            "objectType" : "ExecPort",
+            "name" : "distance",
+            "nodePortType" : "In",
+            "defaultValues" : {
+              "Scalar[]" : [],
+              "LocalL16ScalarArray" : {
+                "first16" : [
+                  0,
+                  0,
+                  0,
+                  0,
+                  0,
+                  0,
+                  0,
+                  0,
+                  0,
+                  0,
+                  0,
+                  0,
+                  0,
+                  0,
+                  0,
+                  0
+                  ],
+                "others" : [],
+                "count" : 0
+                },
+              "LocalL16ScalarArray[]" : [],
+              "LocalL4ScalarArray[]" : []
+              },
+            "execPortType" : "Out",
+            "typeSpec" : "LocalL4ScalarArray[]"
+            },
+          {
+            "objectType" : "ExecPort",
+            "name" : "weights",
+            "nodePortType" : "In",
+            "defaultValues" : {
+              "Scalar[]" : [],
+              "LocalL16ScalarArray" : {
+                "first16" : [
+                  0,
+                  0,
+                  0,
+                  0,
+                  0,
+                  0,
+                  0,
+                  0,
+                  0,
+                  0,
+                  0,
+                  0,
+                  0,
+                  0,
+                  0,
+                  0
+                  ],
+                "others" : [],
+                "count" : 0
+                },
+              "LocalL16ScalarArray[]" : [],
+              "LocalL4ScalarArray[]" : []
+              },
+            "execPortType" : "Out",
+            "typeSpec" : "LocalL4ScalarArray[]"
+            }
+          ],
+        "extDeps" : {
+          "Geometry" : "*",
+          "TKCM" : "*"
+          },
+        "code" : "dfgEntry {
   GetCloseOrderedListArray(positions, target, maxDistance, maxCount, indexList, distance, weights);
 }
-",
-  "requiredPresets" : {}
+"
+        }
+      },
+    {
+      "objectType" : "Inst",
+      "metadata" : {
+        "uiGraphPos" : "{\"x\":588.0,\"y\":212.0}",
+        "uiCollapsedState" : "2"
+        },
+      "name" : "Cache_1",
+      "ports" : [
+        {
+          "objectType" : "InstPort",
+          "name" : "exec",
+          "nodePortType" : "IO"
+          },
+        {
+          "objectType" : "InstPort",
+          "name" : "value",
+          "nodePortType" : "In"
+          }
+        ],
+      "executable" : "Fabric.Core.Data.Cache",
+      "presetGUID" : "D903AFD981FE9214C69943F542D5FD60"
+      },
+    {
+      "objectType" : "Inst",
+      "metadata" : {
+        "uiGraphPos" : "{\"x\":587.0,\"y\":257.0}",
+        "uiCollapsedState" : "2"
+        },
+      "name" : "Cache_2",
+      "ports" : [
+        {
+          "objectType" : "InstPort",
+          "name" : "exec",
+          "nodePortType" : "IO"
+          },
+        {
+          "objectType" : "InstPort",
+          "name" : "value",
+          "nodePortType" : "In"
+          }
+        ],
+      "executable" : "Fabric.Core.Data.Cache",
+      "presetGUID" : "D903AFD981FE9214C69943F542D5FD60"
+      },
+    {
+      "objectType" : "Inst",
+      "metadata" : {
+        "uiGraphPos" : "{\"x\":586.0,\"y\":304.0}",
+        "uiCollapsedState" : "2"
+        },
+      "name" : "Cache_3",
+      "ports" : [
+        {
+          "objectType" : "InstPort",
+          "name" : "exec",
+          "nodePortType" : "IO"
+          },
+        {
+          "objectType" : "InstPort",
+          "name" : "value",
+          "nodePortType" : "In"
+          }
+        ],
+      "executable" : "Fabric.Core.Data.Cache",
+      "presetGUID" : "D903AFD981FE9214C69943F542D5FD60"
+      }
+    ],
+  "connections" : {
+    "positions" : [
+      "GetCloseOrderedListArrayCore.positions"
+      ],
+    "target" : [
+      "GetCloseOrderedListArrayCore.target"
+      ],
+    "maxDistance" : [
+      "GetCloseOrderedListArrayCore.maxDistance"
+      ],
+    "maxCount" : [
+      "GetCloseOrderedListArrayCore.maxCount"
+      ],
+    "GetCloseOrderedListArrayCore.indexList" : [
+      "Cache_1.value"
+      ],
+    "GetCloseOrderedListArrayCore.distance" : [
+      "Cache_2.value"
+      ],
+    "GetCloseOrderedListArrayCore.weights" : [
+      "Cache_3.value"
+      ],
+    "Cache_1.value" : [
+      "indexList"
+      ],
+    "Cache_2.value" : [
+      "distance"
+      ],
+    "Cache_3.value" : [
+      "weights"
+      ]
+    },
+  "requiredPresets" : {
+    "Fabric.Core.Data.Cache" : {
+      "objectType" : "Func",
+      "metadata" : {
+        "uiNodeColor" : "{\n  \"r\" : 214,\n  \"g\" : 191,\n  \"b\" : 103\n  }",
+        "uiAlwaysShowDaisyChainPorts" : "true",
+        "uiHeaderColor" : "{\n  \"r\" : 188,\n  \"g\" : 129,\n  \"b\" : 83\n  }"
+        },
+      "title" : "Cache",
+      "cacheRule" : "always",
+      "ports" : [
+        {
+          "objectType" : "ExecPort",
+          "name" : "exec",
+          "nodePortType" : "IO",
+          "execPortType" : "IO",
+          "typeSpec" : "Execute"
+          },
+        {
+          "objectType" : "ExecPort",
+          "name" : "value",
+          "nodePortType" : "Out",
+          "execPortType" : "In",
+          "typeSpec" : "$TYPE$"
+          }
+        ],
+      "extDeps" : {},
+      "presetGUID" : "D903AFD981FE9214C69943F542D5FD60",
+      "code" : "dfgEntry {
+}
+"
+      }
+    }
   }
