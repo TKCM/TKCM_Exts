@@ -16,9 +16,10 @@ function GetCloseOrderedList(
 	io LocalL4ScalarArray orderedDistance,
 	io LocalL4ScalarArray weights
 	){
-	// ターゲット[]への距離を取得
+	//　ターゲットへの距離を入れる配列の準備　[検出するポジションの数][ターゲットの数]
   Scalar distance[];
-  distance.resize(target.size());  
+  distance.resize(target.size()); 
+  // ターゲットへの距離を一律で格納 
   if(target.size() < 1000){
     for(Integer i=0; i<target.size(); i++){
       GetDistanceListTask(i, distance, source, target);
@@ -26,13 +27,14 @@ function GetCloseOrderedList(
   }else{
     GetDistanceListTask<<<target.size()>>>(distance, source, target);
   }
-  
-  // 上で取得した距離のリストを昇順にし、ターゲットのIDも同じく並び替える
+  //　ターゲットのIDリストを準備　
+  // このあとの昇順処理の際にターゲットIDも同時に並べ替えするため
   Index targetID[];
   targetID.resize(target.size());
   for(Integer i=0; i<target.size(); i++){
     targetID[i] = i;
   }
+  // 上で取得した距離のリストを昇順にし、ターゲットのIDも同じく並び替える
   Scalar tmpS;
   Index tmpID;
   for(Integer i=0; i<distance.size(); i++){
@@ -47,20 +49,18 @@ function GetCloseOrderedList(
       }
     }
   }
-  
+  // 差分の小さな順番に合計値とターゲットIDを取得
   // 指定した検出距離、もしくは検出個数でカットオフする
-  // 昇順にしているので前から順番に判別処理すればいい
   Scalar sum;
   Integer outPutCount = 0;
   for(Integer i=0; i<distance.size(); i++){
     if(distance[i] < maxDistance && maxCount > i){
-      sum += distance[i]; // ウェイトの計算用に距離の合計値を作る
+      sum += pow(distance[i], 3); // ウェイトの計算用に距離の合計値を作る  対象に近いほどウェイト値が強くなるように3乗した値を使用する
       outPutCount += 1; // 条件によってターゲットから検出される数が変わるので、条件に合った数を数えておく
     }else{
       break;
     }
   }
-  
   // 近しい距離で並び変えたターゲット[]の上位のインデックスリスト、距離リスト、ウェイトリストを出力
   // 距離からウェイト値への変換は、(距離/合計)で出した比率の逆比を使い(逆比/逆比合計)で算出している
   Scalar sum2;
@@ -70,17 +70,16 @@ function GetCloseOrderedList(
   for(Integer i=0; i<outPutCount; i++){
     orderedIndex.set(i, targetID[i]);
     orderedDistance.set(i,distance[i]);
-    sum2 += 1/(distance[i]/sum); // 逆比の合計を作る
+    sum2 += 1/(pow(distance[i], 3)/sum); // 逆比の合計を作る　
   }
   for(Integer i=0; i<outPutCount; i++){
-    weights.set(i, 1/(distance[i]/sum) / sum2); //逆比から改めて比（ウェイト値）を算出
+    weights.set(i, 1/(pow(distance[i], 3)/sum) / sum2); //逆比から改めて比（ウェイト値）を算出
   }
 }
 
 //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 // GetCloseOrderedListArray //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 // ある座標[]から複数の座標[]に対して近い座標のインデックス、距離、ウェイト値のリストを取得する
-// 計算等の説明は上記の"GetDistanceList"を参照
 operator getDistanceListArrayTask<<<i>>>(io Scalar distance[][], Vec3 source[], Vec3 target[]){
   for(Integer j=0; j<source.size(); j++){
     distance[j][i] = source[j].distanceTo(target[i]);
@@ -102,11 +101,13 @@ function GetCloseOrderedListArray(
 	io LocalL4ScalarArray orderedDistance[],
 	io LocalL4ScalarArray weights[]
 	){
+  //　ターゲットへの距離を入れる配列の準備　[検出するポジションの数][ターゲットの数]
   Scalar distance[][];
   distance.resize(source.size());
   for(Integer i=0; i<source.size(); i++){
     distance[i].resize(target.size());  
   }
+  // ターゲットへの距離を一律で格納
   if(source.size() < 1000 && target.size() < 1000){
     for(Integer i=0; i<target.size(); i++){
       getDistanceListArrayTask(i, distance, source, target);
@@ -118,6 +119,8 @@ function GetCloseOrderedListArray(
       getDistanceListArrayTask<<<target.size()>>>(distance, source, target);
     }
   }
+  //　ターゲットのIDリストを準備　
+  // このあとの昇順処理の際にターゲットIDも同時に並べ替えするため
   Index targetID[][];
   targetID.resize(source.size());
   for(Integer i=0; i<source.size(); i++){
@@ -127,7 +130,7 @@ function GetCloseOrderedListArray(
       targetID[i][j] = j;
     }
   }
-  
+  // 上で取得した距離のリストを昇順にし、ターゲットのIDも同じく並び替える
   for(Integer k=0; k<source.size(); k++){
     Scalar tmpS;
     Index tmpID;
@@ -144,7 +147,8 @@ function GetCloseOrderedListArray(
       }
     }
   }
-  
+  // 差分の小さな順番に合計値とターゲットIDを取得
+  // 指定した検出距離、もしくは検出個数でカットオフする
   Scalar sum[];
   sum.resize(source.size());
   Integer outPutCount[];
@@ -152,14 +156,16 @@ function GetCloseOrderedListArray(
   for(Integer k=0; k<source.size(); k++){
     for(Integer i=0; i<distance[k].size(); i++){
       if(distance[k][i] < maxDistance && maxCount > i){
-        sum[k] += distance[k][i];
-        outPutCount[k] += 1;
+        sum[k] += distance[k][i]; // ウェイトの計算用に距離の合計値を作る  対象に近いほどウェイト値が強くなるように3乗した値を使用する
+        outPutCount[k] += 1; // 条件によって最終出力のターゲット数が変わるので、条件内のターゲット数を数えておく
       }else{
         break;
       }
     }
   }
   
+  // 近しい距離で並び変えたターゲットの上位のインデックスリスト、距離リスト、ウェイトリストを出力
+  // 距離からウェイト値への変換は、(距離/合計)で出した比率の逆比を使い(逆比/逆比合計)で算出している
   Scalar sum2[];
   sum2.resize(source.size());
   orderedIndex.resize(source.size());
@@ -173,11 +179,114 @@ function GetCloseOrderedListArray(
     for(Integer i=0; i<outPutCount[k]; i++){
       orderedIndex[k].set(i, targetID[k][i]);
       orderedDistance[k].set(i,distance[k][i]);
-      sum2[k] += 1/(distance[k][i]/sum[k]);
+      sum2[k] += 1/(distance[k][i]/sum[k]); // 距離の逆比を作り合計値を作成
     }
     for(Integer i=0; i<outPutCount[k]; i++){
-      weights[k].set(i, 1/(distance[k][i]/sum[k]) / sum2[k]);
+      weights[k].set(i, 1/(distance[k][i]/sum[k]) / sum2[k]); //逆比から改めて比（ウェイト値）を算出
     }
   }
 
+}
+
+//////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+// GetSmallAngleOrderedListArray //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+// 入力のベクトルからターゲットへのベクトルに対して、角度の差が小さなベクトルを順番に取得する（最大４つ）
+// 取得はターゲットの配列番号、角度の差分、ウェイト値
+function Scalar Scalar.ToAngle?(){
+  Scalar angle;
+  angle = (asin(this / 1) * 180) / PI;
+  return angle;
+}
+operator getAngleListArrayTask<<<index>>>(io Scalar delta[][], Vec3 direction[], Vec3 target[]){
+  for(Integer i=0; i<target.size(); i++){
+    Scalar radian = direction[index].dot(target[i]);
+    delta[index][i] = radian.ToAngle();
+  }
+}
+// directionとtargetはノーマライズしておく必要がある
+function GetAngleListArray(
+  in Vec3 direction[],
+  in Vec3 target[],
+  in Integer maxCount,
+  io LocalL4UInt32Array indexList[],
+  io LocalL4ScalarArray deltaAngle[],
+  io LocalL4ScalarArray weights[]
+  ){
+  //　角度の差分を入れる配列の準備　[検出するベクトルの数][ターゲットの数]
+  Scalar delta[][];
+  delta.resize(direction.size());
+  for(Integer i=0; i<direction.size(); i++){
+    delta[i].resize(target.size());  
+  }
+  // 角度の差分を一律で格納
+  if(direction.size() < 1000){
+    for(Integer i=0; i<direction.size(); i++){
+      getAngleListArrayTask(i, delta, direction, target);
+    }
+  }else{
+    getAngleListArrayTask<<<direction.size()>>>(delta, direction, target);
+  }
+  //　ターゲットのIDリストを準備
+  // このあとの昇順処理の際にターゲットIDも同時に並べ替えするため
+  Index targetID[][];
+  targetID.resize(direction.size());
+  for(Integer i=0; i<direction.size(); i++){
+    targetID[i].resize(target.size());
+    for(Integer j=0; j<target.size(); j++){
+      targetID[i][j] = j;
+    }
+  }
+  // 上で取得した差分のリストを昇順にし、ターゲットのIDも同じく並び替える
+  for(Integer k=0; k<direction.size(); k++){
+    Scalar tmpS;
+    Index tmpID;
+    for(Integer i=0; i<delta[k].size(); i++){
+      for(Integer j=i+1; j<delta[k].size(); j++) {
+        if (delta[k][i] > delta[k][j]) {
+          tmpS =  delta[k][i];
+          tmpID = targetID[k][i];
+          delta[k][i] = delta[k][j];
+          targetID[k][i] = targetID[k][j];
+          delta[k][j] = tmpS;
+          targetID[k][j] = tmpID;
+        }
+      }
+    }
+  }
+  // 差分の小さな順番に合計値とターゲットIDを取得
+  Scalar sum[];
+  sum.resize(direction.size());
+  Integer outPutCount[];
+  outPutCount.resize(direction.size());
+  for(Integer k=0; k<direction.size(); k++){
+    for(Integer i=0; i<delta[k].size(); i++){
+      if(maxCount > i){
+        sum[k] += delta[k][i]; // ウェイトの計算用に角度の差分の合計値を作る  対象に近いほどウェイト値が強くなるように3乗した値を使用する
+        outPutCount[k] += 1; // 条件によって最終出力のターゲット数が変わるので、条件内のターゲット数を数えておく
+      }else{
+        break;
+      }
+    }
+  }
+  // 角度の差分の小さな順で並び変えたターゲット[]の上位のインデックスリスト、差分リスト、ウェイトリストを出力
+  // 角度の差分からウェイト値への変換は、(角度の差分/合計)で出した比率の逆比を使い(逆比/逆比合計)で算出している
+  Scalar sum2[];
+  sum2.resize(direction.size());
+  indexList.resize(direction.size());
+  deltaAngle.resize(direction.size());
+  weights.resize(direction.size());
+
+  for(Integer k=0; k<direction.size(); k++){
+    indexList[k].resize(outPutCount[k]);
+    deltaAngle[k].resize(outPutCount[k]);
+    weights[k].resize(outPutCount[k]);
+    for(Integer i=0; i<outPutCount[k]; i++){
+      indexList[k].set(i, targetID[k][i]);
+      deltaAngle[k].set(i,delta[k][i]);
+      sum2[k] += 1/(delta[k][i]/sum[k]); // 差分の逆比を作り合計値を作成
+    }
+    for(Integer i=0; i<outPutCount[k]; i++){
+      weights[k].set(i, 1/(delta[k][i]/sum[k]) / sum2[k]); //逆比から改めて比（ウェイト値）を算出
+    }
+  }
 }

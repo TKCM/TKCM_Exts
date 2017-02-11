@@ -1,0 +1,442 @@
+{
+  "objectType" : "Graph",
+  "metadata" : {
+    "uiGraphZoom" : "{\n  \"value\" : 0.6777153611183167\n  }",
+    "uiGraphPan" : "{\n  \"x\" : 555.924893379623,\n  \"y\" : 97.74403230627377\n  }"
+    },
+  "title" : "GetSmallAngleOrderedListArray",
+  "ports" : [
+    {
+      "objectType" : "ExecPort",
+      "name" : "exec",
+      "nodePortType" : "IO",
+      "defaultValues" : {
+        "Execute" : {}
+        },
+      "execPortType" : "IO",
+      "typeSpec" : "Execute"
+      },
+    {
+      "objectType" : "ExecPort",
+      "name" : "direction",
+      "nodePortType" : "Out",
+      "defaultValues" : {
+        "Vec3[]" : []
+        },
+      "execPortType" : "In",
+      "typeSpec" : "Vec3[]"
+      },
+    {
+      "objectType" : "ExecPort",
+      "name" : "target",
+      "nodePortType" : "Out",
+      "defaultValues" : {
+        "Vec3[]" : []
+        },
+      "execPortType" : "In",
+      "typeSpec" : "Vec3[]"
+      },
+    {
+      "objectType" : "ExecPort",
+      "name" : "maxCount",
+      "nodePortType" : "Out",
+      "defaultValues" : {
+        "Integer" : 2
+        },
+      "execPortType" : "In",
+      "typeSpec" : "Integer"
+      },
+    {
+      "objectType" : "ExecPort",
+      "name" : "indexList",
+      "nodePortType" : "In",
+      "defaultValues" : {
+        "LocalL4UInt32Array[]" : []
+        },
+      "execPortType" : "Out",
+      "typeSpec" : "LocalL4UInt32Array[]"
+      },
+    {
+      "objectType" : "ExecPort",
+      "name" : "deltaAngle",
+      "nodePortType" : "In",
+      "defaultValues" : {
+        "LocalL4ScalarArray[]" : []
+        },
+      "execPortType" : "Out",
+      "typeSpec" : "LocalL4ScalarArray[]"
+      },
+    {
+      "objectType" : "ExecPort",
+      "name" : "weights",
+      "nodePortType" : "In",
+      "defaultValues" : {
+        "LocalL4ScalarArray[]" : []
+        },
+      "execPortType" : "Out",
+      "typeSpec" : "LocalL4ScalarArray[]"
+      }
+    ],
+  "extDeps" : {},
+  "presetGUID" : "827075D6DE482030AE07067B23F1807A",
+  "nodes" : [
+    {
+      "objectType" : "Inst",
+      "metadata" : {
+        "uiGraphPos" : "{\"x\":-410.395,\"y\":332.514}"
+        },
+      "name" : "GetAngleOrderedListCore",
+      "ports" : [
+        {
+          "objectType" : "InstPort",
+          "name" : "exec",
+          "nodePortType" : "IO"
+          },
+        {
+          "objectType" : "InstPort",
+          "name" : "direction",
+          "nodePortType" : "In"
+          },
+        {
+          "objectType" : "InstPort",
+          "name" : "target",
+          "nodePortType" : "In"
+          },
+        {
+          "objectType" : "InstPort",
+          "name" : "maxCount",
+          "nodePortType" : "In"
+          },
+        {
+          "objectType" : "InstPort",
+          "name" : "indexList",
+          "nodePortType" : "Out"
+          },
+        {
+          "objectType" : "InstPort",
+          "name" : "deltaAngle",
+          "nodePortType" : "Out"
+          },
+        {
+          "objectType" : "InstPort",
+          "name" : "weights",
+          "nodePortType" : "Out"
+          }
+        ],
+      "definition" : {
+        "objectType" : "Func",
+        "title" : "GetAngleOrderedList",
+        "ports" : [
+          {
+            "objectType" : "ExecPort",
+            "name" : "exec",
+            "nodePortType" : "IO",
+            "execPortType" : "IO",
+            "typeSpec" : "Execute"
+            },
+          {
+            "objectType" : "ExecPort",
+            "name" : "direction",
+            "nodePortType" : "Out",
+            "execPortType" : "In",
+            "typeSpec" : "Vec3[]"
+            },
+          {
+            "objectType" : "ExecPort",
+            "name" : "target",
+            "nodePortType" : "Out",
+            "execPortType" : "In",
+            "typeSpec" : "Vec3[]"
+            },
+          {
+            "objectType" : "ExecPort",
+            "name" : "maxCount",
+            "nodePortType" : "Out",
+            "execPortType" : "In",
+            "typeSpec" : "Integer"
+            },
+          {
+            "objectType" : "ExecPort",
+            "name" : "indexList",
+            "nodePortType" : "In",
+            "execPortType" : "Out",
+            "typeSpec" : "LocalL4UInt32Array[]"
+            },
+          {
+            "objectType" : "ExecPort",
+            "name" : "deltaAngle",
+            "nodePortType" : "In",
+            "execPortType" : "Out",
+            "typeSpec" : "LocalL4ScalarArray[]"
+            },
+          {
+            "objectType" : "ExecPort",
+            "name" : "weights",
+            "nodePortType" : "In",
+            "execPortType" : "Out",
+            "typeSpec" : "LocalL4ScalarArray[]"
+            }
+          ],
+        "extDeps" : {
+          "TKCM" : "*"
+          },
+        "code" : "dfgEntry {
+  GetAngleListArray(direction, target, maxCount, indexList, deltaAngle, weights);
+}
+"
+        }
+      },
+    {
+      "objectType" : "Inst",
+      "metadata" : {
+        "uiGraphPos" : "{\"x\":-594.446,\"y\":208.071}"
+        },
+      "name" : "UnitArray_1",
+      "ports" : [
+        {
+          "objectType" : "InstPort",
+          "name" : "exec",
+          "nodePortType" : "IO"
+          },
+        {
+          "objectType" : "InstPort",
+          "name" : "this",
+          "nodePortType" : "In"
+          },
+        {
+          "objectType" : "InstPort",
+          "name" : "result",
+          "nodePortType" : "Out"
+          }
+        ],
+      "executable" : "Fabric.Exts.Math.Func.UnitArray",
+      "presetGUID" : "3CA325C8BFF79D095CC68CB503FD0D48"
+      },
+    {
+      "objectType" : "Inst",
+      "metadata" : {
+        "uiGraphPos" : "{\"x\":-595.693,\"y\":295.25}"
+        },
+      "name" : "UnitArray_2",
+      "ports" : [
+        {
+          "objectType" : "InstPort",
+          "name" : "exec",
+          "nodePortType" : "IO"
+          },
+        {
+          "objectType" : "InstPort",
+          "name" : "this",
+          "nodePortType" : "In"
+          },
+        {
+          "objectType" : "InstPort",
+          "name" : "result",
+          "nodePortType" : "Out"
+          }
+        ],
+      "executable" : "Fabric.Exts.Math.Func.UnitArray",
+      "presetGUID" : "3CA325C8BFF79D095CC68CB503FD0D48"
+      },
+    {
+      "objectType" : "Inst",
+      "metadata" : {
+        "uiGraphPos" : "{\"x\":-25.0,\"y\":399.0}",
+        "uiCollapsedState" : "2"
+        },
+      "name" : "Cache_1",
+      "ports" : [
+        {
+          "objectType" : "InstPort",
+          "name" : "exec",
+          "nodePortType" : "IO"
+          },
+        {
+          "objectType" : "InstPort",
+          "name" : "value",
+          "nodePortType" : "In"
+          }
+        ],
+      "executable" : "Fabric.Core.Data.Cache",
+      "presetGUID" : "D903AFD981FE9214C69943F542D5FD60"
+      },
+    {
+      "objectType" : "Inst",
+      "metadata" : {
+        "uiGraphPos" : "{\"x\":-23.0,\"y\":443.0}",
+        "uiCollapsedState" : "2"
+        },
+      "name" : "Cache_2",
+      "ports" : [
+        {
+          "objectType" : "InstPort",
+          "name" : "exec",
+          "nodePortType" : "IO"
+          },
+        {
+          "objectType" : "InstPort",
+          "name" : "value",
+          "nodePortType" : "In"
+          }
+        ],
+      "executable" : "Fabric.Core.Data.Cache",
+      "presetGUID" : "D903AFD981FE9214C69943F542D5FD60"
+      },
+    {
+      "objectType" : "Inst",
+      "metadata" : {
+        "uiGraphPos" : "{\"x\":-23.0,\"y\":486.0}",
+        "uiCollapsedState" : "2"
+        },
+      "name" : "Cache_3",
+      "ports" : [
+        {
+          "objectType" : "InstPort",
+          "name" : "exec",
+          "nodePortType" : "IO"
+          },
+        {
+          "objectType" : "InstPort",
+          "name" : "value",
+          "nodePortType" : "In"
+          }
+        ],
+      "executable" : "Fabric.Core.Data.Cache",
+      "presetGUID" : "D903AFD981FE9214C69943F542D5FD60"
+      }
+    ],
+  "connections" : {
+    "direction" : [
+      "UnitArray_1.this"
+      ],
+    "target" : [
+      "UnitArray_2.this"
+      ],
+    "maxCount" : [
+      "GetAngleOrderedListCore.maxCount"
+      ],
+    "GetAngleOrderedListCore.indexList" : [
+      "Cache_1.value"
+      ],
+    "GetAngleOrderedListCore.deltaAngle" : [
+      "Cache_2.value"
+      ],
+    "GetAngleOrderedListCore.weights" : [
+      "Cache_3.value"
+      ],
+    "UnitArray_1.result" : [
+      "GetAngleOrderedListCore.direction"
+      ],
+    "UnitArray_2.result" : [
+      "GetAngleOrderedListCore.target"
+      ],
+    "Cache_1.value" : [
+      "indexList"
+      ],
+    "Cache_2.value" : [
+      "deltaAngle"
+      ],
+    "Cache_3.value" : [
+      "weights"
+      ]
+    },
+  "requiredPresets" : {
+    "Fabric.Exts.Math.Func.UnitArray" : {
+      "objectType" : "Func",
+      "metadata" : {
+        "uiNodeColor" : "{\n  \"r\" : 99,\n  \"g\" : 129,\n  \"b\" : 92\n  }",
+        "uiDocUrl" : "http://docs.fabric-engine.com/FabricEngine/2.4.0/HTML/KLExtensionsGuide/Math/Vec2.html",
+        "uiTooltip" : "Returns the unit vector of this one, throws and exception if almost zero length\n\n Supported by Vec2,Vec2_d,Vec2_i,Vec3,Vec3_d,Vec3_i,Vec4,Vec4_d,Vec4_i,Quat,Quat_d,Quat_i"
+        },
+      "title" : "Unit[]",
+      "ports" : [
+        {
+          "objectType" : "ExecPort",
+          "name" : "exec",
+          "nodePortType" : "IO",
+          "execPortType" : "IO",
+          "typeSpec" : "Execute"
+          },
+        {
+          "objectType" : "ExecPort",
+          "name" : "this",
+          "nodePortType" : "Out",
+          "defaultValues" : {
+            "Vec2[]" : [
+              {
+                "x" : 0,
+                "y" : 0
+                }
+              ]
+            },
+          "execPortType" : "In",
+          "typeSpec" : "$TYPE$[]"
+          },
+        {
+          "objectType" : "ExecPort",
+          "name" : "result",
+          "nodePortType" : "In",
+          "execPortType" : "Out",
+          "typeSpec" : "$TYPE$[]"
+          }
+        ],
+      "extDeps" : {
+        "Math" : "*"
+        },
+      "presetGUID" : "3CA325C8BFF79D095CC68CB503FD0D48",
+      "code" : "require Math;
+
+operator Math_Vec2_unit_task<<<index>>>(
+  io $TYPE$[] result
+, in $TYPE$[] this
+) {
+  result[index] = this[index < this.size() ? index : this.size() - 1].unit();
+}
+
+dfgEntry {
+  if( this.size() == 0) return;
+  Size task_size = this.size();
+  result.resize(task_size);
+  if(task_size < 10000 /* pex margin */) {
+    for(Size index = 0; index < task_size; index++) {
+      Math_Vec2_unit_task(index, result, this);
+    }
+  } else {
+    Math_Vec2_unit_task<<<task_size>>>(result, this);
+  }
+}
+"
+      },
+    "Fabric.Core.Data.Cache" : {
+      "objectType" : "Func",
+      "metadata" : {
+        "uiNodeColor" : "{\n  \"r\" : 214,\n  \"g\" : 191,\n  \"b\" : 103\n  }",
+        "uiAlwaysShowDaisyChainPorts" : "true",
+        "uiHeaderColor" : "{\n  \"r\" : 188,\n  \"g\" : 129,\n  \"b\" : 83\n  }"
+        },
+      "title" : "Cache",
+      "cacheRule" : "always",
+      "ports" : [
+        {
+          "objectType" : "ExecPort",
+          "name" : "exec",
+          "nodePortType" : "IO",
+          "execPortType" : "IO",
+          "typeSpec" : "Execute"
+          },
+        {
+          "objectType" : "ExecPort",
+          "name" : "value",
+          "nodePortType" : "Out",
+          "execPortType" : "In",
+          "typeSpec" : "$TYPE$"
+          }
+        ],
+      "extDeps" : {},
+      "presetGUID" : "D903AFD981FE9214C69943F542D5FD60",
+      "code" : "dfgEntry {
+}
+"
+      }
+    }
+  }
