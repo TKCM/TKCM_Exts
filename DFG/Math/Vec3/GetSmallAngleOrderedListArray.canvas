@@ -38,6 +38,19 @@
       },
     {
       "objectType" : "ExecPort",
+      "metadata" : {
+        "uiHardRange" : "(0, 90)"
+        },
+      "name" : "maxAngle_0to90",
+      "nodePortType" : "Out",
+      "defaultValues" : {
+        "Scalar" : 90
+        },
+      "execPortType" : "In",
+      "typeSpec" : "Scalar"
+      },
+    {
+      "objectType" : "ExecPort",
       "name" : "maxCount",
       "nodePortType" : "Out",
       "defaultValues" : {
@@ -78,7 +91,7 @@
       }
     ],
   "extDeps" : {},
-  "presetGUID" : "827075D6DE482030AE07067B23F1807A",
+  "presetGUID" : "3C215D7F625C5311AF30723070D4C1BC",
   "nodes" : [
     {
       "objectType" : "Inst",
@@ -100,6 +113,11 @@
         {
           "objectType" : "InstPort",
           "name" : "target",
+          "nodePortType" : "In"
+          },
+        {
+          "objectType" : "InstPort",
+          "name" : "maxAngle_0to90",
           "nodePortType" : "In"
           },
         {
@@ -150,6 +168,13 @@
             },
           {
             "objectType" : "ExecPort",
+            "name" : "maxAngle_0to90",
+            "nodePortType" : "Out",
+            "execPortType" : "In",
+            "typeSpec" : "Scalar"
+            },
+          {
+            "objectType" : "ExecPort",
             "name" : "maxCount",
             "nodePortType" : "Out",
             "execPortType" : "In",
@@ -181,7 +206,7 @@
           "TKCM" : "*"
           },
         "code" : "dfgEntry {
-  GetAngleListArray(direction, target, maxCount, indexList, deltaAngle, weights);
+  GetAngleListArray(direction, target, maxAngle_0to90, maxCount, indexList, deltaAngle, weights);
 }
 "
         }
@@ -311,6 +336,9 @@
       ],
     "target" : [
       "UnitArray_2.this"
+      ],
+    "maxAngle_0to90" : [
+      "GetAngleOrderedListCore.maxAngle_0to90"
       ],
     "maxCount" : [
       "GetAngleOrderedListCore.maxCount"

@@ -18,7 +18,6 @@
       },
     {
       "objectType" : "ExecPort",
-      "metadata" : {},
       "name" : "direction",
       "nodePortType" : "Out",
       "defaultValues" : {
@@ -34,7 +33,6 @@
       },
     {
       "objectType" : "ExecPort",
-      "metadata" : {},
       "name" : "target",
       "nodePortType" : "Out",
       "defaultValues" : {
@@ -50,6 +48,17 @@
       },
     {
       "objectType" : "ExecPort",
+      "metadata" : {},
+      "name" : "maxAngle_0to90",
+      "nodePortType" : "Out",
+      "defaultValues" : {
+        "Scalar" : 90
+        },
+      "execPortType" : "In",
+      "typeSpec" : "Scalar"
+      },
+    {
+      "objectType" : "ExecPort",
       "name" : "maxCount",
       "nodePortType" : "Out",
       "defaultValues" : {
@@ -60,7 +69,6 @@
       },
     {
       "objectType" : "ExecPort",
-      "metadata" : {},
       "name" : "indexList",
       "nodePortType" : "In",
       "defaultValues" : {
@@ -81,7 +89,6 @@
       },
     {
       "objectType" : "ExecPort",
-      "metadata" : {},
       "name" : "deltaAngle",
       "nodePortType" : "In",
       "defaultValues" : {
@@ -102,7 +109,6 @@
       },
     {
       "objectType" : "ExecPort",
-      "metadata" : {},
       "name" : "weights",
       "nodePortType" : "In",
       "defaultValues" : {
@@ -123,12 +129,12 @@
       }
     ],
   "extDeps" : {},
-  "presetGUID" : "E3DE9206C5B9C565F7480FD5E574FA7C",
+  "presetGUID" : "7069E07F576FBDCC49A4AF017A93C429",
   "nodes" : [
     {
       "objectType" : "Inst",
       "metadata" : {
-        "uiGraphPos" : "{\"x\":-410.395,\"y\":332.514}"
+        "uiGraphPos" : "{\"x\":-410.395,\"y\":335.063}"
         },
       "name" : "GetAngleOrderedListCore",
       "ports" : [
@@ -146,6 +152,14 @@
           "objectType" : "InstPort",
           "name" : "target",
           "nodePortType" : "In"
+          },
+        {
+          "objectType" : "InstPort",
+          "name" : "maxAngle_0to90",
+          "nodePortType" : "In",
+          "defaultValues" : {
+            "Scalar" : 90
+            }
           },
         {
           "objectType" : "InstPort",
@@ -195,6 +209,16 @@
             },
           {
             "objectType" : "ExecPort",
+            "metadata" : {
+              "uiHardRange" : "(0, 90)"
+              },
+            "name" : "maxAngle_0to90",
+            "nodePortType" : "Out",
+            "execPortType" : "In",
+            "typeSpec" : "Scalar"
+            },
+          {
+            "objectType" : "ExecPort",
             "name" : "maxCount",
             "nodePortType" : "Out",
             "execPortType" : "In",
@@ -236,7 +260,7 @@
   LocalL4ScalarArray wei[];
     wei.resize(1);
   
-  GetAngleListArray(directionArray, target, maxCount, index, dAngle, wei);
+  GetAngleListArray(directionArray, target, maxAngle_0to90, maxCount, index, dAngle, wei);
   
   indexList = index[0];
   deltaAngle = dAngle[0];
@@ -315,7 +339,7 @@
     {
       "objectType" : "Inst",
       "metadata" : {
-        "uiGraphPos" : "{\"x\":-732.627,\"y\":235.842}"
+        "uiGraphPos" : "{\"x\":-727.528,\"y\":196.328}"
         },
       "name" : "Unit_1",
       "ports" : [
@@ -341,7 +365,7 @@
     {
       "objectType" : "Inst",
       "metadata" : {
-        "uiGraphPos" : "{\"x\":-744.0990000000001,\"y\":339.088}"
+        "uiGraphPos" : "{\"x\":-730.078,\"y\":285.553}"
         },
       "name" : "UnitArray_1",
       "ports" : [
@@ -371,6 +395,9 @@
       ],
     "target" : [
       "UnitArray_1.this"
+      ],
+    "maxAngle_0to90" : [
+      "GetAngleOrderedListCore.maxAngle_0to90"
       ],
     "maxCount" : [
       "GetAngleOrderedListCore.maxCount"

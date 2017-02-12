@@ -54,8 +54,8 @@ function GetCloseOrderedList(
   Scalar sum;
   Integer outPutCount = 0;
   for(Integer i=0; i<distance.size(); i++){
-    if(distance[i] < maxDistance && maxCount > i){
-      sum += pow(distance[i], 3); // ウェイトの計算用に距離の合計値を作る  対象に近いほどウェイト値が強くなるように3乗した値を使用する
+    if(distance[i] < maxDistance && i < maxCount){
+      sum += pow(distance[i], 3); // ウェイトの計算用に距離の合計値を作る  （対象に近いほどウェイト値が強くなるように3乗した値を使用する）
       outPutCount += 1; // 条件によってターゲットから検出される数が変わるので、条件に合った数を数えておく
     }else{
       break;
@@ -70,10 +70,10 @@ function GetCloseOrderedList(
   for(Integer i=0; i<outPutCount; i++){
     orderedIndex.set(i, targetID[i]);
     orderedDistance.set(i,distance[i]);
-    sum2 += 1/(pow(distance[i], 3)/sum); // 逆比の合計を作る　
+    sum2 += 1/(pow(distance[i], 3)/sum); // 逆比の合計を作る　（対象に近いほどウェイト値が強くなるように3乗した値を使用する）
   }
   for(Integer i=0; i<outPutCount; i++){
-    weights.set(i, 1/(pow(distance[i], 3)/sum) / sum2); //逆比から改めて比（ウェイト値）を算出
+    weights.set(i, 1/(pow(distance[i], 3)/sum) / sum2); //逆比から改めて比（ウェイト値）を算出　（対象に近いほどウェイト値が強くなるように3乗した値を使用する）
   }
 }
 
@@ -155,8 +155,8 @@ function GetCloseOrderedListArray(
   outPutCount.resize(source.size());
   for(Integer k=0; k<source.size(); k++){
     for(Integer i=0; i<distance[k].size(); i++){
-      if(distance[k][i] < maxDistance && maxCount > i){
-        sum[k] += distance[k][i]; // ウェイトの計算用に距離の合計値を作る  対象に近いほどウェイト値が強くなるように3乗した値を使用する
+      if(distance[k][i] < maxDistance && i < maxCount){
+        sum[k] += pow(distance[k][i], 3); // ウェイトの計算用に距離の合計値を作る  （対象に近いほどウェイト値が強くなるように3乗した値を使用する）
         outPutCount[k] += 1; // 条件によって最終出力のターゲット数が変わるので、条件内のターゲット数を数えておく
       }else{
         break;
@@ -179,10 +179,10 @@ function GetCloseOrderedListArray(
     for(Integer i=0; i<outPutCount[k]; i++){
       orderedIndex[k].set(i, targetID[k][i]);
       orderedDistance[k].set(i,distance[k][i]);
-      sum2[k] += 1/(distance[k][i]/sum[k]); // 距離の逆比を作り合計値を作成
+      sum2[k] += 1/(pow(distance[k][i], 3)/sum[k]); // 距離の逆比を作り合計値を作成　（対象に近いほどウェイト値が強くなるように3乗した値を使用する）
     }
     for(Integer i=0; i<outPutCount[k]; i++){
-      weights[k].set(i, 1/(distance[k][i]/sum[k]) / sum2[k]); //逆比から改めて比（ウェイト値）を算出
+      weights[k].set(i, 1/(pow(distance[k][i], 3)/sum[k]) / sum2[k]); //逆比から改めて比（ウェイト値）を算出　（対象に近いほどウェイト値が強くなるように3乗した値を使用する）
     }
   }
 
@@ -194,7 +194,7 @@ function GetCloseOrderedListArray(
 // 取得はターゲットの配列番号、角度の差分、ウェイト値
 function Scalar Scalar.ToAngle?(){
   Scalar angle;
-  angle = (asin(this / 1) * 180) / PI;
+  angle = abs((asin(this / 1.0) * 180) / PI -90);
   return angle;
 }
 operator getAngleListArrayTask<<<index>>>(io Scalar delta[][], Vec3 direction[], Vec3 target[]){
@@ -207,6 +207,7 @@ operator getAngleListArrayTask<<<index>>>(io Scalar delta[][], Vec3 direction[],
 function GetAngleListArray(
   in Vec3 direction[],
   in Vec3 target[],
+  in Scalar maxAngle,
   in Integer maxCount,
   io LocalL4UInt32Array indexList[],
   io LocalL4ScalarArray deltaAngle[],
@@ -260,8 +261,8 @@ function GetAngleListArray(
   outPutCount.resize(direction.size());
   for(Integer k=0; k<direction.size(); k++){
     for(Integer i=0; i<delta[k].size(); i++){
-      if(maxCount > i){
-        sum[k] += delta[k][i]; // ウェイトの計算用に角度の差分の合計値を作る  対象に近いほどウェイト値が強くなるように3乗した値を使用する
+      if(delta[k][i] < maxAngle && i < maxCount){
+        sum[k] += pow(delta[k][i], 3); // ウェイトの計算用に角度の差分の合計値を作る  （対象に近いほどウェイト値が強くなるように3乗した値を使用する）
         outPutCount[k] += 1; // 条件によって最終出力のターゲット数が変わるので、条件内のターゲット数を数えておく
       }else{
         break;
@@ -283,10 +284,10 @@ function GetAngleListArray(
     for(Integer i=0; i<outPutCount[k]; i++){
       indexList[k].set(i, targetID[k][i]);
       deltaAngle[k].set(i,delta[k][i]);
-      sum2[k] += 1/(delta[k][i]/sum[k]); // 差分の逆比を作り合計値を作成
+      sum2[k] += 1/(pow(delta[k][i], 3)/sum[k]); // 差分の逆比を作り合計値を作成 （対象に近いほどウェイト値が強くなるように3乗した値を使用する）
     }
     for(Integer i=0; i<outPutCount[k]; i++){
-      weights[k].set(i, 1/(delta[k][i]/sum[k]) / sum2[k]); //逆比から改めて比（ウェイト値）を算出
+      weights[k].set(i, 1/(pow(delta[k][i], 3)/sum[k]) / sum2[k]); //逆比から改めて比（ウェイト値）を算出 （対象に近いほどウェイト値が強くなるように3乗した値を使用する）
     }
   }
 }
