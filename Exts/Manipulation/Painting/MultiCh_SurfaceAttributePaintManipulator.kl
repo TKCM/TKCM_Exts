@@ -99,9 +99,11 @@ function MultiCh_SurfaceAttributePaintCommand.addPaintData!(MultiCh_SurfaceAttri
 
 object MultiCh_SurfaceAttributePaintManipulator : MultiCh_SurfacePaintManipulator {
   String attributeName;
-  String normalizeChNames[];
+  String chNames[];
+  Index normalizeChNum[];
   Size activeCh;
   Boolean weightLock[];
+  Boolean activeChIsNormalizeChAndLockEnable;
 
   Integer paintMode; // 0=Paint, 1=Erase. 2=Smooth
   Scalar paintValLimit[2]; // [0]=min, [1]=max
@@ -175,29 +177,44 @@ function MultiCh_SurfaceAttributePaintManipulator.onStrokeEnd!(io MouseEvent mou
 
 /// \internal
 operator MultiCh_SurfaceSculptManipulator_paint<<<index>>>(
-  SurfacePaintManipulator_PointCollection collectedPoints,
-  Ref<ScalarAttribute> weightMapAttr,
+  in SurfacePaintManipulator_PointCollection collectedPoints,
+  in Ref<ScalarAttribute> weightMapAttr,
   io MultiCh_SurfaceAttributePaintManipulator_PaintData paintData,
-  Integer brushType, // 0=Paint, 1=Erase. 2=Smooth
-  Scalar paintValLimit[2], // [0]=min, [1]=max
+  in Integer brushType, // 0=Paint, 1=Erase. 2=Smooth
+  in Scalar paintValLimit[2], // [0]=min, [1]=max
   io Boolean paintedChecker[],
-  Scalar brushStrength,
+  in Scalar brushStrength,
+  in Boolean activeChIsNormalizeChAndLockEnable,
+  in Boolean weightLock[],
+  in String chNames[]
  ) {
   Scalar weight = collectedPoints.weights[index];
   Integer pointId = collectedPoints.pointIds[index];
   Scalar oldScalar = weightMapAttr.values[pointId];
   Scalar newScalar = oldScalar;
+  Scalar sumLock = 0.0;
+  if(activeChIsNormalizeChAndLockEnable){
+    for(Integer i=0; i<weightLock.size(); i++){
+      if(weightLock[i]){
+        Ref<ScalarAttribute> attr = paintData.mesh.getAttribute(chNames[i], ScalarAttribute);
+        sumLock += attr.values[index];
+      }
+    }
+  }
+
   switch (brushType){
     case 0: //airbrush
       if(oldScalar<paintValLimit[1]){
         newScalar = Math_linearInterpolate(oldScalar, Scalar(1.0), weight);
         newScalar = Math_min(newScalar, paintValLimit[1]);
+        newScalar = Math_min(newScalar, 1.0-sumLock);
       }
       break;
     case 1: //stamp
       if(!paintedChecker[pointId]){
         if(oldScalar<paintValLimit[1]){
           newScalar = Math_min(oldScalar+brushStrength, paintValLimit[1]);
+          newScalar = Math_min(newScalar, 1.0-sumLock);
         }
       }
       paintedChecker[pointId] = true;
@@ -207,6 +224,7 @@ operator MultiCh_SurfaceSculptManipulator_paint<<<index>>>(
         if(oldScalar<paintValLimit[1]){
           Scalar s = Math_max(oldScalar, brushStrength);
           newScalar = Math_min(s, paintValLimit[1]);
+          newScalar = Math_min(newScalar, 1.0-sumLock);
         }
       }
       paintedChecker[pointId] = true;
@@ -295,12 +313,13 @@ operator MultiCh_SurfaceAttributePaintManipulator_smoothAttributeData<<<index>>>
 operator Normalize<<<ii>>>(
   io MultiCh_SurfaceAttributePaintManipulator_PaintData paintData, 
   Integer pointIds[],
-  String normalizeChNames[], 
+  Index normalizeChNum[], 
   Size activeCh, 
   Boolean weightLock[], 
   Boolean paintedChecker[],
   io LocalL16UInt32Array IDs[],
   io LocalL16ScalarArray Weights[],
+  String chNames[],
   ){
   Size i = pointIds[ii];
   Scalar sum;
@@ -308,10 +327,11 @@ operator Normalize<<<ii>>>(
   Scalar otherValue;
   Size s = 0;
   //prepare sum values
-  for(Size j=0; j<normalizeChNames.size(); j++){
-    if(j != activeCh){
-      Ref<ScalarAttribute> attr = paintData.mesh.getAttribute(normalizeChNames[j], ScalarAttribute);
-      if(weightLock[j] == false){
+  for(Size j=0; j<normalizeChNum.size(); j++){
+    Index chNum = normalizeChNum[j];  //  normalizeChNumの配列番号　！＝　ノーマライズ対象のチャンネル番号　なので、チャンネル番号をchNumに抜き出しておく
+    if(chNum != activeCh){
+      Ref<ScalarAttribute> attr = paintData.mesh.getAttribute(chNames[chNum], ScalarAttribute);
+      if(weightLock[chNum] == false){
         sum += attr.values[i];
       }else{
         sumLock += attr.values[i];
@@ -320,9 +340,10 @@ operator Normalize<<<ii>>>(
   }
   //rest SkinValues
   if(paintData.newValues[ii]+sumLock == 1.0){
-    for(Size j=0; j<normalizeChNames.size(); j++){
-      if(j != activeCh){
-        Ref<ScalarAttribute> attr = paintData.mesh.getAttribute(normalizeChNames[j], ScalarAttribute);
+    for(Size j=0; j<normalizeChNum.size(); j++){
+      Index chNum = normalizeChNum[j];  //  normalizeChNumの配列番号　！＝　ノーマライズ対象のチャンネル番号　なので、チャンネル番号をchNumに抜き出しておく
+      if(chNum != activeCh && weightLock[chNum] == false){
+        Ref<ScalarAttribute> attr = paintData.mesh.getAttribute(chNames[chNum], ScalarAttribute);
         if(attr.values[i] > 0){
           IDs[i].first16[s] = j;
           IDs[i].count = s+1;
@@ -334,28 +355,32 @@ operator Normalize<<<ii>>>(
     }
   }
   //set Values
-  for(Size j=0; j<normalizeChNames.size(); j++){
-    Ref<ScalarAttribute> attr = paintData.mesh.getAttribute(normalizeChNames[j], ScalarAttribute);
+  for(Size j=0; j<normalizeChNum.size(); j++){
+    Index chNum = normalizeChNum[j];  //  normalizeChNumの配列番号　！＝　ノーマライズ対象のチャンネル番号　なので、チャンネル番号をchNumに抜き出しておく
+    Ref<ScalarAttribute> attr = paintData.mesh.getAttribute(chNames[chNum], ScalarAttribute);
     otherValue = round(attr.values[i] * 100)/100;
-    Ref<ScalarAttribute> settingCh = paintData.mesh.getAttribute(normalizeChNames[j], ScalarAttribute);
-    if(j != activeCh && weightLock[j] == false){
+    Ref<ScalarAttribute> settingCh = paintData.mesh.getAttribute(chNames[chNum], ScalarAttribute);
+    if(chNum != activeCh && weightLock[chNum] == false){
       Scalar set = 0.0;
       if(otherValue > 0){
         set =  round( (1.0-paintData.newValues[ii]-sumLock) * (otherValue/sum) *100) /100;
         paintData.mesh.setPointAttribute(i, settingCh, set );
       }
-    }else if(j == activeCh){
-      paintData.mesh.setPointAttribute(i, settingCh, paintData.newValues[ii]);
-    }else if(weightLock[j] == true){ // lock value
+    }
+ /*   if(chNum == activeCh){
+      paintData.mesh.setPointAttribute(i, settingCh, (1.0-paintData.newValues[ii]-sumLock) );
+    Scalar ssca=(1.0-paintData.newValues[ii]-sumLock);
+    report(chNum + "AAAAAAAAAAAAAAA" + ssca);
+    }*/
+    if(weightLock[chNum] == true){ // lock value
       paintData.mesh.setPointAttribute(i, settingCh, otherValue);
     } 
   }
   //set from restSkinValues
   if(sum == 0.0 && paintData.newValues[ii] != 1.0){ 
     for(Size j=0; j<IDs[i].count; j++){
-      Ref<ScalarAttribute> reset = paintData.mesh.getAttribute(normalizeChNames[IDs[i].first16[j]]);
+      Ref<ScalarAttribute> reset = paintData.mesh.getAttribute(chNames[ normalizeChNum[ IDs[i].first16[j] ] ]);
       paintData.mesh.setPointAttribute(i, reset, (1.0-paintData.newValues[ii]-sumLock)*Weights[i].first16[j]);
-      
     }
   }
 }
@@ -379,6 +404,7 @@ function MultiCh_SurfaceAttributePaintManipulator.onPaint!(io MouseEvent mouseEv
     paintData.pointIds = collectedPoints.pointIds;
     paintData.oldValues.resize(collectedPoints.pointIds.size());
     paintData.newValues.resize(collectedPoints.pointIds.size());
+
     switch(this.paintMode){
     case 0: // Paint
       MultiCh_SurfaceSculptManipulator_paint<<<nbPoints>>>(
@@ -388,7 +414,10 @@ function MultiCh_SurfaceAttributePaintManipulator.onPaint!(io MouseEvent mouseEv
         this.brushType,
         this.paintValLimit,
         this.paintedChecker,
-        this.brushStrength
+        this.brushStrength,
+        this.activeChIsNormalizeChAndLockEnable,
+        this.weightLock,
+        this.chNames
       );
       break;
     case 1: // Erase
@@ -419,7 +448,17 @@ function MultiCh_SurfaceAttributePaintManipulator.onPaint!(io MouseEvent mouseEv
     }
 
     if(this.normalize){
-      Normalize<<<nbPoints>>>(paintData, collectedPoints.pointIds, this.normalizeChNames, this.activeCh, this.weightLock, this.paintedChecker, this.IDs, this.Weights);
+      Normalize<<<nbPoints>>>(
+        paintData, 
+        collectedPoints.pointIds, 
+        this.normalizeChNum, 
+        this.activeCh, 
+        this.weightLock, 
+        this.paintedChecker, 
+        this.IDs, 
+        this.Weights, 
+        this.chNames
+      );
     }
     // do the command immedietly...
     paintData.doAction();

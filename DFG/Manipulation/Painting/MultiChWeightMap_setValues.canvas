@@ -1,0 +1,78 @@
+{
+  "objectType" : "Func",
+  "title" : "MultiChWeightMap_setValues",
+  "ports" : [
+    {
+      "objectType" : "ExecPort",
+      "name" : "exec",
+      "nodePortType" : "IO",
+      "defaultValues" : {
+        "Execute" : {}
+        },
+      "execPortType" : "IO",
+      "typeSpec" : "Execute"
+      },
+    {
+      "objectType" : "ExecPort",
+      "name" : "multiChWeightmap",
+      "nodePortType" : "IO",
+      "defaultValues" : {
+        "MultiChWeightmap" : null
+        },
+      "execPortType" : "IO",
+      "typeSpec" : "MultiChWeightmap"
+      },
+    {
+      "objectType" : "ExecPort",
+      "name" : "mesh",
+      "nodePortType" : "IO",
+      "defaultValues" : {
+        "PolygonMesh" : null
+        },
+      "execPortType" : "IO",
+      "typeSpec" : "PolygonMesh"
+      },
+    {
+      "objectType" : "ExecPort",
+      "name" : "execute",
+      "nodePortType" : "Out",
+      "defaultValues" : {
+        "Boolean" : false
+        },
+      "execPortType" : "In",
+      "typeSpec" : "Boolean"
+      },
+    {
+      "objectType" : "ExecPort",
+      "metadata" : {
+        "uiPersistValue" : "true"
+        },
+      "name" : "setChannel",
+      "nodePortType" : "Out",
+      "defaultValues" : {
+        "Index" : 0
+        },
+      "execPortType" : "In",
+      "typeSpec" : "Index"
+      },
+    {
+      "objectType" : "ExecPort",
+      "name" : "values",
+      "nodePortType" : "Out",
+      "defaultValues" : {
+        "Scalar[]" : []
+        },
+      "execPortType" : "In",
+      "typeSpec" : "Scalar[]"
+      }
+    ],
+  "extDeps" : {},
+  "presetGUID" : "8AD7763B9F8F8DE056D5BFA7F4721433",
+  "code" : "dfgEntry {
+  if(execute){
+    multiChWeightmap.setValues(mesh, setChannel, values);
+  }
+}
+",
+  "requiredPresets" : {}
+  }

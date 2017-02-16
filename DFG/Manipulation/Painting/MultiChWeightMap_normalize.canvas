@@ -1,0 +1,68 @@
+{
+  "objectType" : "Func",
+  "title" : "MultiChWeightMap_normalize",
+  "ports" : [
+    {
+      "objectType" : "ExecPort",
+      "name" : "exec",
+      "nodePortType" : "IO",
+      "defaultValues" : {
+        "Execute" : {}
+        },
+      "execPortType" : "IO",
+      "typeSpec" : "Execute"
+      },
+    {
+      "objectType" : "ExecPort",
+      "metadata" : {},
+      "name" : "multiChWeightmap",
+      "nodePortType" : "IO",
+      "defaultValues" : {
+        "MultiChWeightmap" : null
+        },
+      "execPortType" : "IO",
+      "typeSpec" : "MultiChWeightmap"
+      },
+    {
+      "objectType" : "ExecPort",
+      "metadata" : {},
+      "name" : "normalize_SelectCh",
+      "nodePortType" : "Out",
+      "defaultValues" : {
+        "Boolean[]" : []
+        },
+      "execPortType" : "In",
+      "typeSpec" : "Boolean[]"
+      },
+    {
+      "objectType" : "ExecPort",
+      "metadata" : {
+        "uiCombo" : "(\"Disable\", \"Enable_AllCh\", \"Enable_SelectCh\")"
+        },
+      "name" : "normalize_mode",
+      "nodePortType" : "Out",
+      "defaultValues" : {
+        "Integer" : 0
+        },
+      "execPortType" : "In",
+      "typeSpec" : "Integer"
+      }
+    ],
+  "extDeps" : {},
+  "presetGUID" : "ABD2CBCCD6CE760F1EFF1170634C6A9D",
+  "code" : "dfgEntry {
+  switch(normalize_mode){
+    case 0:
+      multiChWeightmap.normalize(false);
+      break;
+    case 1:
+      multiChWeightmap.normalize(true);
+      break;
+    case 2:
+      multiChWeightmap.normalize(true, normalize_SelectCh);
+      break;
+  }
+}
+",
+  "requiredPresets" : {}
+  }

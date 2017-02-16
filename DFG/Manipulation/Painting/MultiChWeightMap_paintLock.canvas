@@ -1,0 +1,45 @@
+{
+  "objectType" : "Func",
+  "title" : "MultiChWeightMap_paintLock",
+  "ports" : [
+    {
+      "objectType" : "ExecPort",
+      "name" : "exec",
+      "nodePortType" : "IO",
+      "defaultValues" : {
+        "Execute" : {}
+        },
+      "execPortType" : "IO",
+      "typeSpec" : "Execute"
+      },
+    {
+      "objectType" : "ExecPort",
+      "metadata" : {},
+      "name" : "multiChWeightmap",
+      "nodePortType" : "IO",
+      "defaultValues" : {
+        "MultiChWeightmap" : null
+        },
+      "execPortType" : "IO",
+      "typeSpec" : "MultiChWeightmap"
+      },
+    {
+      "objectType" : "ExecPort",
+      "metadata" : {},
+      "name" : "paintLock_Ch",
+      "nodePortType" : "Out",
+      "defaultValues" : {
+        "Boolean[]" : []
+        },
+      "execPortType" : "In",
+      "typeSpec" : "Boolean[]"
+      }
+    ],
+  "extDeps" : {},
+  "presetGUID" : "5F57C37D116F27458C02E0C75BAA224C",
+  "code" : "dfgEntry {
+  multiChWeightmap.lock(paintLock_Ch);
+}
+",
+  "requiredPresets" : {}
+  }

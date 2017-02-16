@@ -73,41 +73,41 @@ function MultiCh_SurfaceAttributeValuesDrawing.display!(
   this.meshTransform = meshTransform;
   Mat44 meshTransformM44 = meshTransform.toMat44();
   this.color = color;
-  if(this.instanceDrawing[0] != null){
+  if(this.instanceDrawing.size() != 0){
     for(Size i=0; i<this.instanceDrawing.size(); i++){
       this.instanceDrawingWire[i].setShape(this.shapes[this.type]);
       this.instanceDrawing[i].setShape(this.shapes[this.type]);
     }
-  }
-  for(Size i=0; i<this.instanceDrawing.size(); i++){
-    Xfo rest;
-    this.instanceDrawingWire[i].setInstanceUniform(InlineUniform('u_color', this.color*pow(activeWeiMapVal.values[i], 3)) );
-    rest = this.instanceDrawingWire[i].getTransform().getLocalXfo(0);
-    rest.tr = meshTransformM44.multiplyVector3(pointPositions[i]);
-    rest.sc = Vec3(this.drawSize) * Integer(Boolean(Math_max(activeWeiMapVal.values[i]-0.0001, 0.0)));
-    this.instanceDrawingWire[i].getTransform().setLocalXfo(0, rest);
+    for(Size i=0; i<this.instanceDrawing.size(); i++){
+      Xfo rest;
+      this.instanceDrawingWire[i].setInstanceUniform(InlineUniform('u_color', this.color*pow(activeWeiMapVal.values[i], 3)) );
+      rest = this.instanceDrawingWire[i].getTransform().getLocalXfo(0);
+      rest.tr = meshTransformM44.multiplyVector3(pointPositions[i]);
+      rest.sc = Vec3(this.drawSize) * Integer(Boolean(Math_max(activeWeiMapVal.values[i]-0.0001, 0.0)));
+      this.instanceDrawingWire[i].getTransform().setLocalXfo(0, rest);
 
-    this.instanceDrawing[i].setInstanceUniform(InlineUniform('u_color', this.color));
-    rest = this.instanceDrawing[i].getTransform().getLocalXfo(0);
-    rest.tr = meshTransformM44.multiplyVector3(pointPositions[i]);
-    rest.sc = Vec3(this.drawSize) * activeWeiMapVal.values[i];
-    this.instanceDrawing[i].getTransform().setLocalXfo(0, rest);
-  }
-  this.attr = activeWeiMapVal;
-  this.pointPositions = pointPositions;
-  if(this.drawSize > 0.5){
-    if(!this.instanceDrawing[0].hasMaterial(this.attributeValueDrawingMaterial)){
-      for(Size i=0; i<this.instanceDrawing.size(); i++){
-        this.instanceDrawingWire[i].addMaterial(this.attributeValueDrawingWireMaterial);
-        this.instanceDrawing[i].addMaterial(this.attributeValueDrawingMaterial);
+      this.instanceDrawing[i].setInstanceUniform(InlineUniform('u_color', this.color));
+      rest = this.instanceDrawing[i].getTransform().getLocalXfo(0);
+      rest.tr = meshTransformM44.multiplyVector3(pointPositions[i]);
+      rest.sc = Vec3(this.drawSize) * activeWeiMapVal.values[i];
+      this.instanceDrawing[i].getTransform().setLocalXfo(0, rest);
+    }
+    this.attr = activeWeiMapVal;
+    this.pointPositions = pointPositions;
+    if(this.drawSize > 0.5){
+      if(!this.instanceDrawing[0].hasMaterial(this.attributeValueDrawingMaterial)){
+        for(Size i=0; i<this.instanceDrawing.size(); i++){
+          this.instanceDrawingWire[i].addMaterial(this.attributeValueDrawingWireMaterial);
+          this.instanceDrawing[i].addMaterial(this.attributeValueDrawingMaterial);
+        }
       }
     }
-  }
-  else {
-    if(this.instanceDrawing[0] != null && this.instanceDrawing[0].hasMaterial(this.attributeValueDrawingMaterial)){
-			for(Size i=0; i<this.instanceDrawing.size(); i++){
-        this.instanceDrawingWire[i].removeMaterial(this.attributeValueDrawingWireMaterial);
-        this.instanceDrawing[i].removeMaterial(this.attributeValueDrawingMaterial);
+    else {
+      if(this.instanceDrawing[0] != null && this.instanceDrawing[0].hasMaterial(this.attributeValueDrawingMaterial)){
+  			for(Size i=0; i<this.instanceDrawing.size(); i++){
+          this.instanceDrawingWire[i].removeMaterial(this.attributeValueDrawingWireMaterial);
+          this.instanceDrawing[i].removeMaterial(this.attributeValueDrawingMaterial);
+        }
       }
     }
   }

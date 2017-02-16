@@ -65,17 +65,11 @@ inline MultiChWeightmap.prepareCh!(Size chCount,  Color colors[]){
         this.chNames[i] = 'weightMap_ch'+i;
         this.colors[i] = colors[i];
       }
-      this.colorSetted = true;
     }else{
       setError("count of channel is not same size fo colorArray!!  channel count = "+chCount+" : colors.size() = "+colors.size() );
     }
   }
-  if(!this.colorSetted){
-    for(Integer i=0; i<chCount; i++){
-      this.colors[i] = colors[i];
-    }
-    this.colorSetted = true;
-  }
+  this.colors = colors;
 }
 
 inline MultiChWeightmap.prepareCh!(Size chCount){
@@ -278,6 +272,7 @@ operator setPointAttributeTask<<<i>>>(io PolygonMeshTopology mesh, io Scalar tar
 
 inline MultiChWeightmap.connect!(PolygonMesh mesh, Xfo meshTransform){
   this.meshTransform = meshTransform;
+
   if(!this.allChConnected ){
     if(this.mesh == null){
       this.mesh = mesh;
@@ -397,6 +392,15 @@ inline MultiChWeightmap.activateManipulator!(){
   }
   if(!this.paintManipulator.hasTargetGeometry(this.instance))
     this.paintManipulator.addTargetGeometry(this.instance);
+  if(this.oldActiveCh != this.activeCh){
+    for(Integer i=0; i<this.paintManipulator.normalizeChNum.size(); i++){
+      this.paintManipulator.activeChIsNormalizeChAndLockEnable = false;
+      if(this.activeCh == this.paintManipulator.normalizeChNum[i] || this.paintManipulator.weightLock[ this.paintManipulator.normalizeChNum[i] ]){
+        this.paintManipulator.activeChIsNormalizeChAndLockEnable = true;
+        break;
+      }
+    }
+  }
   if(eventDispatcher.activeManipulator() != this.name+'PaintManipulator')
   {
     // activate the manipulator
@@ -411,19 +415,73 @@ inline MultiChWeightmap.activateManipulator!(){
   this.paintManipulator.valueDrawing.display(pointPositions, attr, this.colors[this.activeCh], this.meshTransform);
   this.instance.setInstanceUniform(InlineUniform('u_color', this.colors[this.activeCh]));
   this.paintManipulator.weightLock = this.weightLock;
+  this.paintManipulator.chNames = this.chNames;
 }
-
-function MultiChWeightmap.normalize!(Boolean enable, String normalizeChNames[]){
-  if(enable && !this.paintManipulator.normalize && normalizeChNames.size()!=0){
-    this.paintManipulator.normalizeChNames = normalizeChNames;
+//  複数のマップバリューのノーマライズをON/OFFする
+function MultiChWeightmap.normalize!(Boolean enable, Index normalizeChNum[]){
+  //  既に登録されているノーマライズ対象チャンネル数が変更された場合に、ノーマライズに必要な情報を更新する
+  if(enable && this.paintManipulator.normalizeChNum.size() != normalizeChNum.size() && normalizeChNum.size()!=0){
+    this.paintManipulator.normalizeChNum = normalizeChNum;
     this.paintManipulator.IDs.resize(this.mesh.pointCount());
     this.paintManipulator.Weights.resize(this.mesh.pointCount());
   }
-  this.paintManipulator.normalize = enable;
+  //  アクティブチャンネルがノーマライズ対象であればノーマライズ処理を有効にする
+  for(Integer i=0; i<normalizeChNum.size(); i++){
+    this.paintManipulator.normalize = false;
+    if(this.activeCh == normalizeChNum[i]){
+      this.paintManipulator.normalize = enable;
+      break;
+    }
+  }
 }
-
+//  ノーマライズを行うチャンネルをBooleanの配列で指定する場合に使用
+//  Boolean[]でtrueだった配列番号（＝チャンネル番号）をnormalizeChNumに格納し↑のメソッドへ投げる
+function MultiChWeightmap.normalize!(Boolean enable, Boolean normalizeCh[]){
+  Size count = normalizeCh.size();
+  if(this.chNames.size() < normalizeCh.size()){
+    count = this.chNames.size();
+  }
+  Index normalizeChNum[];
+  for(Integer i=0; i<count; i++){
+    if(normalizeCh[i]){
+      normalizeChNum.push(i);
+    } 
+  }
+  this.normalize(enable, normalizeChNum);
+}
+//  全てのチャンネルに対してノーマライズをOn/Offする場合に使用
+//  全てのチャンネル番号をnormalizeChNumに格納し↑のメソッドへ投げる
 function MultiChWeightmap.normalize!(Boolean enable){
-  this.normalize(enable, this.chNames);
+  Index normalizeChNum[];
+  normalizeChNum.resize(this.chNames.size());
+  for(Integer i=0; i<this.chNames.size(); i++){
+    normalizeChNum[i] = i;
+  }
+  this.normalize(enable, normalizeChNum);
+}
+//  指定したチャンネルに値を設定する
+function MultiChWeightmap.setValues!(io PolygonMesh mesh, Index setChannel, Scalar values[]){
+  if(this.chCount < setChannel){
+    setError("MultiChWeightmap.setValues node : setChannel is range out map channel count." + "setChannel = "+setChannel+"channel count = "+this.chCount);
+  }else if(mesh.pointCount() != values.size()){
+    setError("MultiChWeightmap.setValues node : not same!! mesh point count is "+mesh.pointCount()+" : values count is "+values.size());
+  }else{
+    this.oldChCount = this.chCount;
+    //  マップバリューの受け渡し場所の.temporaryLoadAttrがチャンネル数と同じだけ存在しない場合に準備し、その後一旦nullにしておく
+    if(this.temporaryLoadAttr.size() != this.chCount){
+      this.temporaryLoadAttr.resize(this.chCount);
+      for(Integer i=0; i<this.chCount; i++){
+        this.temporaryLoadAttr[i] = ScalarAttribute();
+        this.temporaryLoadAttr[i] = null;
+      }
+    }
+    //  指定チャンネルへのバリュー受け渡し場所にデータを入れる
+    this.temporaryLoadAttr[setChannel] = ScalarAttribute();
+    this.temporaryLoadAttr[setChannel].values = values;
+    //  渡したバリューをウェイトマップへ再コネクト
+    this.allChConnected = false;
+    this.connect(mesh, this.meshTransform);
+  }
 }
 // 
 ///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
