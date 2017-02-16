@@ -4,7 +4,7 @@
     "uiGraphZoom" : "{\n  \"value\" : 0.472993016242981\n  }",
     "uiGraphPan" : "{\n  \"x\" : 736.5067138671875,\n  \"y\" : -70.58828735351563\n  }"
     },
-  "title" : "MergeMeshClonesAndModifier_2",
+  "title" : "MergeMeshClonesAndModifier",
   "ports" : [
     {
       "objectType" : "ExecPort",
@@ -35,7 +35,7 @@
       "name" : "mode",
       "nodePortType" : "Out",
       "defaultValues" : {
-        "Integer" : 1
+        "Integer" : 0
         },
       "execPortType" : "In",
       "typeSpec" : "Integer"
@@ -126,7 +126,7 @@
       }
     ],
   "extDeps" : {},
-  "presetGUID" : "CEC5B49AF84F099A27DCBB20BB89C2D8",
+  "presetGUID" : "2129252B2CEDB343F521B965F3B70A14",
   "nodes" : [
     {
       "objectType" : "Inst",
@@ -288,7 +288,10 @@ operator MergedMeshModifierTask2<<<index>>>(
   Size XfoID = index / sourceMeshPointCount;
   Size sourceMeshPoiID = index % sourceMeshPointCount;
   
-  for(Integer j=0; j<BSIndexList[XfoID].count; j++){
+  Size count;
+  count = Math_min(BSIndexList[XfoID].count, blendshapeDelta.size());
+  
+  for(Integer j=0; j<count; j++){
     position += blendshapeDelta[ BSIndexList[XfoID].first4[j] ].get(sourceMeshPoiID) * blendshapeWeights[XfoID].first4[j];
   }
   position = updateXfo[XfoID].transformVector(sourcePositions[sourceMeshPoiID] + position);
