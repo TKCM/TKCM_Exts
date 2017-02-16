@@ -1,8 +1,8 @@
 {
   "objectType" : "Graph",
   "metadata" : {
-    "uiGraphZoom" : "{\n  \"value\" : 0.7926589250564575\n  }",
-    "uiGraphPan" : "{\n  \"x\" : 472.41162109375,\n  \"y\" : -40.81539916992188\n  }"
+    "uiGraphZoom" : "{\n  \"value\" : 0.8226137161254883\n  }",
+    "uiGraphPan" : "{\n  \"x\" : -409.6065063476563,\n  \"y\" : -35.27568435668945\n  }"
     },
   "title" : "MultiChWeightMap_painter",
   "ports" : [
@@ -239,66 +239,12 @@
         },
       "execPortType" : "In",
       "typeSpec" : "UInt32"
-      },
-    {
-      "objectType" : "ExecPort",
-      "metadata" : {
-        "uiPersistValue" : "true"
-        },
-      "name" : "save_Enable",
-      "nodePortType" : "Out",
-      "defaultValues" : {
-        "Boolean" : true
-        },
-      "execPortType" : "In",
-      "typeSpec" : "Boolean"
-      },
-    {
-      "objectType" : "ExecPort",
-      "metadata" : {
-        "uiPersistValue" : "true"
-        },
-      "name" : "save_ExternalFile",
-      "nodePortType" : "Out",
-      "defaultValues" : {
-        "Boolean" : false
-        },
-      "execPortType" : "In",
-      "typeSpec" : "Boolean"
-      },
-    {
-      "objectType" : "ExecPort",
-      "metadata" : {
-        "uiPersistValue" : "true"
-        },
-      "name" : "save_FolderPath",
-      "nodePortType" : "Out",
-      "defaultValues" : {
-        "FilePath" : {
-          "handle" : true
-          }
-        },
-      "execPortType" : "In",
-      "typeSpec" : "FilePath"
-      },
-    {
-      "objectType" : "ExecPort",
-      "metadata" : {
-        "uiPersistValue" : "true"
-        },
-      "name" : "save_FileName",
-      "nodePortType" : "Out",
-      "defaultValues" : {
-        "String" : ""
-        },
-      "execPortType" : "In",
-      "typeSpec" : "String"
       }
     ],
   "extDeps" : {
     "TKCM" : "*"
     },
-  "presetGUID" : "85357129CDC5C81EC39F9E35938C5B97",
+  "presetGUID" : "AB93DCF4491E5A45CE37C0931EF075A4",
   "nodes" : [
     {
       "objectType" : "Inst",
@@ -669,7 +615,7 @@
     {
       "objectType" : "Inst",
       "metadata" : {
-        "uiGraphPos" : "{\"x\":798.981,\"y\":151.18}"
+        "uiGraphPos" : "{\"x\":811.1369999999999,\"y\":151.18}"
         },
       "name" : "MultiChWeightMap_castomCommand",
       "ports" : [
@@ -758,141 +704,6 @@
         "code" : "dfgEntry {
   multiChWeightmap.paintManipulator.callHostCommand.setEvalCanvasNode(canvasGraphName, portName);
   multiChWeightmap.setCallHostCommandMode(extMode);
-}
-"
-        }
-      },
-    {
-      "objectType" : "Inst",
-      "metadata" : {
-        "uiGraphPos" : "{\"x\":1254.74,\"y\":203.749}"
-        },
-      "name" : "MultiChWeightMap_save",
-      "ports" : [
-        {
-          "objectType" : "InstPort",
-          "name" : "exec",
-          "nodePortType" : "IO"
-          },
-        {
-          "objectType" : "InstPort",
-          "name" : "multiChWeightmap",
-          "nodePortType" : "IO"
-          },
-        {
-          "objectType" : "InstPort",
-          "name" : "save_Enable",
-          "nodePortType" : "In"
-          },
-        {
-          "objectType" : "InstPort",
-          "name" : "save_ExternalFile",
-          "nodePortType" : "In"
-          },
-        {
-          "objectType" : "InstPort",
-          "name" : "save_FolderPath",
-          "nodePortType" : "In"
-          },
-        {
-          "objectType" : "InstPort",
-          "name" : "save_FileName",
-          "nodePortType" : "In"
-          }
-        ],
-      "definition" : {
-        "objectType" : "Func",
-        "title" : "MultiChWeightMap_save",
-        "ports" : [
-          {
-            "objectType" : "ExecPort",
-            "metadata" : {
-              "uiPersistValue" : "true"
-              },
-            "name" : "exec",
-            "nodePortType" : "IO",
-            "defaultValues" : {
-              "Execute" : {}
-              },
-            "execPortType" : "IO",
-            "typeSpec" : "Execute"
-            },
-          {
-            "objectType" : "ExecPort",
-            "metadata" : {
-              "uiPersistValue" : "true"
-              },
-            "name" : "multiChWeightmap",
-            "nodePortType" : "IO",
-            "defaultValues" : {
-              "MultiChWeightmap" : null
-              },
-            "execPortType" : "IO",
-            "typeSpec" : "MultiChWeightmap"
-            },
-          {
-            "objectType" : "ExecPort",
-            "metadata" : {
-              "uiPersistValue" : "true"
-              },
-            "name" : "save_Enable",
-            "nodePortType" : "Out",
-            "defaultValues" : {
-              "Boolean" : true
-              },
-            "execPortType" : "In",
-            "typeSpec" : "Boolean"
-            },
-          {
-            "objectType" : "ExecPort",
-            "metadata" : {
-              "uiPersistValue" : "true"
-              },
-            "name" : "save_ExternalFile",
-            "nodePortType" : "Out",
-            "defaultValues" : {
-              "Boolean" : false
-              },
-            "execPortType" : "In",
-            "typeSpec" : "Boolean"
-            },
-          {
-            "objectType" : "ExecPort",
-            "metadata" : {
-              "uiPersistValue" : "true"
-              },
-            "name" : "save_FolderPath",
-            "nodePortType" : "Out",
-            "defaultValues" : {
-              "FilePath" : {
-                "handle" : true
-                }
-              },
-            "execPortType" : "In",
-            "typeSpec" : "FilePath"
-            },
-          {
-            "objectType" : "ExecPort",
-            "metadata" : {
-              "uiPersistValue" : "true"
-              },
-            "name" : "save_FileName",
-            "nodePortType" : "Out",
-            "defaultValues" : {
-              "String" : ""
-              },
-            "execPortType" : "In",
-            "typeSpec" : "String"
-            }
-          ],
-        "extDeps" : {
-          "TKCM" : "*"
-          },
-        "code" : "dfgEntry {
-  if(multiChWeightmap == null){
-    multiChWeightmap = MultiChWeightmap();
-  }
-  multiChWeightmap.save(save_Enable, save_ExternalFile, save_FolderPath, save_FileName);
 }
 "
         }
@@ -1009,19 +820,7 @@
       "MultiChWeightMap_castomCommand.portName"
       ],
     "eval" : [
-      "MultiChWeightMap_save.exec"
-      ],
-    "save_Enable" : [
-      "MultiChWeightMap_save.save_Enable"
-      ],
-    "save_ExternalFile" : [
-      "MultiChWeightMap_save.save_ExternalFile"
-      ],
-    "save_FolderPath" : [
-      "MultiChWeightMap_save.save_FolderPath"
-      ],
-    "save_FileName" : [
-      "MultiChWeightMap_save.save_FileName"
+      "MultiChWeightMap_castomCommand.exec"
       ],
     "MultiChWeightMap_core.multiChWeightmap" : [
       "MultiChWeightMap_normalize.multiChWeightmap"
@@ -1042,9 +841,6 @@
       "If_1.cond"
       ],
     "MultiChWeightMap_castomCommand.multiChWeightmap" : [
-      "MultiChWeightMap_save.multiChWeightmap"
-      ],
-    "MultiChWeightMap_save.multiChWeightmap" : [
       "multiChWeightmap"
       ],
     "MultiChWeightMap_normalize.multiChWeightmap" : [
