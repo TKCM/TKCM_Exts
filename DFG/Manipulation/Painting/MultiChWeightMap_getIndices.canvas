@@ -53,7 +53,7 @@
       "metadata" : {
         "uiPersistValue" : "true"
         },
-      "name" : "mapAttr_IDs",
+      "name" : "mapAttr_Ch",
       "nodePortType" : "Out",
       "defaultValues" : {
         "String" : "0,1,2"
@@ -66,7 +66,7 @@
       "metadata" : {
         "uiPersistValue" : "true"
         },
-      "name" : "mapAttr_Names",
+      "name" : "mapAttr_Name",
       "nodePortType" : "Out",
       "defaultValues" : {
         "String[]" : [
@@ -118,9 +118,9 @@
   "extDeps" : {
     "TKCM" : "*"
     },
-  "presetGUID" : "C8BC7EB6D9367B13E7592C2E56BDAE54",
+  "presetGUID" : "3AFEB2191B98E16D871BDAE3FD053053",
   "code" : "dfgEntry {
-  indices = multiChWeightMap.getIndices(mode, mapAttrSelect, mapAttr_IDs, mapAttr_Names, logic, border);
+  indices = multiChWeightMap.getIndices(mode, mapAttrSelect, mapAttr_Ch, mapAttr_Name, logic, border);
 }",
   "requiredPresets" : {}
   }
