@@ -126,7 +126,7 @@
       }
     ],
   "extDeps" : {},
-  "presetGUID" : "2129252B2CEDB343F521B965F3B70A14",
+  "presetGUID" : "EA157EF8B583D9224AA684C2944C5B48",
   "nodes" : [
     {
       "objectType" : "Inst",
@@ -290,6 +290,7 @@ operator MergedMeshModifierTask2<<<index>>>(
   
   Size count;
   count = Math_min(BSIndexList[XfoID].count, blendshapeDelta.size());
+  count = Math_min(blendshapeWeights[XfoID].count, count);
   
   for(Integer j=0; j<count; j++){
     position += blendshapeDelta[ BSIndexList[XfoID].first4[j] ].get(sourceMeshPoiID) * blendshapeWeights[XfoID].first4[j];
