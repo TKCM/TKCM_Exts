@@ -1,8 +1,8 @@
 {
   "objectType" : "Graph",
   "metadata" : {
-    "uiGraphZoom" : "{\n  \"value\" : 0.472993016242981\n  }",
-    "uiGraphPan" : "{\n  \"x\" : 736.5067138671875,\n  \"y\" : -70.58828735351563\n  }"
+    "uiGraphZoom" : "{\n  \"value\" : 0.8227867484092712\n  }",
+    "uiGraphPan" : "{\n  \"x\" : 863.89453125,\n  \"y\" : -397.5216674804688\n  }"
     },
   "title" : "MergeMeshClonesAndModifier",
   "ports" : [
@@ -126,7 +126,7 @@
       }
     ],
   "extDeps" : {},
-  "presetGUID" : "EA157EF8B583D9224AA684C2944C5B48",
+  "presetGUID" : "A9A5A06C7EE2F676F05F3498631BCFBF",
   "nodes" : [
     {
       "objectType" : "Inst",
@@ -288,15 +288,13 @@ operator MergedMeshModifierTask2<<<index>>>(
   Size XfoID = index / sourceMeshPointCount;
   Size sourceMeshPoiID = index % sourceMeshPointCount;
   
-  Size count;
-  count = Math_min(BSIndexList[XfoID].count, blendshapeDelta.size());
-  count = Math_min(blendshapeWeights[XfoID].count, count);
-  
-  for(Integer j=0; j<count; j++){
-    position += blendshapeDelta[ BSIndexList[XfoID].first4[j] ].get(sourceMeshPoiID) * blendshapeWeights[XfoID].first4[j];
+  if(blendshapeWeights[XfoID].count == BSIndexList[XfoID].count){
+    for(Integer j=0; j<blendshapeWeights[XfoID].count; j++){
+      position += blendshapeDelta[ BSIndexList[XfoID].first4[j] ].get(sourceMeshPoiID) * blendshapeWeights[XfoID].first4[j];
+    }
+    position = updateXfo[XfoID].transformVector(sourcePositions[sourceMeshPoiID] + position);
+    mesh.setPointAttribute( i, positions, position );
   }
-  position = updateXfo[XfoID].transformVector(sourcePositions[sourceMeshPoiID] + position);
-  mesh.setPointAttribute( i, positions, position );
 }
 
 dfgEntry {
@@ -304,7 +302,9 @@ dfgEntry {
   baseMeshPointCount = this.pointCount() - source.pointCount()*mergedXfos.size();
   
   if(mergedXfos.size() != updateXfos.size()){
-    setError(\"mergedXfos count don't same updateXfos count. mergedXfos is \"+mergedXfos.size()+\" : updateXfos is \"+ updateXfos.size());
+    setError(\"MergedMeshModifier node : mergedXfos count don't same updateXfos count. mergedXfos is \"+mergedXfos.size()+\" : updateXfos is \"+ updateXfos.size());
+  }else if(blendShapeIndexList[0].others[0] > blendshapeDelta.size()){
+    setError(\"MergedMeshModifier node : IndexList require count = \"+blendShapeIndexList[0].others[0]+\". But blend shape target count = \"+blendshapeDelta.size());
   }else{
     Ref<Vec3Attribute> positionsAttribute = this.getAttributes().positionsAttribute;
     Ref<Vec3Attribute> positionsAttribute2 = source.getAttributes().positionsAttribute;
@@ -648,7 +648,7 @@ dfgEntry {
     {
       "objectType" : "Inst",
       "metadata" : {
-        "uiGraphPos" : "{\"x\":-675.524,\"y\":831.068}",
+        "uiGraphPos" : "{\"x\":-675.524,\"y\":821.345}",
         "uiCollapsedState" : "2"
         },
       "name" : "PassIn_3",
@@ -670,7 +670,7 @@ dfgEntry {
     {
       "objectType" : "Inst",
       "metadata" : {
-        "uiGraphPos" : "{\"x\":-675.524,\"y\":884.952}",
+        "uiGraphPos" : "{\"x\":-681.6,\"y\":883.736}",
         "uiCollapsedState" : "2"
         },
       "name" : "PassIn_4",

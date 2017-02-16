@@ -120,11 +120,19 @@
       }
     ],
   "extDeps" : {},
-  "presetGUID" : "FD4224B0CDF9E420DBE1E40256847963",
+  "presetGUID" : "C2CC453143FED7102DE86F803BBE5BF6",
   "code" : "dfgEntry {
-  for(Integer i=0; i<indexList.count; i++){
-    result += target[indexList.first4[i]] * weights.first4[i];
-  }
+  Vec3 re[];
+  re.resize(1);
+  LocalL4UInt32Array id[];
+  id.resize(1);
+  id[0] = indexList;
+  LocalL4ScalarArray we[];
+  we.resize(1);
+  we[0] = weights;
+  re.mulWeight(target, id, we);
+  
+  result = re[0];
 }
 ",
   "requiredPresets" : {}

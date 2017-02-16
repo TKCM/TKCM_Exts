@@ -105,16 +105,9 @@
       }
     ],
   "extDeps" : {},
-  "presetGUID" : "C78101BF3D31C623FFCA3072A961810F",
-  "code" : "operator MulWeightArrayTask<<<i>>>(io Vec3 result[], in Vec3 target[], in LocalL4UInt32Array indexList[], in LocalL4ScalarArray weights[]){
-  for(Integer j=0; j<indexList[i].count; j++){
-    result[i] += target[indexList[i].first4[j]] * weights[i].first4[j];
-  }
-}
-
-dfgEntry {
-  result.resize(indexList.size());
-  MulWeightArrayTask<<<indexList.size()>>>(result, target, indexList, weights);
+  "presetGUID" : "2E9619747AAE5ACAB18FACF01A5634A7",
+  "code" : "dfgEntry {
+  result.mulWeight(target, indexList, weights);
 }
 ",
   "requiredPresets" : {}

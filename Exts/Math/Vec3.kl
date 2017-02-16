@@ -75,6 +75,9 @@ function GetCloseOrderedList(
   for(Integer i=0; i<outPutCount; i++){
     weights.set(i, 1/(pow(distance[i], 3)/sum) / sum2); //逆比から改めて比（ウェイト値）を算出　（対象に近いほどウェイト値が強くなるように3乗した値を使用する）
   }
+  //  ターゲットの数を格納しておく
+  orderedIndex.others.resize(1);
+  orderedIndex.others[0] = target.size();
 }
 
 //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -185,7 +188,9 @@ function GetCloseOrderedListArray(
       weights[k].set(i, 1/(pow(distance[k][i], 3)/sum[k]) / sum2[k]); //逆比から改めて比（ウェイト値）を算出　（対象に近いほどウェイト値が強くなるように3乗した値を使用する）
     }
   }
-
+  //  ターゲットの数を格納しておく
+  orderedIndex[0].others.resize(1);
+  orderedIndex[0].others[0] = target.size();
 }
 
 //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -288,6 +293,34 @@ function GetAngleListArray(
     }
     for(Integer i=0; i<outPutCount[k]; i++){
       weights[k].set(i, 1/(pow(delta[k][i], 3)/sum[k]) / sum2[k]); //逆比から改めて比（ウェイト値）を算出 （対象に近いほどウェイト値が強くなるように3乗した値を使用する）
+    }
+  }
+  //  ターゲットの数を格納しておく
+  indexList[0].others.resize(1);
+  indexList[0].others[0] = target.size();
+}
+
+//////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+// MulWeight /////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+operator MulWeightArrayTask<<<i>>>(io Vec3 result[], in Vec3 target[], in LocalL4UInt32Array indexList[], in LocalL4ScalarArray weights[]){
+  for(Integer j=0; j<indexList[i].count; j++){
+    result[i] += target[indexList[i].first4[j]] * weights[i].first4[j];
+  }
+}
+
+function Vec3[].mulWeight!(Vec3 target[], LocalL4UInt32Array indexList[], LocalL4ScalarArray weights[]){
+  if(indexList[0].others.size() != 0){
+    if(indexList[0].others[0] > target.size()){
+      setError("Vec3.MulWeight node : IndexList require count = "+indexList[0].others[0]+". But target count = "+target.size());
+    }
+  }else{
+    this.resize(indexList.size());
+    if(indexList.size() > 300){
+      MulWeightArrayTask<<<indexList.size()>>>(this, target, indexList, weights);
+    }else{
+      for(Integer i=0; i<indexList.size(); i++){
+        MulWeightArrayTask(i, this, target, indexList, weights);
+      }
     }
   }
 }

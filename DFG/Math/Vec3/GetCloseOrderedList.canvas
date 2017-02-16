@@ -14,6 +14,56 @@
       },
     {
       "objectType" : "ExecPort",
+      "name" : "position",
+      "nodePortType" : "Out",
+      "defaultValues" : {
+        "Vec3" : {
+          "x" : 0,
+          "y" : 0,
+          "z" : 0
+          }
+        },
+      "execPortType" : "In",
+      "typeSpec" : "Vec3"
+      },
+    {
+      "objectType" : "ExecPort",
+      "name" : "target",
+      "nodePortType" : "Out",
+      "defaultValues" : {
+        "Vec3[]" : []
+        },
+      "execPortType" : "In",
+      "typeSpec" : "Vec3[]"
+      },
+    {
+      "objectType" : "ExecPort",
+      "metadata" : {
+        "uiPersistValue" : "true"
+        },
+      "name" : "maxDistance",
+      "nodePortType" : "Out",
+      "defaultValues" : {
+        "Scalar" : 1000
+        },
+      "execPortType" : "In",
+      "typeSpec" : "Scalar"
+      },
+    {
+      "objectType" : "ExecPort",
+      "metadata" : {
+        "uiPersistValue" : "true"
+        },
+      "name" : "maxCount",
+      "nodePortType" : "Out",
+      "defaultValues" : {
+        "Integer" : 2
+        },
+      "execPortType" : "In",
+      "typeSpec" : "Integer"
+      },
+    {
+      "objectType" : "ExecPort",
       "name" : "indexList",
       "nodePortType" : "In",
       "defaultValues" : {
@@ -66,67 +116,15 @@
           }
         },
       "execPortType" : "Out"
-      },
-    {
-      "objectType" : "ExecPort",
-      "metadata" : {},
-      "name" : "position",
-      "nodePortType" : "Out",
-      "defaultValues" : {
-        "Vec3" : {
-          "x" : 0,
-          "y" : 0,
-          "z" : 0
-          }
-        },
-      "execPortType" : "In",
-      "typeSpec" : "Vec3"
-      },
-    {
-      "objectType" : "ExecPort",
-      "metadata" : {},
-      "name" : "target",
-      "nodePortType" : "Out",
-      "defaultValues" : {
-        "Vec3[]" : []
-        },
-      "execPortType" : "In",
-      "typeSpec" : "Vec3[]"
-      },
-    {
-      "objectType" : "ExecPort",
-      "metadata" : {
-        "uiPersistValue" : "true"
-        },
-      "name" : "maxDistance",
-      "nodePortType" : "Out",
-      "defaultValues" : {
-        "Scalar" : 1000
-        },
-      "execPortType" : "In",
-      "typeSpec" : "Scalar"
-      },
-    {
-      "objectType" : "ExecPort",
-      "metadata" : {
-        "uiPersistValue" : "true"
-        },
-      "name" : "maxCount",
-      "nodePortType" : "Out",
-      "defaultValues" : {
-        "Integer" : 2
-        },
-      "execPortType" : "In",
-      "typeSpec" : "Integer"
       }
     ],
   "extDeps" : {},
-  "presetGUID" : "08DD9B1089170E42724D27F5DBD813EE",
+  "presetGUID" : "EC277EDFDED7B88543B0FCE4A7FB4740",
   "nodes" : [
     {
       "objectType" : "Inst",
       "metadata" : {
-        "uiGraphPos" : "{\"x\":224.668,\"y\":224.579}"
+        "uiGraphPos" : "{\"x\":225.668,\"y\":219.579}"
         },
       "name" : "GetCloseOrderedListCore",
       "ports" : [

@@ -14,7 +14,6 @@
       },
     {
       "objectType" : "ExecPort",
-      "metadata" : {},
       "name" : "positions",
       "nodePortType" : "Out",
       "defaultValues" : {
@@ -25,7 +24,6 @@
       },
     {
       "objectType" : "ExecPort",
-      "metadata" : {},
       "name" : "target",
       "nodePortType" : "Out",
       "defaultValues" : {
@@ -42,7 +40,7 @@
       "name" : "maxDistance",
       "nodePortType" : "Out",
       "defaultValues" : {
-        "Scalar" : 1000
+        "Scalar" : 100
         },
       "execPortType" : "In",
       "typeSpec" : "Scalar"
@@ -55,14 +53,13 @@
       "name" : "maxCount",
       "nodePortType" : "Out",
       "defaultValues" : {
-        "Integer" : 2
+        "Integer" : 3
         },
       "execPortType" : "In",
       "typeSpec" : "Integer"
       },
     {
       "objectType" : "ExecPort",
-      "metadata" : {},
       "name" : "indexList",
       "nodePortType" : "In",
       "defaultValues" : {
@@ -73,7 +70,6 @@
       },
     {
       "objectType" : "ExecPort",
-      "metadata" : {},
       "name" : "distance",
       "nodePortType" : "In",
       "defaultValues" : {
@@ -84,7 +80,6 @@
       },
     {
       "objectType" : "ExecPort",
-      "metadata" : {},
       "name" : "weights",
       "nodePortType" : "In",
       "defaultValues" : {
@@ -95,7 +90,7 @@
       }
     ],
   "extDeps" : {},
-  "presetGUID" : "E7938294D05A08614D421900DAAE7133",
+  "presetGUID" : "AEA0DC70611DC5A95052ACD57D4CFBD9",
   "nodes" : [
     {
       "objectType" : "Inst",
