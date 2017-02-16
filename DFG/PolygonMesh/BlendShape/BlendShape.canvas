@@ -1,8 +1,8 @@
 {
   "objectType" : "Graph",
   "metadata" : {
-    "uiGraphZoom" : "{\n  \"value\" : 1.0\n  }",
-    "uiGraphPan" : "{\n  \"x\" : 544.3524627685547,\n  \"y\" : 44.39950180053711\n  }"
+    "uiGraphZoom" : "{\n  \"value\" : 0.7222758531570435\n  }",
+    "uiGraphPan" : "{\n  \"x\" : 107.8785102078987,\n  \"y\" : 74.33772397813254\n  }"
     },
   "title" : "BlendShape",
   "ports" : [
@@ -50,7 +50,7 @@
       "nodePortType" : "Out",
       "defaultValues" : {
         "Scalar[]" : [
-          0,
+          0.800000011920929,
           0,
           0
           ]
@@ -64,7 +64,7 @@
       "nodePortType" : "Out",
       "defaultValues" : {
         "Scalar[]" : [
-          0,
+          1.200000047683716,
           0,
           0
           ]
@@ -82,8 +82,10 @@
       "execPortType" : "Out"
       }
     ],
-  "extDeps" : {},
-  "presetGUID" : "A5D065067233A77A37E831BBFA19DB8E",
+  "extDeps" : {
+    "TKCM" : "*"
+    },
+  "presetGUID" : "372FFA160C45DCD169E91AA8374E202D",
   "nodes" : [
     {
       "objectType" : "Inst",
@@ -126,9 +128,6 @@
             "objectType" : "ExecPort",
             "name" : "blendShape",
             "nodePortType" : "IO",
-            "defaultValues" : {
-              "BlendShape" : null
-              },
             "execPortType" : "IO",
             "typeSpec" : "BlendShape"
             },

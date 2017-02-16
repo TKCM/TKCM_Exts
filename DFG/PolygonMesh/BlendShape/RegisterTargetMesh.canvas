@@ -53,8 +53,10 @@
       "typeSpec" : "Boolean"
       }
     ],
-  "extDeps" : {},
-  "presetGUID" : "AA14B15761C9A0E030E42B5B5D24E4DD",
+  "extDeps" : {
+    "TKCM" : "*"
+    },
+  "presetGUID" : "864DC58871011940CE3F01757CAE6F35",
   "code" : "dfgEntry {
   blendShape.registerTargetMesh(registIndex, shapeTargetMesh);
   if(makeReverseTarget){

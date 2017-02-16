@@ -322,7 +322,7 @@ function BlendShape.applyTo(io PolygonMesh applyMesh, in Scalar weights[], in Sc
       }
     }
   }else{
-    setError("target count is "+this.targets.size()+": weight count is "+weights.size()+", weightsRev count is "+ weights.size());
+    setError("target count is "+this.targets.size()+": weight count is "+weights.size()+", weightsRev count is "+ weightsRev.size());
   }
 }
 /*
