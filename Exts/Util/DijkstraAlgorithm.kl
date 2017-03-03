@@ -1,0 +1,161 @@
+// ダイクストラ法による最短経路の取得
+// http://qiita.com/edo_m18/items/0588d290a19f2afc0a84を参考
+
+//	ダイクストラ法グラフの各バーテックス（ノード）
+object DijkstraVertex{
+	LocalL16UInt32Array surroundingVertex;	 //	 隣接点のポイントID
+	LocalL16ScalarArray toVertexCost;	//	隣接点へのコスト（距離）
+	Boolean done;	 //	 確定ノードか否か
+	Scalar cost;	//	このポイントへの現時点で判明している最小コスト
+};
+
+function DijkstraVertex(){
+	this.done = false;
+	this.cost = -1;
+}
+//	ダイクストラ法グラフ
+object DijkstraGraph{
+	DijkstraVertex vertex[];
+	Scalar maxDistance;
+	Boolean setedVertex;
+	Boolean computed;
+};
+//	ダイクストラ法グラフ　初期化
+function DijkstraGraph(){
+	this.vertex.resize(1);
+	this.vertex[0] = DijkstraVertex();
+	this.setedVertex = false;
+	this.computed = false;
+}
+
+//	setFromPolygonMesh用のオペレータ
+//	i = メッシュのポイント数
+operator SetGraphFromPolygonMeshTask<<<index>>>(
+  io Ref<DijkstraGraph> dijkstra, 
+  in PolygonMeshTopology mesh,
+  in Vec3 positions[], 
+  in Boolean includeAllPolygonPoints
+  ){
+	//	ポイントからエッジでつながった隣のポイントIDリストを取得
+	//	includeAllPolygonPointsはポリゴンの対角ポイントも含めるか否か
+  mesh.getPointSurroundingPoints(index, includeAllPolygonPoints, dijkstra.vertex[index].surroundingVertex);
+  //	取得した各ポイントへの距離を格納していく
+  dijkstra.vertex[index].toVertexCost.resize( dijkstra.vertex[index].surroundingVertex.count );
+  for(Integer i=0; i<dijkstra.vertex[index].surroundingVertex.count; i++){
+    Index poiId;
+    //	LocalL16に収まっていない場合対応
+    //	例：スフィアのトップの頂点からは２０本のエッジが出ているが、これは恐らく特殊な形状だと思われるのでL16にしておく
+    if(i < 16){
+      poiId = dijkstra.vertex[index].surroundingVertex.first16[i];
+    }else{
+      poiId = dijkstra.vertex[index].surroundingVertex.others[i-16];
+    }
+    dijkstra.vertex[index].toVertexCost.set(i, positions[index].distanceTo(positions[poiId]) );
+  }
+}
+//	ダイクストラ法グラフをポリゴンメッシュの頂点から構築する
+//	メッシュの各ポイントごとに、ポイントが構成するポリゴンの頂点番号と頂点までの距離（コスト）を登録する
+function DijkstraGraph.setFromPolygonMesh!(in PolygonMesh mesh, in Boolean includeAllPolygonPoints){
+  if(mesh == null){
+    return;
+  }
+  this.vertex.resize(mesh.pointCount());
+  for(Integer i=0; i<mesh.pointCount(); i++){
+    this.vertex[i] = DijkstraVertex();
+  }
+  Ref<Vec3Attribute> posAttr = mesh.getAttributes().positionsAttribute;
+  SetGraphFromPolygonMeshTask<<<mesh.pointCount()>>>(this, mesh.topology, posAttr.values,, includeAllPolygonPoints);
+  this.setedVertex = true;
+}
+//	ダイクストラ法グラフのスタートを設定し、指定した距離内でバーテックスへの移動コストを計算し経路図を作る
+function DijkstraGraph.computeRouteCost!(Index startVertexID, Scalar maxDistance){
+  if(maxDistance <= 0.0){
+  	return;
+  }
+  //	グラフの生成が終わっていない場合はエラー
+  if(!this.setedVertex){
+  	setError("DijkstraGraph.computeRouteCost node : this DijkstraGraph not yet set vertex. have to do for example 'DijkstraGraph.setFromPolygonMesh'");
+  	return;
+  }
+  //	スタートバーテックスの移動コストを０にする
+  this.vertex[startVertexID].cost = 0;
+  // 経路が見つかるまでループする
+  while(true){
+  	// 現在処理中のバーテックスを格納（これが見つからなければ終了）
+    DijkstraVertex processVertex = null;
+    for(Integer i=0; i<this.vertex.size(); i++){
+      // 訪問済み or まだコストが未設定の場合はスキップ
+      // 結果として最初はスタートバーテックスだけがコスト `0` になっているため、スタートバーテックスが選択される
+      if(this.vertex[i].done || this.vertex[i].cost<0){
+        continue;
+      }
+      // 処理中バーテックスがなければ現在のバーテックスを保持して次へ
+      if(processVertex == null) {
+        processVertex = this.vertex[i];
+        continue;
+      }
+      // 訪問済み（確定済み）でないバーテックスのうち、一番小さいコストのバーテックスを探す
+      if(this.vertex[i].cost < processVertex.cost) {
+        processVertex = this.vertex[i];
+      }
+    }
+    // 処理中のバーテックスがなくなったら、つまりすべてチェックが終わったらループ終了
+    if(processVertex == null){
+      break;
+    }
+    // 処理中バーテックスに「訪問済み」のフラグを設定する
+    // （未確定バーテックスのうち、一番コストが小さい場合はそこにいたるまでの経路が計算された結果なので「確定」できる
+    processVertex.done = true;
+    
+    // コストのアップデート
+    // 選択されたバーテックス（processNode）の現在のコストと接続されているエッジのコストを足し、それを接続先のバーテックスに設定されているコストと比較し、
+    // もしそれよりも小さければその値にアップデートする
+    for(Integer i=0; i<processVertex.surroundingVertex.count; i++){
+      DijkstraVertex node();
+      Scalar cost;
+      if(i < 16){
+      	node = this.vertex[processVertex.surroundingVertex.first16[i]];
+      	cost = processVertex.cost + processVertex.toVertexCost.first16[i];
+    	}else{
+    		node = this.vertex[ processVertex.surroundingVertex.others[i-16] ];
+      	cost = processVertex.cost + processVertex.toVertexCost.others[i-16];
+    	}
+      // コストが未設定 or コストの少ない経路がある場合はアップデート
+      if(node.cost < 0 || node.cost > cost){
+        //	コストの合計値がmaxDistance内の場合のみ値を更新
+        if(cost < maxDistance){
+          node.cost = cost;
+        }
+      }
+    }
+  }
+  this.computed = true;
+  this.maxDistance = maxDistance;
+}
+//	ダイクストラ法グラフの経路図（スタートからの移動コスト）を出力
+//	出力のタイプは距離かウェイト値
+function DijkstraGraph.getRouteCostValue(Integer type, io Scalar result[]){
+  if(!this.computed){
+    setError("DijkstraGraph.getRouteCostValue node : this DijkstraGraph not yet compute route cost. have to do for example 'DijkstraGraph.computeRouteCost'");
+    return;
+  }
+  result.resize(this.vertex.size());
+  for(Integer i=0; i<result.size(); i++){
+    switch (type){
+    	//	typeが"0"の場合はバーテックスまでの距離を出力
+    	//	maxDistanceより離れているバーテックの出力は"-1.0"
+    	case 0:
+	      result[i] = this.vertex[i].cost;
+  			break;
+  		//	typeが"1"の場合はスタート～maxDistanceを0～1としてバーテックスまでの距離のウェイト値を出力
+    	//	maxDistanceより離れているバーテック(.costが-1のもの)の出力は"0.0"
+  		case 1:     	
+      	if(this.vertex[i].cost == -1){
+       	  result[i] = 0.0;
+      	}else{
+      	  result[i] = 1.0 - (this.vertex[i].cost / this.maxDistance);
+      	}
+      	break;
+    }
+  }
+}

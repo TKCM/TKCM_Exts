@@ -1,0 +1,36 @@
+{
+  "objectType" : "Func",
+  "title" : "emptyDijkstraGraph",
+  "ports" : [
+    {
+      "objectType" : "ExecPort",
+      "name" : "exec",
+      "nodePortType" : "IO",
+      "defaultValues" : {
+        "Execute" : {}
+        },
+      "execPortType" : "IO",
+      "typeSpec" : "Execute"
+      },
+    {
+      "objectType" : "ExecPort",
+      "metadata" : {},
+      "name" : "dijkstraGraph",
+      "nodePortType" : "In",
+      "defaultValues" : {
+        "DijkstraGraph" : null
+        },
+      "execPortType" : "Out",
+      "typeSpec" : "DijkstraGraph"
+      }
+    ],
+  "extDeps" : {
+    "TKCM" : "*"
+    },
+  "presetGUID" : "B7CBF004FF26BD33CE013E44A40F6777",
+  "code" : "dfgEntry {
+  dijkstraGraph = DijkstraGraph();
+}
+",
+  "requiredPresets" : {}
+  }
