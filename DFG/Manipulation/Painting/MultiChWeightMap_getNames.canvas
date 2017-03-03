@@ -33,54 +33,13 @@
       "typeSpec" : "String[]"
       }
     ],
-  "extDeps" : {},
-  "presetGUID" : "4BE135D226212F02ED3B3963A5B9A6BA",
+  "extDeps" : {
+    "TKCM" : "*"
+    },
+  "presetGUID" : "04082F7B30C28D773688891D2BFCBCE3",
   "code" : "dfgEntry {
   mapAttrNames = multiChWeightMap.getChNames();
 }
 ",
-  "requiredPresets" : {
-    "TKCM.Manipulation.Painting.MultiChWeightMap_getNames" : {
-      "objectType" : "Func",
-      "title" : "MultiChWeightMap_getNames",
-      "ports" : [
-        {
-          "objectType" : "ExecPort",
-          "name" : "exec",
-          "nodePortType" : "IO",
-          "defaultValues" : {
-            "Execute" : {}
-            },
-          "execPortType" : "IO",
-          "typeSpec" : "Execute"
-          },
-        {
-          "objectType" : "ExecPort",
-          "name" : "multiChWeightMap",
-          "nodePortType" : "Out",
-          "defaultValues" : {
-            "MultiChWeightmap" : null
-            },
-          "execPortType" : "In",
-          "typeSpec" : "MultiChWeightmap"
-          },
-        {
-          "objectType" : "ExecPort",
-          "name" : "mapAttrNames",
-          "nodePortType" : "In",
-          "defaultValues" : {
-            "String[]" : []
-            },
-          "execPortType" : "Out",
-          "typeSpec" : "String[]"
-          }
-        ],
-      "extDeps" : {},
-      "presetGUID" : "4BE135D226212F02ED3B3963A5B9A6BA",
-      "code" : "dfgEntry {
-  mapAttrNames = multiChWeightMap.getChNames();
-}
-"
-      }
-    }
+  "requiredPresets" : {}
   }

@@ -66,8 +66,10 @@
       "typeSpec" : "Scalar[]"
       }
     ],
-  "extDeps" : {},
-  "presetGUID" : "8AD7763B9F8F8DE056D5BFA7F4721433",
+  "extDeps" : {
+    "TKCM" : "*"
+    },
+  "presetGUID" : "0C33964580421508B658CC0EAB4CE326",
   "code" : "dfgEntry {
   if(execute){
     multiChWeightmap.setValues(mesh, setChannel, values);

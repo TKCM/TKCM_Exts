@@ -1,8 +1,8 @@
 {
   "objectType" : "Graph",
   "metadata" : {
-    "uiGraphZoom" : "{\n  \"value\" : 0.636974573135376\n  }",
-    "uiGraphPan" : "{\n  \"x\" : 174.1470947265625,\n  \"y\" : -686.635009765625\n  }"
+    "uiGraphZoom" : "{\n  \"value\" : 0.3834577798843384\n  }",
+    "uiGraphPan" : "{\n  \"x\" : -691.8763427734375,\n  \"y\" : -399.7178344726563\n  }"
     },
   "title" : "GetLimitedVec3Of2VectorsAngle",
   "ports" : [
@@ -48,7 +48,7 @@
       "objectType" : "ExecPort",
       "metadata" : {
         "uiPersistValue" : "true",
-        "uiCombo" : "(\"1 to -1 (dot)\", \"1 to -1 (linear)\", \"1 to 0 (ratio)\", \"0 to 180 (angle)\")"
+        "uiCombo" : "(\"1 to -1 (dot)\", \"1 to -1 (linear)\", \"0 to 1 (ratio)\", \"0 to 180 (angle)\")"
         },
       "name" : "limitMode",
       "nodePortType" : "Out",
@@ -78,7 +78,7 @@
         "uiPersistValue" : "true",
         "uiHardRange" : "(0, 1)"
         },
-      "name" : "limitRatio_1to0",
+      "name" : "limitRatio_0to1",
       "nodePortType" : "Out",
       "defaultValues" : {
         "Scalar" : 0
@@ -113,10 +113,34 @@
         },
       "execPortType" : "Out",
       "typeSpec" : "Vec3"
+      },
+    {
+      "objectType" : "ExecPort",
+      "metadata" : {
+        "uiPersistValue" : "true",
+        "uiCombo" : "(\"1 to -1 (dot)\", \"1 to -1 (linear)\", \"0 to 1 (ratio)\", \"0 to 180 (angle)\")"
+        },
+      "name" : "getCorrectedValueMode",
+      "nodePortType" : "Out",
+      "defaultValues" : {
+        "Integer" : 0
+        },
+      "execPortType" : "In",
+      "typeSpec" : "Integer"
+      },
+    {
+      "objectType" : "ExecPort",
+      "name" : "correctedValue",
+      "nodePortType" : "In",
+      "defaultValues" : {
+        "Scalar" : 0
+        },
+      "execPortType" : "Out",
+      "typeSpec" : "Scalar"
       }
     ],
   "extDeps" : {},
-  "presetGUID" : "C25D9508F3F01EF8BA2921EF167EDDDB",
+  "presetGUID" : "C4E86155AB62F946C9E4D98E066EE822",
   "nodes" : [
     {
       "objectType" : "Inst",
@@ -1254,6 +1278,767 @@
         ],
       "executable" : "Fabric.Exts.Math.Func.MultiplyScalar",
       "presetGUID" : "8EC64304FD2D82AEC7EBB545E4A9709B"
+      },
+    {
+      "objectType" : "Inst",
+      "metadata" : {
+        "uiGraphPos" : "{\"x\":1959.79,\"y\":2081.65}"
+        },
+      "name" : "Dot_1",
+      "ports" : [
+        {
+          "objectType" : "InstPort",
+          "name" : "exec",
+          "nodePortType" : "IO"
+          },
+        {
+          "objectType" : "InstPort",
+          "name" : "this",
+          "nodePortType" : "In"
+          },
+        {
+          "objectType" : "InstPort",
+          "name" : "other",
+          "nodePortType" : "In"
+          },
+        {
+          "objectType" : "InstPort",
+          "name" : "result",
+          "nodePortType" : "Out"
+          }
+        ],
+      "executable" : "Fabric.Exts.Math.Func.Dot",
+      "presetGUID" : "17C51FBA9AB500DD36FEA3A69CF58128"
+      },
+    {
+      "objectType" : "Inst",
+      "metadata" : {
+        "uiGraphPos" : "{\"x\":2141.23,\"y\":2024.44}"
+        },
+      "name" : "Mul_1",
+      "ports" : [
+        {
+          "objectType" : "InstPort",
+          "name" : "exec",
+          "nodePortType" : "IO"
+          },
+        {
+          "objectType" : "InstPort",
+          "name" : "lhs",
+          "nodePortType" : "In"
+          },
+        {
+          "objectType" : "InstPort",
+          "name" : "rhs",
+          "nodePortType" : "In",
+          "defaultValues" : {
+            "Scalar" : 1000
+            }
+          },
+        {
+          "objectType" : "InstPort",
+          "name" : "result",
+          "nodePortType" : "Out"
+          }
+        ],
+      "executable" : "Fabric.Core.Math.Mul",
+      "presetGUID" : "CC951B43BB879483B46EFF7965692350"
+      },
+    {
+      "objectType" : "Inst",
+      "metadata" : {
+        "uiGraphPos" : "{\"x\":2411.46,\"y\":2026.43}"
+        },
+      "name" : "Div_6",
+      "ports" : [
+        {
+          "objectType" : "InstPort",
+          "name" : "exec",
+          "nodePortType" : "IO"
+          },
+        {
+          "objectType" : "InstPort",
+          "name" : "lhs",
+          "nodePortType" : "In"
+          },
+        {
+          "objectType" : "InstPort",
+          "name" : "rhs",
+          "nodePortType" : "In"
+          },
+        {
+          "objectType" : "InstPort",
+          "name" : "result",
+          "nodePortType" : "Out"
+          }
+        ],
+      "executable" : "Fabric.Core.Math.Div",
+      "presetGUID" : "695E8145F8F42293FBC88BD348869892"
+      },
+    {
+      "objectType" : "Inst",
+      "metadata" : {
+        "uiGraphPos" : "{\"x\":2281.28,\"y\":2085.59}"
+        },
+      "name" : "Round_3",
+      "ports" : [
+        {
+          "objectType" : "InstPort",
+          "name" : "exec",
+          "nodePortType" : "IO"
+          },
+        {
+          "objectType" : "InstPort",
+          "name" : "value",
+          "nodePortType" : "In"
+          },
+        {
+          "objectType" : "InstPort",
+          "name" : "result",
+          "nodePortType" : "Out"
+          }
+        ],
+      "executable" : "Fabric.Core.Math.Round",
+      "presetGUID" : "2961A03C0AAFD1D5084693BCAD072D03"
+      },
+    {
+      "objectType" : "Inst",
+      "metadata" : {
+        "uiGraphPos" : "{\"x\":2565.31,\"y\":2186.18}"
+        },
+      "name" : "RadianToAngle_2",
+      "ports" : [
+        {
+          "objectType" : "InstPort",
+          "name" : "exec",
+          "nodePortType" : "IO"
+          },
+        {
+          "objectType" : "InstPort",
+          "name" : "radian",
+          "nodePortType" : "In"
+          },
+        {
+          "objectType" : "InstPort",
+          "name" : "angle",
+          "nodePortType" : "Out"
+          }
+        ],
+      "executable" : "TKCM.Math.Quat.RadianToAngle",
+      "presetGUID" : "050388BB644B8BA095AE65AF621A6195"
+      },
+    {
+      "objectType" : "Inst",
+      "metadata" : {
+        "uiGraphPos" : "{\"x\":2786.2,\"y\":2190.13}",
+        "uiCollapsedState" : "2"
+        },
+      "name" : "Div_7",
+      "ports" : [
+        {
+          "objectType" : "InstPort",
+          "name" : "exec",
+          "nodePortType" : "IO"
+          },
+        {
+          "objectType" : "InstPort",
+          "name" : "lhs",
+          "nodePortType" : "In"
+          },
+        {
+          "objectType" : "InstPort",
+          "name" : "rhs",
+          "nodePortType" : "In",
+          "defaultValues" : {
+            "Scalar" : 90
+            }
+          },
+        {
+          "objectType" : "InstPort",
+          "name" : "result",
+          "nodePortType" : "Out"
+          }
+        ],
+      "executable" : "Fabric.Core.Math.Div",
+      "presetGUID" : "695E8145F8F42293FBC88BD348869892"
+      },
+    {
+      "objectType" : "Inst",
+      "metadata" : {
+        "uiGraphPos" : "{\"x\":2932.17,\"y\":2156.62}",
+        "uiCollapsedState" : "2"
+        },
+      "name" : "Rescale_7",
+      "ports" : [
+        {
+          "objectType" : "InstPort",
+          "name" : "exec",
+          "nodePortType" : "IO"
+          },
+        {
+          "objectType" : "InstPort",
+          "name" : "value",
+          "nodePortType" : "In"
+          },
+        {
+          "objectType" : "InstPort",
+          "name" : "inMin",
+          "nodePortType" : "In",
+          "defaultValues" : {
+            "Scalar" : -1
+            }
+          },
+        {
+          "objectType" : "InstPort",
+          "name" : "inMax",
+          "nodePortType" : "In",
+          "defaultValues" : {
+            "Scalar" : 1
+            }
+          },
+        {
+          "objectType" : "InstPort",
+          "name" : "outMin",
+          "nodePortType" : "In"
+          },
+        {
+          "objectType" : "InstPort",
+          "name" : "outMax",
+          "nodePortType" : "In",
+          "defaultValues" : {
+            "Scalar" : 1
+            }
+          },
+        {
+          "objectType" : "InstPort",
+          "name" : "result",
+          "nodePortType" : "Out"
+          }
+        ],
+      "executable" : "Fabric.Core.Math.Rescale",
+      "presetGUID" : "4769F739D0AB963E327F9F6DB41FB521"
+      },
+    {
+      "objectType" : "Inst",
+      "metadata" : {
+        "uiGraphPos" : "{\"x\":2936.11,\"y\":2233.52}",
+        "uiCollapsedState" : "2"
+        },
+      "name" : "Rescale_8",
+      "ports" : [
+        {
+          "objectType" : "InstPort",
+          "name" : "exec",
+          "nodePortType" : "IO"
+          },
+        {
+          "objectType" : "InstPort",
+          "name" : "value",
+          "nodePortType" : "In"
+          },
+        {
+          "objectType" : "InstPort",
+          "name" : "inMin",
+          "nodePortType" : "In",
+          "defaultValues" : {
+            "Scalar" : -90
+            }
+          },
+        {
+          "objectType" : "InstPort",
+          "name" : "inMax",
+          "nodePortType" : "In",
+          "defaultValues" : {
+            "Scalar" : 90
+            }
+          },
+        {
+          "objectType" : "InstPort",
+          "name" : "outMin",
+          "nodePortType" : "In",
+          "defaultValues" : {
+            "Scalar" : 180
+            }
+          },
+        {
+          "objectType" : "InstPort",
+          "name" : "outMax",
+          "nodePortType" : "In",
+          "defaultValues" : {
+            "Scalar" : 0
+            }
+          },
+        {
+          "objectType" : "InstPort",
+          "name" : "result",
+          "nodePortType" : "Out"
+          }
+        ],
+      "executable" : "Fabric.Core.Math.Rescale",
+      "presetGUID" : "4769F739D0AB963E327F9F6DB41FB521"
+      },
+    {
+      "objectType" : "Inst",
+      "metadata" : {
+        "uiGraphPos" : "{\"x\":3151.75,\"y\":2091.54}"
+        },
+      "name" : "SwitchCase4_9",
+      "ports" : [
+        {
+          "objectType" : "InstPort",
+          "name" : "exec",
+          "nodePortType" : "IO"
+          },
+        {
+          "objectType" : "InstPort",
+          "name" : "condition",
+          "nodePortType" : "In"
+          },
+        {
+          "objectType" : "InstPort",
+          "name" : "case0",
+          "nodePortType" : "In"
+          },
+        {
+          "objectType" : "InstPort",
+          "name" : "case1",
+          "nodePortType" : "In"
+          },
+        {
+          "objectType" : "InstPort",
+          "name" : "case2",
+          "nodePortType" : "In"
+          },
+        {
+          "objectType" : "InstPort",
+          "name" : "case3",
+          "nodePortType" : "In"
+          },
+        {
+          "objectType" : "InstPort",
+          "name" : "default_value",
+          "nodePortType" : "In"
+          },
+        {
+          "objectType" : "InstPort",
+          "name" : "result",
+          "nodePortType" : "Out"
+          }
+        ],
+      "executable" : "Fabric.Core.Control.SwitchCase4",
+      "presetGUID" : "0505855834341C76D4AFB00ECDD0E9C3"
+      },
+    {
+      "objectType" : "Inst",
+      "metadata" : {
+        "uiGraphPos" : "{\"x\":3388.36,\"y\":2295.98}"
+        },
+      "name" : "Sub_3",
+      "ports" : [
+        {
+          "objectType" : "InstPort",
+          "name" : "exec",
+          "nodePortType" : "IO"
+          },
+        {
+          "objectType" : "InstPort",
+          "name" : "lhs",
+          "nodePortType" : "In"
+          },
+        {
+          "objectType" : "InstPort",
+          "name" : "rhs",
+          "nodePortType" : "In"
+          },
+        {
+          "objectType" : "InstPort",
+          "name" : "result",
+          "nodePortType" : "Out"
+          }
+        ],
+      "executable" : "Fabric.Core.Array.Sub",
+      "presetGUID" : "ACCD924B148DD74A0C4A5CD08D5D89CD"
+      },
+    {
+      "objectType" : "Inst",
+      "metadata" : {
+        "uiGraphPos" : "{\"x\":2125.92,\"y\":2313.51}"
+        },
+      "name" : "Mul_3",
+      "ports" : [
+        {
+          "objectType" : "InstPort",
+          "name" : "exec",
+          "nodePortType" : "IO"
+          },
+        {
+          "objectType" : "InstPort",
+          "name" : "lhs",
+          "nodePortType" : "In"
+          },
+        {
+          "objectType" : "InstPort",
+          "name" : "rhs",
+          "nodePortType" : "In",
+          "defaultValues" : {
+            "Scalar" : 1000
+            }
+          },
+        {
+          "objectType" : "InstPort",
+          "name" : "result",
+          "nodePortType" : "Out"
+          }
+        ],
+      "executable" : "Fabric.Core.Math.Mul",
+      "presetGUID" : "CC951B43BB879483B46EFF7965692350"
+      },
+    {
+      "objectType" : "Inst",
+      "metadata" : {
+        "uiGraphPos" : "{\"x\":2396.15,\"y\":2315.5}"
+        },
+      "name" : "Div_8",
+      "ports" : [
+        {
+          "objectType" : "InstPort",
+          "name" : "exec",
+          "nodePortType" : "IO"
+          },
+        {
+          "objectType" : "InstPort",
+          "name" : "lhs",
+          "nodePortType" : "In"
+          },
+        {
+          "objectType" : "InstPort",
+          "name" : "rhs",
+          "nodePortType" : "In"
+          },
+        {
+          "objectType" : "InstPort",
+          "name" : "result",
+          "nodePortType" : "Out"
+          }
+        ],
+      "executable" : "Fabric.Core.Math.Div",
+      "presetGUID" : "695E8145F8F42293FBC88BD348869892"
+      },
+    {
+      "objectType" : "Inst",
+      "metadata" : {
+        "uiGraphPos" : "{\"x\":2265.97,\"y\":2374.66}"
+        },
+      "name" : "Round_4",
+      "ports" : [
+        {
+          "objectType" : "InstPort",
+          "name" : "exec",
+          "nodePortType" : "IO"
+          },
+        {
+          "objectType" : "InstPort",
+          "name" : "value",
+          "nodePortType" : "In"
+          },
+        {
+          "objectType" : "InstPort",
+          "name" : "result",
+          "nodePortType" : "Out"
+          }
+        ],
+      "executable" : "Fabric.Core.Math.Round",
+      "presetGUID" : "2961A03C0AAFD1D5084693BCAD072D03"
+      },
+    {
+      "objectType" : "Inst",
+      "metadata" : {
+        "uiGraphPos" : "{\"x\":2550.0,\"y\":2475.25}"
+        },
+      "name" : "RadianToAngle_3",
+      "ports" : [
+        {
+          "objectType" : "InstPort",
+          "name" : "exec",
+          "nodePortType" : "IO"
+          },
+        {
+          "objectType" : "InstPort",
+          "name" : "radian",
+          "nodePortType" : "In"
+          },
+        {
+          "objectType" : "InstPort",
+          "name" : "angle",
+          "nodePortType" : "Out"
+          }
+        ],
+      "executable" : "TKCM.Math.Quat.RadianToAngle",
+      "presetGUID" : "050388BB644B8BA095AE65AF621A6195"
+      },
+    {
+      "objectType" : "Inst",
+      "metadata" : {
+        "uiGraphPos" : "{\"x\":2770.89,\"y\":2479.2}",
+        "uiCollapsedState" : "2"
+        },
+      "name" : "Div_9",
+      "ports" : [
+        {
+          "objectType" : "InstPort",
+          "name" : "exec",
+          "nodePortType" : "IO"
+          },
+        {
+          "objectType" : "InstPort",
+          "name" : "lhs",
+          "nodePortType" : "In"
+          },
+        {
+          "objectType" : "InstPort",
+          "name" : "rhs",
+          "nodePortType" : "In",
+          "defaultValues" : {
+            "Scalar" : 90
+            }
+          },
+        {
+          "objectType" : "InstPort",
+          "name" : "result",
+          "nodePortType" : "Out"
+          }
+        ],
+      "executable" : "Fabric.Core.Math.Div",
+      "presetGUID" : "695E8145F8F42293FBC88BD348869892"
+      },
+    {
+      "objectType" : "Inst",
+      "metadata" : {
+        "uiGraphPos" : "{\"x\":2916.86,\"y\":2445.69}",
+        "uiCollapsedState" : "2"
+        },
+      "name" : "Rescale_9",
+      "ports" : [
+        {
+          "objectType" : "InstPort",
+          "name" : "exec",
+          "nodePortType" : "IO"
+          },
+        {
+          "objectType" : "InstPort",
+          "name" : "value",
+          "nodePortType" : "In"
+          },
+        {
+          "objectType" : "InstPort",
+          "name" : "inMin",
+          "nodePortType" : "In",
+          "defaultValues" : {
+            "Scalar" : -1
+            }
+          },
+        {
+          "objectType" : "InstPort",
+          "name" : "inMax",
+          "nodePortType" : "In",
+          "defaultValues" : {
+            "Scalar" : 1
+            }
+          },
+        {
+          "objectType" : "InstPort",
+          "name" : "outMin",
+          "nodePortType" : "In"
+          },
+        {
+          "objectType" : "InstPort",
+          "name" : "outMax",
+          "nodePortType" : "In",
+          "defaultValues" : {
+            "Scalar" : 1
+            }
+          },
+        {
+          "objectType" : "InstPort",
+          "name" : "result",
+          "nodePortType" : "Out"
+          }
+        ],
+      "executable" : "Fabric.Core.Math.Rescale",
+      "presetGUID" : "4769F739D0AB963E327F9F6DB41FB521"
+      },
+    {
+      "objectType" : "Inst",
+      "metadata" : {
+        "uiGraphPos" : "{\"x\":2920.8,\"y\":2522.59}",
+        "uiCollapsedState" : "2"
+        },
+      "name" : "Rescale_10",
+      "ports" : [
+        {
+          "objectType" : "InstPort",
+          "name" : "exec",
+          "nodePortType" : "IO"
+          },
+        {
+          "objectType" : "InstPort",
+          "name" : "value",
+          "nodePortType" : "In"
+          },
+        {
+          "objectType" : "InstPort",
+          "name" : "inMin",
+          "nodePortType" : "In",
+          "defaultValues" : {
+            "Scalar" : -90
+            }
+          },
+        {
+          "objectType" : "InstPort",
+          "name" : "inMax",
+          "nodePortType" : "In",
+          "defaultValues" : {
+            "Scalar" : 90
+            }
+          },
+        {
+          "objectType" : "InstPort",
+          "name" : "outMin",
+          "nodePortType" : "In",
+          "defaultValues" : {
+            "Scalar" : 180
+            }
+          },
+        {
+          "objectType" : "InstPort",
+          "name" : "outMax",
+          "nodePortType" : "In",
+          "defaultValues" : {
+            "Scalar" : 0
+            }
+          },
+        {
+          "objectType" : "InstPort",
+          "name" : "result",
+          "nodePortType" : "Out"
+          }
+        ],
+      "executable" : "Fabric.Core.Math.Rescale",
+      "presetGUID" : "4769F739D0AB963E327F9F6DB41FB521"
+      },
+    {
+      "objectType" : "Inst",
+      "metadata" : {
+        "uiGraphPos" : "{\"x\":3136.44,\"y\":2380.61}"
+        },
+      "name" : "SwitchCase4_10",
+      "ports" : [
+        {
+          "objectType" : "InstPort",
+          "name" : "exec",
+          "nodePortType" : "IO"
+          },
+        {
+          "objectType" : "InstPort",
+          "name" : "condition",
+          "nodePortType" : "In"
+          },
+        {
+          "objectType" : "InstPort",
+          "name" : "case0",
+          "nodePortType" : "In"
+          },
+        {
+          "objectType" : "InstPort",
+          "name" : "case1",
+          "nodePortType" : "In"
+          },
+        {
+          "objectType" : "InstPort",
+          "name" : "case2",
+          "nodePortType" : "In"
+          },
+        {
+          "objectType" : "InstPort",
+          "name" : "case3",
+          "nodePortType" : "In"
+          },
+        {
+          "objectType" : "InstPort",
+          "name" : "default_value",
+          "nodePortType" : "In"
+          },
+        {
+          "objectType" : "InstPort",
+          "name" : "result",
+          "nodePortType" : "Out"
+          }
+        ],
+      "executable" : "Fabric.Core.Control.SwitchCase4",
+      "presetGUID" : "0505855834341C76D4AFB00ECDD0E9C3"
+      },
+    {
+      "objectType" : "Inst",
+      "metadata" : {
+        "uiGraphPos" : "{\"x\":1952.12,\"y\":2316.94}"
+        },
+      "name" : "PassIn_4",
+      "ports" : [
+        {
+          "objectType" : "InstPort",
+          "name" : "exec",
+          "nodePortType" : "IO"
+          },
+        {
+          "objectType" : "InstPort",
+          "name" : "value",
+          "nodePortType" : "In"
+          }
+        ],
+      "executable" : "Fabric.Compounds.Data.PassIn",
+      "presetGUID" : "E1A3D489434CCC2433A2E2DF69094AB3"
+      },
+    {
+      "objectType" : "Inst",
+      "metadata" : {
+        "uiGraphPos" : "{\"x\":4367.83,\"y\":1733.48}"
+        },
+      "name" : "Cache_1",
+      "ports" : [
+        {
+          "objectType" : "InstPort",
+          "name" : "exec",
+          "nodePortType" : "IO"
+          },
+        {
+          "objectType" : "InstPort",
+          "name" : "value",
+          "nodePortType" : "In"
+          }
+        ],
+      "executable" : "Fabric.Core.Data.Cache",
+      "presetGUID" : "D903AFD981FE9214C69943F542D5FD60"
+      },
+    {
+      "objectType" : "Inst",
+      "metadata" : {
+        "uiGraphPos" : "{\"x\":4370.44,\"y\":1809.11}"
+        },
+      "name" : "Cache_2",
+      "ports" : [
+        {
+          "objectType" : "InstPort",
+          "name" : "exec",
+          "nodePortType" : "IO"
+          },
+        {
+          "objectType" : "InstPort",
+          "name" : "value",
+          "nodePortType" : "In"
+          }
+        ],
+      "executable" : "Fabric.Core.Data.Cache",
+      "presetGUID" : "D903AFD981FE9214C69943F542D5FD60"
       }
     ],
   "connections" : {
@@ -1269,11 +2054,14 @@
     "limitDotOrLinear_1toMinus1" : [
       "Clamp_2.this"
       ],
-    "limitRatio_1to0" : [
+    "limitRatio_0to1" : [
       "Clamp_1.this"
       ],
     "limitAngle_0to180" : [
       "Clamp_3.this"
+      ],
+    "getCorrectedValueMode" : [
+      "SwitchCase4_9.condition"
       ],
     "Unit_3.this" : [
       "Length_1.this"
@@ -1294,10 +2082,14 @@
       "Sqrt_1.value"
       ],
     "Vec3_1.result" : [
-      "RotateVector_4.v"
+      "RotateVector_4.v",
+      "Dot_1.other"
       ],
     "RotateVector_4.result" : [
       "MultiplyScalar_1.this"
+      ],
+    "SetFromDirectionAndUpvector_8.direction" : [
+      "Dot_1.this"
       ],
     "SetFromDirectionAndUpvector_8.result" : [
       "RotateVector_4.this"
@@ -1311,6 +2103,9 @@
     "Dot_2.result" : [
       "Lt_1.lhs",
       "RadianToAngle_1.radian"
+      ],
+    "If_2.if_true" : [
+      "PassIn_4.value"
       ],
     "If_2.result" : [
       "Pow_1.base",
@@ -1389,7 +2184,85 @@
       "MultiplyScalar_1.other"
       ],
     "MultiplyScalar_1.result" : [
+      "Cache_1.value"
+      ],
+    "Dot_1.result" : [
+      "Mul_1.lhs"
+      ],
+    "Mul_1.rhs" : [
+      "Div_6.rhs"
+      ],
+    "Mul_1.result" : [
+      "Round_3.value"
+      ],
+    "Div_6.result" : [
+      "RadianToAngle_2.radian",
+      "SwitchCase4_9.case0"
+      ],
+    "Round_3.result" : [
+      "Div_6.lhs"
+      ],
+    "RadianToAngle_2.angle" : [
+      "Div_7.lhs",
+      "Rescale_8.value"
+      ],
+    "Div_7.result" : [
+      "Rescale_7.value",
+      "SwitchCase4_9.case2"
+      ],
+    "Rescale_7.result" : [
+      "SwitchCase4_9.case1"
+      ],
+    "Rescale_8.result" : [
+      "SwitchCase4_9.case3"
+      ],
+    "SwitchCase4_9.condition" : [
+      "SwitchCase4_10.condition"
+      ],
+    "SwitchCase4_9.result" : [
+      "Sub_3.lhs"
+      ],
+    "Sub_3.result" : [
+      "Cache_2.value"
+      ],
+    "Mul_3.rhs" : [
+      "Div_8.rhs"
+      ],
+    "Mul_3.result" : [
+      "Round_4.value"
+      ],
+    "Div_8.result" : [
+      "RadianToAngle_3.radian",
+      "SwitchCase4_10.case0"
+      ],
+    "Round_4.result" : [
+      "Div_8.lhs"
+      ],
+    "RadianToAngle_3.angle" : [
+      "Div_9.lhs",
+      "Rescale_10.value"
+      ],
+    "Div_9.result" : [
+      "Rescale_9.value",
+      "SwitchCase4_10.case2"
+      ],
+    "Rescale_9.result" : [
+      "SwitchCase4_10.case1"
+      ],
+    "Rescale_10.result" : [
+      "SwitchCase4_10.case3"
+      ],
+    "SwitchCase4_10.result" : [
+      "Sub_3.rhs"
+      ],
+    "PassIn_4.value" : [
+      "Mul_3.lhs"
+      ],
+    "Cache_1.value" : [
       "result"
+      ],
+    "Cache_2.value" : [
+      "correctedValue"
       ]
     },
   "requiredPresets" : {
@@ -2829,6 +3702,129 @@ dfgEntry {
 
 dfgEntry {
   result = this.multiplyScalar(other);
+}
+"
+      },
+    "Fabric.Core.Math.Round" : {
+      "objectType" : "Func",
+      "title" : "Round",
+      "ports" : [
+        {
+          "objectType" : "ExecPort",
+          "name" : "exec",
+          "nodePortType" : "IO",
+          "execPortType" : "IO",
+          "typeSpec" : "Execute"
+          },
+        {
+          "objectType" : "ExecPort",
+          "name" : "value",
+          "nodePortType" : "Out",
+          "execPortType" : "In",
+          "typeSpec" : "$TYPE$"
+          },
+        {
+          "objectType" : "ExecPort",
+          "name" : "result",
+          "nodePortType" : "In",
+          "execPortType" : "Out",
+          "typeSpec" : "$TYPE$"
+          }
+        ],
+      "extDeps" : {},
+      "presetGUID" : "2961A03C0AAFD1D5084693BCAD072D03",
+      "code" : "
+dfgEntry {
+	result = round(value);
+}
+"
+      },
+    "Fabric.Core.Array.Sub" : {
+      "objectType" : "Func",
+      "title" : "Sub[]",
+      "ports" : [
+        {
+          "objectType" : "ExecPort",
+          "name" : "exec",
+          "nodePortType" : "IO",
+          "execPortType" : "IO",
+          "typeSpec" : "Execute"
+          },
+        {
+          "objectType" : "ExecPort",
+          "name" : "lhs",
+          "nodePortType" : "Out",
+          "execPortType" : "In",
+          "typeSpec" : "$TYPE$"
+          },
+        {
+          "objectType" : "ExecPort",
+          "name" : "rhs",
+          "nodePortType" : "Out",
+          "execPortType" : "In",
+          "typeSpec" : "$TYPE$"
+          },
+        {
+          "objectType" : "ExecPort",
+          "name" : "result",
+          "nodePortType" : "In",
+          "execPortType" : "Out",
+          "typeSpec" : "$TYPE$"
+          }
+        ],
+      "extDeps" : {},
+      "presetGUID" : "ACCD924B148DD74A0C4A5CD08D5D89CD",
+      "code" : "
+operator core_array_sub_task<<<index>>>($TYPE$ lhs, $TYPE$ rhs, io $TYPE$ result) {
+  result[index] = lhs[index < lhs.size() ? index : lhs.size() - 1] - rhs[index < rhs.size() ? index : rhs.size() - 1];
+}
+
+dfgEntry {
+  if(lhs.size() == 0) return;
+  if(rhs.size() == 0) return;
+  Size size = lhs.size() > rhs.size() ? lhs.size() : rhs.size();
+  result.resize(size);
+
+  if(size < 10000)
+  {
+    for(Size i=0;i<size;i++)
+      core_array_sub_task(i, lhs, rhs, result);
+  }
+  else
+  {
+    core_array_sub_task<<<size>>>(lhs, rhs, result);
+  }
+}
+"
+      },
+    "Fabric.Core.Data.Cache" : {
+      "objectType" : "Func",
+      "metadata" : {
+        "uiNodeColor" : "{\n  \"r\" : 214,\n  \"g\" : 191,\n  \"b\" : 103\n  }",
+        "uiAlwaysShowDaisyChainPorts" : "true",
+        "uiHeaderColor" : "{\n  \"r\" : 188,\n  \"g\" : 129,\n  \"b\" : 83\n  }"
+        },
+      "title" : "Cache",
+      "cacheRule" : "always",
+      "ports" : [
+        {
+          "objectType" : "ExecPort",
+          "name" : "exec",
+          "nodePortType" : "IO",
+          "execPortType" : "IO",
+          "typeSpec" : "Execute"
+          },
+        {
+          "objectType" : "ExecPort",
+          "name" : "value",
+          "nodePortType" : "Out",
+          "execPortType" : "In",
+          "typeSpec" : "$TYPE$"
+          }
+        ],
+      "extDeps" : {},
+      "presetGUID" : "D903AFD981FE9214C69943F542D5FD60",
+      "code" : "dfgEntry {
 }
 "
       }

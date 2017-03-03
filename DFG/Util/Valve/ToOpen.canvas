@@ -14,28 +14,37 @@
       },
     {
       "objectType" : "ExecPort",
-      "metadata" : {},
       "name" : "execOnlyOnce_sceanOpen",
       "nodePortType" : "Out",
+      "defaultValues" : {
+        "Execute" : {}
+        },
       "execPortType" : "In",
       "typeSpec" : "$TYPE$"
       },
     {
       "objectType" : "ExecPort",
-      "metadata" : {},
       "name" : "default_Value",
       "nodePortType" : "Out",
+      "defaultValues" : {
+        "Execute" : {}
+        },
       "execPortType" : "In"
       },
     {
       "objectType" : "ExecPort",
       "name" : "result",
       "nodePortType" : "In",
+      "defaultValues" : {
+        "Execute" : {}
+        },
       "execPortType" : "Out"
       }
     ],
-  "extDeps" : {},
-  "presetGUID" : "199F3E6E76A840A5C1BB4BB9FF163E9A",
+  "extDeps" : {
+    "TKCM" : "*"
+    },
+  "presetGUID" : "D25B7E945A1ED2F4A0AA797058049164",
   "nodes" : [
     {
       "objectType" : "Inst",

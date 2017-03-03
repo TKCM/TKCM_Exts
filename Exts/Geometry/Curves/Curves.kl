@@ -36,15 +36,17 @@ function Vec3[] Curves.getSamplePointPositions?(Index curveIndex){
 //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 //  GetCloseOrderedListArray /////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 //  ある座標[]からCurvesに対して近い座標のインデックス、ノーマライズドパラメータ、ウェイト値のリストを取得する
-//  リストは近い順で最大１６個まで
+//  リストは近い順で最大4個まで
 
 //  空間分析用に準備したLinesを使用し、各種パラメータを取得する
+//  index = 検出スタートポジションの数
 operator getClosestTask<<<index>>>(
   io Lines target[],
   in Curves targetCurves, 
   in Vec3 position[], 
   io LocalL4UInt32Array orderedIndex[],
   io LocalL4ScalarArray normalizedParam[], 
+  io GenericVec3ArrayValue deltaPosition[],
   io LocalL4ScalarArray resultWeights[], 
   in Scalar length[],
   in Scalar maxDistance, 
@@ -78,10 +80,21 @@ operator getClosestTask<<<index>>>(
   //  各Curveへの近いポジションの配列Vec3[]に対し、近い順でリストを作る
   GetCloseOrderedList(position[index], closestPosition, maxDistance, maxCount, orderedIndex[index], orderedDistance_notUse, resultWeights[index]);
   //  リストに沿って近いポジション値をCurveのノーマライズドパラメータに変換しリストにする
-  normalizedParam[index].resize( orderedIndex[index].count );
-  for(Integer k=0; k<orderedIndex[index].count; k++){
-    Scalar param = targetCurves.getNormalizedParameterFromLengthRatio(orderedIndex[index].first4[k], ratio[ orderedIndex[index].first4[k] ]);
-    normalizedParam[index].set(k, param);
+  if(resultWeights[index].count > 0){
+    normalizedParam[index].resize( resultWeights[index].count );
+    deltaPosition[index] = GenericVec3ArrayValue();
+    deltaPosition[index].resize( resultWeights[index].count );
+    for(Integer k=0; k<resultWeights[index].count; k++){
+      Scalar nParam = targetCurves.getNormalizedParameterFromLengthRatio(orderedIndex[index].first4[k], ratio[ orderedIndex[index].first4[k] ]);
+      normalizedParam[index].set(k, nParam);
+      // 検出スタートポジションからカーブ上の最も近いポジションまでの差分座標を取得
+      Vec3 v2 = targetCurves.getTangentAtNormalizedParam (orderedIndex[index].first4[k], nParam);
+      Vec3 v1 = Vec3(v2.z*v2.x, abs(v2.z), v2.y*-1 );
+
+      Quat qu;  qu.setFromDirectionAndUpvector(v2, v1);
+      Mat44 im = Xfo(qu, closestPosition[ orderedIndex[index].first4[k] ], Vec3(1.0)).toMat44().inverse();
+      deltaPosition[index].set(k, im.multiplyVector3(position[index]));
+    }
   }
 }
 
@@ -91,8 +104,13 @@ function Curves.getCloseOrderedListArray(
   in Size maxCount,
   io LocalL4UInt32Array indexList[],
   io LocalL4ScalarArray normalizedParam[],
+  io GenericVec3ArrayValue deltaPosition[],
   io LocalL4ScalarArray weights[],
   ){
+  indexList.resize(positions.size());
+  normalizedParam.resize(positions.size());
+  deltaPosition.resize(positions.size());
+  weights.resize(positions.size());
   //  これから作る各Linesの長さを取得しておくための配列を準備
   //  配列の数 = Curveの数 = Linesの数
   Scalar length[];
@@ -120,10 +138,114 @@ function Curves.getCloseOrderedListArray(
   //  上記オペレータを実行
   //  検索位置が3００個より多ければ並列処理
   if(positions.size() > 300){
-    getClosestTask<<<positions.size()>>>(lines, this, positions, indexList, normalizedParam, weights, length, maxDistance, maxCount);
+    getClosestTask<<<positions.size()>>>(lines, this, positions, indexList, normalizedParam, deltaPosition, weights, length, maxDistance, maxCount);
   }else{
     for(Integer i=0; i<positions.size(); i++){
-      getClosestTask(i, lines, this, positions, indexList, normalizedParam, weights, length, maxDistance, maxCount);
+      getClosestTask(i, lines, this, positions, indexList, normalizedParam, deltaPosition, weights, length, maxDistance, maxCount);
+    }
+  }
+  //  MulWeightでターゲット数に不足がないかの確認を行えるようにターゲットの数を格納しておく
+  //  カウントがothers[0]を作るために5になるが、MulWeightではweightListのcountを参照するので問題ないはず
+  indexList[0].count = 5;
+  indexList[0].others.resize(1);
+  indexList[0].others[0] = this.curveCount();
+}
+
+//////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+//  MulWeight ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+// GetCloseOrderedListArray等で取得した各情報を元に、ターゲットのカーブからタンジェント、ノーマル、ポジション、差分座標にウェイトを掛けた値を取得する
+
+// カーブ上のパラメータポジションのポジション値xウェイト
+operator MulWeightTaskPos<<<index>>>(
+  io Vec3 result[], 
+  in Curves target, 
+  in LocalL4UInt32Array indexList[], 
+  in LocalL4ScalarArray normalizedParam[], 
+  in LocalL4ScalarArray weights[]
+  ){
+  Vec3 rest();
+  for(Integer i=0; i<weights[index].count; i++){
+    rest += target.getPositionAtNormalizedParam(indexList[index].first4[i], normalizedParam[index].first4[i]) * weights[index].first4[i];
+  }
+  result[index] = rest;
+}
+// カーブ上のパラメータポジションのタンジェント値xウェイト
+operator MulWeightTaskTan<<<index>>>(
+  io Vec3 result[], 
+  in Curves target, 
+  in LocalL4UInt32Array indexList[], 
+  in LocalL4ScalarArray normalizedParam[], 
+  in LocalL4ScalarArray weights[]
+  ){
+  Vec3 rest();
+  for(Integer i=0; i<weights[index].count; i++){
+    rest += target.getTangentAtNormalizedParam(indexList[index].first4[i], normalizedParam[index].first4[i]) * weights[index].first4[i];
+  }
+  result[index] = rest;
+}
+// カーブ上のパラメータポジションのノーマル値xウェイト
+operator MulWeightTaskNom<<<index>>>(
+  io Vec3 result[], 
+  in Curves target, 
+  in LocalL4UInt32Array indexList[], 
+  in LocalL4ScalarArray normalizedParam[], 
+  in LocalL4ScalarArray weights[]
+  ){
+  Vec3 rest();
+  for(Integer i=0; i<weights[index].count; i++){
+    rest += target.getNormalAtNormalizedParam(indexList[index].first4[i], normalizedParam[index].first4[i]) * weights[index].first4[i];
+  }
+  result[index] = rest;
+}
+// 検出スタートポジションからカーブ上の最も近いポジションまでの差分座標xウェイト
+operator MulWeightTaskDlt<<<index>>>(
+  io Vec3 result[], 
+  in Curves target, 
+  in LocalL4UInt32Array indexList[], 
+  in LocalL4ScalarArray normalizedParam[], 
+  in GenericVec3ArrayValue deltaPosition[], 
+  in LocalL4ScalarArray weights[],
+  ){
+  Vec3 rest();
+  for(Integer i=0; i<weights[index].count; i++){
+    Vec3 restTan = target.getTangentAtNormalizedParam(indexList[index].first4[i], normalizedParam[index].first4[i]);
+    Vec3 restNom = Vec3(restTan.z*restTan.x, abs(restTan.z), restTan.y*-1 );
+
+    Vec3 restPos = target.getPositionAtNormalizedParam(indexList[index].first4[i], normalizedParam[index].first4[i]);
+    Quat qu;
+    qu.setFromDirectionAndUpvector(restTan, restNom);
+    Mat44 gM = Xfo(qu, restPos, Vec3(1.0)).toMat44();
+    rest += gM.multiplyVector3(deltaPosition[index].get(i)) * weights[index].first4[i];
+  }
+  result[index] = rest;
+}
+function Curves.mulWeight(
+  io Vec3 result[], 
+  in Integer getValueType, 
+  in LocalL4UInt32Array indexList[], 
+  in LocalL4ScalarArray normalizedParam[], 
+  in GenericVec3ArrayValue deltaPosition[], 
+  in LocalL4ScalarArray weights[],
+  ){
+  //  リストを制作した際のターゲット数と今回参照するターゲット数に不足がないかを確認する
+  //  indexList[0].others[0]にターゲット数が格納されているためcountの数が実際のターゲット数とは異なるので、ループではweightsのサイズを使用する
+  if(indexList[0].others[0] > this.curveCount()){
+    setError("Curves.MulWeight node : IndexList require count = "+indexList[0].others[0]+". But Curve count = "+this.curveCount());
+  }else{
+    result.resize(weights.size());
+    switch(getValueType){
+      case 0:
+        MulWeightTaskPos<<<result.size()>>>(result, this, indexList, normalizedParam, weights);
+        break;
+      case 1:
+        MulWeightTaskTan<<<result.size()>>>(result, this, indexList, normalizedParam, weights);
+        break;
+      case 2:
+        MulWeightTaskNom<<<result.size()>>>(result, this, indexList, normalizedParam, weights);
+        break;
+      case 3:
+        MulWeightTaskDlt<<<result.size()>>>(result, this, indexList, normalizedParam, deltaPosition, weights);
+        break;
     }
   }
 }

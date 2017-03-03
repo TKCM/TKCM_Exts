@@ -1,0 +1,1167 @@
+{
+  "objectType" : "Graph",
+  "metadata" : {
+    "uiGraphZoom" : "{\n  \"value\" : 0.8266586661338806\n  }",
+    "uiGraphPan" : "{\n  \"x\" : 210.0980834960938,\n  \"y\" : -317.4696350097656\n  }"
+    },
+  "title" : "MultiChWeightMap_getOrderedListArray",
+  "ports" : [
+    {
+      "objectType" : "ExecPort",
+      "name" : "exec",
+      "nodePortType" : "IO",
+      "defaultValues" : {
+        "Execute" : {}
+        },
+      "execPortType" : "IO",
+      "typeSpec" : "Execute"
+      },
+    {
+      "objectType" : "ExecPort",
+      "name" : "multiChWeightmap",
+      "nodePortType" : "Out",
+      "defaultValues" : {
+        "MultiChWeightmap" : null
+        },
+      "execPortType" : "In"
+      },
+    {
+      "objectType" : "ExecPort",
+      "name" : "mesh",
+      "nodePortType" : "Out",
+      "defaultValues" : {
+        "PolygonMesh" : null
+        },
+      "execPortType" : "In"
+      },
+    {
+      "objectType" : "ExecPort",
+      "metadata" : {
+        "uiPersistValue" : "true"
+        },
+      "name" : "positions",
+      "nodePortType" : "Out",
+      "defaultValues" : {
+        "Vec3" : {
+          "x" : -0.1754908710718155,
+          "y" : 0,
+          "z" : 0.7797738313674927
+          },
+        "Vec3[]" : []
+        },
+      "execPortType" : "In",
+      "typeSpec" : "Vec3[]"
+      },
+    {
+      "objectType" : "ExecPort",
+      "metadata" : {
+        "uiCombo" : "(\"Larger \", \"Smaller\")"
+        },
+      "name" : "condition",
+      "nodePortType" : "Out",
+      "defaultValues" : {
+        "Integer" : 0
+        },
+      "execPortType" : "In",
+      "typeSpec" : "Integer"
+      },
+    {
+      "objectType" : "ExecPort",
+      "metadata" : {
+        "uiCombo" : "(\"Ch\", \"Name\")"
+        },
+      "name" : "mapAttrSelect",
+      "nodePortType" : "Out",
+      "defaultValues" : {
+        "Integer" : 0
+        },
+      "execPortType" : "In",
+      "typeSpec" : "Integer"
+      },
+    {
+      "objectType" : "ExecPort",
+      "metadata" : {
+        "uiPersistValue" : "true"
+        },
+      "name" : "mapAttr_Ch",
+      "nodePortType" : "Out",
+      "defaultValues" : {
+        "String" : "0,1,2"
+        },
+      "execPortType" : "In",
+      "typeSpec" : "String"
+      },
+    {
+      "objectType" : "ExecPort",
+      "metadata" : {
+        "uiPersistValue" : "true"
+        },
+      "name" : "mapAttr_Name",
+      "nodePortType" : "Out",
+      "defaultValues" : {
+        "String[]" : [
+          "weightMap_ch0",
+          "weightMap_ch1",
+          "weightMap_ch2"
+          ]
+        },
+      "execPortType" : "In",
+      "typeSpec" : "String[]"
+      },
+    {
+      "objectType" : "ExecPort",
+      "metadata" : {
+        "uiPersistValue" : "true"
+        },
+      "name" : "maxCount",
+      "nodePortType" : "Out",
+      "defaultValues" : {
+        "Integer" : 2
+        },
+      "execPortType" : "In",
+      "typeSpec" : "Integer"
+      },
+    {
+      "objectType" : "ExecPort",
+      "name" : "chIndexList",
+      "nodePortType" : "In",
+      "defaultValues" : {
+        "LocalL4UInt32Array[]" : []
+        },
+      "execPortType" : "Out",
+      "typeSpec" : "LocalL4UInt32Array[]"
+      },
+    {
+      "objectType" : "ExecPort",
+      "name" : "mapValues",
+      "nodePortType" : "In",
+      "defaultValues" : {
+        "LocalL4ScalarArray[]" : []
+        },
+      "execPortType" : "Out",
+      "typeSpec" : "LocalL4ScalarArray[]"
+      },
+    {
+      "objectType" : "ExecPort",
+      "name" : "weights",
+      "nodePortType" : "In",
+      "defaultValues" : {
+        "LocalL4ScalarArray[]" : []
+        },
+      "execPortType" : "Out",
+      "typeSpec" : "LocalL4ScalarArray[]"
+      }
+    ],
+  "extDeps" : {
+    "TKCM" : "*"
+    },
+  "presetGUID" : "BCCF379E0A844DF667C3DC5850D9370C",
+  "nodes" : [
+    {
+      "objectType" : "Inst",
+      "metadata" : {
+        "uiGraphPos" : "{\"x\":82.1974,\"y\":738.114}",
+        "uiCollapsedState" : "0"
+        },
+      "name" : "MultiChWeightMap_getOrderedListCore",
+      "ports" : [
+        {
+          "objectType" : "InstPort",
+          "name" : "exec",
+          "nodePortType" : "IO"
+          },
+        {
+          "objectType" : "InstPort",
+          "name" : "multiChWeightmap",
+          "nodePortType" : "In"
+          },
+        {
+          "objectType" : "InstPort",
+          "name" : "mesh",
+          "nodePortType" : "In"
+          },
+        {
+          "objectType" : "InstPort",
+          "name" : "locations",
+          "nodePortType" : "In"
+          },
+        {
+          "objectType" : "InstPort",
+          "name" : "condition",
+          "nodePortType" : "In"
+          },
+        {
+          "objectType" : "InstPort",
+          "name" : "mapAttrSelect",
+          "nodePortType" : "In",
+          "defaultValues" : {
+            "Integer" : 0
+            }
+          },
+        {
+          "objectType" : "InstPort",
+          "name" : "mapAttr_Ch",
+          "nodePortType" : "In",
+          "defaultValues" : {
+            "String" : "0,1,2"
+            }
+          },
+        {
+          "objectType" : "InstPort",
+          "name" : "mapAttr_Name",
+          "nodePortType" : "In",
+          "defaultValues" : {
+            "String[]" : [
+              "weightMap_ch0",
+              "weightMap_ch1",
+              "weightMap_ch2"
+              ]
+            }
+          },
+        {
+          "objectType" : "InstPort",
+          "name" : "maxCount",
+          "nodePortType" : "In",
+          "defaultValues" : {
+            "Integer" : 2
+            }
+          },
+        {
+          "objectType" : "InstPort",
+          "name" : "chIndexList",
+          "nodePortType" : "Out"
+          },
+        {
+          "objectType" : "InstPort",
+          "name" : "mapValues",
+          "nodePortType" : "Out"
+          },
+        {
+          "objectType" : "InstPort",
+          "name" : "weights",
+          "nodePortType" : "Out"
+          }
+        ],
+      "definition" : {
+        "objectType" : "Func",
+        "title" : "func",
+        "ports" : [
+          {
+            "objectType" : "ExecPort",
+            "name" : "exec",
+            "nodePortType" : "IO",
+            "execPortType" : "IO",
+            "typeSpec" : "Execute"
+            },
+          {
+            "objectType" : "ExecPort",
+            "name" : "multiChWeightmap",
+            "nodePortType" : "Out",
+            "execPortType" : "In",
+            "typeSpec" : "MultiChWeightmap"
+            },
+          {
+            "objectType" : "ExecPort",
+            "name" : "mesh",
+            "nodePortType" : "Out",
+            "execPortType" : "In",
+            "typeSpec" : "PolygonMesh"
+            },
+          {
+            "objectType" : "ExecPort",
+            "name" : "locations",
+            "nodePortType" : "Out",
+            "execPortType" : "In",
+            "typeSpec" : "GeometryLocation[]"
+            },
+          {
+            "objectType" : "ExecPort",
+            "name" : "condition",
+            "nodePortType" : "Out",
+            "execPortType" : "In",
+            "typeSpec" : "Integer"
+            },
+          {
+            "objectType" : "ExecPort",
+            "metadata" : {
+              "uiCombo" : "(\"Ch\", \"Name\")"
+              },
+            "name" : "mapAttrSelect",
+            "nodePortType" : "Out",
+            "execPortType" : "In",
+            "typeSpec" : "Integer"
+            },
+          {
+            "objectType" : "ExecPort",
+            "metadata" : {
+              "uiPersistValue" : "true"
+              },
+            "name" : "mapAttr_Ch",
+            "nodePortType" : "Out",
+            "execPortType" : "In",
+            "typeSpec" : "String"
+            },
+          {
+            "objectType" : "ExecPort",
+            "metadata" : {
+              "uiPersistValue" : "true"
+              },
+            "name" : "mapAttr_Name",
+            "nodePortType" : "Out",
+            "execPortType" : "In",
+            "typeSpec" : "String[]"
+            },
+          {
+            "objectType" : "ExecPort",
+            "metadata" : {
+              "uiPersistValue" : "true"
+              },
+            "name" : "maxCount",
+            "nodePortType" : "Out",
+            "execPortType" : "In",
+            "typeSpec" : "Integer"
+            },
+          {
+            "objectType" : "ExecPort",
+            "name" : "chIndexList",
+            "nodePortType" : "In",
+            "execPortType" : "Out",
+            "typeSpec" : "LocalL4UInt32Array[]"
+            },
+          {
+            "objectType" : "ExecPort",
+            "name" : "mapValues",
+            "nodePortType" : "In",
+            "execPortType" : "Out",
+            "typeSpec" : "LocalL4ScalarArray[]"
+            },
+          {
+            "objectType" : "ExecPort",
+            "name" : "weights",
+            "nodePortType" : "In",
+            "execPortType" : "Out",
+            "typeSpec" : "LocalL4ScalarArray[]"
+            }
+          ],
+        "extDeps" : {
+          "TKCM" : "*"
+          },
+        "code" : "dfgEntry {
+  String ch[];
+  switch(mapAttrSelect){
+    case 0:
+      String chNum[] = mapAttr_Ch.split(\",\");
+      ch.resize(chNum.size());
+      for(Integer i=0; i<chNum.size(); i++){
+        ch[i] = multiChWeightmap.chNames[chNum[i].toScalar()];
+      }
+      break;
+    case 1:
+      ch = mapAttr_Name;
+      break;
+  }
+  for(Integer i=0; i<ch.size(); i++){
+    if(!mesh.has(ch[i])){
+      report(\"Error MultiChWeightMap_getOrderedList node: empty attribute \"+ch[i]);
+      return;
+    }
+  }
+  
+  GetMapValueOrderedListArray(multiChWeightmap,	mesh, locations, condition, ch, maxCount, chIndexList, mapValues, weights);
+  
+}
+"
+        }
+      },
+    {
+      "objectType" : "Inst",
+      "metadata" : {
+        "uiGraphPos" : "{\"x\":-216.511,\"y\":594.069}"
+        },
+      "name" : "getClosestLocation_Array_1",
+      "ports" : [
+        {
+          "objectType" : "InstPort",
+          "name" : "exec",
+          "nodePortType" : "IO"
+          },
+        {
+          "objectType" : "InstPort",
+          "name" : "polygonMesh",
+          "nodePortType" : "In"
+          },
+        {
+          "objectType" : "InstPort",
+          "name" : "meshXfo",
+          "nodePortType" : "In"
+          },
+        {
+          "objectType" : "InstPort",
+          "name" : "positions",
+          "nodePortType" : "In"
+          },
+        {
+          "objectType" : "InstPort",
+          "name" : "Distance",
+          "nodePortType" : "In",
+          "defaultValues" : {
+            "Integer" : 1
+            }
+          },
+        {
+          "objectType" : "InstPort",
+          "name" : "Distance_Optional",
+          "nodePortType" : "In"
+          },
+        {
+          "objectType" : "InstPort",
+          "name" : "location",
+          "nodePortType" : "Out"
+          }
+        ],
+      "executable" : "TKCM.PolygonMesh.Queries.getClosestLocation_Array",
+      "presetGUID" : "91A848375E47BFF91AC32AD65E305714"
+      }
+    ],
+  "connections" : {
+    "multiChWeightmap" : [
+      "MultiChWeightMap_getOrderedListCore.multiChWeightmap"
+      ],
+    "mesh" : [
+      "MultiChWeightMap_getOrderedListCore.mesh",
+      "getClosestLocation_Array_1.polygonMesh"
+      ],
+    "positions" : [
+      "getClosestLocation_Array_1.positions"
+      ],
+    "condition" : [
+      "MultiChWeightMap_getOrderedListCore.condition"
+      ],
+    "mapAttrSelect" : [
+      "MultiChWeightMap_getOrderedListCore.mapAttrSelect"
+      ],
+    "mapAttr_Ch" : [
+      "MultiChWeightMap_getOrderedListCore.mapAttr_Ch"
+      ],
+    "mapAttr_Name" : [
+      "MultiChWeightMap_getOrderedListCore.mapAttr_Name"
+      ],
+    "maxCount" : [
+      "MultiChWeightMap_getOrderedListCore.maxCount"
+      ],
+    "MultiChWeightMap_getOrderedListCore.chIndexList" : [
+      "chIndexList"
+      ],
+    "MultiChWeightMap_getOrderedListCore.mapValues" : [
+      "mapValues"
+      ],
+    "MultiChWeightMap_getOrderedListCore.weights" : [
+      "weights"
+      ],
+    "getClosestLocation_Array_1.location" : [
+      "MultiChWeightMap_getOrderedListCore.locations"
+      ]
+    },
+  "requiredPresets" : {
+    "TKCM.PolygonMesh.Queries.getClosestLocation_Array" : {
+      "objectType" : "Graph",
+      "metadata" : {
+        "uiGraphZoom" : "{\n  \"value\" : 1.0\n  }",
+        "uiGraphPan" : "{\n  \"x\" : 180.5,\n  \"y\" : 129.0\n  }"
+        },
+      "title" : "getClosestLocation_Array",
+      "ports" : [
+        {
+          "objectType" : "ExecPort",
+          "metadata" : {
+            "uiPersistValue" : "true"
+            },
+          "name" : "exec",
+          "nodePortType" : "IO",
+          "defaultValues" : {
+            "Execute" : {}
+            },
+          "execPortType" : "IO",
+          "typeSpec" : "Execute"
+          },
+        {
+          "objectType" : "ExecPort",
+          "metadata" : {
+            "uiPersistValue" : "true"
+            },
+          "name" : "polygonMesh",
+          "nodePortType" : "Out",
+          "defaultValues" : {
+            "PolygonMesh" : null
+            },
+          "execPortType" : "In",
+          "typeSpec" : "PolygonMesh"
+          },
+        {
+          "objectType" : "ExecPort",
+          "metadata" : {
+            "uiPersistValue" : "true"
+            },
+          "name" : "meshXfo",
+          "nodePortType" : "Out",
+          "defaultValues" : {
+            "Xfo" : {
+              "ori" : {
+                "v" : {
+                  "x" : 0,
+                  "y" : 0,
+                  "z" : 0
+                  },
+                "w" : 1
+                },
+              "tr" : {
+                "x" : 0,
+                "y" : 0,
+                "z" : 0
+                },
+              "sc" : {
+                "x" : 1,
+                "y" : 1,
+                "z" : 1
+                }
+              }
+            },
+          "execPortType" : "In",
+          "typeSpec" : "Xfo"
+          },
+        {
+          "objectType" : "ExecPort",
+          "name" : "positions",
+          "nodePortType" : "Out",
+          "defaultValues" : {
+            "Vec3[]" : []
+            },
+          "execPortType" : "In",
+          "typeSpec" : "Vec3[]"
+          },
+        {
+          "objectType" : "ExecPort",
+          "metadata" : {
+            "uiCombo" : "(\"Optional\", \"Infinite\")"
+            },
+          "name" : "Distance",
+          "nodePortType" : "Out",
+          "defaultValues" : {
+            "Integer" : 0
+            },
+          "execPortType" : "In",
+          "typeSpec" : "Integer"
+          },
+        {
+          "objectType" : "ExecPort",
+          "metadata" : {
+            "uiPersistValue" : "true"
+            },
+          "name" : "Distance_Optional",
+          "nodePortType" : "Out",
+          "defaultValues" : {
+            "Scalar" : 100
+            },
+          "execPortType" : "In",
+          "typeSpec" : "Scalar"
+          },
+        {
+          "objectType" : "ExecPort",
+          "name" : "location",
+          "nodePortType" : "In",
+          "defaultValues" : {
+            "GeometryLocation[]" : []
+            },
+          "execPortType" : "Out",
+          "typeSpec" : "GeometryLocation[]"
+          }
+        ],
+      "extDeps" : {},
+      "presetGUID" : "91A848375E47BFF91AC32AD65E305714",
+      "nodes" : [
+        {
+          "objectType" : "Inst",
+          "metadata" : {
+            "uiGraphPos" : "{\"x\":-115.0,\"y\":386.0}",
+            "uiCollapsedState" : "2"
+            },
+          "name" : "SCALAR_INFINITE_1",
+          "ports" : [
+            {
+              "objectType" : "InstPort",
+              "name" : "exec",
+              "nodePortType" : "IO"
+              },
+            {
+              "objectType" : "InstPort",
+              "name" : "value",
+              "nodePortType" : "Out"
+              }
+            ],
+          "executable" : "Fabric.Exts.Math.Constants.SCALAR_INFINITE",
+          "presetGUID" : "B2AFC45CAF82C9C3E29C4CC05AD68829"
+          },
+        {
+          "objectType" : "Inst",
+          "metadata" : {
+            "uiGraphPos" : "{\"x\":-61.0,\"y\":139.0}"
+            },
+          "name" : "Transform_1",
+          "ports" : [
+            {
+              "objectType" : "InstPort",
+              "name" : "exec",
+              "nodePortType" : "IO"
+              },
+            {
+              "objectType" : "InstPort",
+              "name" : "mesh",
+              "nodePortType" : "In"
+              },
+            {
+              "objectType" : "InstPort",
+              "name" : "xfo",
+              "nodePortType" : "In"
+              },
+            {
+              "objectType" : "InstPort",
+              "name" : "result",
+              "nodePortType" : "Out"
+              }
+            ],
+          "definition" : {
+            "objectType" : "Graph",
+            "metadata" : {
+              "uiNodeColor" : "{\n  \"r\" : 120,\n  \"g\" : 130,\n  \"b\" : 144\n  }",
+              "uiHeaderColor" : "{\n  \"r\" : 88,\n  \"g\" : 92,\n  \"b\" : 110\n  }",
+              "uiTooltip" : "transforms (= translates/rotates/scales) a polygon mesh."
+              },
+            "title" : "Transform",
+            "ports" : [
+              {
+                "objectType" : "ExecPort",
+                "name" : "exec",
+                "nodePortType" : "IO",
+                "execPortType" : "IO",
+                "typeSpec" : "Execute"
+                },
+              {
+                "objectType" : "ExecPort",
+                "name" : "mesh",
+                "nodePortType" : "Out",
+                "execPortType" : "In",
+                "typeSpec" : "PolygonMesh"
+                },
+              {
+                "objectType" : "ExecPort",
+                "name" : "xfo",
+                "nodePortType" : "Out",
+                "execPortType" : "In",
+                "typeSpec" : "Xfo"
+                },
+              {
+                "objectType" : "ExecPort",
+                "name" : "result",
+                "nodePortType" : "In",
+                "execPortType" : "Out",
+                "typeSpec" : "PolygonMesh"
+                }
+              ],
+            "extDeps" : {
+              "Geometry" : "*"
+              },
+            "nodes" : [
+              {
+                "objectType" : "Inst",
+                "metadata" : {
+                  "uiGraphPos" : "{\"x\":445.5,\"y\":147.5}"
+                  },
+                "name" : "applyTransform",
+                "ports" : [
+                  {
+                    "objectType" : "InstPort",
+                    "name" : "exec",
+                    "nodePortType" : "IO"
+                    },
+                  {
+                    "objectType" : "InstPort",
+                    "name" : "mesh",
+                    "nodePortType" : "IO"
+                    },
+                  {
+                    "objectType" : "InstPort",
+                    "name" : "xfo",
+                    "nodePortType" : "In"
+                    }
+                  ],
+                "definition" : {
+                  "objectType" : "Func",
+                  "title" : "applyTransform",
+                  "ports" : [
+                    {
+                      "objectType" : "ExecPort",
+                      "name" : "exec",
+                      "nodePortType" : "IO",
+                      "execPortType" : "IO",
+                      "typeSpec" : "Execute"
+                      },
+                    {
+                      "objectType" : "ExecPort",
+                      "name" : "mesh",
+                      "nodePortType" : "IO",
+                      "execPortType" : "IO",
+                      "typeSpec" : "PolygonMesh"
+                      },
+                    {
+                      "objectType" : "ExecPort",
+                      "name" : "xfo",
+                      "nodePortType" : "Out",
+                      "execPortType" : "In",
+                      "typeSpec" : "Xfo"
+                      }
+                    ],
+                  "extDeps" : {},
+                  "code" : "require Geometry;
+
+dfgEntry
+{
+  mesh.applyTransform(xfo);
+}
+
+"
+                  }
+                },
+              {
+                "objectType" : "Inst",
+                "metadata" : {
+                  "uiGraphPos" : "{\"x\":197.0,\"y\":100.0}"
+                  },
+                "name" : "ClonePolygonMesh",
+                "ports" : [
+                  {
+                    "objectType" : "InstPort",
+                    "name" : "exec",
+                    "nodePortType" : "IO"
+                    },
+                  {
+                    "objectType" : "InstPort",
+                    "name" : "value",
+                    "nodePortType" : "In"
+                    },
+                  {
+                    "objectType" : "InstPort",
+                    "name" : "result",
+                    "nodePortType" : "Out"
+                    }
+                  ],
+                "executable" : "Fabric.Exts.Geometry.PolygonMesh.ClonePolygonMesh",
+                "presetGUID" : "8480EBBD95E54A412E1471D01B474BA2"
+                }
+              ],
+            "connections" : {
+              "mesh" : [
+                "ClonePolygonMesh.value"
+                ],
+              "xfo" : [
+                "applyTransform.xfo"
+                ],
+              "applyTransform.mesh" : [
+                "result"
+                ],
+              "ClonePolygonMesh.result" : [
+                "applyTransform.mesh"
+                ]
+              }
+            }
+          },
+        {
+          "objectType" : "Inst",
+          "metadata" : {
+            "uiGraphPos" : "{\"x\":92.0,\"y\":310.0}"
+            },
+          "name" : "If_1",
+          "ports" : [
+            {
+              "objectType" : "InstPort",
+              "name" : "exec",
+              "nodePortType" : "IO"
+              },
+            {
+              "objectType" : "InstPort",
+              "name" : "cond",
+              "nodePortType" : "In"
+              },
+            {
+              "objectType" : "InstPort",
+              "name" : "if_true",
+              "nodePortType" : "In"
+              },
+            {
+              "objectType" : "InstPort",
+              "name" : "if_false",
+              "nodePortType" : "In"
+              },
+            {
+              "objectType" : "InstPort",
+              "name" : "result",
+              "nodePortType" : "Out"
+              }
+            ],
+          "executable" : "Fabric.Core.Control.If",
+          "presetGUID" : "3182A478A21643455D549E483D35F831"
+          },
+        {
+          "objectType" : "Inst",
+          "metadata" : {
+            "uiGraphPos" : "{\"x\":-84.0,\"y\":329.0}",
+            "uiCollapsedState" : "2"
+            },
+          "name" : "ToBoolean_1",
+          "ports" : [
+            {
+              "objectType" : "InstPort",
+              "name" : "exec",
+              "nodePortType" : "IO"
+              },
+            {
+              "objectType" : "InstPort",
+              "name" : "value",
+              "nodePortType" : "In"
+              },
+            {
+              "objectType" : "InstPort",
+              "name" : "boolean",
+              "nodePortType" : "Out"
+              }
+            ],
+          "executable" : "Fabric.Core.Func.ToBoolean",
+          "presetGUID" : "E3F4150E373A9F4000F8FE5216942051"
+          },
+        {
+          "objectType" : "Inst",
+          "metadata" : {
+            "uiGraphPos" : "{\"x\":302.5,\"y\":195.0}"
+            },
+          "name" : "GetClosestArray_1",
+          "ports" : [
+            {
+              "objectType" : "InstPort",
+              "name" : "exec",
+              "nodePortType" : "IO"
+              },
+            {
+              "objectType" : "InstPort",
+              "name" : "this",
+              "nodePortType" : "In"
+              },
+            {
+              "objectType" : "InstPort",
+              "name" : "position",
+              "nodePortType" : "In"
+              },
+            {
+              "objectType" : "InstPort",
+              "name" : "scaling",
+              "nodePortType" : "In",
+              "defaultValues" : {
+                "Vec3" : {
+                  "x" : 1,
+                  "y" : 1,
+                  "z" : 1
+                  }
+                }
+              },
+            {
+              "objectType" : "InstPort",
+              "name" : "maxUnscaledDistance",
+              "nodePortType" : "In"
+              },
+            {
+              "objectType" : "InstPort",
+              "name" : "result",
+              "nodePortType" : "Out"
+              }
+            ],
+          "executable" : "Fabric.Exts.Geometry.PolygonMesh.GetClosestArray",
+          "presetGUID" : "9D39DE8545E42FF6E21986D02A2BCE3F"
+          }
+        ],
+      "connections" : {
+        "polygonMesh" : [
+          "Transform_1.mesh"
+          ],
+        "meshXfo" : [
+          "Transform_1.xfo"
+          ],
+        "positions" : [
+          "GetClosestArray_1.position"
+          ],
+        "Distance" : [
+          "ToBoolean_1.value"
+          ],
+        "Distance_Optional" : [
+          "If_1.if_true"
+          ],
+        "SCALAR_INFINITE_1.value" : [
+          "If_1.if_false"
+          ],
+        "Transform_1.result" : [
+          "GetClosestArray_1.this"
+          ],
+        "If_1.result" : [
+          "GetClosestArray_1.maxUnscaledDistance"
+          ],
+        "ToBoolean_1.boolean" : [
+          "If_1.cond"
+          ],
+        "GetClosestArray_1.result" : [
+          "location"
+          ]
+        }
+      },
+    "Fabric.Exts.Math.Constants.SCALAR_INFINITE" : {
+      "objectType" : "Func",
+      "metadata" : {
+        "uiNodeColor" : "{\n  \"r\" : 99,\n  \"g\" : 129,\n  \"b\" : 92\n  }"
+        },
+      "title" : "SCALAR_INFINITE",
+      "ports" : [
+        {
+          "objectType" : "ExecPort",
+          "name" : "exec",
+          "nodePortType" : "IO",
+          "execPortType" : "IO",
+          "typeSpec" : "Execute"
+          },
+        {
+          "objectType" : "ExecPort",
+          "name" : "value",
+          "nodePortType" : "In",
+          "execPortType" : "Out",
+          "typeSpec" : "Float32"
+          }
+        ],
+      "extDeps" : {
+        "Math" : "*"
+        },
+      "presetGUID" : "B2AFC45CAF82C9C3E29C4CC05AD68829",
+      "code" : "require Math;
+
+dfgEntry {
+  value = SCALAR_INFINITE;
+}
+"
+      },
+    "Fabric.Exts.Geometry.PolygonMesh.ClonePolygonMesh" : {
+      "objectType" : "Func",
+      "metadata" : {
+        "uiNodeColor" : "{\n  \"r\" : 214,\n  \"g\" : 191,\n  \"b\" : 103\n  }",
+        "uiHeaderColor" : "{\n  \"r\" : 188,\n  \"g\" : 129,\n  \"b\" : 83\n  }"
+        },
+      "title" : "ClonePolygonMesh",
+      "ports" : [
+        {
+          "objectType" : "ExecPort",
+          "name" : "exec",
+          "nodePortType" : "IO",
+          "execPortType" : "IO",
+          "typeSpec" : "Execute"
+          },
+        {
+          "objectType" : "ExecPort",
+          "name" : "value",
+          "nodePortType" : "Out",
+          "execPortType" : "In",
+          "typeSpec" : "PolygonMesh"
+          },
+        {
+          "objectType" : "ExecPort",
+          "name" : "result",
+          "nodePortType" : "In",
+          "execPortType" : "Out",
+          "typeSpec" : "PolygonMesh"
+          }
+        ],
+      "extDeps" : {},
+      "presetGUID" : "8480EBBD95E54A412E1471D01B474BA2",
+      "code" : "dfgEntry {
+  result = value.clone();
+}
+"
+      },
+    "Fabric.Core.Control.If" : {
+      "objectType" : "Func",
+      "title" : "If",
+      "ports" : [
+        {
+          "objectType" : "ExecPort",
+          "name" : "exec",
+          "nodePortType" : "IO",
+          "execPortType" : "IO",
+          "typeSpec" : "Execute"
+          },
+        {
+          "objectType" : "ExecPort",
+          "name" : "cond",
+          "nodePortType" : "Out",
+          "execPortType" : "In",
+          "typeSpec" : "Boolean"
+          },
+        {
+          "objectType" : "ExecPort",
+          "name" : "if_true",
+          "nodePortType" : "Out",
+          "execPortType" : "In",
+          "typeSpec" : "$TYPE$"
+          },
+        {
+          "objectType" : "ExecPort",
+          "name" : "if_false",
+          "nodePortType" : "Out",
+          "execPortType" : "In",
+          "typeSpec" : "$TYPE$"
+          },
+        {
+          "objectType" : "ExecPort",
+          "name" : "result",
+          "nodePortType" : "In",
+          "execPortType" : "Out",
+          "typeSpec" : "$TYPE$"
+          }
+        ],
+      "extDeps" : {},
+      "presetGUID" : "3182A478A21643455D549E483D35F831",
+      "code" : "
+dfgEntry {
+	result = cond ? if_true : if_false;
+}
+"
+      },
+    "Fabric.Core.Func.ToBoolean" : {
+      "objectType" : "Func",
+      "title" : "ToBoolean",
+      "ports" : [
+        {
+          "objectType" : "ExecPort",
+          "name" : "exec",
+          "nodePortType" : "IO",
+          "execPortType" : "IO",
+          "typeSpec" : "Execute"
+          },
+        {
+          "objectType" : "ExecPort",
+          "name" : "value",
+          "nodePortType" : "Out",
+          "execPortType" : "In",
+          "typeSpec" : "$TYPE$"
+          },
+        {
+          "objectType" : "ExecPort",
+          "name" : "boolean",
+          "nodePortType" : "In",
+          "execPortType" : "Out",
+          "typeSpec" : "Boolean"
+          }
+        ],
+      "extDeps" : {},
+      "presetGUID" : "E3F4150E373A9F4000F8FE5216942051",
+      "code" : "dfgEntry {
+  boolean = Boolean(value);
+}
+"
+      },
+    "Fabric.Exts.Geometry.PolygonMesh.GetClosestArray" : {
+      "objectType" : "Func",
+      "metadata" : {
+        "uiDocUrl" : "http://docs.fabric-engine.com/FabricEngine/2.4.0/HTML/KLExtensionsGuide/Geometry/SpatialQueryable.html",
+        "uiTooltip" : "A shortcut to :kl-ref:`SpatialQuery.getClosest`, without the need to call\n:kl-ref:`SpatialQueryable.beginSpatialQuery` and :kl-ref:`SpatialQueryable.endSpatialQuery`.\nSee :kl-ref:`SpatialQuery.getClosest` for more details.\n\n\n Supported by SpatialQueryable,Points,Lines,PolygonMesh"
+        },
+      "title" : "GetClosest[]",
+      "ports" : [
+        {
+          "objectType" : "ExecPort",
+          "name" : "exec",
+          "nodePortType" : "IO",
+          "execPortType" : "IO",
+          "typeSpec" : "Execute"
+          },
+        {
+          "objectType" : "ExecPort",
+          "name" : "this",
+          "nodePortType" : "Out",
+          "execPortType" : "In",
+          "typeSpec" : "PolygonMesh"
+          },
+        {
+          "objectType" : "ExecPort",
+          "metadata" : {
+            "uiColor" : "{\n  \"r\" : 255,\n  \"g\" : 242,\n  \"b\" : 0\n  }"
+            },
+          "name" : "position",
+          "nodePortType" : "Out",
+          "execPortType" : "In",
+          "typeSpec" : "Vec3[]"
+          },
+        {
+          "objectType" : "ExecPort",
+          "metadata" : {
+            "uiColor" : "{\n  \"r\" : 255,\n  \"g\" : 242,\n  \"b\" : 0\n  }"
+            },
+          "name" : "scaling",
+          "nodePortType" : "Out",
+          "execPortType" : "In",
+          "typeSpec" : "Vec3"
+          },
+        {
+          "objectType" : "ExecPort",
+          "name" : "maxUnscaledDistance",
+          "nodePortType" : "Out",
+          "execPortType" : "In",
+          "typeSpec" : "Scalar"
+          },
+        {
+          "objectType" : "ExecPort",
+          "name" : "result",
+          "nodePortType" : "In",
+          "execPortType" : "Out",
+          "typeSpec" : "GeometryLocation[]"
+          }
+        ],
+      "extDeps" : {
+        "Geometry" : "*"
+        },
+      "presetGUID" : "9D39DE8545E42FF6E21986D02A2BCE3F",
+      "code" : "
+require Geometry;
+
+operator geometry_polygonmesh_getclosest_task<<<index>>>(
+  PolygonMesh this,
+  Vec3 position[],
+  Vec3 scaling,
+  Scalar maxUnscaledDistance,
+  io GeometryLocation result[]
+) {
+  result[index] = this.getClosest(position[index], scaling, maxUnscaledDistance);
+}
+
+dfgEntry {
+  if(position.size() == 0) return;
+  result.resize(position.size());
+
+  GenericValueContainer options = GenericValueContainer();
+  this.prepareForSpatialQueries(result.size(), options);
+
+  if(result.size() < 128)
+  {
+    for(Size i=0;i<result.size();i++)
+      geometry_polygonmesh_getclosest_task(i, this, position, scaling, maxUnscaledDistance, result);
+  }
+  else
+  {
+    geometry_polygonmesh_getclosest_task<<<result.size()>>>(this, position, scaling, maxUnscaledDistance, result);
+  }
+}
+"
+      }
+    }
+  }

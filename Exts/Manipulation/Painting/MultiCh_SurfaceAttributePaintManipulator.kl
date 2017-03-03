@@ -180,7 +180,7 @@ operator MultiCh_SurfaceSculptManipulator_paint<<<index>>>(
   in SurfacePaintManipulator_PointCollection collectedPoints,
   in Ref<ScalarAttribute> weightMapAttr,
   io MultiCh_SurfaceAttributePaintManipulator_PaintData paintData,
-  in Integer brushType, // 0=Paint, 1=Erase. 2=Smooth
+  in Integer brushType, 
   in Scalar paintValLimit[2], // [0]=min, [1]=max
   io Boolean paintedChecker[],
   in Scalar brushStrength,

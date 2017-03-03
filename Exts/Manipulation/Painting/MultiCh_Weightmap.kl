@@ -50,9 +50,11 @@ function MultiChWeightmap(){
 // prepare to channel
 inline MultiChWeightmap.prepareCh!(Size chCount,  Color colors[]){
   if(chCount <= 0){
-    setError("count of channel is "+chCount+"!!!!!");
+    setError("MultiChWeightmap node : input count of channel is "+chCount+"!!!!!");
+    this.chCount = 1;
+  }else{
+    this.chCount = chCount;
   }
-  this.chCount = chCount;
   if(this.chCount != this.oldChCount){
     this.allChConnected = false;
   }
@@ -66,7 +68,7 @@ inline MultiChWeightmap.prepareCh!(Size chCount,  Color colors[]){
         this.colors[i] = colors[i];
       }
     }else{
-      setError("count of channel is not same size fo colorArray!!  channel count = "+chCount+" : colors.size() = "+colors.size() );
+      setError("MultiChWeightmap node : count of channel is not same size fo colorArray!!  channel count = "+chCount+" : colors.size() = "+colors.size() );
     }
   }
   this.colors = colors;
@@ -146,7 +148,7 @@ inline Color[] MakeRandomColors(Color colors[], Integer count){
   return resultColors;
 }
 
-//　MultiChWeightmap.getIndices用　i=頂点or面の数
+//　getIndices用のオペレータ　i=頂点or面の数
 operator getIndicesTask<<<i>>>(
   io Boolean hasVal[], 
   in Integer mode, 
@@ -246,6 +248,125 @@ function Index[] MultiChWeightmap.getIndices?(
     if(hasVal[i]){ indices.push(i); }
   }
   return indices;
+}
+
+//  GetMapValueOrderedListArray用のオペレータ　i=ロケーションの数
+operator GetMapValueListArrayTask<<<i>>>(io Scalar values[][], PolygonMesh mesh, GeometryLocation locations[], String ch[]){
+  GeometryAttributes attributes = mesh.attributes;
+  for(Integer j=0; j<ch.size(); j++){
+    GeometryAttribute attr = attributes.getAttribute(ch[j]);
+    ScalarAttribute cast = attr;
+    values[i][j] = GetAttributeAtLocation(mesh, locations[i], cast);
+  }
+}
+//  ロケーションでのウェイトマップの値が大きなもの（小さなもの）を順番に取得する
+//  取得の最大数は4
+function GetMapValueOrderedListArray(
+  in MultiChWeightmap multiChWeightmap,
+  in PolygonMesh mesh,
+  in GeometryLocation locations[],
+  in Integer condition,
+  in String ch[],
+  in Integer maxCount,
+  io LocalL4UInt32Array orderedIndex[],
+  io LocalL4ScalarArray orderedMapValues[],
+  io LocalL4ScalarArray weights[]
+  ){
+  //   入力されたデータの確認
+  if(locations.size() == 0){
+    return;
+  }
+  if(mesh == null){
+    report("Error: missing geometry in \"GetValueAtLocation\"");
+    return;
+  }
+  // ロケーションのマップ値を格納するための配列データを準備
+  Scalar values[][];
+  values.resize(locations.size());
+  for(Integer i=0; i<locations.size(); i++){
+    values[i].resize(ch.size());  
+  }
+  // ロケーションのマップ値を取得
+  if(locations.size() < 128 ){
+    for(Integer i=0; i<locations.size(); i++){
+      GetMapValueListArrayTask(i, values, mesh, locations, ch);
+    }
+  }else{
+    GetMapValueListArrayTask<<<locations.size()>>>(values, mesh, locations, ch);
+  }
+  // この後の昇順、降順の際にチャンネル番号も並び替えに連動するようにデータを準備
+  Index targetID[][];
+  targetID.resize(locations.size());
+  for(Integer i=0; i<locations.size(); i++){
+    targetID[i].resize(ch.size());
+    for(Integer j=0; j<ch.size(); j++){
+      targetID[i][j] = j;
+    }
+  }
+  // 取得したマップ値を順に並べなおす
+  for(Integer k=0; k<locations.size(); k++){
+    Scalar tmpS;
+    Index tmpID;
+    for(Integer i=0; i<values[k].size(); i++){
+      for(Integer j=i+1; j<values[k].size(); j++) {
+        //  conditionが0の場合は降順、1の場合は昇順
+        if(condition == 0){
+          if(values[k][i] < values[k][j]) {
+            tmpS =  values[k][i];
+            tmpID = targetID[k][i];
+            values[k][i] = values[k][j];
+            targetID[k][i] = targetID[k][j];
+            values[k][j] = tmpS;
+            targetID[k][j] = tmpID;
+          }
+        }else{
+          if(values[k][i] > values[k][j]) {
+            tmpS =  values[k][i];
+            tmpID = targetID[k][i];
+            values[k][i] = values[k][j];
+            targetID[k][i] = targetID[k][j];
+            values[k][j] = tmpS;
+            targetID[k][j] = tmpID;
+          }
+        }
+      }
+    }
+  }
+  // weights算出用にマップ値の合計値を計算しておく
+  Scalar sum[];
+  sum.resize(locations.size());
+  Integer outPutCount[];
+  outPutCount.resize(locations.size());
+  for(Integer k=0; k<locations.size(); k++){
+    for(Integer i=0; i<values[k].size(); i++){
+      if(i < maxCount){
+        sum[k] += values[k][i]; 
+        outPutCount[k] += 1; 
+      }else{
+        break;
+      }
+    }
+  }
+  // 出力データ準備
+  orderedIndex.resize(locations.size());
+  orderedMapValues.resize(locations.size());
+  weights.resize(locations.size());
+
+  for(Integer k=0; k<locations.size(); k++){
+    orderedIndex[k].resize(outPutCount[k]);
+    orderedMapValues[k].resize(outPutCount[k]);
+    weights[k].resize(outPutCount[k]);
+    for(Integer i=0; i<outPutCount[k]; i++){
+      orderedIndex[k].set(i, targetID[k][i]);
+      orderedMapValues[k].set(i,values[k][i]);
+      weights[k].set(i, values[k][i]/sum[k]); 
+    }
+  }
+  //  MulWeightでターゲット数に不足がないかの確認を行えるようにターゲットの数を格納しておく
+  //  カウントがothers[0]を作るために5になるが、MulWeightではweightListのcountを参照するので問題ないはず
+  orderedIndex[0].count = 5;
+  orderedIndex[0].others.resize(1);
+  orderedIndex[0].others[0] = ch.size();
 }
 
 // output

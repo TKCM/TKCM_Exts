@@ -66,8 +66,10 @@
       "execPortType" : "Out"
       }
     ],
-  "extDeps" : {},
-  "presetGUID" : "905FCFC7ED27D0E0B2492FB6ED1D951E",
+  "extDeps" : {
+    "TKCM" : "*"
+    },
+  "presetGUID" : "018F0510CA01F4733DD4493282BFBA44",
   "nodes" : [
     {
       "objectType" : "Inst",
@@ -151,7 +153,6 @@
         "extDeps" : {
           "TKCM" : "*"
           },
-        "origPresetGUID" : "48C821AFB1CF6658D01CFA235C2BF3B8",
         "code" : "dfgEntry {
   valve = Valve();
   valve.setName(origName);

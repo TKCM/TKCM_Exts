@@ -1,8 +1,8 @@
 {
   "objectType" : "Graph",
   "metadata" : {
-    "uiGraphZoom" : "{\n  \"value\" : 0.8227867484092712\n  }",
-    "uiGraphPan" : "{\n  \"x\" : 863.89453125,\n  \"y\" : -397.5216674804688\n  }"
+    "uiGraphZoom" : "{\n  \"value\" : 0.3185311853885651\n  }",
+    "uiGraphPan" : "{\n  \"x\" : 542.7963012873197,\n  \"y\" : 273.9421130576839\n  }"
     },
   "title" : "MergeMeshClonesAndModifier",
   "ports" : [
@@ -126,12 +126,12 @@
       }
     ],
   "extDeps" : {},
-  "presetGUID" : "A9A5A06C7EE2F676F05F3498631BCFBF",
+  "presetGUID" : "CF0D9C89CCE8829ED6CA4DE0C963A966",
   "nodes" : [
     {
       "objectType" : "Inst",
       "metadata" : {
-        "uiGraphPos" : "{\"x\":110.679,\"y\":705.2430000000001}"
+        "uiGraphPos" : "{\"x\":109.464,\"y\":701.597}"
         },
       "name" : "MergedMeshModifier",
       "ports" : [
@@ -256,82 +256,9 @@
             }
           ],
         "extDeps" : {},
-        "code" : "operator MergedMeshModifierTask<<<index>>>(
-  io PolygonMeshTopology mesh,
-  io Vec3 positions[], 
-  in Vec3 sourcePositions[], 
-  in Size baseMeshPointCount,
-  in Size sourceMeshPointCount,
-  in Xfo updateXfo[],
-  ){
-  Size i = index + baseMeshPointCount;
-  Vec3 position;
-  Size XfoID = index / sourceMeshPointCount;
-  Size sourceMeshPoiID = index % sourceMeshPointCount;
+        "code" : "dfgEntry {
+ this.mergedMeshClonesModifier(mergedXfos, updateXfos, source, applyBlendShape, blendshapeDelta, blendShapeIndexList, blendshapeWeights);
 
-  position = updateXfo[XfoID].transformVector(sourcePositions[sourceMeshPoiID]);
-  mesh.setPointAttribute( i, positions, position );
-}
-operator MergedMeshModifierTask2<<<index>>>(
-  io PolygonMeshTopology mesh,
-  io Vec3 positions[], 
-  in Vec3 sourcePositions[],
-  in GenericVec3ArrayValue blendshapeDelta[],
-  in LocalL4UInt32Array[] BSIndexList,
-  in LocalL4ScalarArray[] blendshapeWeights,
-  in Size baseMeshPointCount,
-  in Size sourceMeshPointCount,
-  in Xfo updateXfo[],
-  ){
-  Size i = index + baseMeshPointCount;
-  Vec3 position;
-  Size XfoID = index / sourceMeshPointCount;
-  Size sourceMeshPoiID = index % sourceMeshPointCount;
-  
-  if(blendshapeWeights[XfoID].count == BSIndexList[XfoID].count){
-    for(Integer j=0; j<blendshapeWeights[XfoID].count; j++){
-      position += blendshapeDelta[ BSIndexList[XfoID].first4[j] ].get(sourceMeshPoiID) * blendshapeWeights[XfoID].first4[j];
-    }
-    position = updateXfo[XfoID].transformVector(sourcePositions[sourceMeshPoiID] + position);
-    mesh.setPointAttribute( i, positions, position );
-  }
-}
-
-dfgEntry {
-  Size baseMeshPointCount;
-  baseMeshPointCount = this.pointCount() - source.pointCount()*mergedXfos.size();
-  
-  if(mergedXfos.size() != updateXfos.size()){
-    setError(\"MergedMeshModifier node : mergedXfos count don't same updateXfos count. mergedXfos is \"+mergedXfos.size()+\" : updateXfos is \"+ updateXfos.size());
-  }else if(blendShapeIndexList[0].others[0] > blendshapeDelta.size()){
-    setError(\"MergedMeshModifier node : IndexList require count = \"+blendShapeIndexList[0].others[0]+\". But blend shape target count = \"+blendshapeDelta.size());
-  }else{
-    Ref<Vec3Attribute> positionsAttribute = this.getAttributes().positionsAttribute;
-    Ref<Vec3Attribute> positionsAttribute2 = source.getAttributes().positionsAttribute;
-    
-    if(applyBlendShape && blendshapeDelta.size() != 0 && blendshapeDelta.size() != 0 && blendshapeWeights.size() != 0){
-      MergedMeshModifierTask2<<<this.pointCount()>>>(
-        this.topology, 
-        positionsAttribute.values, 
-        positionsAttribute2.values,
-        blendshapeDelta,
-        blendShapeIndexList,
-        blendshapeWeights,
-        baseMeshPointCount,
-        source.pointCount(),
-        updateXfos
-      );
-    }else{
-      MergedMeshModifierTask<<<this.pointCount()>>>(
-        this.topology, 
-        positionsAttribute.values, 
-        positionsAttribute2.values, 
-        baseMeshPointCount,
-        source.pointCount(),
-        updateXfos
-      );
-    }
-  }
 }
 "
         }
