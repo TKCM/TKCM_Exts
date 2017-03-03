@@ -1,0 +1,115 @@
+{
+  "objectType" : "Func",
+  "title" : "CreateAttribute",
+  "ports" : [
+    {
+      "objectType" : "ExecPort",
+      "name" : "exec",
+      "nodePortType" : "IO",
+      "defaultValues" : {
+        "Execute" : {}
+        },
+      "execPortType" : "IO",
+      "typeSpec" : "Execute"
+      },
+    {
+      "objectType" : "ExecPort",
+      "name" : "curves",
+      "nodePortType" : "IO",
+      "defaultValues" : {
+        "Curves" : null
+        },
+      "execPortType" : "IO",
+      "typeSpec" : "Curves"
+      },
+    {
+      "objectType" : "ExecPort",
+      "name" : "attributeName",
+      "nodePortType" : "Out",
+      "defaultValues" : {
+        "String" : ""
+        },
+      "execPortType" : "In",
+      "typeSpec" : "String"
+      },
+    {
+      "objectType" : "ExecPort",
+      "metadata" : {
+        "uiCombo" : "(\"Integer\", \"Scalar\", \"Vec2\", \"Vec3\", \"Vec4\", \"Quat\", \"Mat33\", \"Mat44\", \"Color\", \"RGB\", \"RGBA\", \"Skinning\")"
+        },
+      "name" : "type",
+      "nodePortType" : "Out",
+      "defaultValues" : {
+        "SInt32" : 0
+        },
+      "execPortType" : "In",
+      "typeSpec" : "SInt32"
+      },
+    {
+      "objectType" : "ExecPort",
+      "name" : "success",
+      "nodePortType" : "In",
+      "defaultValues" : {
+        "Boolean" : false
+        },
+      "execPortType" : "Out",
+      "typeSpec" : "Boolean"
+      }
+    ],
+  "extDeps" : {},
+  "presetGUID" : "58CD027D51373A2024DCA05A34530489",
+  "code" : "dfgEntry {
+  success = false;
+  if(attributeName == \"\"){
+    report(\"Error: empty attribute name in \\\"Curves.CreateAttribute\\\"\");
+    return;
+  }
+  if(curves == null){
+    report(\"Error: missing geometry in \\\"Curves.CreateAttribute\");
+    return;
+  }
+  
+  Ref<Vec3Attribute> attr();
+  switch(type){
+    case 0:
+      attr = curves.attributes.getOrCreateIntegerAttribute(attributeName);
+      break;
+    case 1:
+      attr = curves.attributes.getOrCreateScalarAttribute(attributeName);
+      break;
+    case 2:
+      attr = curves.attributes.getOrCreateVec2Attribute(attributeName);
+      break;
+    case 3:
+      attr = curves.attributes.getOrCreateVec3Attribute(attributeName);
+      break;
+    case 4:
+      attr = curves.attributes.getOrCreateVec4Attribute(attributeName);
+      break;
+    case 5:
+      attr = curves.attributes.getOrCreateQuatAttribute(attributeName);
+      break;
+    case 6:
+      attr = curves.attributes.getOrCreateMat33Attribute(attributeName);
+      break;
+    case 7:
+      attr = curves.attributes.getOrCreateMat44Attribute(attributeName);
+      break;
+    case 8:
+      attr = curves.attributes.getOrCreateColorAttribute(attributeName);
+      break;
+    case 9:
+      attr = curves.attributes.getOrCreateRGBAttribute(attributeName);
+      break;
+    case 10:
+      attr = curves.attributes.getOrCreateRGBAAttribute(attributeName);
+      break;
+    case 11:
+      attr = curves.attributes.getOrCreateSkinningAttribute(attributeName);
+      break;
+  }
+  success = attr != null;
+}
+",
+  "requiredPresets" : {}
+  }
