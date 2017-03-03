@@ -1,0 +1,71 @@
+
+object TransformManipulationCallback2 : TransformManipulationCallback{ 
+  Integer setID; 
+  Integer dataType; //0=Vec3, 1=Quat,
+  UInt32 evalID;
+  Vec3 restVec3[];
+  Xfo restXfo[];
+};
+
+function TransformManipulationCallback2.onDrag!(io MouseEvent mouseEvent, Xfo space, Xfo delta, UInt32 flags){
+  Xfo invSpace = space.inverse();
+  for(Integer i=0; i<this.targets.size(); i++){
+    if(!this.targets[i])
+      continue;
+    InlineTransform target = this.targets[i];
+    for(Integer j=0; j<target.getGlobalCount(); j++){
+      Xfo xfo = invSpace * this.command.oldValues[i][j];
+      if(flags&ManipulationMode_Position){
+        xfo.tr += delta.tr;
+      }
+      if(flags&ManipulationMode_Orientation){
+        xfo.ori = delta.ori * xfo.ori;
+      }
+      if(flags&ManipulationMode_Scale){
+        xfo.sc *= delta.sc;  
+      }
+
+      String hostName = mouseEvent.getHost().hostName;
+      if(this.portToDrive.length() > 0 && hostName.length() > 0) {
+        if(hostName == 'Canvas') {
+
+          // Generate a command that will change the arg back in Canvas.
+          /*
+          ParamDict params = ParamDict();
+          params.setString('portName', this.portToDrive);
+          params.setXfo('xfo', xfo);
+          mouseEvent.getHost().callCustomCommand('setArg', params);
+          */
+
+        } else if(hostName == 'Maya') {
+          //FabricCanvasSetPortDefaultValue -m "canvasNode1" -e "" -p "SetValueArray_1.vec3Values" -t "Vec3[]" -v "[ { \"x\":3, \"y\":0, \"z\":0}, {\"x\":2, \"y\":0, \"z\":0} ]";
+
+          
+          switch(this.dataType){
+            case 0:
+              this.restVec3[this.setID] = xfo.tr;
+              break;
+            case 1:
+              this.restXfo[this.setID] = xfo.ori;
+              break;
+          }
+          // eval
+          this.evalID++;
+          String attr = this.graphName + '.' + this.portToDrive;;
+          String args[];
+          args.push(attr);
+          args.push(this.evalID);
+          mouseEvent.getHost().callCustomCommand('setAttr', args);
+        }
+      }else{
+        setError(this.graphName+"."+this.portToDrive+" can not find.");
+      }
+
+      xfo = space * xfo;
+      target.setGlobalXfo(j, xfo);
+      this.command.newValues[i][j] = xfo;
+    }
+  }
+  // Notify the system that data has changed, and that we should redraw
+  mouseEvent.getHost().requestRedraw();
+}
