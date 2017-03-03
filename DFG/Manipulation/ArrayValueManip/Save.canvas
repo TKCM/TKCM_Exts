@@ -1,0 +1,97 @@
+{
+  "objectType" : "Func",
+  "title" : "Save",
+  "ports" : [
+    {
+      "objectType" : "ExecPort",
+      "metadata" : {
+        "uiPersistValue" : "true"
+        },
+      "name" : "exec",
+      "nodePortType" : "IO",
+      "defaultValues" : {
+        "Execute" : {}
+        },
+      "execPortType" : "IO",
+      "typeSpec" : "Execute"
+      },
+    {
+      "objectType" : "ExecPort",
+      "metadata" : {
+        "uiPersistValue" : "true"
+        },
+      "name" : "this",
+      "nodePortType" : "IO",
+      "defaultValues" : {
+        "MultiChWeightmap" : null,
+        "ArrayValueManipHandle" : null
+        },
+      "execPortType" : "IO",
+      "typeSpec" : "ArrayValueManipHandle"
+      },
+    {
+      "objectType" : "ExecPort",
+      "metadata" : {
+        "uiPersistValue" : "true"
+        },
+      "name" : "save_Enable",
+      "nodePortType" : "Out",
+      "defaultValues" : {
+        "Boolean" : true
+        },
+      "execPortType" : "In",
+      "typeSpec" : "Boolean"
+      },
+    {
+      "objectType" : "ExecPort",
+      "metadata" : {
+        "uiPersistValue" : "true"
+        },
+      "name" : "save_ExternalFile",
+      "nodePortType" : "Out",
+      "defaultValues" : {
+        "Boolean" : true
+        },
+      "execPortType" : "In",
+      "typeSpec" : "Boolean"
+      },
+    {
+      "objectType" : "ExecPort",
+      "metadata" : {
+        "uiPersistValue" : "true"
+        },
+      "name" : "save_FolderPath",
+      "nodePortType" : "Out",
+      "defaultValues" : {
+        "FilePath" : "O:\\FabricEngine\\FabricEngine_study\\FE_study\\assets"
+        },
+      "execPortType" : "In",
+      "typeSpec" : "FilePath"
+      },
+    {
+      "objectType" : "ExecPort",
+      "metadata" : {
+        "uiPersistValue" : "true"
+        },
+      "name" : "save_FileName",
+      "nodePortType" : "Out",
+      "defaultValues" : {
+        "String" : "arrayValManip"
+        },
+      "execPortType" : "In",
+      "typeSpec" : "String"
+      }
+    ],
+  "extDeps" : {
+    "TKCM" : "*"
+    },
+  "presetGUID" : "BC91837E435F2A128FD0103BCBF4E7B7",
+  "code" : "dfgEntry {
+  if(this == null){
+    this = ArrayValueManipHandle();
+  }
+  this.save(save_Enable, save_ExternalFile, save_FolderPath, save_FileName);
+}
+",
+  "requiredPresets" : {}
+  }

@@ -1,0 +1,555 @@
+object ArrayValueManipHandle : ManipHandle, RTValFromJSONDecoder, RTValToJSONEncoder{
+  Integer oldModeID[String];
+  Vec3 oldAxisAndNormal[String][3];
+  Scalar oldLimiter[String][2];
+
+  Boolean saveEnable;
+  Boolean saveExternalFile;
+  FilePath saveFolderPath;
+  String saveFileName;
+
+  String manipVec3Names[];
+  Vec3 manipulationResultVec3[String][];
+  String manipXfoNames[];
+  Xfo manipulationResultXfo[String][];
+};
+
+function ArrayValueManipHandle(){
+}
+
+//////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+//////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+//////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+//////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+// get values ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+function Vec3[] ArrayValueManipHandle.getVec3Values?(String manipName){
+  return this.manipulationResultVec3[manipName];
+}
+
+function Xfo[] ArrayValueManipHandle.getXfoValues?(String manipName){
+  return this.manipulationResultXfo[manipName];
+}
+
+function Quat[] ArrayValueManipHandle.getQuatValues?(String manipName){
+  Quat result[];
+  result.resize(this.manipulationResultXfo[manipName].size());
+  for(Integer i=0; i<result.size(); i++){
+    result[i] = this.manipulationResultXfo[manipName][i].ori;
+  }
+  return result;
+}
+
+// get values //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////// 
+//////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+//////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+//////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+// add Vec3 manipulator //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+function ArrayValueManipHandle.addPositionsManip!(
+  in Integer mode,
+  in String name,
+  in PolygonMesh mesh,
+  in Vec3 pos[],
+  in Integer setID,
+  in Color color,
+  in Scalar size,
+  in InlineInstance parentInstance,
+  in String portToDrive,
+  in String hostGraphName,
+  out InlineInstance instance
+  ) {
+  if(name.length() == 0 || pos.size() == 0 || setID > pos.size() || portToDrive.length() == 0 || hostGraphName.length() == 0){
+    return;
+  }
+  Xfo xfo;
+  xfo.tr = pos[setID];
+  xfo.sc *= size;
+
+  if(this.manipulationResultVec3.has(name)){
+    xfo.tr = this.manipulationResultVec3[name][setID];
+  }else{
+    this.manipVec3Names.push(name);
+    this.manipulationResultVec3[name] = pos;
+  }
+
+  this.ensureGizmoManipExists();
+
+  instance = this.getGizmoInstance(name+setID, mesh, xfo, color, parentInstance);
+  InlineTransform transform = instance.getTransform();
+  String uniqueName = name+setID + this.uid();
+  if(this.gizmoHandlers.has(uniqueName) && this.oldModeID[name] == mode){
+    this.gizmoHandlers[uniqueName].owner = instance;
+    return;
+  }
+
+  TransformManipulationCallback2 callback();
+  callback.addTarget(transform);
+  callback.setPortToDrive(portToDrive);
+  callback.setGraph(hostGraphName);
+  callback.setID = setID;
+  callback.dataType = 0;  //type = vec3[]
+  callback.restVec3 = this.manipulationResultVec3[name];
+  this.gizmoHandlers[uniqueName] = PositionGizmoHandler(instance, callback);
+
+  if(setID == pos.size()-1){
+    this.oldModeID[name] = mode;
+  }
+}
+
+function ArrayValueManipHandle.addPositionAxisManip!(
+  in Integer mode,
+  in String name,
+  in PolygonMesh mesh,
+  in Vec3 pos[],
+  in Integer setID,
+  in Color color,
+  in Scalar size,
+  in Vec3 axis,
+  in InlineInstance parentInstance,
+  in String portToDrive,
+  in String hostGraphName,
+  out InlineInstance instance
+  ) {
+
+  if(name.length() == 0 || pos.size() == 0 || setID > pos.size() || portToDrive.length() == 0 || hostGraphName.length() == 0){
+    return;
+  }
+  
+  Xfo xfo;
+  xfo.tr = pos[setID];
+  xfo.sc *= size;
+  
+  if(this.manipulationResultVec3.has(name)){
+    xfo.tr = this.manipulationResultVec3[name][setID];
+  }else{
+    this.manipVec3Names.push(name);
+    this.manipulationResultVec3[name] = pos;
+  }
+  this.ensureGizmoManipExists();
+
+  instance = this.getGizmoInstance(name+setID, mesh, xfo, color, parentInstance);
+  InlineTransform transform = instance.getTransform();
+
+  String uniqueName = name + setID + this.uid();
+  
+  if(this.gizmoHandlers.has(uniqueName) && this.oldModeID[name] == mode && this.oldAxisAndNormal[name][0] == axis){
+    return;
+  }
+
+  TransformManipulationCallback2 callback();
+  callback.addTarget(transform);
+  callback.setPortToDrive(portToDrive);
+  callback.setGraph(hostGraphName);
+  callback.setID = setID;
+  callback.dataType = 0;  //type = vec3[]
+  callback.restVec3 = this.manipulationResultVec3[name];
+  this.gizmoHandlers[uniqueName] = PositionAxisGizmoHandler(instance, axis, callback);
+
+  if(setID == pos.size()-1){
+    this.oldModeID[name] = mode;
+    this.oldAxisAndNormal[name][0] = axis;
+  }
+}
+
+function ArrayValueManipHandle.addPositionPlanarManip!(
+  in Integer mode,
+  in String name,
+  in PolygonMesh mesh,
+  in Vec3 pos[],
+  in Integer setID,
+  in Color color,
+  in Scalar size,
+  in Vec3 normal,
+  in InlineInstance parentInstance,
+  in String portToDrive,
+  in String hostGraphName,
+  out InlineInstance instance
+  ) {
+
+  if(name.length() == 0 || pos.size() == 0 || setID > pos.size() || portToDrive.length() == 0 || hostGraphName.length() == 0){
+    return;
+  }
+  
+  Xfo xfo;
+  xfo.tr = pos[setID];
+  xfo.sc *= size;
+  
+  if(this.manipulationResultVec3.has(name)){
+    xfo.tr = this.manipulationResultVec3[name][setID];
+  }else{
+    this.manipVec3Names.push(name);
+    this.manipulationResultVec3[name] = pos;
+  }
+  this.ensureGizmoManipExists();
+
+  instance = this.getGizmoInstance(name+setID, mesh, xfo, color, parentInstance);
+  InlineTransform transform = instance.getTransform();
+
+  String uniqueName = name + setID + this.uid();
+  
+  if(this.gizmoHandlers.has(uniqueName) && this.oldModeID[name] == mode && this.oldAxisAndNormal[name][1] == normal){
+    return;
+  }
+
+  TransformManipulationCallback2 callback();
+  callback.addTarget(transform);
+  callback.setPortToDrive(portToDrive);
+  callback.setGraph(hostGraphName);
+  callback.setID = setID;
+  callback.dataType = 0;  //type = vec3[]
+  callback.restVec3 = this.manipulationResultVec3[name];
+  this.gizmoHandlers[uniqueName] = PositionPlanarGizmoHandler(instance, normal, callback);
+
+  if(setID == pos.size()-1){
+    this.oldModeID[name] = mode;
+    this.oldAxisAndNormal[name][1] = normal;
+  }
+}
+
+function ArrayValueManipHandle.addPositionSliderManip!(
+  in Integer mode,
+  in String name,
+  in PolygonMesh mesh,
+  in Vec3 pos[],
+  in Integer setID,
+  in Color color,
+  in Scalar size,
+  in Vec3 sliderAxis,
+  in Scalar sliderLimitMin,
+  in Scalar sliderLimitMax,
+  in InlineInstance parentInstance,
+  in String portToDrive,
+  in String hostGraphName,
+  out InlineInstance instance
+  ) {
+
+  if(name.length() == 0 || pos.size() == 0 || setID > pos.size() || portToDrive.length() == 0 || hostGraphName.length() == 0 || sliderLimitMin >= sliderLimitMax){
+    return;
+  }
+  
+  Xfo xfo;
+  xfo.tr = pos[setID];;
+  xfo.sc *= size;
+  
+  if(this.manipulationResultVec3.has(name)){
+    xfo.tr = this.manipulationResultVec3[name][setID];
+  }else{
+    this.manipVec3Names.push(name);
+    this.manipulationResultVec3[name] = pos;
+  }
+  
+  this.ensureGizmoManipExists();
+
+  instance = this.getGizmoInstance(name+setID, mesh, xfo, color, parentInstance);
+  InlineTransform transform = instance.getTransform();
+
+  String uniqueName = name + setID + this.uid();
+  
+  if(this.gizmoHandlers.has(uniqueName) && this.oldModeID[name] == mode && this.oldAxisAndNormal[name][2] == sliderAxis && this.oldLimiter[name][0] == sliderLimitMin && this.oldLimiter[name][1] == sliderLimitMax){
+    return;
+  }
+
+  TransformManipulationCallback2 callback();
+  callback.addTarget(transform);
+  callback.setPortToDrive(portToDrive);
+  callback.setGraph(hostGraphName);
+  callback.setID = setID;
+  callback.dataType = 0;  //type = vec3[]
+  callback.restVec3 = this.manipulationResultVec3[name];
+  Vec2 limits = Vec2( sliderLimitMin, sliderLimitMax);
+  this.gizmoHandlers[uniqueName] = SliderGizmoHandler(instance, sliderAxis, callback, limits);
+
+  if(setID == pos.size()-1){
+    this.oldModeID[name] = mode;
+    this.oldAxisAndNormal[name][2] = sliderAxis;
+    this.oldLimiter[name][0] = sliderLimitMin;
+    this.oldLimiter[name][1] = sliderLimitMax;
+  }
+}
+
+// add Vec3 manipulator //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+//////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+//////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+//////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+// add Quat manipulator //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+function ArrayValueManipHandle.addOrientationAxisManip!(
+  in Integer mode,
+  in String name,
+  in PolygonMesh mesh,
+  in Xfo xfo[],
+  in Integer setID,
+  in Color color,
+  in Scalar size,
+  in Vec3 axis,
+  in InlineInstance parentInstance,
+  in String portToDrive,
+  in String hostGraphName,
+  out InlineInstance instance
+  ) {
+
+  if(name.length() == 0 || xfo.size() == 0 || setID > xfo.size() || portToDrive.length() == 0 || hostGraphName.length() == 0){
+    return;
+  }
+  
+  Xfo xfoToUse = xfo[setID];
+  if(this.manipulationResultXfo.has(name)){
+    xfoToUse.ori = this.manipulationResultXfo[name][setID].ori;
+  }else{
+    this.manipXfoNames.push(name);
+    this.manipulationResultXfo[name] = xfo;
+  }
+  xfoToUse.sc *= size;
+
+  this.ensureGizmoManipExists();
+
+  instance = this.getGizmoInstance(name+setID, mesh, xfoToUse, color, parentInstance);
+  InlineTransform transform = instance.getTransform();
+
+  String uniqueName = name + setID + this.uid();
+  if(this.gizmoHandlers.has(uniqueName) && this.oldModeID[name] == mode && this.oldAxisAndNormal[name][0] == axis)
+    return;
+
+  TransformManipulationCallback2 callback();
+  callback.addTarget(transform);
+  callback.setPortToDrive(portToDrive);
+  callback.setGraph(hostGraphName);
+  callback.setID = setID;
+  callback.dataType = 1;  //type = Xfo[]
+  callback.restXfo = this.manipulationResultXfo[name];
+  this.gizmoHandlers[uniqueName] = OrientationAxisGizmoHandler(instance, axis, callback);
+  
+  if(setID == xfo.size()-1){
+    this.oldModeID[name] = mode;
+    this.oldAxisAndNormal[name][0] = axis;
+  }
+}
+
+function ArrayValueManipHandle.addOrientationSphericalManip!(
+  in Integer mode,
+  in String name,
+  in PolygonMesh mesh,
+  in Xfo xfo[],
+  in Integer setID,
+  in Color color,
+  in Scalar size,
+  in Float32 tolerance,
+  in InlineInstance parentInstance,
+  in String portToDrive,
+  in String hostGraphName,
+  out InlineInstance instance
+  ) {
+
+  if(name.length() == 0 || xfo.size() == 0 || setID > xfo.size() || portToDrive.length() == 0 || hostGraphName.length() == 0){
+    return;
+  }
+
+  this.ensureGizmoManipExists();
+
+  Xfo xfoToUse = xfo[setID];
+  if(this.manipulationResultXfo.has(name)){
+    xfoToUse.ori = this.manipulationResultXfo[name][setID].ori;
+  }else{
+    this.manipXfoNames.push(name);
+    this.manipulationResultXfo[name] = xfo;
+  }
+  xfoToUse.sc *= size;
+
+  instance = this.getGizmoInstance(name+setID, mesh, xfoToUse, color, parentInstance);
+  InlineTransform transform = instance.getTransform();
+
+  String uniqueName = name + setID + this.uid();
+  if(this.gizmoHandlers.has(uniqueName) && this.oldModeID[name] == mode)
+    return;
+
+  TransformManipulationCallback2 callback();
+  callback.addTarget(transform);
+  callback.setPortToDrive(portToDrive);
+  callback.setGraph(hostGraphName);
+  callback.setID = setID;
+  callback.dataType = 1;  //type = Xfo[]
+  callback.restXfo = this.manipulationResultXfo[name];
+  this.gizmoHandlers[uniqueName] = OrientationSphericalGizmoHandler(instance, tolerance, callback);
+  
+  if(setID == xfo.size()-1){
+    this.oldModeID[name] = mode;
+  }
+}
+
+// add manipilator ///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+//////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+//////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+//////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+// save & load ///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+inline ArrayValueManipHandle.save!(Boolean saveEnable, Boolean saveExternalFile, FilePath saveFolderPath, String saveFileName){
+  this.saveEnable = saveEnable;
+  this.saveExternalFile = saveExternalFile;
+  this.saveFolderPath = saveFolderPath;
+  this.saveFileName = saveFileName;
+}
+
+inline JSONDictValue ArrayValueManipHandle.saveBin(){
+  JSONDictValue root();
+  if(!this.saveFolderPath.exists()){
+    setError("!!!!!!!!!!!!!!!! Could not save !!!!!!!!!!!!!! saveFolderPath is not exists : " + this.saveFolderPath.string() );
+  }else if(!this.saveFileName){
+    setError("!!!!!!!!!!!!!!!! Could not save !!!!!!!!!!!!!! saveFileName is null");
+  }else{
+    // prepare save file path & file name
+    FilePath binCacheFilePath(); 
+    binCacheFilePath = this.saveFolderPath / FilePath(this.saveFileName + '_' + 'BinCache.bin');
+
+    BinaryBlockWriter blockWriter(binCacheFilePath.string());
+    blockWriter.setNumBlocks(2);
+    BinaryBlockWriter arrayValManipNames = blockWriter.beginWriteBlock('arrayValManipNames', this.manipVec3Names.size());{
+      for(Integer i=0; i<this.manipVec3Names.size(); i++){
+        BinaryBlockWriter arrayValManipNameSub = arrayValManipNames.beginWriteBlock( 'name' + i ); {
+          UInt32 numElements = this.manipVec3Names[i].length();
+          arrayValManipNameSub.write(numElements.data(), numElements.dataSize());
+          arrayValManipNameSub.write(this.manipVec3Names[i].data(), this.manipVec3Names[i].dataSize() );
+        }
+      }
+    }
+    BinaryBlockWriter arrayManipValues = blockWriter.beginWriteBlock('arrayManipValues', this.manipVec3Names.size());{
+      for(Integer i=0; i<this.manipVec3Names.size(); i++){
+        String manipName = this.manipVec3Names[i];
+        BinaryBlockWriter arrayManipVec3ValSub = arrayManipValues.beginWriteBlock( manipName );{
+          UInt32 numElements = this.manipulationResultVec3[manipName].size();
+          Vec3 data[] = this.manipulationResultVec3[manipName];
+          arrayManipVec3ValSub.write(numElements.data(), numElements.dataSize());
+          arrayManipVec3ValSub.write(data.data(), data.dataSize());
+        }
+      }
+    }
+    report('ArrayValueManipHandle value data save to "' + binCacheFilePath.string() +'"');
+    root.setString("saveFolderPath", binCacheFilePath.removeFileName().string() );
+    root.setString("saveFileName", this.saveFileName + '_' + 'BinCache.bin');
+    root.setString("saveFileNameOrig", this.saveFileName);
+  }
+  return root;
+}
+
+inline JSONDictValue ArrayValueManipHandle.saveJSON(){
+  JSONDictValue root();
+  // JSON write
+  JSONArrayValue arrayValManipNames();{
+    arrayValManipNames.values.resize(this.manipVec3Names.size());
+    for(Integer i=0; i<this.manipVec3Names.size(); i++){
+      arrayValManipNames.values[i] = JSONStringValue(this.manipVec3Names[i]);
+    }
+  }
+  JSONArrayValue manipVec3Values(); {
+    for(Integer i=0; i<this.manipVec3Names.size(); i++){
+      String manipName = this.manipVec3Names[i];
+      JSONArrayValue manipVec3Value();
+      manipVec3Value.values.resize(this.manipulationResultVec3[manipName].size()*3);
+      for(Integer j=0; j<this.manipulationResultVec3[manipName].size(); j++){
+        manipVec3Value.values[j*3]   = JSONNumberValue( this.manipulationResultVec3[manipName][j].x );
+        manipVec3Value.values[j*3+1] = JSONNumberValue( this.manipulationResultVec3[manipName][j].y );
+        manipVec3Value.values[j*3+2] = JSONNumberValue( this.manipulationResultVec3[manipName][j].z );
+      }
+      manipVec3Values.add(manipVec3Value);
+    }
+  }
+  root.set("arrayValManipNames", arrayValManipNames);
+  root.set("manipVec3Values", manipVec3Values);
+  report("save ArrayValueManipHandle values in this scean");
+  return root;
+}
+
+inline ArrayValueManipHandle.loadBinFilePath!(FilePath binCacheFilePath){
+  BinaryBlockReader blockReader(binCacheFilePath.string());
+  BinaryBlockReader arrayValManipNames = blockReader.beginReadBlock('arrayValManipNames');
+  if(arrayValManipNames){
+    String readNames[] = arrayValManipNames.getBlockNames();
+    this.manipVec3Names.resize( readNames.size() );
+    for(Integer i=0; i < readNames.size(); i++){
+      BinaryBlockReader manipName_reader = arrayValManipNames.beginReadBlock('name' + i );
+      UInt32 numElements = 0;
+      manipName_reader.read(numElements.data(), numElements.dataSize());
+      for(Integer ii=0; ii<numElements; ii++){
+        this.manipVec3Names[i] += ' ';
+      }
+      manipName_reader.read(this.manipVec3Names[i].data(), this.manipVec3Names[i].dataSize());
+    }
+  }
+  BinaryBlockReader arrayManipValues = blockReader.beginReadBlock('arrayManipValues');
+  if(arrayManipValues){   
+    Scalar readVals[] = arrayManipValues.getBlockNames().size();
+    for(Integer i=0; i<readVals.size(); i++){
+      String manipName = this.manipVec3Names[i];
+      BinaryBlockReader arrayManipVec3ValuesSub = arrayManipValues.beginReadBlock(manipName);
+      if(arrayManipVec3ValuesSub){
+        UInt32 numElements = 0;
+        arrayManipVec3ValuesSub.read(numElements.data(), numElements.dataSize());
+        this.manipulationResultVec3[manipName].resize(numElements);
+        arrayManipVec3ValuesSub.read(this.manipulationResultVec3[manipName].data(), this.manipulationResultVec3[manipName].dataSize());
+      }
+    }
+  }
+  report('ArrayValueManipHandle value data loaded from "' + binCacheFilePath.string() +'"');
+}
+
+inline ArrayValueManipHandle.loadJSON!(JSONDictValue json){
+  JSONArrayValue arrayValManipNames = json.get("arrayValManipNames");
+  this.manipVec3Names.resize(arrayValManipNames.size());
+  for(Integer i=0; i<arrayValManipNames.size(); i++){
+    this.manipVec3Names[i] = arrayValManipNames.getString(i);
+  }
+  JSONArrayValue manipVec3Values = json.get("manipVec3Values");
+  for(Integer i=0; i<manipVec3Values.size(); i++){
+    String manipName = this.manipVec3Names[i];
+    JSONArrayValue manipVec3Value = manipVec3Values.get(i);
+    this.manipulationResultVec3[manipName].resize(manipVec3Value.size()/3);
+    for(Integer j=0; j<this.manipulationResultVec3[manipName].size(); j++){
+      this.manipulationResultVec3[manipName][j].x = manipVec3Value.getScalar(j*3);
+      this.manipulationResultVec3[manipName][j].y = manipVec3Value.getScalar(j*3+1);
+      this.manipulationResultVec3[manipName][j].z = manipVec3Value.getScalar(j*3+2);
+    }
+  }
+  report('ArrayValueManipHandle value data loaded from this scean');
+}
+
+function String ArrayValueManipHandle.convertToString!(){
+  JSONDoc doc();
+  if(this.saveEnable){
+    if(this.saveExternalFile){
+      // save bin
+      doc.root = this.saveBin();
+    }else{
+      // save JSON
+      doc.root = this.saveJSON();
+    }
+    doc.root.setBoolean("saved", this.saveEnable);
+  }
+  String json = doc.write();
+  return json;
+}
+
+function Boolean ArrayValueManipHandle.convertFromString!(in String data){
+  JSONDoc doc();
+  if(doc.parse(data)){
+    if(doc.root.has("saved")){
+      this.saveEnable = true;
+      // load bin
+      if(doc.root.has("saveFolderPath") && doc.root.has("saveFileName")){
+        this.saveExternalFile = true;
+        this.saveFolderPath = FilePath(doc.root.getString("saveFolderPath"));
+        this.saveFileName = doc.root.getString("saveFileNameOrig"); 
+        String loadFileName = doc.root.getString("saveFileName");
+        FilePath loadBinFilePath = this.saveFolderPath / FilePath(loadFileName) ;
+        if(loadBinFilePath.exists()){
+          this.loadBinFilePath(loadBinFilePath);
+        }else{
+          report("!!!!!!!!!!!!!!!! can not load ArrayValueManipHandle data file. File don't found from ----" + loadBinFilePath.string());
+        }
+      }
+      // load JSON
+      if(doc.root.has("arrayValManipNames")){
+        this.loadJSON(doc.root);
+      }
+    }
+  }
+  return true;
+}

@@ -1,0 +1,36 @@
+{
+  "objectType" : "Func",
+  "title" : "ArrayValueManipHandle",
+  "ports" : [
+    {
+      "objectType" : "ExecPort",
+      "name" : "exec",
+      "nodePortType" : "IO",
+      "defaultValues" : {
+        "Execute" : {}
+        },
+      "execPortType" : "IO",
+      "typeSpec" : "Execute"
+      },
+    {
+      "objectType" : "ExecPort",
+      "metadata" : {},
+      "name" : "this",
+      "nodePortType" : "In",
+      "defaultValues" : {
+        "ArrayValueManipHandle" : null
+        },
+      "execPortType" : "Out",
+      "typeSpec" : "ArrayValueManipHandle"
+      }
+    ],
+  "extDeps" : {
+    "TKCM" : "*"
+    },
+  "presetGUID" : "D2F6E7A3B320D9D4150892D2C83FC373",
+  "code" : "dfgEntry {
+  this = ArrayValueManipHandle();
+}
+",
+  "requiredPresets" : {}
+  }

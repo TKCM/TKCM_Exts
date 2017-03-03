@@ -1,0 +1,198 @@
+{
+  "objectType" : "Func",
+  "metadata" : {
+    "uiDocUrl" : "http://docs.fabric-engine.com/FabricEngine/2.4.0/HTML/KLExtensionsGuide/Manipulation/ManipHandle.html",
+    "uiTooltip" : "Registers a single position manipulator if it doesn't exist yet\n\nSupported types:\n  this: ManipHandle\n  name: String\n  mesh: PolygonMesh\n  pos: Vec3\n  color: Color\n  size: Scalar\n  parentInstance: InlineInstance\n  portToDrive: String\n  hostGraphName: String\n  instance: InlineInstance\n"
+    },
+  "title" : "AddXfoOriArrayManip",
+  "ports" : [
+    {
+      "objectType" : "ExecPort",
+      "name" : "exec",
+      "nodePortType" : "IO",
+      "defaultValues" : {
+        "Execute" : {}
+        },
+      "execPortType" : "IO",
+      "typeSpec" : "Execute"
+      },
+    {
+      "objectType" : "ExecPort",
+      "name" : "this",
+      "nodePortType" : "IO",
+      "defaultValues" : {
+        "ArrayValueManipHandle" : null
+        },
+      "execPortType" : "IO",
+      "typeSpec" : "ArrayValueManipHandle"
+      },
+    {
+      "objectType" : "ExecPort",
+      "name" : "XfoValues",
+      "nodePortType" : "IO",
+      "defaultValues" : {
+        "Quat[]" : [],
+        "Xfo[]" : []
+        },
+      "execPortType" : "IO",
+      "typeSpec" : "Xfo[]"
+      },
+    {
+      "objectType" : "ExecPort",
+      "name" : "manipulatorName",
+      "nodePortType" : "Out",
+      "defaultValues" : {
+        "String" : "xfoOriManip"
+        },
+      "execPortType" : "In",
+      "typeSpec" : "String"
+      },
+    {
+      "objectType" : "ExecPort",
+      "metadata" : {
+        "uiCombo" : "(\"XYZ\", \"Axis\")"
+        },
+      "name" : "manipulatorMode",
+      "nodePortType" : "Out",
+      "defaultValues" : {
+        "Integer" : 0
+        },
+      "execPortType" : "In",
+      "typeSpec" : "Integer"
+      },
+    {
+      "objectType" : "ExecPort",
+      "name" : "axis",
+      "nodePortType" : "Out",
+      "defaultValues" : {
+        "Vec3" : {
+          "x" : 1,
+          "y" : 0,
+          "z" : 0
+          }
+        },
+      "execPortType" : "In",
+      "typeSpec" : "Vec3"
+      },
+    {
+      "objectType" : "ExecPort",
+      "metadata" : {
+        "uiColor" : "{\n  \"r\" : 51,\n  \"g\" : 1,\n  \"b\" : 106\n  }"
+        },
+      "name" : "manipulatorMesh",
+      "nodePortType" : "Out",
+      "defaultValues" : {
+        "PolygonMesh" : null
+        },
+      "execPortType" : "In",
+      "typeSpec" : "PolygonMesh"
+      },
+    {
+      "objectType" : "ExecPort",
+      "metadata" : {
+        "uiColor" : "{\n  \"r\" : 255,\n  \"g\" : 0,\n  \"b\" : 0\n  }"
+        },
+      "name" : "manipulatorColor",
+      "nodePortType" : "Out",
+      "defaultValues" : {
+        "Color" : {
+          "r" : 0.04313725605607033,
+          "g" : 0.4745098054409027,
+          "b" : 1,
+          "a" : 1
+          }
+        },
+      "execPortType" : "In",
+      "typeSpec" : "Color"
+      },
+    {
+      "objectType" : "ExecPort",
+      "name" : "manipulatorSize",
+      "nodePortType" : "Out",
+      "defaultValues" : {
+        "Scalar" : 0.4000000059604645
+        },
+      "execPortType" : "In",
+      "typeSpec" : "Scalar"
+      },
+    {
+      "objectType" : "ExecPort",
+      "name" : "parentInstance",
+      "nodePortType" : "Out",
+      "defaultValues" : {
+        "InlineInstance" : null
+        },
+      "execPortType" : "In",
+      "typeSpec" : "InlineInstance"
+      },
+    {
+      "objectType" : "ExecPort",
+      "name" : "hostGraphName",
+      "nodePortType" : "Out",
+      "defaultValues" : {
+        "String" : "canvasNode1"
+        },
+      "execPortType" : "In",
+      "typeSpec" : "String"
+      },
+    {
+      "objectType" : "ExecPort",
+      "name" : "portName",
+      "nodePortType" : "Out",
+      "defaultValues" : {
+        "String" : "eval"
+        },
+      "execPortType" : "In",
+      "typeSpec" : "String"
+      },
+    {
+      "objectType" : "ExecPort",
+      "name" : "eval",
+      "nodePortType" : "Out",
+      "defaultValues" : {
+        "Scalar" : 0
+        },
+      "execPortType" : "In",
+      "typeSpec" : "Scalar"
+      },
+    {
+      "objectType" : "ExecPort",
+      "name" : "instance",
+      "nodePortType" : "In",
+      "defaultValues" : {
+        "InlineInstance" : null
+        },
+      "execPortType" : "Out",
+      "typeSpec" : "InlineInstance"
+      }
+    ],
+  "extDeps" : {
+    "Manipulation" : "*",
+    "TKCM" : "*"
+    },
+  "presetGUID" : "3E3574509EA5FB4FB9A074B141C55D80",
+  "code" : "dfgEntry {
+  if(this == null){
+    this = ArrayValueManipHandle();
+  }
+  
+  switch(manipulatorMode){
+    case 0:  // XYZ
+      for(Integer i=0; i<XfoValues.size(); i++){
+        this.addOrientationSphericalManip(manipulatorMode, manipulatorName, manipulatorMesh, XfoValues, i, manipulatorColor, manipulatorSize, 
+                                          0.001, parentInstance, portName, hostGraphName, instance);  
+      }
+      break;
+    case 1:  // Axis
+      for(Integer i=0; i<XfoValues.size(); i++){
+        this.addOrientationAxisManip(manipulatorMode, manipulatorName, manipulatorMesh, XfoValues, i, manipulatorColor, manipulatorSize, 
+                                     axis, parentInstance, portName, hostGraphName, instance);      
+      }
+      break;
+  }
+  XfoValues = this.getXfoValues(manipulatorName);
+}
+
+",
+  "requiredPresets" : {}
+  }
