@@ -1,5 +1,6 @@
 
 object TransformManipulationCallback2 : TransformManipulationCallback{ 
+  Integer evalType; //  1=non, 2=evalCanvasPort, （3=Canvas内のノードのポートへ直接値を設定）
   Integer setID; 
   Integer dataType; //0=Vec3, 1=Quat,
   UInt32 evalID;
@@ -24,7 +25,14 @@ function TransformManipulationCallback2.onDrag!(io MouseEvent mouseEvent, Xfo sp
       if(flags&ManipulationMode_Scale){
         xfo.sc *= delta.sc;  
       }
-
+      switch(this.dataType){
+        case 0:
+          this.restVec3[this.setID] = xfo.tr;
+          break;
+        case 1:
+          this.restXfo[this.setID] = xfo.ori;
+          break;
+      }
       String hostName = mouseEvent.getHost().hostName;
       if(this.portToDrive.length() > 0 && hostName.length() > 0) {
         if(hostName == 'Canvas') {
@@ -37,19 +45,8 @@ function TransformManipulationCallback2.onDrag!(io MouseEvent mouseEvent, Xfo sp
           mouseEvent.getHost().callCustomCommand('setArg', params);
           */
 
-        } else if(hostName == 'Maya') {
-          //FabricCanvasSetPortDefaultValue -m "canvasNode1" -e "" -p "SetValueArray_1.vec3Values" -t "Vec3[]" -v "[ { \"x\":3, \"y\":0, \"z\":0}, {\"x\":2, \"y\":0, \"z\":0} ]";
-
-          
-          switch(this.dataType){
-            case 0:
-              this.restVec3[this.setID] = xfo.tr;
-              break;
-            case 1:
-              this.restXfo[this.setID] = xfo.ori;
-              break;
-          }
-          // eval
+        } else if(hostName == 'Maya' && this.evalType == 2) {
+          // eval Canvas port
           this.evalID++;
           String attr = this.graphName + '.' + this.portToDrive;;
           String args[];

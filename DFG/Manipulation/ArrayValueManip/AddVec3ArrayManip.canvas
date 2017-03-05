@@ -157,8 +157,8 @@
       "defaultValues" : {
         "Color" : {
           "r" : 1,
-          "g" : 0.6666666865348816,
-          "b" : 0,
+          "g" : 0.3333333432674408,
+          "b" : 0.4980392158031464,
           "a" : 1
           }
         },
@@ -184,6 +184,19 @@
         },
       "execPortType" : "In",
       "typeSpec" : "InlineInstance"
+      },
+    {
+      "objectType" : "ExecPort",
+      "metadata" : {
+        "uiCombo" : "(\"non\", \"evalCavasNode\")"
+        },
+      "name" : "callCommand",
+      "nodePortType" : "Out",
+      "defaultValues" : {
+        "Integer" : 0
+        },
+      "execPortType" : "In",
+      "typeSpec" : "Integer"
       },
     {
       "objectType" : "ExecPort",
@@ -220,7 +233,8 @@
       "name" : "instance",
       "nodePortType" : "In",
       "defaultValues" : {
-        "InlineInstance" : null
+        "InlineInstance" : null,
+        "InlineInstance[]" : []
         },
       "execPortType" : "Out",
       "typeSpec" : "InlineInstance"
@@ -230,7 +244,7 @@
     "Manipulation" : "*",
     "TKCM" : "*"
     },
-  "presetGUID" : "24A7D29AAA37B3B7831D38AE897E686C",
+  "presetGUID" : "026530A15E36D2069CAADC6A10AEEE76",
   "code" : "dfgEntry {
   if(this == null){
     this = ArrayValueManipHandle();
@@ -240,25 +254,25 @@
     case 0:  // XYZ
       for(Integer i=0; i<vec3Values.size(); i++){
         this.addPositionsManip(manipulatorMode, manipulatorName, manipulatorMesh, vec3Values, i, manipulatorColor, manipulatorSize, 
-                               parentInstance, portName, hostGraphName, instance);
+                               parentInstance, callCommand+1, portName, hostGraphName, instance);
       }
       break;
     case 1:  // Axis
       for(Integer i=0; i<vec3Values.size(); i++){
         this.addPositionAxisManip(manipulatorMode, manipulatorName, manipulatorMesh, vec3Values, i, manipulatorColor, manipulatorSize, 
-                                  axis, parentInstance, portName, hostGraphName, instance);      
+                                  axis, parentInstance, callCommand+1, portName, hostGraphName, instance);      
       }
       break;
     case 2:  // Planar
       for(Integer i=0; i<vec3Values.size(); i++){
         this.addPositionPlanarManip(manipulatorMode, manipulatorName, manipulatorMesh, vec3Values, i, manipulatorColor, manipulatorSize, 
-                                    planeNormal, parentInstance, portName, hostGraphName, instance);      
+                                    planeNormal, parentInstance, callCommand+1, portName, hostGraphName, instance);      
       }
       break;
     case 3:  // Slider
       for(Integer i=0; i<vec3Values.size(); i++){
         this.addPositionSliderManip(manipulatorMode, manipulatorName, manipulatorMesh, vec3Values, i, manipulatorColor, manipulatorSize,
-                                    sliderAxisi, sliderLimitMin, sliderLimitMax, parentInstance, portName, hostGraphName, instance); 
+                                    sliderAxisi, sliderLimitMin, sliderLimitMax, parentInstance, callCommand+1, portName, hostGraphName, instance); 
       }
       break;
   }

@@ -1,3 +1,9 @@
+require InlineDrawing;
+require FileIO;
+require JSON;
+require FabricInterfaces;
+require Manipulation;
+
 object ArrayValueManipHandle : ManipHandle, RTValFromJSONDecoder, RTValToJSONEncoder{
   Integer oldModeID[String];
   Vec3 oldAxisAndNormal[String][3];
@@ -12,6 +18,8 @@ object ArrayValueManipHandle : ManipHandle, RTValFromJSONDecoder, RTValToJSONEnc
   Vec3 manipulationResultVec3[String][];
   String manipXfoNames[];
   Xfo manipulationResultXfo[String][];
+
+  Integer evalType[String]; //  1=non, 2=evalCanvasPort, （3=Canvas内のノードのポートへ直接値を設定）
 };
 
 function ArrayValueManipHandle(){
@@ -54,6 +62,7 @@ function ArrayValueManipHandle.addPositionsManip!(
   in Color color,
   in Scalar size,
   in InlineInstance parentInstance,
+  in Integer evalType,
   in String portToDrive,
   in String hostGraphName,
   out InlineInstance instance
@@ -77,7 +86,7 @@ function ArrayValueManipHandle.addPositionsManip!(
   instance = this.getGizmoInstance(name+setID, mesh, xfo, color, parentInstance);
   InlineTransform transform = instance.getTransform();
   String uniqueName = name+setID + this.uid();
-  if(this.gizmoHandlers.has(uniqueName) && this.oldModeID[name] == mode){
+  if(this.gizmoHandlers.has(uniqueName) && this.oldModeID[name] == mode && this.evalType[name] == evalType){
     this.gizmoHandlers[uniqueName].owner = instance;
     return;
   }
@@ -89,10 +98,12 @@ function ArrayValueManipHandle.addPositionsManip!(
   callback.setID = setID;
   callback.dataType = 0;  //type = vec3[]
   callback.restVec3 = this.manipulationResultVec3[name];
+  callback.evalType = evalType;
   this.gizmoHandlers[uniqueName] = PositionGizmoHandler(instance, callback);
 
   if(setID == pos.size()-1){
     this.oldModeID[name] = mode;
+    this.evalType[name] = evalType;
   }
 }
 
@@ -106,6 +117,7 @@ function ArrayValueManipHandle.addPositionAxisManip!(
   in Scalar size,
   in Vec3 axis,
   in InlineInstance parentInstance,
+  in Integer evalType,
   in String portToDrive,
   in String hostGraphName,
   out InlineInstance instance
@@ -132,10 +144,10 @@ function ArrayValueManipHandle.addPositionAxisManip!(
 
   String uniqueName = name + setID + this.uid();
   
-  if(this.gizmoHandlers.has(uniqueName) && this.oldModeID[name] == mode && this.oldAxisAndNormal[name][0] == axis){
+  if(this.gizmoHandlers.has(uniqueName) && this.oldModeID[name] == mode && this.oldAxisAndNormal[name][0] == axis && this.evalType[name] == evalType){
     return;
   }
-
+report(setID);
   TransformManipulationCallback2 callback();
   callback.addTarget(transform);
   callback.setPortToDrive(portToDrive);
@@ -143,11 +155,13 @@ function ArrayValueManipHandle.addPositionAxisManip!(
   callback.setID = setID;
   callback.dataType = 0;  //type = vec3[]
   callback.restVec3 = this.manipulationResultVec3[name];
+  callback.evalType = evalType;
   this.gizmoHandlers[uniqueName] = PositionAxisGizmoHandler(instance, axis, callback);
 
   if(setID == pos.size()-1){
     this.oldModeID[name] = mode;
     this.oldAxisAndNormal[name][0] = axis;
+    this.evalType[name] = evalType;
   }
 }
 
@@ -161,6 +175,7 @@ function ArrayValueManipHandle.addPositionPlanarManip!(
   in Scalar size,
   in Vec3 normal,
   in InlineInstance parentInstance,
+  in Integer evalType,
   in String portToDrive,
   in String hostGraphName,
   out InlineInstance instance
@@ -187,7 +202,7 @@ function ArrayValueManipHandle.addPositionPlanarManip!(
 
   String uniqueName = name + setID + this.uid();
   
-  if(this.gizmoHandlers.has(uniqueName) && this.oldModeID[name] == mode && this.oldAxisAndNormal[name][1] == normal){
+  if(this.gizmoHandlers.has(uniqueName) && this.oldModeID[name] == mode && this.oldAxisAndNormal[name][1] == normal && this.evalType[name] == evalType){
     return;
   }
 
@@ -198,11 +213,13 @@ function ArrayValueManipHandle.addPositionPlanarManip!(
   callback.setID = setID;
   callback.dataType = 0;  //type = vec3[]
   callback.restVec3 = this.manipulationResultVec3[name];
+  callback.evalType = evalType;
   this.gizmoHandlers[uniqueName] = PositionPlanarGizmoHandler(instance, normal, callback);
 
   if(setID == pos.size()-1){
     this.oldModeID[name] = mode;
     this.oldAxisAndNormal[name][1] = normal;
+    this.evalType[name] = evalType;
   }
 }
 
@@ -218,6 +235,7 @@ function ArrayValueManipHandle.addPositionSliderManip!(
   in Scalar sliderLimitMin,
   in Scalar sliderLimitMax,
   in InlineInstance parentInstance,
+  in Integer evalType,
   in String portToDrive,
   in String hostGraphName,
   out InlineInstance instance
@@ -245,7 +263,7 @@ function ArrayValueManipHandle.addPositionSliderManip!(
 
   String uniqueName = name + setID + this.uid();
   
-  if(this.gizmoHandlers.has(uniqueName) && this.oldModeID[name] == mode && this.oldAxisAndNormal[name][2] == sliderAxis && this.oldLimiter[name][0] == sliderLimitMin && this.oldLimiter[name][1] == sliderLimitMax){
+  if(this.gizmoHandlers.has(uniqueName) && this.oldModeID[name] == mode && this.oldAxisAndNormal[name][2] == sliderAxis && this.oldLimiter[name][0] == sliderLimitMin && this.oldLimiter[name][1] == sliderLimitMax && this.evalType[name] == evalType){
     return;
   }
 
@@ -256,6 +274,7 @@ function ArrayValueManipHandle.addPositionSliderManip!(
   callback.setID = setID;
   callback.dataType = 0;  //type = vec3[]
   callback.restVec3 = this.manipulationResultVec3[name];
+  callback.evalType = evalType;
   Vec2 limits = Vec2( sliderLimitMin, sliderLimitMax);
   this.gizmoHandlers[uniqueName] = SliderGizmoHandler(instance, sliderAxis, callback, limits);
 
@@ -264,6 +283,7 @@ function ArrayValueManipHandle.addPositionSliderManip!(
     this.oldAxisAndNormal[name][2] = sliderAxis;
     this.oldLimiter[name][0] = sliderLimitMin;
     this.oldLimiter[name][1] = sliderLimitMax;
+    this.evalType[name] = evalType;
   }
 }
 
@@ -283,6 +303,7 @@ function ArrayValueManipHandle.addOrientationAxisManip!(
   in Scalar size,
   in Vec3 axis,
   in InlineInstance parentInstance,
+  in Integer evalType,
   in String portToDrive,
   in String hostGraphName,
   out InlineInstance instance
@@ -294,22 +315,22 @@ function ArrayValueManipHandle.addOrientationAxisManip!(
   
   Xfo xfoToUse = xfo[setID];
   if(this.manipulationResultXfo.has(name)){
+    this.manipulationResultXfo[name][setID].tr = xfo[setID].tr;
     xfoToUse.ori = this.manipulationResultXfo[name][setID].ori;
+    xfoToUse.tr = this.manipulationResultXfo[name][setID].tr;
   }else{
     this.manipXfoNames.push(name);
     this.manipulationResultXfo[name] = xfo;
   }
   xfoToUse.sc *= size;
-
   this.ensureGizmoManipExists();
 
   instance = this.getGizmoInstance(name+setID, mesh, xfoToUse, color, parentInstance);
   InlineTransform transform = instance.getTransform();
 
   String uniqueName = name + setID + this.uid();
-  if(this.gizmoHandlers.has(uniqueName) && this.oldModeID[name] == mode && this.oldAxisAndNormal[name][0] == axis)
+  if(this.gizmoHandlers.has(uniqueName) && this.oldModeID[name] == mode && this.oldAxisAndNormal[name][0] == axis && this.evalType[name] == evalType)
     return;
-
   TransformManipulationCallback2 callback();
   callback.addTarget(transform);
   callback.setPortToDrive(portToDrive);
@@ -317,11 +338,12 @@ function ArrayValueManipHandle.addOrientationAxisManip!(
   callback.setID = setID;
   callback.dataType = 1;  //type = Xfo[]
   callback.restXfo = this.manipulationResultXfo[name];
+  callback.evalType = evalType;
   this.gizmoHandlers[uniqueName] = OrientationAxisGizmoHandler(instance, axis, callback);
-  
   if(setID == xfo.size()-1){
     this.oldModeID[name] = mode;
     this.oldAxisAndNormal[name][0] = axis;
+    this.evalType[name] = evalType;
   }
 }
 
@@ -335,6 +357,7 @@ function ArrayValueManipHandle.addOrientationSphericalManip!(
   in Scalar size,
   in Float32 tolerance,
   in InlineInstance parentInstance,
+  in Integer evalType,
   in String portToDrive,
   in String hostGraphName,
   out InlineInstance instance
@@ -348,7 +371,9 @@ function ArrayValueManipHandle.addOrientationSphericalManip!(
 
   Xfo xfoToUse = xfo[setID];
   if(this.manipulationResultXfo.has(name)){
+    this.manipulationResultXfo[name][setID].tr = xfo[setID].tr;
     xfoToUse.ori = this.manipulationResultXfo[name][setID].ori;
+    xfoToUse.tr = this.manipulationResultXfo[name][setID].tr;
   }else{
     this.manipXfoNames.push(name);
     this.manipulationResultXfo[name] = xfo;
@@ -359,7 +384,7 @@ function ArrayValueManipHandle.addOrientationSphericalManip!(
   InlineTransform transform = instance.getTransform();
 
   String uniqueName = name + setID + this.uid();
-  if(this.gizmoHandlers.has(uniqueName) && this.oldModeID[name] == mode)
+  if(this.gizmoHandlers.has(uniqueName) && this.oldModeID[name] == mode && this.evalType[name] == evalType)
     return;
 
   TransformManipulationCallback2 callback();
@@ -369,10 +394,12 @@ function ArrayValueManipHandle.addOrientationSphericalManip!(
   callback.setID = setID;
   callback.dataType = 1;  //type = Xfo[]
   callback.restXfo = this.manipulationResultXfo[name];
+  callback.evalType = evalType;
   this.gizmoHandlers[uniqueName] = OrientationSphericalGizmoHandler(instance, tolerance, callback);
   
   if(setID == xfo.size()-1){
     this.oldModeID[name] = mode;
+    this.evalType[name] = evalType;
   }
 }
 
@@ -401,90 +428,185 @@ inline JSONDictValue ArrayValueManipHandle.saveBin(){
     binCacheFilePath = this.saveFolderPath / FilePath(this.saveFileName + '_' + 'BinCache.bin');
 
     BinaryBlockWriter blockWriter(binCacheFilePath.string());
-    blockWriter.setNumBlocks(2);
-    BinaryBlockWriter arrayValManipNames = blockWriter.beginWriteBlock('arrayValManipNames', this.manipVec3Names.size());{
-      for(Integer i=0; i<this.manipVec3Names.size(); i++){
+    blockWriter.setNumBlocks(3);
+    // ロード時にVec3,Xfoの配列数がわかるように保存しておく
+    BinaryBlockWriter nameCount = blockWriter.beginWriteBlock('nameCount', 2);{
+      BinaryBlockWriter vec3Count = nameCount.beginWriteBlock( 'vec3Count' );{
+        UInt32 numElements = this.manipVec3Names.size();
+        Integer data = this.manipVec3Names.size();
+        vec3Count.write(numElements.data(), numElements.dataSize());
+        vec3Count.write(data.data(), data.dataSize());
+      }
+      BinaryBlockWriter xfoCount = nameCount.beginWriteBlock( 'xfoCount' );{
+        UInt32 numElements = this.manipXfoNames.size();
+        Integer data = this.manipXfoNames.size();
+        xfoCount.write(numElements.data(), numElements.dataSize());
+        xfoCount.write(data.data(), data.dataSize());
+      }
+    }
+    //  操作結果を格納しているVec3とXfoの辞書名の保存
+    BinaryBlockWriter arrayValManipNames = blockWriter.beginWriteBlock('arrayValManipNames', this.manipVec3Names.size() + this.manipXfoNames.size());{  //  Vec3とXfoの辞書名の合計数でBin保存場所を確保
+      //  Vec3.Xfoの辞書名の保存
+      for(Integer i=0; i<this.manipVec3Names.size()+this.manipXfoNames.size(); i++){
         BinaryBlockWriter arrayValManipNameSub = arrayValManipNames.beginWriteBlock( 'name' + i ); {
-          UInt32 numElements = this.manipVec3Names[i].length();
-          arrayValManipNameSub.write(numElements.data(), numElements.dataSize());
-          arrayValManipNameSub.write(this.manipVec3Names[i].data(), this.manipVec3Names[i].dataSize() );
+          if(i<this.manipVec3Names.size()){
+            UInt32 numElements = this.manipVec3Names[i].length();
+            arrayValManipNameSub.write(numElements.data(), numElements.dataSize());
+            arrayValManipNameSub.write(this.manipVec3Names[i].data(), this.manipVec3Names[i].dataSize() );
+          }else{
+            Integer iXfo = i - this.manipVec3Names.size();
+            UInt32 numElements = this.manipXfoNames[iXfo].length();
+            arrayValManipNameSub.write(numElements.data(), numElements.dataSize());
+            arrayValManipNameSub.write(this.manipXfoNames[iXfo].data(), this.manipXfoNames[iXfo].dataSize() );
+          }
         }
       }
     }
-    BinaryBlockWriter arrayManipValues = blockWriter.beginWriteBlock('arrayManipValues', this.manipVec3Names.size());{
-      for(Integer i=0; i<this.manipVec3Names.size(); i++){
-        String manipName = this.manipVec3Names[i];
-        BinaryBlockWriter arrayManipVec3ValSub = arrayManipValues.beginWriteBlock( manipName );{
-          UInt32 numElements = this.manipulationResultVec3[manipName].size();
-          Vec3 data[] = this.manipulationResultVec3[manipName];
-          arrayManipVec3ValSub.write(numElements.data(), numElements.dataSize());
-          arrayManipVec3ValSub.write(data.data(), data.dataSize());
+    //  操作結果を格納しているVec3とXfoの値の保存
+    BinaryBlockWriter arrayManipValues = blockWriter.beginWriteBlock('arrayManipValues', this.manipVec3Names.size() + this.manipXfoNames.size());{ //  Vec3とXfoの数でBin保存場所を確保
+      //  辞書名でVec3,Xfoの保存
+      for(Integer i=0; i<this.manipVec3Names.size()+this.manipXfoNames.size(); i++){
+        if(i<this.manipVec3Names.size()){
+          String manipName = this.manipVec3Names[i];
+          BinaryBlockWriter arrayManipVec3ValSub = arrayManipValues.beginWriteBlock( manipName );{
+            UInt32 numElements = this.manipulationResultVec3[manipName].size();
+            Vec3 data[] = this.manipulationResultVec3[manipName];
+            arrayManipVec3ValSub.write(numElements.data(), numElements.dataSize());
+            arrayManipVec3ValSub.write(data.data(), data.dataSize());
+          }
+        }else{
+          Integer iXfo = i - this.manipVec3Names.size();
+          String manipName = this.manipXfoNames[iXfo];
+          BinaryBlockWriter arrayManipXfoValSub = arrayManipValues.beginWriteBlock( manipName );{
+            UInt32 numElements = this.manipulationResultXfo[manipName].size();
+            Xfo data[] = this.manipulationResultXfo[manipName];
+            arrayManipXfoValSub.write(numElements.data(), numElements.dataSize());
+            arrayManipXfoValSub.write(data.data(), data.dataSize());
+          }
         }
       }
     }
-    report('ArrayValueManipHandle value data save to "' + binCacheFilePath.string() +'"');
     root.setString("saveFolderPath", binCacheFilePath.removeFileName().string() );
     root.setString("saveFileName", this.saveFileName + '_' + 'BinCache.bin');
     root.setString("saveFileNameOrig", this.saveFileName);
+     //  bin保存場所の報告
+    report('ArrayValueManipHandle value data save to "' + binCacheFilePath.string() + '\\' + this.saveFileName + '_' + 'BinCache.bin"');
   }
   return root;
 }
 
 inline JSONDictValue ArrayValueManipHandle.saveJSON(){
   JSONDictValue root();
-  // JSON write
+  //  操作結果を格納しているVec3とXfoの辞書名の保存
   JSONArrayValue arrayValManipNames();{
-    arrayValManipNames.values.resize(this.manipVec3Names.size());
-    for(Integer i=0; i<this.manipVec3Names.size(); i++){
-      arrayValManipNames.values[i] = JSONStringValue(this.manipVec3Names[i]);
+    arrayValManipNames.values.resize(this.manipVec3Names.size() + this.manipXfoNames.size() );  //  Vec3とXfoの辞書名の合計数でJSON保存場所を確保
+    for(Integer i=0; i<this.manipVec3Names.size()+this.manipXfoNames.size(); i++){
+      if(i<this.manipVec3Names.size()){
+        arrayValManipNames.values[i] = JSONStringValue(this.manipVec3Names[i]);
+      }else{
+        Integer iXfo = i - this.manipVec3Names.size();
+        arrayValManipNames.values[i] = JSONStringValue(this.manipXfoNames[iXfo]);
+      }
     }
   }
-  JSONArrayValue manipVec3Values(); {
-    for(Integer i=0; i<this.manipVec3Names.size(); i++){
-      String manipName = this.manipVec3Names[i];
-      JSONArrayValue manipVec3Value();
-      manipVec3Value.values.resize(this.manipulationResultVec3[manipName].size()*3);
-      for(Integer j=0; j<this.manipulationResultVec3[manipName].size(); j++){
-        manipVec3Value.values[j*3]   = JSONNumberValue( this.manipulationResultVec3[manipName][j].x );
-        manipVec3Value.values[j*3+1] = JSONNumberValue( this.manipulationResultVec3[manipName][j].y );
-        manipVec3Value.values[j*3+2] = JSONNumberValue( this.manipulationResultVec3[manipName][j].z );
+  //  操作結果を格納しているVec3とXfoの値の保存
+  JSONArrayValue manipValues(); {
+    for(Integer i=0; i<this.manipVec3Names.size() + this.manipXfoNames.size(); i++){
+      if(i<this.manipVec3Names.size()){
+        String manipName = this.manipVec3Names[i];
+        JSONArrayValue manipVec3Value();
+        manipVec3Value.values.resize(this.manipulationResultVec3[manipName].size()*3);
+        for(Integer j=0; j<this.manipulationResultVec3[manipName].size(); j++){
+          manipVec3Value.values[j*3]   = JSONNumberValue( this.manipulationResultVec3[manipName][j].x );
+          manipVec3Value.values[j*3+1] = JSONNumberValue( this.manipulationResultVec3[manipName][j].y );
+          manipVec3Value.values[j*3+2] = JSONNumberValue( this.manipulationResultVec3[manipName][j].z );
+        }
+        manipValues.add(manipVec3Value);
+      }else{
+        Integer iXfo = i - this.manipVec3Names.size();
+        String manipName = this.manipXfoNames[iXfo];
+        JSONArrayValue manipXfoValue();
+        manipXfoValue.values.resize(this.manipulationResultXfo[manipName].size()*7);
+        for(Integer j=0; j<this.manipulationResultXfo[manipName].size(); j++){
+          manipXfoValue.values[j*7]   = JSONNumberValue( this.manipulationResultXfo[manipName][j].tr.x );
+          manipXfoValue.values[j*7+1] = JSONNumberValue( this.manipulationResultXfo[manipName][j].tr.y );
+          manipXfoValue.values[j*7+2] = JSONNumberValue( this.manipulationResultXfo[manipName][j].tr.z );
+          manipXfoValue.values[j*7+3] = JSONNumberValue( this.manipulationResultXfo[manipName][j].ori.v.x );
+          manipXfoValue.values[j*7+4] = JSONNumberValue( this.manipulationResultXfo[manipName][j].ori.v.y );
+          manipXfoValue.values[j*7+5] = JSONNumberValue( this.manipulationResultXfo[manipName][j].ori.v.z );
+          manipXfoValue.values[j*7+6] = JSONNumberValue( this.manipulationResultXfo[manipName][j].ori.w );
+        }
+        manipValues.add(manipXfoValue);
       }
-      manipVec3Values.add(manipVec3Value);
     }
   }
   root.set("arrayValManipNames", arrayValManipNames);
-  root.set("manipVec3Values", manipVec3Values);
+  root.set("manipValues", manipValues);
+  root.setInteger("Vec3Count", this.manipVec3Names.size());  // ロード時にVec3の配列数がわかるように保存しておく
+  root.setInteger("XfoCount", this.manipXfoNames.size());  // ロード時にXfoの配列数がわかるように保存しておく
   report("save ArrayValueManipHandle values in this scean");
   return root;
 }
 
 inline ArrayValueManipHandle.loadBinFilePath!(FilePath binCacheFilePath){
   BinaryBlockReader blockReader(binCacheFilePath.string());
+  // Vec3.Xfoの辞書名の数をロード
+  BinaryBlockReader nameCount = blockReader.beginReadBlock('nameCount');
+  if(nameCount){
+    BinaryBlockReader vCount_reader = nameCount.beginReadBlock('vec3Count');
+    Integer vCount = 0;
+    vCount_reader.read(vCount.data(), vCount.dataSize());
+    this.manipVec3Names.resize( vCount );
+    BinaryBlockReader xCount_reader = nameCount.beginReadBlock('xfoCount');
+    Integer xCount = 0;
+    xCount_reader.read(xCount.data(), xCount.dataSize());
+    this.manipXfoNames.resize( xCount );
+  }
   BinaryBlockReader arrayValManipNames = blockReader.beginReadBlock('arrayValManipNames');
   if(arrayValManipNames){
     String readNames[] = arrayValManipNames.getBlockNames();
-    this.manipVec3Names.resize( readNames.size() );
-    for(Integer i=0; i < readNames.size(); i++){
+    //  Vec3とXfoの辞書名のロード
+    //  辞書名の数はすでにロード済みで、this.manipVec3Namesとthis.manipXfoNamesの配列数に設定済み
+    for(Integer i=0; i < this.manipVec3Names.size() + this.manipXfoNames.size(); i++){
       BinaryBlockReader manipName_reader = arrayValManipNames.beginReadBlock('name' + i );
-      UInt32 numElements = 0;
-      manipName_reader.read(numElements.data(), numElements.dataSize());
-      for(Integer ii=0; ii<numElements; ii++){
-        this.manipVec3Names[i] += ' ';
+      if(manipName_reader){
+        UInt32 numElements = 0;
+        manipName_reader.read(numElements.data(), numElements.dataSize());
+        if(i<this.manipVec3Names.size()){
+          for(Integer j=0; j<numElements; j++){  this.manipVec3Names[i] += ' ';  }  //  文字列をロードするための空枠を準備
+          manipName_reader.read(this.manipVec3Names[i].data(), this.manipVec3Names[i].dataSize());  //  文字列をロード
+        }else{
+          Integer iXfo = i - this.manipVec3Names.size();
+          for(Integer j=0; j<numElements; j++){  this.manipXfoNames[iXfo] += ' ';  }  //  文字列をロードするための空枠を準備
+          manipName_reader.read(this.manipXfoNames[iXfo].data(), this.manipXfoNames[iXfo].dataSize());  //  文字列をロード
+        }
       }
-      manipName_reader.read(this.manipVec3Names[i].data(), this.manipVec3Names[i].dataSize());
     }
   }
   BinaryBlockReader arrayManipValues = blockReader.beginReadBlock('arrayManipValues');
   if(arrayManipValues){   
-    Scalar readVals[] = arrayManipValues.getBlockNames().size();
+    Scalar readVals[] = arrayManipValues.getBlockNames().size();  //  Vec3とXfoの辞書名の合計値が返る
     for(Integer i=0; i<readVals.size(); i++){
-      String manipName = this.manipVec3Names[i];
-      BinaryBlockReader arrayManipVec3ValuesSub = arrayManipValues.beginReadBlock(manipName);
-      if(arrayManipVec3ValuesSub){
-        UInt32 numElements = 0;
-        arrayManipVec3ValuesSub.read(numElements.data(), numElements.dataSize());
-        this.manipulationResultVec3[manipName].resize(numElements);
-        arrayManipVec3ValuesSub.read(this.manipulationResultVec3[manipName].data(), this.manipulationResultVec3[manipName].dataSize());
+      //  Vec3,Xfoの各辞書ごとに値のロード
+      if(i<this.manipVec3Names.size()){
+        String manipName = this.manipVec3Names[i];
+        BinaryBlockReader arrayManipVec3ValuesSub = arrayManipValues.beginReadBlock(manipName);  //  辞書名のデータ配列をロード
+        if(arrayManipVec3ValuesSub){
+          UInt32 numElements = 0;
+          arrayManipVec3ValuesSub.read(numElements.data(), numElements.dataSize()); // 辞書内のVec３の配列数を取得
+          this.manipulationResultVec3[manipName].resize(numElements); // Vec３をロードするための空枠を準備
+          arrayManipVec3ValuesSub.read(this.manipulationResultVec3[manipName].data(), this.manipulationResultVec3[manipName].dataSize());  // 値のロード
+        }
+      }else{
+        Integer iXfo = i - this.manipVec3Names.size();
+        String manipName = this.manipXfoNames[iXfo];
+        BinaryBlockReader arrayManipXfoValuesSub = arrayManipValues.beginReadBlock(manipName);  //  辞書名のデータ配列をロード
+        if(arrayManipXfoValuesSub){
+          UInt32 numElements = 0;
+          arrayManipXfoValuesSub.read(numElements.data(), numElements.dataSize()); // 辞書内のXfoの配列数を取得
+          this.manipulationResultXfo[manipName].resize(numElements); // Xfoをロードするための空枠を準備
+          arrayManipXfoValuesSub.read(this.manipulationResultXfo[manipName].data(), this.manipulationResultXfo[manipName].dataSize());  // 値のロード
+        }
       }
     }
   }
@@ -492,20 +614,45 @@ inline ArrayValueManipHandle.loadBinFilePath!(FilePath binCacheFilePath){
 }
 
 inline ArrayValueManipHandle.loadJSON!(JSONDictValue json){
+  //  Vec3,Xfoそれぞれの辞書数をロード
+  this.manipVec3Names.resize( json.getInteger("Vec3Count") );
+  this.manipXfoNames.resize( json.getInteger("XfoCount") );
+  //  Vec3,Xfoそれぞれの辞書名をロード
   JSONArrayValue arrayValManipNames = json.get("arrayValManipNames");
-  this.manipVec3Names.resize(arrayValManipNames.size());
   for(Integer i=0; i<arrayValManipNames.size(); i++){
-    this.manipVec3Names[i] = arrayValManipNames.getString(i);
+    if(i<this.manipVec3Names.size()){
+      this.manipVec3Names[i] = arrayValManipNames.getString(i);
+    }else{
+      Integer iXfo = i - this.manipVec3Names.size();
+      this.manipXfoNames[iXfo] = arrayValManipNames.getString(i);
+    }
   }
-  JSONArrayValue manipVec3Values = json.get("manipVec3Values");
-  for(Integer i=0; i<manipVec3Values.size(); i++){
-    String manipName = this.manipVec3Names[i];
-    JSONArrayValue manipVec3Value = manipVec3Values.get(i);
-    this.manipulationResultVec3[manipName].resize(manipVec3Value.size()/3);
-    for(Integer j=0; j<this.manipulationResultVec3[manipName].size(); j++){
-      this.manipulationResultVec3[manipName][j].x = manipVec3Value.getScalar(j*3);
-      this.manipulationResultVec3[manipName][j].y = manipVec3Value.getScalar(j*3+1);
-      this.manipulationResultVec3[manipName][j].z = manipVec3Value.getScalar(j*3+2);
+  //  Vec3,Xfoそれぞれの配列をロード
+  JSONArrayValue manipValues = json.get("manipValues");
+  for(Integer i=0; i<manipValues.size(); i++){
+    if(i<this.manipVec3Names.size()){
+      String manipName = this.manipVec3Names[i];
+      JSONArrayValue manipVec3Value = manipValues.get(i);
+      this.manipulationResultVec3[manipName].resize(manipVec3Value.size()/3);
+      for(Integer j=0; j<this.manipulationResultVec3[manipName].size(); j++){
+        this.manipulationResultVec3[manipName][j].x = manipVec3Value.getScalar(j*3);
+        this.manipulationResultVec3[manipName][j].y = manipVec3Value.getScalar(j*3+1);
+        this.manipulationResultVec3[manipName][j].z = manipVec3Value.getScalar(j*3+2);
+      }
+    }else{
+      Integer iXfo = i - this.manipVec3Names.size();
+      String manipName = this.manipXfoNames[iXfo];
+      JSONArrayValue manipXfoValue = manipValues.get(i);
+      this.manipulationResultXfo[manipName].resize(manipXfoValue.size()/7);
+      for(Integer j=0; j<this.manipulationResultXfo[manipName].size(); j++){
+        this.manipulationResultXfo[manipName][j].tr.x  = manipXfoValue.getScalar(j*7);
+        this.manipulationResultXfo[manipName][j].tr.y  = manipXfoValue.getScalar(j*7+1);
+        this.manipulationResultXfo[manipName][j].tr.z  = manipXfoValue.getScalar(j*7+2);
+        this.manipulationResultXfo[manipName][j].ori.v.x = manipXfoValue.getScalar(j*7+3);
+        this.manipulationResultXfo[manipName][j].ori.v.y = manipXfoValue.getScalar(j*7+4);
+        this.manipulationResultXfo[manipName][j].ori.v.z = manipXfoValue.getScalar(j*7+5);
+        this.manipulationResultXfo[manipName][j].ori.w   = manipXfoValue.getScalar(j*7+6);
+      }
     }
   }
   report('ArrayValueManipHandle value data loaded from this scean');
@@ -536,7 +683,7 @@ function Boolean ArrayValueManipHandle.convertFromString!(in String data){
       if(doc.root.has("saveFolderPath") && doc.root.has("saveFileName")){
         this.saveExternalFile = true;
         this.saveFolderPath = FilePath(doc.root.getString("saveFolderPath"));
-        this.saveFileName = doc.root.getString("saveFileNameOrig"); 
+        this.saveFileName = doc.root.getString("saveFileNameOrig");
         String loadFileName = doc.root.getString("saveFileName");
         FilePath loadBinFilePath = this.saveFolderPath / FilePath(loadFileName) ;
         if(loadBinFilePath.exists()){

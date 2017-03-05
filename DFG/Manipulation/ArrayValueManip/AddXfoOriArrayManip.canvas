@@ -55,7 +55,7 @@
       "name" : "manipulatorMode",
       "nodePortType" : "Out",
       "defaultValues" : {
-        "Integer" : 0
+        "Integer" : 1
         },
       "execPortType" : "In",
       "typeSpec" : "Integer"
@@ -66,9 +66,9 @@
       "nodePortType" : "Out",
       "defaultValues" : {
         "Vec3" : {
-          "x" : 1,
+          "x" : 0,
           "y" : 0,
-          "z" : 0
+          "z" : 1
           }
         },
       "execPortType" : "In",
@@ -110,7 +110,7 @@
       "name" : "manipulatorSize",
       "nodePortType" : "Out",
       "defaultValues" : {
-        "Scalar" : 0.4000000059604645
+        "Scalar" : 0.5
         },
       "execPortType" : "In",
       "typeSpec" : "Scalar"
@@ -124,6 +124,19 @@
         },
       "execPortType" : "In",
       "typeSpec" : "InlineInstance"
+      },
+    {
+      "objectType" : "ExecPort",
+      "metadata" : {
+        "uiCombo" : "(\"non\", \"evalCavasNode\")"
+        },
+      "name" : "callCommand",
+      "nodePortType" : "Out",
+      "defaultValues" : {
+        "Integer" : 0
+        },
+      "execPortType" : "In",
+      "typeSpec" : "Integer"
       },
     {
       "objectType" : "ExecPort",
@@ -170,7 +183,7 @@
     "Manipulation" : "*",
     "TKCM" : "*"
     },
-  "presetGUID" : "3E3574509EA5FB4FB9A074B141C55D80",
+  "presetGUID" : "9CD071006D79BA4398B82884A26A788F",
   "code" : "dfgEntry {
   if(this == null){
     this = ArrayValueManipHandle();
@@ -180,13 +193,13 @@
     case 0:  // XYZ
       for(Integer i=0; i<XfoValues.size(); i++){
         this.addOrientationSphericalManip(manipulatorMode, manipulatorName, manipulatorMesh, XfoValues, i, manipulatorColor, manipulatorSize, 
-                                          0.001, parentInstance, portName, hostGraphName, instance);  
+                                          0.001, parentInstance, callCommand+1, portName, hostGraphName, instance);  
       }
       break;
     case 1:  // Axis
       for(Integer i=0; i<XfoValues.size(); i++){
         this.addOrientationAxisManip(manipulatorMode, manipulatorName, manipulatorMesh, XfoValues, i, manipulatorColor, manipulatorSize, 
-                                     axis, parentInstance, portName, hostGraphName, instance);      
+                                     axis, parentInstance, callCommand+1, portName, hostGraphName, instance);      
       }
       break;
   }
