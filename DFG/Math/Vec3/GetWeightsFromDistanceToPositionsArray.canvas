@@ -1,0 +1,462 @@
+{
+  "objectType" : "Graph",
+  "metadata" : {
+    "uiGraphPan" : "{\n  \"x\" : -117.0,\n  \"y\" : 17.0\n  }"
+    },
+  "title" : "GetWeightsFromDistanceToPositionsArray",
+  "ports" : [
+    {
+      "objectType" : "ExecPort",
+      "name" : "exec",
+      "nodePortType" : "IO",
+      "defaultValues" : {
+        "Execute" : {}
+        },
+      "execPortType" : "IO",
+      "typeSpec" : "Execute"
+      },
+    {
+      "objectType" : "ExecPort",
+      "name" : "positions",
+      "nodePortType" : "Out",
+      "defaultValues" : {
+        "Vec3[]" : []
+        },
+      "execPortType" : "In",
+      "typeSpec" : "Vec3[]"
+      },
+    {
+      "objectType" : "ExecPort",
+      "name" : "target",
+      "nodePortType" : "Out",
+      "defaultValues" : {
+        "Vec3[]" : []
+        },
+      "execPortType" : "In",
+      "typeSpec" : "Vec3[]"
+      },
+    {
+      "objectType" : "ExecPort",
+      "metadata" : {
+        "uiPersistValue" : "true"
+        },
+      "name" : "maxDistance",
+      "nodePortType" : "Out",
+      "defaultValues" : {
+        "Scalar" : 100
+        },
+      "execPortType" : "In",
+      "typeSpec" : "Scalar"
+      },
+    {
+      "objectType" : "ExecPort",
+      "metadata" : {
+        "uiPersistValue" : "true"
+        },
+      "name" : "maxCount",
+      "nodePortType" : "Out",
+      "defaultValues" : {
+        "Integer" : 3
+        },
+      "execPortType" : "In",
+      "typeSpec" : "Integer"
+      },
+    {
+      "objectType" : "ExecPort",
+      "name" : "indexList",
+      "nodePortType" : "In",
+      "defaultValues" : {
+        "LocalL4UInt32Array[]" : []
+        },
+      "execPortType" : "Out",
+      "typeSpec" : "LocalL4UInt32Array[]"
+      },
+    {
+      "objectType" : "ExecPort",
+      "name" : "distance",
+      "nodePortType" : "In",
+      "defaultValues" : {
+        "LocalL4ScalarArray[]" : []
+        },
+      "execPortType" : "Out",
+      "typeSpec" : "LocalL4ScalarArray[]"
+      },
+    {
+      "objectType" : "ExecPort",
+      "name" : "weights",
+      "nodePortType" : "In",
+      "defaultValues" : {
+        "LocalL4ScalarArray[]" : []
+        },
+      "execPortType" : "Out",
+      "typeSpec" : "LocalL4ScalarArray[]"
+      }
+    ],
+  "extDeps" : {
+    "TKCM" : "*"
+    },
+  "presetGUID" : "0C633A5194EAE5A0FC6F484D35114BED",
+  "nodes" : [
+    {
+      "objectType" : "Inst",
+      "metadata" : {
+        "uiGraphPos" : "{\"x\":258.233,\"y\":101.009}"
+        },
+      "name" : "GetWeightsFromDistanceToPositionsArrayCore",
+      "ports" : [
+        {
+          "objectType" : "InstPort",
+          "name" : "exec",
+          "nodePortType" : "IO"
+          },
+        {
+          "objectType" : "InstPort",
+          "name" : "positions",
+          "nodePortType" : "In"
+          },
+        {
+          "objectType" : "InstPort",
+          "name" : "target",
+          "nodePortType" : "In"
+          },
+        {
+          "objectType" : "InstPort",
+          "name" : "maxDistance",
+          "nodePortType" : "In",
+          "defaultValues" : {
+            "Scalar" : 1000
+            }
+          },
+        {
+          "objectType" : "InstPort",
+          "name" : "maxCount",
+          "nodePortType" : "In"
+          },
+        {
+          "objectType" : "InstPort",
+          "name" : "indexList",
+          "nodePortType" : "Out"
+          },
+        {
+          "objectType" : "InstPort",
+          "name" : "distance",
+          "nodePortType" : "Out"
+          },
+        {
+          "objectType" : "InstPort",
+          "name" : "weights",
+          "nodePortType" : "Out"
+          }
+        ],
+      "definition" : {
+        "objectType" : "Func",
+        "title" : "GetCloseOrderedListArray",
+        "ports" : [
+          {
+            "objectType" : "ExecPort",
+            "name" : "exec",
+            "nodePortType" : "IO",
+            "defaultValues" : {
+              "Execute" : {}
+              },
+            "execPortType" : "IO",
+            "typeSpec" : "Execute"
+            },
+          {
+            "objectType" : "ExecPort",
+            "name" : "positions",
+            "nodePortType" : "Out",
+            "defaultValues" : {
+              "Vec3" : {
+                "x" : 0,
+                "y" : 0,
+                "z" : 0
+                },
+              "Vec3[]" : []
+              },
+            "execPortType" : "In",
+            "typeSpec" : "Vec3[]"
+            },
+          {
+            "objectType" : "ExecPort",
+            "name" : "target",
+            "nodePortType" : "Out",
+            "defaultValues" : {
+              "Vec3[]" : []
+              },
+            "execPortType" : "In",
+            "typeSpec" : "Vec3[]"
+            },
+          {
+            "objectType" : "ExecPort",
+            "metadata" : {
+              "uiPersistValue" : "true"
+              },
+            "name" : "maxDistance",
+            "nodePortType" : "Out",
+            "defaultValues" : {
+              "Scalar" : 1000
+              },
+            "execPortType" : "In",
+            "typeSpec" : "Scalar"
+            },
+          {
+            "objectType" : "ExecPort",
+            "metadata" : {
+              "uiPersistValue" : "true",
+              "uiHardRange" : "(1, 16)"
+              },
+            "name" : "maxCount",
+            "nodePortType" : "Out",
+            "defaultValues" : {
+              "Integer" : 3
+              },
+            "execPortType" : "In",
+            "typeSpec" : "Integer"
+            },
+          {
+            "objectType" : "ExecPort",
+            "name" : "indexList",
+            "nodePortType" : "In",
+            "defaultValues" : {
+              "Index[]" : [],
+              "LocalL16UInt32Array" : {
+                "first16" : [
+                  0,
+                  0,
+                  0,
+                  0,
+                  0,
+                  0,
+                  0,
+                  0,
+                  0,
+                  0,
+                  0,
+                  0,
+                  0,
+                  0,
+                  0,
+                  0
+                  ],
+                "others" : [],
+                "count" : 0
+                },
+              "LocalL16UInt32Array[]" : [],
+              "LocalL4UInt32Array[]" : []
+              },
+            "execPortType" : "Out",
+            "typeSpec" : "LocalL4UInt32Array[]"
+            },
+          {
+            "objectType" : "ExecPort",
+            "name" : "distance",
+            "nodePortType" : "In",
+            "defaultValues" : {
+              "Scalar[]" : [],
+              "LocalL16ScalarArray" : {
+                "first16" : [
+                  0,
+                  0,
+                  0,
+                  0,
+                  0,
+                  0,
+                  0,
+                  0,
+                  0,
+                  0,
+                  0,
+                  0,
+                  0,
+                  0,
+                  0,
+                  0
+                  ],
+                "others" : [],
+                "count" : 0
+                },
+              "LocalL16ScalarArray[]" : [],
+              "LocalL4ScalarArray[]" : []
+              },
+            "execPortType" : "Out",
+            "typeSpec" : "LocalL4ScalarArray[]"
+            },
+          {
+            "objectType" : "ExecPort",
+            "name" : "weights",
+            "nodePortType" : "In",
+            "defaultValues" : {
+              "Scalar[]" : [],
+              "LocalL16ScalarArray" : {
+                "first16" : [
+                  0,
+                  0,
+                  0,
+                  0,
+                  0,
+                  0,
+                  0,
+                  0,
+                  0,
+                  0,
+                  0,
+                  0,
+                  0,
+                  0,
+                  0,
+                  0
+                  ],
+                "others" : [],
+                "count" : 0
+                },
+              "LocalL16ScalarArray[]" : [],
+              "LocalL4ScalarArray[]" : []
+              },
+            "execPortType" : "Out",
+            "typeSpec" : "LocalL4ScalarArray[]"
+            }
+          ],
+        "extDeps" : {
+          "Geometry" : "*",
+          "TKCM" : "*"
+          },
+        "code" : "dfgEntry {
+  GetWeightsFromDistanceToPositionsArray(positions, target, maxDistance, maxCount, indexList, distance, weights);
+}
+"
+        }
+      },
+    {
+      "objectType" : "Inst",
+      "metadata" : {
+        "uiGraphPos" : "{\"x\":712.0,\"y\":155.0}",
+        "uiCollapsedState" : "2"
+        },
+      "name" : "Cache_1",
+      "ports" : [
+        {
+          "objectType" : "InstPort",
+          "name" : "exec",
+          "nodePortType" : "IO"
+          },
+        {
+          "objectType" : "InstPort",
+          "name" : "value",
+          "nodePortType" : "In"
+          }
+        ],
+      "executable" : "Fabric.Core.Data.Cache",
+      "presetGUID" : "D903AFD981FE9214C69943F542D5FD60"
+      },
+    {
+      "objectType" : "Inst",
+      "metadata" : {
+        "uiGraphPos" : "{\"x\":711.0,\"y\":200.0}",
+        "uiCollapsedState" : "2"
+        },
+      "name" : "Cache_2",
+      "ports" : [
+        {
+          "objectType" : "InstPort",
+          "name" : "exec",
+          "nodePortType" : "IO"
+          },
+        {
+          "objectType" : "InstPort",
+          "name" : "value",
+          "nodePortType" : "In"
+          }
+        ],
+      "executable" : "Fabric.Core.Data.Cache",
+      "presetGUID" : "D903AFD981FE9214C69943F542D5FD60"
+      },
+    {
+      "objectType" : "Inst",
+      "metadata" : {
+        "uiGraphPos" : "{\"x\":710.0,\"y\":247.0}",
+        "uiCollapsedState" : "2"
+        },
+      "name" : "Cache_3",
+      "ports" : [
+        {
+          "objectType" : "InstPort",
+          "name" : "exec",
+          "nodePortType" : "IO"
+          },
+        {
+          "objectType" : "InstPort",
+          "name" : "value",
+          "nodePortType" : "In"
+          }
+        ],
+      "executable" : "Fabric.Core.Data.Cache",
+      "presetGUID" : "D903AFD981FE9214C69943F542D5FD60"
+      }
+    ],
+  "connections" : {
+    "positions" : [
+      "GetWeightsFromDistanceToPositionsArrayCore.positions"
+      ],
+    "target" : [
+      "GetWeightsFromDistanceToPositionsArrayCore.target"
+      ],
+    "maxDistance" : [
+      "GetWeightsFromDistanceToPositionsArrayCore.maxDistance"
+      ],
+    "maxCount" : [
+      "GetWeightsFromDistanceToPositionsArrayCore.maxCount"
+      ],
+    "GetWeightsFromDistanceToPositionsArrayCore.indexList" : [
+      "Cache_1.value"
+      ],
+    "GetWeightsFromDistanceToPositionsArrayCore.distance" : [
+      "Cache_2.value"
+      ],
+    "GetWeightsFromDistanceToPositionsArrayCore.weights" : [
+      "Cache_3.value"
+      ],
+    "Cache_1.value" : [
+      "indexList"
+      ],
+    "Cache_2.value" : [
+      "distance"
+      ],
+    "Cache_3.value" : [
+      "weights"
+      ]
+    },
+  "requiredPresets" : {
+    "Fabric.Core.Data.Cache" : {
+      "objectType" : "Func",
+      "metadata" : {
+        "uiNodeColor" : "{\n  \"r\" : 214,\n  \"g\" : 191,\n  \"b\" : 103\n  }",
+        "uiAlwaysShowDaisyChainPorts" : "true",
+        "uiHeaderColor" : "{\n  \"r\" : 188,\n  \"g\" : 129,\n  \"b\" : 83\n  }"
+        },
+      "title" : "Cache",
+      "cacheRule" : "always",
+      "ports" : [
+        {
+          "objectType" : "ExecPort",
+          "name" : "exec",
+          "nodePortType" : "IO",
+          "execPortType" : "IO",
+          "typeSpec" : "Execute"
+          },
+        {
+          "objectType" : "ExecPort",
+          "name" : "value",
+          "nodePortType" : "Out",
+          "execPortType" : "In",
+          "typeSpec" : "$TYPE$"
+          }
+        ],
+      "extDeps" : {},
+      "presetGUID" : "D903AFD981FE9214C69943F542D5FD60",
+      "code" : "dfgEntry {
+}
+"
+      }
+    }
+  }

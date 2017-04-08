@@ -1,0 +1,250 @@
+{
+  "objectType" : "Func",
+  "title" : "GetMultipliedCurvesValueByWeights",
+  "ports" : [
+    {
+      "objectType" : "ExecPort",
+      "name" : "exec",
+      "nodePortType" : "IO",
+      "defaultValues" : {
+        "Execute" : {}
+        },
+      "execPortType" : "IO",
+      "typeSpec" : "Execute"
+      },
+    {
+      "objectType" : "ExecPort",
+      "name" : "target",
+      "nodePortType" : "Out",
+      "defaultValues" : {
+        "Vec3[]" : [],
+        "Curves" : null
+        },
+      "execPortType" : "In",
+      "typeSpec" : "Curves"
+      },
+    {
+      "objectType" : "ExecPort",
+      "metadata" : {
+        "uiCombo" : "(\"position\", \"tangent\", \"normal\")"
+        },
+      "name" : "getValueType",
+      "nodePortType" : "Out",
+      "defaultValues" : {
+        "Integer" : 0
+        },
+      "execPortType" : "In",
+      "typeSpec" : "Integer"
+      },
+    {
+      "objectType" : "ExecPort",
+      "metadata" : {
+        "uiCombo" : "(\"Length Ratio\", \"Normalized Param\")"
+        },
+      "name" : "ratioType",
+      "nodePortType" : "Out",
+      "defaultValues" : {
+        "Integer" : 0
+        },
+      "execPortType" : "In",
+      "typeSpec" : "Integer"
+      },
+    {
+      "objectType" : "ExecPort",
+      "name" : "indexList",
+      "nodePortType" : "Out",
+      "defaultValues" : {
+        "LocalL16UInt32Array" : {
+          "first16" : [
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0
+            ],
+          "others" : [],
+          "count" : 0
+          },
+        "LocalL4UInt32Array" : {
+          "first4" : [
+            0,
+            0,
+            0,
+            0
+            ],
+          "others" : [],
+          "count" : 0
+          }
+        },
+      "execPortType" : "In",
+      "typeSpec" : "LocalL4UInt32Array"
+      },
+    {
+      "objectType" : "ExecPort",
+      "name" : "lengthRatio",
+      "nodePortType" : "Out",
+      "defaultValues" : {
+        "LocalL16ScalarArray" : {
+          "first16" : [
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0
+            ],
+          "others" : [],
+          "count" : 0
+          },
+        "LocalL4ScalarArray" : {
+          "first4" : [
+            0,
+            0,
+            0,
+            0
+            ],
+          "others" : [],
+          "count" : 0
+          }
+        },
+      "execPortType" : "In",
+      "typeSpec" : "LocalL4ScalarArray"
+      },
+    {
+      "objectType" : "ExecPort",
+      "name" : "normalizedParam",
+      "nodePortType" : "Out",
+      "defaultValues" : {
+        "LocalL4ScalarArray[]" : [],
+        "LocalL4ScalarArray" : {
+          "first4" : [
+            0,
+            0,
+            0,
+            0
+            ],
+          "others" : [],
+          "count" : 0
+          }
+        },
+      "execPortType" : "In",
+      "typeSpec" : "LocalL4ScalarArray"
+      },
+    {
+      "objectType" : "ExecPort",
+      "name" : "deltaPosition",
+      "nodePortType" : "Out",
+      "defaultValues" : {
+        "GenericVec3ArrayValue" : null,
+        "Vec3Array" : []
+        },
+      "execPortType" : "In",
+      "typeSpec" : "Vec3Array"
+      },
+    {
+      "objectType" : "ExecPort",
+      "name" : "weights",
+      "nodePortType" : "Out",
+      "defaultValues" : {
+        "LocalL16ScalarArray" : {
+          "first16" : [
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0
+            ],
+          "others" : [],
+          "count" : 0
+          },
+        "LocalL4ScalarArray" : {
+          "first4" : [
+            0,
+            0,
+            0,
+            0
+            ],
+          "others" : [],
+          "count" : 0
+          }
+        },
+      "execPortType" : "In",
+      "typeSpec" : "LocalL4ScalarArray"
+      },
+    {
+      "objectType" : "ExecPort",
+      "name" : "result",
+      "nodePortType" : "In",
+      "defaultValues" : {
+        "Vec3" : {
+          "x" : 0,
+          "y" : 0,
+          "z" : 0
+          }
+        },
+      "execPortType" : "Out",
+      "typeSpec" : "Vec3"
+      }
+    ],
+  "extDeps" : {
+    "TKCM" : "*"
+    },
+  "presetGUID" : "0EA9CBEE55DBBE1BD9F17F9E6D8DA8FB",
+  "code" : "dfgEntry {
+  LocalL4UInt32Array index[];
+    index.resize(1);
+    index[0] = indexList;
+  LocalL4ScalarArray lRatio[];
+    lRatio.resize(1);
+    lRatio[0] = lengthRatio;
+  LocalL4ScalarArray nParam[];
+    nParam.resize(1);
+    nParam[0] = normalizedParam;
+  Vec3Array del[];
+    del.resize(1);
+    del[0] = deltaPosition;
+  LocalL4ScalarArray wei[];
+    wei.resize(1);
+    wei[0] = weights;
+  Vec3 re[];
+    re.resize(1);
+  
+  target.getMultipliedCurvesValueByWeights(re, getValueType, ratioType, index, lRatio, nParam, del, wei);
+  
+  result = re[0];
+  
+}
+"
+  }
