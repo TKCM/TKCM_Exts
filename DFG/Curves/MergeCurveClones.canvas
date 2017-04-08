@@ -1,0 +1,154 @@
+{
+  "objectType" : "Func",
+  "title" : "MergeCurveClones",
+  "ports" : [
+    {
+      "objectType" : "ExecPort",
+      "name" : "exec",
+      "nodePortType" : "IO",
+      "defaultValues" : {
+        "Execute" : {}
+        },
+      "execPortType" : "IO",
+      "typeSpec" : "Execute"
+      },
+    {
+      "objectType" : "ExecPort",
+      "name" : "this",
+      "nodePortType" : "IO",
+      "defaultValues" : {
+        "Curves" : null
+        },
+      "execPortType" : "IO",
+      "typeSpec" : "Curves"
+      },
+    {
+      "objectType" : "ExecPort",
+      "name" : "sourceCurves",
+      "nodePortType" : "Out",
+      "defaultValues" : {
+        "Curves" : null
+        },
+      "execPortType" : "In",
+      "typeSpec" : "Curves"
+      },
+    {
+      "objectType" : "ExecPort",
+      "name" : "selectSourceCurveID",
+      "nodePortType" : "Out",
+      "defaultValues" : {
+        "Integer" : 1
+        },
+      "execPortType" : "In",
+      "typeSpec" : "Integer"
+      },
+    {
+      "objectType" : "ExecPort",
+      "name" : "transformXfos",
+      "nodePortType" : "Out",
+      "defaultValues" : {
+        "Xfo[]" : []
+        },
+      "execPortType" : "In",
+      "typeSpec" : "Xfo[]"
+      },
+    {
+      "objectType" : "ExecPort",
+      "metadata" : {
+        "uiCombo" : "(\"NormalDirection\", \"NormalDirection Inv\", \"Bi NormalDirection\", \"Bi NormalDirection Inv\")"
+        },
+      "name" : "direction",
+      "nodePortType" : "Out",
+      "defaultValues" : {
+        "Integer" : 0
+        },
+      "execPortType" : "In",
+      "typeSpec" : "Integer"
+      }
+    ],
+  "extDeps" : {},
+  "presetGUID" : "3C9CA76194A55CC38041CFF8B6E9623D",
+  "code" : "dfgEntry {
+  if(this.attributes.has(\"normalDirections\") == false){
+    report(\"!!!!!!Error!!!!!! ::: MergeCurveClones : this Curves don't have 'normalDirections' attribute\");
+    return;
+  }
+  if(sourceCurves.attributes.has(\"normalDirections\") == false){
+    report(\"!!!!!!Error!!!!!! ::: MergeCurveClones : sourceCurves don't have 'normalDirections' attribute\");
+    return;
+  }
+  if(this.curveCount()-1 <  selectSourceCurveID){
+    report(\"!!!!!!Error!!!!!! ::: MergeCurveClones : selectSourceCurveID is range out of this curve count. [\"+selectSourceCurveID+\"] of [\"+this.curveCount()+\"]\");
+    return;
+  }
+  
+  Mat44 gMat;
+  UInt32 startID;
+  Quat q();
+  Vec3 tangent, normal;
+  Xfo xfo;
+  startID = sourceCurves.getFirstPointIndex(selectSourceCurveID);
+  gMat.setTranslation(sourceCurves.getPointPosition(startID));
+  tangent = sourceCurves.getTangentAtNormalizedParam(selectSourceCurveID, 0.99999);
+  Ref<Vec3Attribute> normalsAttr = sourceCurves.attributes.getAttribute(\"normalDirections\");
+  normal = normalsAttr.values[startID];
+  q.setFromDirectionAndUpvector(normal, tangent);
+  gMat.setRotation(q);
+  
+  Vec3 sourceCervePoiPosLVec3[](sourceCurves.getPointCount(selectSourceCurveID));
+  Vec3 sourceCerveLNormal[](sourceCurves.getPointCount(selectSourceCurveID));
+  for(Integer j=0; j<sourceCervePoiPosLVec3.size(); j++){
+    sourceCervePoiPosLVec3[j] = gMat.inverse().multiplyVector3( sourceCurves.getPointPosition(startID+j) );
+    sourceCerveLNormal[j] = normalsAttr.values[startID+j];
+  }
+  UInt8 sourceCurveType = this.getCurveType(selectSourceCurveID);
+  UInt8 sourceCurveDegree = this.getDegree(selectSourceCurveID);
+  Boolean close = this.isClosed(selectSourceCurveID);
+  UInt8 form = 0;
+  if(this.isClosed(selectSourceCurveID)){
+    form = 1;
+    if(this.isPeriodic(selectSourceCurveID)){
+      form = 2;
+    }
+  }
+  
+  for(Integer i=0; i<transformXfos.size(); i++){  
+    Vec3 clonePoiPos[](sourceCervePoiPosLVec3.size());
+    for(Integer j=0; j<clonePoiPos.size(); j++){
+      xfo = transformXfos[i];
+      switch(direction){
+        case 0:  //  NormalDirection
+          xfo.ori.setFromDirectionAndUpvector(xfo.ori.getZaxis(), xfo.ori.getYaxis());
+          break;
+        case 1:  //  NormalDirection Inv
+          xfo.ori.setFromDirectionAndUpvector(xfo.ori.getZaxis(), xfo.ori.getYaxis()*-1);
+          break;
+        case 2:  //  Bi NormalDirection
+          xfo.ori.setFromDirectionAndUpvector(xfo.ori.getZaxis(), xfo.ori.getXaxis());
+          break;
+        case 3:  //  Bi NormalDirection Inv
+          xfo.ori.setFromDirectionAndUpvector(xfo.ori.getZaxis(), xfo.ori.getXaxis()*-1);
+          break;
+      }
+      clonePoiPos[j] = xfo.toMat44().multiplyVector3( sourceCervePoiPosLVec3[j] );
+    }
+    switch(sourceCurveType){
+      case 1:
+        this.addLinearCurve(clonePoiPos, close);
+        break;
+      case 2:
+        this.addBezier(clonePoiPos, sourceCurveDegree, close);
+        break;
+      case 3:
+        this.addNURBS(clonePoiPos, sourceCurveDegree, form);  
+        break;
+    }
+    startID = this.getFirstPointIndex(this.curveCount()-1);
+    Ref<Vec3Attribute> normalsAttr2 = this.attributes.getAttribute(\"normalDirections\");
+    for(Integer j=0;  j<clonePoiPos.size(); j++){
+      normalsAttr2.values[startID+j] = xfo.toMat44().multiplyVector3(sourceCerveLNormal[j]) - xfo.tr;
+    }
+  }
+}
+"
+  }

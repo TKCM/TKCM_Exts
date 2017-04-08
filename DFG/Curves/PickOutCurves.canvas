@@ -1,0 +1,1253 @@
+{
+  "objectType" : "Graph",
+  "metadata" : {
+    "uiGraphZoom" : "{\n  \"value\" : 0.9278257489204407\n  }",
+    "uiGraphPan" : "{\n  \"x\" : 1617.632934570313,\n  \"y\" : -831.5618286132813\n  }"
+    },
+  "title" : "PickOutCurves",
+  "ports" : [
+    {
+      "objectType" : "ExecPort",
+      "name" : "exec",
+      "nodePortType" : "IO",
+      "defaultValues" : {
+        "Execute" : {}
+        },
+      "execPortType" : "IO",
+      "typeSpec" : "Execute"
+      },
+    {
+      "objectType" : "ExecPort",
+      "name" : "curves",
+      "nodePortType" : "Out",
+      "defaultValues" : {
+        "Curves" : null
+        },
+      "execPortType" : "In",
+      "typeSpec" : "Curves"
+      },
+    {
+      "objectType" : "ExecPort",
+      "metadata" : {
+        "uiCombo" : "(\"All Curve\", \"By Type\", \"By ID\")"
+        },
+      "name" : "select",
+      "nodePortType" : "Out",
+      "defaultValues" : {
+        "Integer" : 1
+        },
+      "execPortType" : "In",
+      "typeSpec" : "Integer"
+      },
+    {
+      "objectType" : "ExecPort",
+      "metadata" : {
+        "uiCombo" : "(\"Linear\", \"Bezier\", \"NURBS\")"
+        },
+      "name" : "type",
+      "nodePortType" : "Out",
+      "defaultValues" : {
+        "Integer" : 2
+        },
+      "execPortType" : "In",
+      "typeSpec" : "Integer"
+      },
+    {
+      "objectType" : "ExecPort",
+      "name" : "ID",
+      "nodePortType" : "Out",
+      "defaultValues" : {
+        "String" : "0,3"
+        },
+      "execPortType" : "In",
+      "typeSpec" : "String"
+      },
+    {
+      "objectType" : "ExecPort",
+      "name" : "transferAttributes",
+      "nodePortType" : "Out",
+      "defaultValues" : {
+        "Boolean" : true
+        },
+      "execPortType" : "In",
+      "typeSpec" : "Boolean"
+      },
+    {
+      "objectType" : "ExecPort",
+      "metadata" : {
+        "uiPersistValue" : "true"
+        },
+      "name" : "attributeNames",
+      "nodePortType" : "Out",
+      "defaultValues" : {
+        "String" : "normalDirections,"
+        },
+      "execPortType" : "In",
+      "typeSpec" : "String"
+      },
+    {
+      "objectType" : "ExecPort",
+      "name" : "result",
+      "nodePortType" : "In",
+      "defaultValues" : {
+        "Curves" : null
+        },
+      "execPortType" : "Out",
+      "typeSpec" : "Curves"
+      }
+    ],
+  "extDeps" : {
+    "AttributeHelpers" : "*"
+    },
+  "presetGUID" : "0F1682086E91C17A9EAA2BC3CB38B29A",
+  "nodes" : [
+    {
+      "objectType" : "Inst",
+      "metadata" : {
+        "uiGraphPos" : "{\"x\":-951.783,\"y\":957.424}"
+        },
+      "name" : "SwitchCase4_1",
+      "ports" : [
+        {
+          "objectType" : "InstPort",
+          "name" : "exec",
+          "nodePortType" : "IO"
+          },
+        {
+          "objectType" : "InstPort",
+          "name" : "condition",
+          "nodePortType" : "In"
+          },
+        {
+          "objectType" : "InstPort",
+          "name" : "case0",
+          "nodePortType" : "In"
+          },
+        {
+          "objectType" : "InstPort",
+          "name" : "case1",
+          "nodePortType" : "In"
+          },
+        {
+          "objectType" : "InstPort",
+          "name" : "case2",
+          "nodePortType" : "In"
+          },
+        {
+          "objectType" : "InstPort",
+          "name" : "case3",
+          "nodePortType" : "In"
+          },
+        {
+          "objectType" : "InstPort",
+          "name" : "default_value",
+          "nodePortType" : "In"
+          },
+        {
+          "objectType" : "InstPort",
+          "name" : "result",
+          "nodePortType" : "Out"
+          }
+        ],
+      "executable" : "Fabric.Core.Control.SwitchCase4",
+      "presetGUID" : "0505855834341C76D4AFB00ECDD0E9C3"
+      },
+    {
+      "objectType" : "Inst",
+      "metadata" : {
+        "uiGraphPos" : "{\"x\":-1252.54,\"y\":1037.72}"
+        },
+      "name" : "FilterByCurveType",
+      "ports" : [
+        {
+          "objectType" : "InstPort",
+          "name" : "exec",
+          "nodePortType" : "IO"
+          },
+        {
+          "objectType" : "InstPort",
+          "name" : "targetCurves",
+          "nodePortType" : "In"
+          },
+        {
+          "objectType" : "InstPort",
+          "name" : "selectType",
+          "nodePortType" : "In"
+          },
+        {
+          "objectType" : "InstPort",
+          "name" : "result",
+          "nodePortType" : "Out",
+          "defaultValues" : {
+            "Curves" : null
+            }
+          },
+        {
+          "objectType" : "InstPort",
+          "name" : "transferAttributes",
+          "nodePortType" : "In"
+          },
+        {
+          "objectType" : "InstPort",
+          "name" : "attrName",
+          "nodePortType" : "In"
+          }
+        ],
+      "definition" : {
+        "objectType" : "Func",
+        "title" : "func",
+        "ports" : [
+          {
+            "objectType" : "ExecPort",
+            "name" : "exec",
+            "nodePortType" : "IO",
+            "execPortType" : "IO",
+            "typeSpec" : "Execute"
+            },
+          {
+            "objectType" : "ExecPort",
+            "name" : "targetCurves",
+            "nodePortType" : "Out",
+            "execPortType" : "In",
+            "typeSpec" : "Curves"
+            },
+          {
+            "objectType" : "ExecPort",
+            "name" : "selectType",
+            "nodePortType" : "Out",
+            "execPortType" : "In",
+            "typeSpec" : "Integer"
+            },
+          {
+            "objectType" : "ExecPort",
+            "name" : "result",
+            "nodePortType" : "In",
+            "execPortType" : "Out",
+            "typeSpec" : "Curves"
+            },
+          {
+            "objectType" : "ExecPort",
+            "name" : "transferAttributes",
+            "nodePortType" : "Out",
+            "execPortType" : "In",
+            "typeSpec" : "Boolean"
+            },
+          {
+            "objectType" : "ExecPort",
+            "name" : "attrName",
+            "nodePortType" : "Out",
+            "execPortType" : "In",
+            "typeSpec" : "String[]"
+            }
+          ],
+        "extDeps" : {
+          "AttributeHelpers" : "*"
+          },
+        "code" : "dfgEntry {
+  result = Curves();
+  Index selectCurveID[](targetCurves.curveCount());
+  Index startID[];
+  Index endID[];
+  
+  for(Integer i=0; i<targetCurves.curveCount(); i++){
+    if(targetCurves.getCurveType(i) == selectType+1){
+      result.pushCurve(targetCurves.getCurve(i), false);
+      
+      selectCurveID[i] = i;
+      Index s;
+      Index e;
+      targetCurves.getPointRange(i, s, e);
+      startID.push(s);
+      endID.push(e);
+    }
+  }
+  if(transferAttributes){
+    if(attrName == \"\"){
+      report(\"!!!!!!Error!!!!!! ::: SelectCurve : empty attribute name in \\\"GetType\\\"\");
+      return;
+    }
+    for(Integer i=0; i<attrName.size(); i++){
+      if(targetCurves.attributes.has(attrName[i]) == false){
+        report(\"!!!!!!Error!!!!!! ::: SelectCurve : input targetCurves don't have '\"+attrName[i]+\"' attribute\");
+        return;
+      }
+    }
+    for(Integer i=0; i<attrName.size(); i++){
+      String type = targetCurves.getAttributeTypeString(attrName[i]);
+      Ref<GeometryAttribute> attr = targetCurves.attributes.getAttribute(attrName[i]);
+      Index setType;
+      Index sum = 0;
+      switch(attr.type()){
+        case IntegerAttribute:
+        {
+          Ref<IntegerAttribute> attrSource = targetCurves.attributes.getAttribute(attrName[i], IntegerAttribute);
+          Ref<IntegerAttribute> attrSet = result.attributes.getOrCreateIntegerAttribute(attrName[i]);
+          for(Integer j=0; j<result.curveCount(); j++){
+            for(Integer k=startID[j]; k<endID[j]; k++){
+              attrSet.values[sum] = attrSource.values[ k ];
+              sum += 1;
+            }
+          }
+          break;
+        }
+        case UInt32Attribute: 
+        {
+          Ref<UInt32Attribute> attrSource = targetCurves.attributes.getAttribute(attrName[i], UInt32Attribute);
+          Ref<UInt32Attribute> attrSet = result.attributes.getOrCreateUInt32Attribute(attrName[i]);
+          for(Integer j=0; j<result.curveCount(); j++){
+            for(Integer k=startID[j]; k<endID[j]; k++){
+              attrSet.values[sum] = attrSource.values[ k ];
+              sum += 1;
+            }
+          }
+          break;
+        }
+        case ScalarAttribute: 
+        {
+          Ref<ScalarAttribute> attrSource = targetCurves.attributes.getAttribute(attrName[i], ScalarAttribute);
+          Ref<ScalarAttribute> attrSet = result.attributes.getOrCreateScalarAttribute(attrName[i]);
+          for(Integer j=0; j<result.curveCount(); j++){
+            for(Integer k=startID[j]; k<endID[j]; k++){
+              attrSet.values[sum] = attrSource.values[ k ];
+              sum += 1;
+            }
+          }
+          break;
+        }
+        case Vec2Attribute:  
+        {
+          Ref<Vec2Attribute> attrSource = targetCurves.attributes.getAttribute(attrName[i], Vec2Attribute);
+          Ref<Vec2Attribute> attrSet = result.attributes.getOrCreateVec2Attribute(attrName[i]);
+          for(Integer j=0; j<result.curveCount(); j++){
+            for(Integer k=startID[j]; k<endID[j]; k++){
+              attrSet.values[sum] = attrSource.values[ k ];
+              sum += 1;
+            }
+          }
+          break;
+        }
+        case Vec3Attribute:
+        {   
+          Ref<Vec3Attribute> attrSource = targetCurves.attributes.getAttribute(attrName[i], Vec3Attribute);
+          Ref<Vec3Attribute> attrSet = result.attributes.getOrCreateVec3Attribute(attrName[i]);
+          for(Integer j=0; j<result.curveCount(); j++){
+            for(Integer k=startID[j]; k<endID[j]; k++){
+              attrSet.values[sum] = attrSource.values[ k ];
+              sum += 1;
+            }
+          }
+          break;
+        }
+        case Vec4Attribute:
+        {   
+          Ref<Vec4Attribute> attrSource = targetCurves.attributes.getAttribute(attrName[i], Vec4Attribute);
+          Ref<Vec4Attribute> attrSet = result.attributes.getOrCreateVec4Attribute(attrName[i]);
+          for(Integer j=0; j<result.curveCount(); j++){
+            for(Integer k=startID[j]; k<endID[j]; k++){
+              attrSet.values[sum] = attrSource.values[ k ];
+              sum += 1;
+            }
+          }
+          break;
+        }
+        case QuatAttribute:
+        {   
+          Ref<QuatAttribute> attrSource = targetCurves.attributes.getAttribute(attrName[i], QuatAttribute);
+          Ref<QuatAttribute> attrSet = result.attributes.getOrCreateQuatAttribute(attrName[i]);
+          for(Integer j=0; j<result.curveCount(); j++){
+            for(Integer k=startID[j]; k<endID[j]; k++){
+              attrSet.values[sum] = attrSource.values[ k ];
+              sum += 1;
+            }
+          }
+          break;
+        }
+        case Mat33Attribute:
+        {   
+          Ref<Mat33Attribute> attrSource = targetCurves.attributes.getAttribute(attrName[i], Mat33Attribute);
+          Ref<Mat33Attribute> attrSet = result.attributes.getOrCreateMat33Attribute(attrName[i]);
+          for(Integer j=0; j<result.curveCount(); j++){
+            for(Integer k=startID[j]; k<endID[j]; k++){
+              attrSet.values[sum] = attrSource.values[ k ];
+              sum += 1;
+            }
+          }
+          break;
+        }
+        case Mat44Attribute:
+        {   
+          Ref<Mat44Attribute> attrSource = targetCurves.attributes.getAttribute(attrName[i], Mat44Attribute);
+          Ref<Mat44Attribute> attrSet = result.attributes.getOrCreateMat44Attribute(attrName[i]);
+          for(Integer j=0; j<result.curveCount(); j++){
+            for(Integer k=startID[j]; k<endID[j]; k++){
+              attrSet.values[sum] = attrSource.values[ k ];
+              sum += 1;
+            }
+          }
+          break;
+        }
+        case ColorAttribute:
+        {   
+          Ref<ColorAttribute> attrSource = targetCurves.attributes.getAttribute(attrName[i], ColorAttribute);
+          Ref<ColorAttribute> attrSet = result.attributes.getOrCreateColorAttribute(attrName[i]);
+          for(Integer j=0; j<result.curveCount(); j++){
+            for(Integer k=startID[j]; k<endID[j]; k++){
+              attrSet.values[sum] = attrSource.values[ k ];
+              sum += 1;
+            }
+          }
+          break;
+        }
+        case RGBAttribute:
+        {   
+          Ref<RGBAttribute> attrSource = targetCurves.attributes.getAttribute(attrName[i], RGBAttribute);
+          Ref<RGBAttribute> attrSet = result.attributes.getOrCreateRGBAttribute(attrName[i]);
+          for(Integer j=0; j<result.curveCount(); j++){
+            for(Integer k=startID[j]; k<endID[j]; k++){
+              attrSet.values[sum] = attrSource.values[ k ];
+              sum += 1;
+            }
+          }
+          break;
+        }
+        case RGBAAttribute:
+        {   
+          Ref<RGBAAttribute> attrSource = targetCurves.attributes.getAttribute(attrName[i], RGBAAttribute);
+          Ref<RGBAAttribute> attrSet = result.attributes.getOrCreateRGBAAttribute(attrName[i]);
+          for(Integer j=0; j<result.curveCount(); j++){
+            for(Integer k=startID[j]; k<endID[j]; k++){
+              attrSet.values[sum] = attrSource.values[ k ];
+              sum += 1;
+            }
+          }
+          break;
+        }
+        case UInt16ConstantArrayAttribute:
+        {   
+          Ref<UInt16ConstantArrayAttribute> attrSource = targetCurves.attributes.getAttribute(attrName[i], UInt16ConstantArrayAttribute);
+          Ref<UInt16ConstantArrayAttribute> attrSet = result.attributes.getOrCreateUInt16ConstantArrayAttribute(attrName[i]);
+          for(Integer j=0; j<result.curveCount(); j++){
+            for(Integer k=startID[j]; k<endID[j]; k++){
+              attrSet.values[sum] = attrSource.values[ k ];
+              sum += 1;
+            }
+          }
+          break;
+        }
+        case ScalarConstantArrayAttribute:
+        {   
+          Ref<ScalarConstantArrayAttribute> attrSource = targetCurves.attributes.getAttribute(attrName[i], ScalarConstantArrayAttribute);
+          Ref<ScalarConstantArrayAttribute> attrSet = result.attributes.getOrCreateScalarConstantArrayAttribute(attrName[i]);
+          for(Integer j=0; j<result.curveCount(); j++){
+            for(Integer k=startID[j]; k<endID[j]; k++){
+              attrSet.values[sum] = attrSource.values[ k ];
+              sum += 1;
+            }
+          }
+          break;
+        }
+        case SkinningAttribute:
+        /*{   
+          Ref<SkinningAttribute> attrSource = targetCurves.attributes.getAttribute(attrName[i], SkinningAttribute);
+          Ref<SkinningAttribute> attrSet = result.attributes.getOrCreateSkinningAttribute(attrName[i]);
+          for(Integer j=0; j<result.curveCount(); j++){
+            for(Integer k=0; k<result.getPointCount(selectCurveID[j]); k++){
+              attrSet.values[sum] = attrSource.values[ k ];
+              sum += 1;
+            }
+          }
+          break;
+        }*/
+          report(\"!!!!!!Error!!!!!! ::: SelectCurve.FilterByCurveType : not support SkinningAttribute yet\");
+          break;
+      }
+    }
+  }
+}
+"
+        }
+      },
+    {
+      "objectType" : "Inst",
+      "metadata" : {
+        "uiGraphPos" : "{\"x\":-1246.55,\"y\":1194.65}"
+        },
+      "name" : "ChoiceByCurveID",
+      "ports" : [
+        {
+          "objectType" : "InstPort",
+          "name" : "exec",
+          "nodePortType" : "IO"
+          },
+        {
+          "objectType" : "InstPort",
+          "name" : "targetCurves",
+          "nodePortType" : "In"
+          },
+        {
+          "objectType" : "InstPort",
+          "name" : "curveID",
+          "nodePortType" : "In"
+          },
+        {
+          "objectType" : "InstPort",
+          "name" : "result",
+          "nodePortType" : "Out",
+          "defaultValues" : {
+            "Curves" : null
+            }
+          },
+        {
+          "objectType" : "InstPort",
+          "name" : "transferAttributes",
+          "nodePortType" : "In"
+          },
+        {
+          "objectType" : "InstPort",
+          "name" : "attrName",
+          "nodePortType" : "In"
+          }
+        ],
+      "definition" : {
+        "objectType" : "Func",
+        "title" : "func",
+        "ports" : [
+          {
+            "objectType" : "ExecPort",
+            "name" : "exec",
+            "nodePortType" : "IO",
+            "execPortType" : "IO",
+            "typeSpec" : "Execute"
+            },
+          {
+            "objectType" : "ExecPort",
+            "name" : "targetCurves",
+            "nodePortType" : "Out",
+            "execPortType" : "In",
+            "typeSpec" : "Curves"
+            },
+          {
+            "objectType" : "ExecPort",
+            "name" : "curveID",
+            "nodePortType" : "Out",
+            "execPortType" : "In",
+            "typeSpec" : "String[]"
+            },
+          {
+            "objectType" : "ExecPort",
+            "name" : "result",
+            "nodePortType" : "In",
+            "execPortType" : "Out",
+            "typeSpec" : "Curves"
+            },
+          {
+            "objectType" : "ExecPort",
+            "name" : "transferAttributes",
+            "nodePortType" : "Out",
+            "execPortType" : "In",
+            "typeSpec" : "Boolean"
+            },
+          {
+            "objectType" : "ExecPort",
+            "name" : "attrName",
+            "nodePortType" : "Out",
+            "execPortType" : "In",
+            "typeSpec" : "String[]"
+            }
+          ],
+        "extDeps" : {
+          "AttributeHelpers" : "*"
+          },
+        "code" : "dfgEntry {
+  result = Curves();
+  Index selectCurveID[](curveID.size());
+  Index startID[](curveID.size());
+  Index endID[](curveID.size());
+  for(Integer i=0; i<curveID.size(); i++){
+    result.pushCurve(targetCurves.getCurve(curveID[i].toScalar()), false);
+    
+    selectCurveID[i] = curveID[i].toScalar();
+    targetCurves.getPointRange(curveID[i].toScalar(), startID[i], endID[i]);
+  }
+  
+  if(transferAttributes){
+    if(attrName == \"\"){
+      report(\"!!!!!!Error!!!!!! ::: SelectCurve : empty attribute name in \\\"GetType\\\"\");
+      return;
+    }
+    for(Integer i=0; i<attrName.size(); i++){
+      if(targetCurves.attributes.has(attrName[i]) == false){
+        report(\"!!!!!!Error!!!!!! ::: SelectCurve : input targetCurves don't have '\"+attrName[i]+\"' attribute\");
+        return;
+      }
+    }
+    for(Integer i=0; i<attrName.size(); i++){
+      String type = targetCurves.getAttributeTypeString(attrName[i]);
+      Ref<GeometryAttribute> attr = targetCurves.attributes.getAttribute(attrName[i]);
+      Index setType;
+      Index sum = 0;
+      switch(attr.type()){
+        case IntegerAttribute:
+        {
+          Ref<IntegerAttribute> attrSource = targetCurves.attributes.getAttribute(attrName[i], IntegerAttribute);
+          Ref<IntegerAttribute> attrSet = result.attributes.getOrCreateIntegerAttribute(attrName[i]);
+          for(Integer j=0; j<result.curveCount(); j++){
+            for(Integer k=startID[j]; k<endID[j]; k++){
+              attrSet.values[sum] = attrSource.values[ k ];
+              sum += 1;
+            }
+          }
+          break;
+        }
+        case UInt32Attribute: 
+        {
+          Ref<UInt32Attribute> attrSource = targetCurves.attributes.getAttribute(attrName[i], UInt32Attribute);
+          Ref<UInt32Attribute> attrSet = result.attributes.getOrCreateUInt32Attribute(attrName[i]);
+          for(Integer j=0; j<result.curveCount(); j++){
+            for(Integer k=startID[j]; k<endID[j]; k++){
+              attrSet.values[sum] = attrSource.values[ k ];
+              sum += 1;
+            }
+          }
+          break;
+        }
+        case ScalarAttribute: 
+        {
+          Ref<ScalarAttribute> attrSource = targetCurves.attributes.getAttribute(attrName[i], ScalarAttribute);
+          Ref<ScalarAttribute> attrSet = result.attributes.getOrCreateScalarAttribute(attrName[i]);
+          for(Integer j=0; j<result.curveCount(); j++){
+            for(Integer k=startID[j]; k<endID[j]; k++){
+              attrSet.values[sum] = attrSource.values[ k ];
+              sum += 1;
+            }
+          }
+          break;
+        }
+        case Vec2Attribute:  
+        {
+          Ref<Vec2Attribute> attrSource = targetCurves.attributes.getAttribute(attrName[i], Vec2Attribute);
+          Ref<Vec2Attribute> attrSet = result.attributes.getOrCreateVec2Attribute(attrName[i]);
+          for(Integer j=0; j<result.curveCount(); j++){
+            for(Integer k=startID[j]; k<endID[j]; k++){
+              attrSet.values[sum] = attrSource.values[ k ];
+              sum += 1;
+            }
+          }
+          break;
+        }
+        case Vec3Attribute:
+        {   
+          Ref<Vec3Attribute> attrSource = targetCurves.attributes.getAttribute(attrName[i], Vec3Attribute);
+          Ref<Vec3Attribute> attrSet = result.attributes.getOrCreateVec3Attribute(attrName[i]);
+          for(Integer j=0; j<result.curveCount(); j++){
+            for(Integer k=startID[j]; k<endID[j]; k++){
+              attrSet.values[sum] = attrSource.values[ k ];
+              sum += 1;
+            }
+          }
+          break;
+        }
+        case Vec4Attribute:
+        {   
+          Ref<Vec4Attribute> attrSource = targetCurves.attributes.getAttribute(attrName[i], Vec4Attribute);
+          Ref<Vec4Attribute> attrSet = result.attributes.getOrCreateVec4Attribute(attrName[i]);
+          for(Integer j=0; j<result.curveCount(); j++){
+            for(Integer k=startID[j]; k<endID[j]; k++){
+              attrSet.values[sum] = attrSource.values[ k ];
+              sum += 1;
+            }
+          }
+          break;
+        }
+        case QuatAttribute:
+        {   
+          Ref<QuatAttribute> attrSource = targetCurves.attributes.getAttribute(attrName[i], QuatAttribute);
+          Ref<QuatAttribute> attrSet = result.attributes.getOrCreateQuatAttribute(attrName[i]);
+          for(Integer j=0; j<result.curveCount(); j++){
+            for(Integer k=startID[j]; k<endID[j]; k++){
+              attrSet.values[sum] = attrSource.values[ k ];
+              sum += 1;
+            }
+          }
+          break;
+        }
+        case Mat33Attribute:
+        {   
+          Ref<Mat33Attribute> attrSource = targetCurves.attributes.getAttribute(attrName[i], Mat33Attribute);
+          Ref<Mat33Attribute> attrSet = result.attributes.getOrCreateMat33Attribute(attrName[i]);
+          for(Integer j=0; j<result.curveCount(); j++){
+            for(Integer k=startID[j]; k<endID[j]; k++){
+              attrSet.values[sum] = attrSource.values[ k ];
+              sum += 1;
+            }
+          }
+          break;
+        }
+        case Mat44Attribute:
+        {   
+          Ref<Mat44Attribute> attrSource = targetCurves.attributes.getAttribute(attrName[i], Mat44Attribute);
+          Ref<Mat44Attribute> attrSet = result.attributes.getOrCreateMat44Attribute(attrName[i]);
+          for(Integer j=0; j<result.curveCount(); j++){
+            for(Integer k=startID[j]; k<endID[j]; k++){
+              attrSet.values[sum] = attrSource.values[ k ];
+              sum += 1;
+            }
+          }
+          break;
+        }
+        case ColorAttribute:
+        {   
+          Ref<ColorAttribute> attrSource = targetCurves.attributes.getAttribute(attrName[i], ColorAttribute);
+          Ref<ColorAttribute> attrSet = result.attributes.getOrCreateColorAttribute(attrName[i]);
+          for(Integer j=0; j<result.curveCount(); j++){
+            for(Integer k=startID[j]; k<endID[j]; k++){
+              attrSet.values[sum] = attrSource.values[ k ];
+              sum += 1;
+            }
+          }
+          break;
+        }
+        case RGBAttribute:
+        {   
+          Ref<RGBAttribute> attrSource = targetCurves.attributes.getAttribute(attrName[i], RGBAttribute);
+          Ref<RGBAttribute> attrSet = result.attributes.getOrCreateRGBAttribute(attrName[i]);
+          for(Integer j=0; j<result.curveCount(); j++){
+            for(Integer k=startID[j]; k<endID[j]; k++){
+              attrSet.values[sum] = attrSource.values[ k ];
+              sum += 1;
+            }
+          }
+          break;
+        }
+        case RGBAAttribute:
+        {   
+          Ref<RGBAAttribute> attrSource = targetCurves.attributes.getAttribute(attrName[i], RGBAAttribute);
+          Ref<RGBAAttribute> attrSet = result.attributes.getOrCreateRGBAAttribute(attrName[i]);
+          for(Integer j=0; j<result.curveCount(); j++){
+            for(Integer k=startID[j]; k<endID[j]; k++){
+              attrSet.values[sum] = attrSource.values[ k ];
+              sum += 1;
+            }
+          }
+          break;
+        }
+        case UInt16ConstantArrayAttribute:
+        {   
+          Ref<UInt16ConstantArrayAttribute> attrSource = targetCurves.attributes.getAttribute(attrName[i], UInt16ConstantArrayAttribute);
+          Ref<UInt16ConstantArrayAttribute> attrSet = result.attributes.getOrCreateUInt16ConstantArrayAttribute(attrName[i]);
+          for(Integer j=0; j<result.curveCount(); j++){
+            for(Integer k=startID[j]; k<endID[j]; k++){
+              attrSet.values[sum] = attrSource.values[ k ];
+              sum += 1;
+            }
+          }
+          break;
+        }
+        case ScalarConstantArrayAttribute:
+        {   
+          Ref<ScalarConstantArrayAttribute> attrSource = targetCurves.attributes.getAttribute(attrName[i], ScalarConstantArrayAttribute);
+          Ref<ScalarConstantArrayAttribute> attrSet = result.attributes.getOrCreateScalarConstantArrayAttribute(attrName[i]);
+          for(Integer j=0; j<result.curveCount(); j++){
+            for(Integer k=startID[j]; k<endID[j]; k++){
+              attrSet.values[sum] = attrSource.values[ k ];
+              sum += 1;
+            }
+          }
+          break;
+        }
+        case SkinningAttribute:
+        /*{   
+          Ref<SkinningAttribute> attrSource = targetCurves.attributes.getAttribute(attrName[i], SkinningAttribute);
+          Ref<SkinningAttribute> attrSet = result.attributes.getOrCreateSkinningAttribute(attrName[i]);
+          for(Integer j=0; j<result.curveCount(); j++){
+            for(Integer k=0; k<result.getPointCount(selectCurveID[j]); k++){
+              attrSet.values[sum] = attrSource.values[ startID[j] ];
+              sum += 1;
+            }
+          }
+          break;
+        }*/
+          report(\"!!!!!!Error!!!!!! ::: SelectCurve.ChoiceByCurveID : not support SkinningAttribute yet\");
+          break;
+      }
+    }
+  }
+}
+"
+        }
+      },
+    {
+      "objectType" : "Inst",
+      "metadata" : {
+        "uiGraphPos" : "{\"x\":-1735.43,\"y\":1242.95}"
+        },
+      "name" : "SplitAndDeleteBlank",
+      "ports" : [
+        {
+          "objectType" : "InstPort",
+          "name" : "exec",
+          "nodePortType" : "IO"
+          },
+        {
+          "objectType" : "InstPort",
+          "name" : "this",
+          "nodePortType" : "In"
+          },
+        {
+          "objectType" : "InstPort",
+          "name" : "separator",
+          "nodePortType" : "In"
+          },
+        {
+          "objectType" : "InstPort",
+          "name" : "deletBlank",
+          "nodePortType" : "In",
+          "defaultValues" : {
+            "Boolean" : true
+            }
+          },
+        {
+          "objectType" : "InstPort",
+          "name" : "result",
+          "nodePortType" : "Out"
+          }
+        ],
+      "executable" : "TKCM.Util.String.SplitAndDeleteBlank",
+      "presetGUID" : "F433EE0F045CFB5086821B670F6FEC3D"
+      },
+    {
+      "objectType" : "Inst",
+      "metadata" : {
+        "uiGraphPos" : "{\"x\":-1732.78,\"y\":1398.67}"
+        },
+      "name" : "SplitAndDeleteBlank_2",
+      "ports" : [
+        {
+          "objectType" : "InstPort",
+          "name" : "exec",
+          "nodePortType" : "IO"
+          },
+        {
+          "objectType" : "InstPort",
+          "name" : "this",
+          "nodePortType" : "In"
+          },
+        {
+          "objectType" : "InstPort",
+          "name" : "separator",
+          "nodePortType" : "In"
+          },
+        {
+          "objectType" : "InstPort",
+          "name" : "deletBlank",
+          "nodePortType" : "In",
+          "defaultValues" : {
+            "Boolean" : true
+            }
+          },
+        {
+          "objectType" : "InstPort",
+          "name" : "result",
+          "nodePortType" : "Out"
+          }
+        ],
+      "executable" : "TKCM.Util.String.SplitAndDeleteBlank",
+      "presetGUID" : "F433EE0F045CFB5086821B670F6FEC3D"
+      }
+    ],
+  "connections" : {
+    "curves" : [
+      "SwitchCase4_1.case0",
+      "SwitchCase4_1.default_value",
+      "FilterByCurveType.targetCurves",
+      "ChoiceByCurveID.targetCurves"
+      ],
+    "select" : [
+      "SwitchCase4_1.condition"
+      ],
+    "type" : [
+      "FilterByCurveType.selectType"
+      ],
+    "ID" : [
+      "SplitAndDeleteBlank.this"
+      ],
+    "transferAttributes" : [
+      "FilterByCurveType.transferAttributes",
+      "ChoiceByCurveID.transferAttributes"
+      ],
+    "attributeNames" : [
+      "SplitAndDeleteBlank_2.this"
+      ],
+    "SwitchCase4_1.result" : [
+      "result"
+      ],
+    "FilterByCurveType.result" : [
+      "SwitchCase4_1.case1"
+      ],
+    "ChoiceByCurveID.result" : [
+      "SwitchCase4_1.case2"
+      ],
+    "SplitAndDeleteBlank.result" : [
+      "ChoiceByCurveID.curveID"
+      ],
+    "SplitAndDeleteBlank_2.result" : [
+      "FilterByCurveType.attrName",
+      "ChoiceByCurveID.attrName"
+      ]
+    },
+  "requiredPresets" : {
+    "Fabric.Core.Control.SwitchCase4" : {
+      "objectType" : "Func",
+      "metadata" : {
+        "uiTextColor" : "{\n  \"r\" : 20,\n  \"g\" : 20,\n  \"b\" : 20\n  }",
+        "uiNodeColor" : "{\n  \"r\" : 121,\n  \"g\" : 134,\n  \"b\" : 143\n  }"
+        },
+      "title" : "SwitchCase4",
+      "ports" : [
+        {
+          "objectType" : "ExecPort",
+          "name" : "exec",
+          "nodePortType" : "IO",
+          "defaultValues" : {
+            "Execute" : {}
+            },
+          "execPortType" : "IO",
+          "typeSpec" : "Execute"
+          },
+        {
+          "objectType" : "ExecPort",
+          "name" : "condition",
+          "nodePortType" : "Out",
+          "defaultValues" : {
+            "Integer" : -1
+            },
+          "execPortType" : "In",
+          "typeSpec" : "Integer"
+          },
+        {
+          "objectType" : "ExecPort",
+          "name" : "case0",
+          "nodePortType" : "Out",
+          "defaultValues" : {
+            "Scalar" : 0
+            },
+          "execPortType" : "In",
+          "typeSpec" : "$TYPE$"
+          },
+        {
+          "objectType" : "ExecPort",
+          "name" : "case1",
+          "nodePortType" : "Out",
+          "defaultValues" : {
+            "Scalar" : 0
+            },
+          "execPortType" : "In",
+          "typeSpec" : "$TYPE$"
+          },
+        {
+          "objectType" : "ExecPort",
+          "name" : "case2",
+          "nodePortType" : "Out",
+          "defaultValues" : {
+            "Scalar" : 0
+            },
+          "execPortType" : "In",
+          "typeSpec" : "$TYPE$"
+          },
+        {
+          "objectType" : "ExecPort",
+          "name" : "case3",
+          "nodePortType" : "Out",
+          "defaultValues" : {
+            "Scalar" : 0
+            },
+          "execPortType" : "In",
+          "typeSpec" : "$TYPE$"
+          },
+        {
+          "objectType" : "ExecPort",
+          "name" : "default_value",
+          "nodePortType" : "Out",
+          "defaultValues" : {
+            "Scalar" : 0
+            },
+          "execPortType" : "In",
+          "typeSpec" : "$TYPE$"
+          },
+        {
+          "objectType" : "ExecPort",
+          "name" : "result",
+          "nodePortType" : "In",
+          "defaultValues" : {
+            "Scalar" : 0
+            },
+          "execPortType" : "Out",
+          "typeSpec" : "$TYPE$"
+          }
+        ],
+      "extDeps" : {},
+      "presetGUID" : "0505855834341C76D4AFB00ECDD0E9C3",
+      "code" : "dfgEntry {
+
+  switch(condition) {
+    case 0:
+    {
+      result = case0;
+      break;
+    }
+    case 1:
+    {
+      result = case1;
+      break;
+    }
+    case 2:
+    {
+      result = case2;
+      break;
+    }
+    case 3:
+    {
+      result = case3;
+      break;
+    }
+    default:
+    {
+      result = default_value;
+    }
+  }
+}
+"
+      },
+    "TKCM.Util.String.SplitAndDeleteBlank" : {
+      "objectType" : "Graph",
+      "metadata" : {
+        "uiGraphZoom" : "{\n  \"value\" : 1.0\n  }",
+        "uiGraphPan" : "{\n  \"x\" : 1851.85498046875,\n  \"y\" : -1009.830017089844\n  }"
+        },
+      "title" : "SplitAndDeleteBlank",
+      "ports" : [
+        {
+          "objectType" : "ExecPort",
+          "name" : "exec",
+          "nodePortType" : "IO",
+          "defaultValues" : {
+            "Execute" : {}
+            },
+          "execPortType" : "IO",
+          "typeSpec" : "Execute"
+          },
+        {
+          "objectType" : "ExecPort",
+          "name" : "this",
+          "nodePortType" : "Out",
+          "defaultValues" : {
+            "String" : ""
+            },
+          "execPortType" : "In",
+          "typeSpec" : "String"
+          },
+        {
+          "objectType" : "ExecPort",
+          "name" : "separator",
+          "nodePortType" : "Out",
+          "defaultValues" : {
+            "String" : ","
+            },
+          "execPortType" : "In",
+          "typeSpec" : "String"
+          },
+        {
+          "objectType" : "ExecPort",
+          "name" : "deletBlank",
+          "nodePortType" : "Out",
+          "defaultValues" : {
+            "Boolean" : true
+            },
+          "execPortType" : "In",
+          "typeSpec" : "Boolean"
+          },
+        {
+          "objectType" : "ExecPort",
+          "name" : "result",
+          "nodePortType" : "In",
+          "defaultValues" : {
+            "String[]" : []
+            },
+          "execPortType" : "Out",
+          "typeSpec" : "String[]"
+          }
+        ],
+      "extDeps" : {},
+      "presetGUID" : "F433EE0F045CFB5086821B670F6FEC3D",
+      "nodes" : [
+        {
+          "objectType" : "Inst",
+          "metadata" : {
+            "uiGraphPos" : "{\"x\":-1667.97,\"y\":1245.8}"
+            },
+          "name" : "Split_1",
+          "ports" : [
+            {
+              "objectType" : "InstPort",
+              "name" : "exec",
+              "nodePortType" : "IO"
+              },
+            {
+              "objectType" : "InstPort",
+              "name" : "this",
+              "nodePortType" : "In"
+              },
+            {
+              "objectType" : "InstPort",
+              "name" : "separator",
+              "nodePortType" : "In",
+              "defaultValues" : {
+                "String" : ","
+                }
+              },
+            {
+              "objectType" : "InstPort",
+              "name" : "result",
+              "nodePortType" : "Out"
+              }
+            ],
+          "executable" : "Fabric.Exts.Util.String.Split",
+          "presetGUID" : "E09CFC151D7658D0FD0EAA6DB4FFB18B"
+          },
+        {
+          "objectType" : "Inst",
+          "metadata" : {
+            "uiGraphPos" : "{\"x\":-1469.74,\"y\":1305.86}"
+            },
+          "name" : "DeleteBlank",
+          "ports" : [
+            {
+              "objectType" : "InstPort",
+              "name" : "exec",
+              "nodePortType" : "IO"
+              },
+            {
+              "objectType" : "InstPort",
+              "name" : "this",
+              "nodePortType" : "IO"
+              },
+            {
+              "objectType" : "InstPort",
+              "name" : "deletBlank",
+              "nodePortType" : "In"
+              }
+            ],
+          "definition" : {
+            "objectType" : "Func",
+            "title" : "func",
+            "ports" : [
+              {
+                "objectType" : "ExecPort",
+                "name" : "exec",
+                "nodePortType" : "IO",
+                "execPortType" : "IO",
+                "typeSpec" : "Execute"
+                },
+              {
+                "objectType" : "ExecPort",
+                "name" : "this",
+                "nodePortType" : "IO",
+                "execPortType" : "IO",
+                "typeSpec" : "String[]"
+                },
+              {
+                "objectType" : "ExecPort",
+                "name" : "deletBlank",
+                "nodePortType" : "Out",
+                "execPortType" : "In",
+                "typeSpec" : "Boolean"
+                }
+              ],
+            "extDeps" : {},
+            "code" : "dfgEntry {
+  if(deletBlank){
+    Index chack[];
+    chack.resize(this.size());
+    for(Integer i=0; i<this.size(); i++){
+      chack[i]=this[i].length();
+    }
+    String result[];
+    for(Integer i=0; i<this.size(); i++){
+      if(chack[i] > 0){
+        result.push(this[i]);
+      }
+    }
+    this = result;
+  }
+}
+"
+            }
+          }
+        ],
+      "connections" : {
+        "this" : [
+          "Split_1.this"
+          ],
+        "separator" : [
+          "Split_1.separator"
+          ],
+        "deletBlank" : [
+          "DeleteBlank.deletBlank"
+          ],
+        "Split_1.result" : [
+          "DeleteBlank.this"
+          ],
+        "DeleteBlank.this" : [
+          "result"
+          ]
+        }
+      },
+    "Fabric.Exts.Util.String.Split" : {
+      "objectType" : "Func",
+      "metadata" : {
+        "uiTooltip" : "splitting this string by a given separator\n\n Supported by String"
+        },
+      "title" : "Split",
+      "ports" : [
+        {
+          "objectType" : "ExecPort",
+          "name" : "exec",
+          "nodePortType" : "IO",
+          "execPortType" : "IO",
+          "typeSpec" : "Execute"
+          },
+        {
+          "objectType" : "ExecPort",
+          "name" : "this",
+          "nodePortType" : "Out",
+          "execPortType" : "In",
+          "typeSpec" : "String"
+          },
+        {
+          "objectType" : "ExecPort",
+          "name" : "separator",
+          "nodePortType" : "Out",
+          "execPortType" : "In",
+          "typeSpec" : "String"
+          },
+        {
+          "objectType" : "ExecPort",
+          "name" : "result",
+          "nodePortType" : "In",
+          "execPortType" : "Out",
+          "typeSpec" : "String[]"
+          }
+        ],
+      "extDeps" : {
+        "Util" : "*"
+        },
+      "presetGUID" : "E09CFC151D7658D0FD0EAA6DB4FFB18B",
+      "code" : "require Util;
+
+dfgEntry {
+  result = this.split(separator);
+}
+"
+      }
+    }
+  }

@@ -1,0 +1,63 @@
+{
+  "objectType" : "Func",
+  "title" : "AddMultipleLinearCurve",
+  "ports" : [
+    {
+      "objectType" : "ExecPort",
+      "name" : "exec",
+      "nodePortType" : "IO",
+      "defaultValues" : {
+        "Execute" : {}
+        },
+      "execPortType" : "IO",
+      "typeSpec" : "Execute"
+      },
+    {
+      "objectType" : "ExecPort",
+      "name" : "this",
+      "nodePortType" : "IO",
+      "defaultValues" : {
+        "Curves" : null
+        },
+      "execPortType" : "IO",
+      "typeSpec" : "Curves"
+      },
+    {
+      "objectType" : "ExecPort",
+      "name" : "CurvePositions",
+      "nodePortType" : "Out",
+      "defaultValues" : {
+        "GenericVec3ArrayValue[]" : [],
+        "Vec3Array[]" : []
+        },
+      "execPortType" : "In",
+      "typeSpec" : "Vec3Array[]"
+      },
+    {
+      "objectType" : "ExecPort",
+      "name" : "isClosed",
+      "nodePortType" : "Out",
+      "defaultValues" : {
+        "Boolean" : false
+        },
+      "execPortType" : "In",
+      "typeSpec" : "Boolean"
+      }
+    ],
+  "extDeps" : {},
+  "presetGUID" : "ED6C3B9A96A93D71A80FD5123DAC1B75",
+  "code" : "dfgEntry {
+  if(CurvePositions.size() == 0){  return;  }
+  
+  for(Integer i=0; i<CurvePositions.size(); i++){
+    Vec3 curvePos[];
+    curvePos.resize(CurvePositions[i].size());
+    
+    for(Integer j=0; j<CurvePositions[i].size(); j++){
+      curvePos[j] = CurvePositions[i][j];
+    }
+    this.addLinearCurve(curvePos, isClosed);
+  }
+}
+"
+  }

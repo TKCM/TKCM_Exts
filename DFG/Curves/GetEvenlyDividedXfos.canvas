@@ -1,0 +1,138 @@
+{
+  "objectType" : "Func",
+  "title" : "GetEvenlyDividedXfos",
+  "ports" : [
+    {
+      "objectType" : "ExecPort",
+      "name" : "exec",
+      "nodePortType" : "IO",
+      "defaultValues" : {
+        "Execute" : {}
+        },
+      "execPortType" : "IO",
+      "typeSpec" : "Execute"
+      },
+    {
+      "objectType" : "ExecPort",
+      "name" : "this",
+      "nodePortType" : "Out",
+      "defaultValues" : {
+        "Curves" : null
+        },
+      "execPortType" : "In",
+      "typeSpec" : "Curves"
+      },
+    {
+      "objectType" : "ExecPort",
+      "metadata" : {
+        "uiCombo" : "(\"Evenly Divide\", \"Evenly Interval\")"
+        },
+      "name" : "mode",
+      "nodePortType" : "Out",
+      "defaultValues" : {
+        "Integer" : 0
+        },
+      "execPortType" : "In",
+      "typeSpec" : "Integer"
+      },
+    {
+      "objectType" : "ExecPort",
+      "name" : "divisionValue",
+      "nodePortType" : "Out",
+      "defaultValues" : {
+        "Integer" : 3
+        },
+      "execPortType" : "In",
+      "typeSpec" : "Integer"
+      },
+    {
+      "objectType" : "ExecPort",
+      "metadata" : {
+        "uiCombo" : "(\"Length\", \"Lengrth Ratio\", \"Normalized Param\")"
+        },
+      "name" : "intervalValueType",
+      "nodePortType" : "Out",
+      "defaultValues" : {
+        "Integer" : 0
+        },
+      "execPortType" : "In",
+      "typeSpec" : "Integer"
+      },
+    {
+      "objectType" : "ExecPort",
+      "name" : "intervalValue",
+      "nodePortType" : "Out",
+      "defaultValues" : {
+        "Scalar" : 5
+        },
+      "execPortType" : "In",
+      "typeSpec" : "Scalar"
+      },
+    {
+      "objectType" : "ExecPort",
+      "metadata" : {
+        "uiCombo" : "(\"non\", \"Curve Tangent\", \"Normal Direction Attribute\")"
+        },
+      "name" : "directionType",
+      "nodePortType" : "Out",
+      "defaultValues" : {
+        "Integer" : 0
+        },
+      "execPortType" : "In",
+      "typeSpec" : "Integer"
+      },
+    {
+      "objectType" : "ExecPort",
+      "name" : "addStartPosition",
+      "nodePortType" : "Out",
+      "defaultValues" : {
+        "Boolean" : true
+        },
+      "execPortType" : "In",
+      "typeSpec" : "Boolean"
+      },
+    {
+      "objectType" : "ExecPort",
+      "name" : "addEndPosition",
+      "nodePortType" : "Out",
+      "defaultValues" : {
+        "Boolean" : true
+        },
+      "execPortType" : "In",
+      "typeSpec" : "Boolean"
+      },
+    {
+      "objectType" : "ExecPort",
+      "name" : "resultEachCurve",
+      "nodePortType" : "In",
+      "defaultValues" : {
+        "XfoArray[]" : []
+        },
+      "execPortType" : "Out",
+      "typeSpec" : "XfoArray[]"
+      },
+    {
+      "objectType" : "ExecPort",
+      "name" : "result",
+      "nodePortType" : "In",
+      "defaultValues" : {
+        "Xfo[]" : []
+        },
+      "execPortType" : "Out",
+      "typeSpec" : "Xfo[]"
+      }
+    ],
+  "extDeps" : {
+    "TKCM" : "*"
+    },
+  "presetGUID" : "E22E31D4FC3492DD65EB2E40D62EEFFC",
+  "code" : "dfgEntry {
+  Curves normalCurves();
+  if(directionType != 0){
+    normalCurves = this.createNormalDirectionAttributeCurves(0, 1.0);
+  }
+
+  this.GetEvenlyDividXfos(resultEachCurve, result, normalCurves, mode, divisionValue, intervalValueType, intervalValue, directionType, addStartPosition, addEndPosition);
+}
+"
+  }

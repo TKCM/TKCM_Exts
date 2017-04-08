@@ -1,0 +1,44 @@
+{
+  "objectType" : "Func",
+  "title" : "GetSegmentCount",
+  "ports" : [
+    {
+      "objectType" : "ExecPort",
+      "name" : "exec",
+      "nodePortType" : "IO",
+      "defaultValues" : {
+        "Execute" : {}
+        },
+      "execPortType" : "IO",
+      "typeSpec" : "Execute"
+      },
+    {
+      "objectType" : "ExecPort",
+      "name" : "segmentValues",
+      "nodePortType" : "Out",
+      "defaultValues" : {
+        "Vec2Array[]" : []
+        },
+      "execPortType" : "In",
+      "typeSpec" : "Vec2Array[]"
+      },
+    {
+      "objectType" : "ExecPort",
+      "name" : "result",
+      "nodePortType" : "In",
+      "defaultValues" : {
+        "Size" : 0
+        },
+      "execPortType" : "Out",
+      "typeSpec" : "Size"
+      }
+    ],
+  "extDeps" : {},
+  "presetGUID" : "32BF9044CD14F2C479972426CFE65D2A",
+  "code" : "dfgEntry {
+  for(Integer i=0; i<segmentValues.size(); i++){
+    result += segmentValues[i].size();
+  }
+}
+"
+  }

@@ -1,40 +1,507 @@
 
 //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-//  getSamplePointPositions //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-//  描画されているCurveと同じ見た目のLinesを構築できるVec3[]を取得する
-//  (出来上がったLinesはあくまで見た目を合わせるだけなので、Curve != Lines　であることに注意)
-function Vec3[] Curves.getSamplePointPositions?(Index curveIndex){
-  Vec3 result[];
-  switch(this.getCurveType(curveIndex) -1){
-    case 0:  //  linear
-    {
-      break;
+//////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+//////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+//  hasEmptyCurve ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+//  各カーブが正常か（長さがあるか）をチェック
+function Boolean Curves.hasEmptyCurve?(String functionName){
+  Boolean have;
+  Integer check;
+  for(Integer i=0; i<this.curveCount(); i++){
+    if(this.getCurve(i).getLength() == 0.0){
+      report("!!!!!!Error!!!!!! "+functionName+" : curve index '"+i+"'' is empty curve");
+      check += 1;
     }
-    case 1:  //  Bezier
-    {
-      break;
-    }
-    case 2:  //  NURBS
-    {
-      if(this.isClosed(curveIndex)){  //  閉じたNURBS
-        result.resize(this.drawSamplesPerSpan*5);
-        for(Integer i=0; i<result.size(); i++){
-          result[i] = this.getPositionAtNormalizedParam(curveIndex, i/Scalar(result.size()) );
+  }
+  if(check > 0){
+    have = true;
+  } 
+  
+  return have;  
+}
+//  hasEmptyCurve ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+//////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+//////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+//////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+//  createNormalsValue //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+//  カーブのポイント位置でのノーマルを取得する
+/*function Curves.createNormalsValue(io Vec3 result[], in Integer control, in Vec3 fixValue){
+  result.resize(this.allCurvesPointRange());
+  
+  Size poiCount = 0;
+  for(Integer i=0; i<this.curveCount(); i++){
+    for(Integer j=0; j<this.getCurve(i).pointCount(); j++){
+      Float32 nParam = 1.0 / Scalar(this.getCurve(i).pointCount()-1.0) * j;;
+      if(j == 0 ){
+        nParam = 0.001;
+      }else if(j == this.getCurve(i).pointCount() -1){
+        nParam = 0.999;
+      }
+      
+      
+      //  LinearCurveの場合はcurvatureの取得も出来ないので、処理をスキップする
+      Vec3 curvature;
+      Vec3 tangent;
+      if(this.getCurveType(i) != 1){
+        this.getTangentAndCurvatureAtNormalizedParam(i, nParam, tangent, curvature);
+      }
+      
+      //  リニアカーブ、Degreeが1、curvatureがVec3(0)、固定値の入力が指示、の場合はFixValueを使用し、それ以外の場合はカーブ上からノーマルを取得する
+      if(this.getCurveType(i) == 1 || this.getDegree(i) == 1 || curvature.almostEqual(Vec3(0.0)) || control == 2 || control == 3){
+        if(fixValue == Vec3(0.0)){
+          report("!!!!!!Error!!!!!! ::: CreateNormals node : input fixNormals value is Vec3(0,0,0)");
+          return;
+        }else{
+          Quat q();
+          if(control != 3){
+            result[poiCount] = fixValue.unit();
+          }else{
+            result[poiCount] = q.setFromDirectionAndUpvector(tangent, fixValue).getYaxis().unit();
+          }
         }
-      }else{  //  開いたNURBS
-        result.resize(this.drawSamplesPerSpan*3+1);
-        for(Integer i=0; i<result.size(); i++){
-          result[i] = this.getPositionAtNormalizedParam(curveIndex, i/Scalar(result.size()-1) );
+      }else{ 
+        result[poiCount] = this.getNormalAtNormalizedParam(i, nParam).unit();
+      }
+      if(j == this.getCurve(i).pointCount()-1 && this.getCurve(i).isClosed()){
+        result[poiCount] = result[ poiCount-this.getCurve(i).pointCount()+1];
+      }
+      poiCount += 1;
+    }
+  }
+}*/
+function Curves.createNormalsValue(io Vec3 result[], in Integer control, in Vec3 fixValue){
+  result.resize(this.allCurvesPointRange());
+  
+  Size poiCount = 0;
+  Vec3 curvature;
+  Vec3 tangent;
+  Vec3 cross[];
+  Vec3 crossV0;
+  Vec3 crossV1;
+  Vec3 crossV2;
+  Integer mode;  //  0=default, 1=avoid flip, 2=direction, 3=upvector
+  
+  for(Integer i=0; i<this.curveCount(); i++){
+    cross.resize(this.getCurve(i).pointCount());
+    for(Integer j=0; j<this.getCurve(i).pointCount(); j++){
+      Float32 nParam = 1.0 / Scalar(this.getCurve(i).pointCount()-1.0) * j;;
+      if(j == 0 ){
+        nParam = 0.001;
+      }else if(j == this.getCurve(i).pointCount() -1){
+        nParam = 0.999;
+      }
+      
+      if(this.getCurveType(i) == 1){
+        crossV1 = this.getPositionAtNormalizedParam(i, nParam-0.001);
+        crossV2 = this.getPositionAtNormalizedParam(i, nParam+0.001);
+        tangent = crossV2 - crossV1;
+      }else{
+        this.getTangentAndCurvatureAtNormalizedParam(i, nParam, tangent, curvature);
+      }
+      
+      mode = control;
+      if(this.getCurveType(i) == 1){  //  linearCurve
+        if(this.getPointCount(i) < 3){
+          mode = 2;
+        }
+      }else{  // NURBSやBezieでも、ポイントが直線上に並ぶとノーマルの計算が出来なくなるので、curvatureを取得しVec3（0）だった場合はカーブ上からノーマルの取得をしないようにする
+        if(this.getDegree(i) == 1 || curvature.almostEqual(Vec3(0.0))){
+          mode = 2;
+        }
+      }      
+
+      switch(mode){
+        case 0:
+          result[poiCount] = this.getNormalAtNormalizedParam(i, nParam);
+          break;
+        case 1:
+          crossV0 = this.getPositionAtNormalizedParam(i, nParam);
+          crossV1 = (this.getPositionAtNormalizedParam(i, nParam-0.001) - crossV0);
+          crossV2 = (this.getPositionAtNormalizedParam(i, nParam+0.001) - crossV0);
+          if(j==0){
+            crossV1 = this.getPointPosition(i, 1) - this.getPointPosition(i, 0);
+            crossV2 = this.getPointPosition(i, 2) - this.getPointPosition(i, 0);
+          }
+          cross[j] = crossV1.cross(crossV2);
+          if(0<j){
+            if(cross[j].dot(cross[j-1]) < 0.0 ){
+              cross[j] *= -1.0;
+            }
+          }
+          if(this.getCurve(i).isClosed()){
+            cross[j] = crossV1.cross(crossV2);
+          }  
+          result[poiCount] = tangent.cross(cross[j]).unit();
+          break;
+        case 2:
+          if(fixValue == Vec3(0.0)){
+            report("!!!!!!Error!!!!!! ::: CreateNormalDirectionAttribute : input fixNormals value is Vec3(0,0,0)");
+            return;
+          }
+          result[poiCount] = fixValue.unit();
+          break;
+        case 3:
+          if(fixValue == Vec3(0.0)){
+            report("!!!!!!Error!!!!!! ::: CreateNormalDirectionAttribute : input fixNormals value is Vec3(0,0,0)");
+            return;
+          }
+          Quat q();
+          result[poiCount] = q.setFromDirectionAndUpvector(tangent, fixValue).getYaxis().unit();
+          break;
+      }
+      
+      if(j == this.getCurve(i).pointCount()-1 && this.getCurve(i).isClosed()){
+        result[poiCount] = result[ poiCount-this.getCurve(i).pointCount()+1];
+      }
+      poiCount += 1;
+    }
+  }
+}
+//  createNormalsValue //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+//////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+//////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+//////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+//  addNormalDirectionAttributeCurves //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+//  指定した番号のカーブに対してのノーマル、逆ノーマル、バイノーマル、逆バイノーマルのカーブを"追加"制作する
+function Curves.addNormalDirectionAttributeCurves!(Index baseCurveID, Boolean create[4], Scalar distance[4]){
+  //  create[4] = ノーマル、逆ノーマル、バイノーマル、逆バイノーマル
+  //  distance[4] = ↑それぞれのカーブを作成する距離
+  
+  //  ベースカーブが正常か（長さがあるか）をチェック
+  if(this.getCurve(baseCurveID).getLength() == 0.0){
+    report("!!!!!!Error!!!!!! GetEvenlyDividPositions : curve index '"+baseCurveID+"'' is empty curve");
+    return;
+  }
+  if(this.attributes.has("normalDirections") == false){
+    report("!!!!!!Error!!!!!! ::: Curves.addNormalDirectionAttributeCurves : this Curves don't have 'normalDirections' attribute");
+    return;
+  }
+  //  ベースカーブのポイント数、Curves全体の中で何番目からポイント情報が格納されているかを取得
+  Size poiCount = this.getPointCount(baseCurveID);
+  UInt32 startID;
+  UInt32 endtID;
+  this.getPointRange(baseCurveID, startID, endtID);
+  //  編集済みのノーマル情報があるならアトリビュートから取得
+  Vec3 normals[];
+  normals.resize(poiCount);
+  Ref<Vec3Attribute> normalsAttr();
+  if(this.attributes.has("normalDirections")){
+    normalsAttr = this.attributes.getOrCreateVec3Attribute("normalDirections");
+    for(Integer i=0; i<poiCount; i++){
+      normals[i] = normalsAttr.values[i+startID];
+    }
+  }
+  //  ポイント位置でのタンジェントを取得
+  Vec3 tangents[];
+  tangents.resize(poiCount);
+  for(Integer i=0; i<poiCount; i++){
+    Float32 nParam = 1.0 / Scalar(poiCount-1) * i;
+    tangents[i] = this.getTangentAtNormalizedParam(baseCurveID, nParam);
+  }
+
+  Vec3 pos[] = this.getAllPointPositions(); //  Curvesのすべてのポイントポジションを取得（↑で取得しておいたstartIDで必要箇所を特定できる）
+  
+  Vec3 addCurvePos[]; //  カーブ制作用のポジション格納場所を準備
+  addCurvePos.resize(poiCount);
+  for(Integer i=0; i<4; i++){
+    if(create[i]){
+      for(Integer j=0; j<poiCount; j++){
+        //  それぞれのタイプごとにポジション位置の算出方法を指定
+        switch(i){
+          case 0: // ノーマル
+            addCurvePos[j] = pos[j+startID] + normals[j] * distance[i];
+            break;
+          case 1: // 逆ノーマル
+            addCurvePos[j] = pos[j+startID] + normals[j].negate() * distance[i];
+            break;
+          case 2: // バイノーマル
+            addCurvePos[j] = pos[j+startID] + tangents[j].cross(normals[j]) * distance[i];
+            break;
+          case 3: // 逆バイノーマル
+            addCurvePos[j] = pos[j+startID] + tangents[j].cross(normals[j]).negate() * distance[i];
+            break;
         }
       }
-      break;
+      UInt8 type = this.getCurveType(baseCurveID);
+      //  ベースカーブと同じタイプ、設定でカーブを作成
+      switch(type){
+        case 1:
+          this.addLinearCurve(addCurvePos, this.isClosed(baseCurveID));
+          break;
+        case 2:
+          UInt8 degree = this.getDegree(baseCurveID);
+          this.addBezier(addCurvePos, degree, this.isClosed(baseCurveID));
+          break;
+        case 3:
+          UInt8 degree = this.getDegree(baseCurveID);
+          UInt8 form = 0;
+          if(this.isClosed(baseCurveID)){
+            form = 1;
+            if(this.isPeriodic(baseCurveID)){
+              form = 2;
+            }
+          }
+          this.addNURBS(addCurvePos, degree, form);
+          break;
+      }
+      Size addedCurveID = this.curveCount()-1;
+      UInt32 startID2;
+      UInt32 endtID2;
+      this.getPointRange(addedCurveID, startID2, endtID2);
+      for(Integer j=0; j<poiCount; j++){
+        normalsAttr.values[startID2+j] = normalsAttr.values[startID+j];
+      }
+    }
+  }
+}
+//  addNormalDirectionAttributeCurves //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+//////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+//////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+//////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+//  createNormalDirectionAttributeCurves ///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+//  ベースカーブのノーマル、逆ノーマル、バイノーマル、逆バイノーマルのカーブを"新規"Curvesで制作する
+function Curves Curves.createNormalDirectionAttributeCurves?(Integer type, Scalar distance){  
+  Curves result();
+  if(this.curveCount() == 0){  
+    report("!!!!!!Error!!!!!! ::: Curves.createNormalDirectionAttributeCurves : this Curves is not empty.");
+    return result;
+  }
+
+  if(this.attributes.has("normalDirections") == false){
+    report("!!!!!!Error!!!!!! ::: Curves.createNormalDirectionAttributeCurves : this Curves don't have 'normalDirections' attribute");
+    return result;
+  }
+  if(this.hasEmptyCurve("CreateNormalDirectionAttributeCurves")){  return result;  }
+
+  Size poiCount; 
+  UInt32 startID;
+  UInt32 endtID;
+  Index cnt = this.curveCount();
+  Vec3 pos[] = this.getAllPointPositions();
+  Vec3 addCurvePos[];
+  Vec3 normals[];
+  Vec3 tangents[];
+  Ref<Vec3Attribute> normalsAttr = this.attributes.getAttribute("normalDirections");
+  
+  for(Integer k=0; k<cnt; k++){
+    poiCount = this.getPointCount(k);
+    this.getPointRange(k, startID, endtID);
+  
+    normals.resize(poiCount);
+    
+    for(Integer i=0; i<poiCount; i++){
+      normals[i] = normalsAttr.values[i+startID];
+    }
+
+    tangents.resize(poiCount);
+    for(Integer i=0; i<poiCount; i++){
+      Float32 nParam = 1.0 / Scalar(poiCount-1) * i;
+      tangents[i] = this.getTangentAtNormalizedParam(k, nParam);
+    }
+
+    addCurvePos.resize(poiCount);
+    for(Integer j=0; j<poiCount; j++){
+      switch(type){
+        case 0: 
+          addCurvePos[j] = pos[j+startID] + normals[j] * distance;
+          break;
+        case 1: 
+          addCurvePos[j] = pos[j+startID] + normals[j].negate() * distance;
+          break;
+        case 2: 
+          addCurvePos[j] = pos[j+startID] + tangents[j].cross(normals[j]) * distance;
+          break;
+        case 3: 
+          addCurvePos[j] = pos[j+startID] + tangents[j].cross(normals[j]).negate() * distance;
+          break;
+      }
+    }
+    UInt8 type2 = this.getCurveType(k);
+    switch(type2){
+      case 1:
+        result.addLinearCurve(addCurvePos, this.isClosed(k));
+        break;
+      case 2:
+        UInt8 degree = this.getDegree(k);
+        result.addBezier(addCurvePos, degree, this.isClosed(k));
+        break;
+      case 3:
+        UInt8 degree = this.getDegree(k);
+        UInt8 form = 0;
+        if(this.isClosed(k)){
+          form = 1;
+          if(this.isPeriodic(k)){
+            form = 2;
+          }
+        }
+        result.addNURBS(addCurvePos, degree, form);  
+        break;
+    }
+    Size addedCurveID = result.curveCount()-1;
+    UInt32 startID2;
+    UInt32 endtID2;
+    result.getPointRange(addedCurveID, startID2, endtID2);
+    Ref<Vec3Attribute> normalsAttr2 = result.attributes.getOrCreateVec3Attribute("normalDirections");
+    for(Integer j=0; j<poiCount; j++){
+      normalsAttr2.values[startID2+j] = normalsAttr.values[startID+j];
+    }
+  }
+
+  return result;
+}
+//  createNormalDirectionAttributeCurves ///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+//////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+//////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+//////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+//  getEvenlyDividPositions //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+//  Curveを均等に分割したポジションを取得する　（主な用途はCurveをLinesで再現する時用）
+//  auto=turueで取得したポジションで生成するLinesは近似値は取れるが、Curve != Lines　であることに注意
+function Vec3[] Curves.getEvenlyDividPositions?(Index curveIndex, Boolean auto, Scalar accuracy, Integer divisionValue){
+  //  autoはカーブの分割数を自動で設定する（カーブの長さから算出）
+  //  accuracyは分割数（＝生成するLinesの精度）
+  //  divisionValueは分割数を指定する場合に使用
+  Vec3 result[];
+  //  指定されたカーブIDが存在するかチェック
+  if(curveIndex >= this.curveCount()){
+    report("!!!!!!Error!!!!!! GetEvenlyDividPositions : input curve index (" +curveIndex+ ") is out of range that this curve count (" +this.curveCount() +")");
+    return result;
+  }
+  //  指定されたカーブが正常なデータか(長さがあるか)チェックする
+  if(this.getCurve(curveIndex).getLength() == 0.0){
+    report("!!!!!!Error!!!!!! GetEvenlyDividPositions : curve index '"+curveIndex+"'' is empty curve");
+    return result;
+  }
+  //  カーブが閉じているか開いているか
+  if(this.isClosed(curveIndex)){
+    if(auto){
+      result.resize( this.getCurveLength(curveIndex) * Math_max(accuracy, 1) * 1.5 + 1 );
+    }else{
+      result.resize( divisionValue + 1 );
+    }
+    Scalar base = this.getCurveLength(curveIndex) / (result.size()-1);
+    for(Integer i=0; i<result.size()-1; i++){
+      Scalar nParam = (base * i) / this.getCurveLength(curveIndex);
+      result[i] = this.getPositionAtNormalizedParam(curveIndex, nParam);
+    }
+    result[result.size()-1] = result[0];
+  }else{
+    if(auto){
+      result.resize( Math_max(this.getCurveLength(curveIndex) * Math_max(accuracy, 1), 2) );
+    }else{
+      result.resize( divisionValue + 1 );
+    }
+    Scalar base = this.getCurveLength(curveIndex) / (result.size()-1);
+    for(Integer i=0; i<result.size(); i++){
+      Scalar nParam = (base * i) / this.getCurveLength(curveIndex);
+      result[i] = this.getPositionAtNormalizedParam(curveIndex, nParam );
     }
   }
   return result;
 }
-
+//  getEvenlyDividPositions //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-//  GetCloseOrderedListArray /////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+//////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+//////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+//  GetEvenlyDividXfos ///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+//  Curveを指定数で均等に分割した場所のXfoを取得する
+//  getEvenlyDividPositionsとの違いは、”分割数の指定もしくは分割の間隔を指定するモードを選択できる””向きも取得できる”の2点
+//  mode 0　＝ divisionValueの数で均等に分割、　1　＝　intervalValueの長さの間隔で分割
+//  directionType 0　＝　角度の計算しない、　1　＝　カーブのタンジェントをZの向きにする、　2　＝　normalDirectionAttributeの値をZの向きにする
+//  intervalValueは長さ（Length）なので、LenrthRatioやNormalizedParamで指定したい場合はlengthに変換しておく必要がある
+function Curves.GetEvenlyDividXfos(
+  io XfoArray result[], 
+  io Xfo result2[],
+  in Curves nomalCurve,
+  in Integer mode,
+  in Integer divisionValue,
+  in Integer intervalValueType,
+  in Scalar intervalValue,
+  in Integer directionType,
+  in Boolean addStartPosition,
+  in Boolean addEndPosition
+  ){
+  result.resize(this.curveCount());
+  if(this == null || this.curveCount() == 0){  return;  }
+  
+  Xfo rest();
+  Scalar base;
+  Integer cnt;
+  Vec3 direction;
+  Vec3 upVector;
+  Quat q();
+  for(Integer i=0; i<this.curveCount(); i++){
+    
+    if(mode == 0){
+      base = this.getCurveLength(i) / Scalar(divisionValue+1);
+      cnt = divisionValue;
+    }else{
+      switch(intervalValueType){
+        case 0:
+          base = intervalValue;
+          break;
+        case 1:
+          base = this.getCurveLength(i) * intervalValue;
+          break;
+        case 2:
+          base = this.getCurveLength(i) * this.getLengthRatioFromNormalizedParameter(i, intervalValue);
+          break;
+      }
+      cnt = this.getCurveLength(i) / base;
+    }
+
+    if(addStartPosition){
+      rest.tr = this.getPositionAtNormalizedParam(i, 0.0);
+      if(directionType != 0){
+        direction = this.getTangentAtNormalizedParam(i, 0.001);
+        upVector = nomalCurve.getPositionAtNormalizedParam(i, 0.001) - rest.tr;
+        if(directionType == 1){  // curve tagent
+          rest.ori = q.setFromDirectionAndUpvector(direction, upVector.unit());
+        }else if(directionType == 2){  //  normal direction atribute
+          rest.ori = q.setFromDirectionAndUpvector(upVector.unit(), direction);
+        }
+      }
+      result[i].push(rest);
+      result2.push(rest);
+    }
+    for(Integer j=0; j<cnt; j++){
+      Scalar lengthRatio = (base * (j+1)) / this.getCurveLength(i);
+      if(lengthRatio < 1.0){
+        Scalar nParam = this.getNormalizedParameterFromLengthRatio(i, lengthRatio);
+        rest.tr = this.getPositionAtNormalizedParam(i, nParam);
+        if(directionType != 0){
+          direction = this.getTangentAtNormalizedParam(i, nParam);
+          upVector = nomalCurve.getPositionAtNormalizedParam(i, nParam) - rest.tr;
+          if(directionType == 1){  // curve tagent
+            rest.ori = q.setFromDirectionAndUpvector(direction, upVector.unit());
+          }else if(directionType == 2){  //  normal direction atribute
+            rest.ori = q.setFromDirectionAndUpvector(upVector.unit(), direction);
+          }
+        }
+        result[i].push(rest);
+        result2.push(rest);
+      }
+    }
+    if(addEndPosition){
+      rest.tr = this.getPositionAtNormalizedParam(i, 1.0);
+      if(directionType != 0){
+        direction = this.getTangentAtNormalizedParam(i, 0.999);
+        upVector = nomalCurve.getPositionAtNormalizedParam(i, 0.999) - rest.tr;
+        if(directionType == 1){  // curve tagent
+          rest.ori = q.setFromDirectionAndUpvector(direction, upVector.unit());
+        }else if(directionType == 2){  //  normal direction atribute
+          rest.ori = q.setFromDirectionAndUpvector(upVector.unit(), direction);
+        }
+      }
+      result[i].push(rest);
+      result2.push(rest);
+    }    
+  }
+}
+//  GetEvenlyDividXfos ///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+//////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+//////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+//////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+//  getWeightsFromDistanceToCurvesArray //////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 //  ある座標[]からCurvesに対して近い座標のインデックス、ノーマライズドパラメータ、ウェイト値のリストを取得する
 //  リストは近い順で最大4個まで
 
@@ -45,13 +512,16 @@ operator getClosestTask<<<index>>>(
   in Curves targetCurves, 
   in Vec3 position[], 
   io LocalL4UInt32Array orderedIndex[],
-  io LocalL4ScalarArray normalizedParam[], 
-  io GenericVec3ArrayValue deltaPosition[],
+  io LocalL4ScalarArray lengthRatio[], 
+  io LocalL4ScalarArray normalizedParam[],
+  io Vec3Array deltaPosition[],
   io LocalL4ScalarArray resultWeights[], 
   in Scalar length[],
   in Scalar maxDistance, 
-  in Size maxCount) 
-  {
+  in Size maxCount,
+  in Curves normalCurve,
+  in Boolean conputeDeltaPos
+  ){
   //  Curves内の複数のCurveそれぞれへの最も近いポジションを格納する配列を準備
   Vec3 closestPosition[]; 
   closestPosition.resize(target.size());
@@ -78,38 +548,46 @@ operator getClosestTask<<<index>>>(
   }
   LocalL4ScalarArray orderedDistance_notUse; //  GetCloseOrderedListを実行するためのダミーデータを準備
   //  各Curveへの近いポジションの配列Vec3[]に対し、近い順でリストを作る
-  GetCloseOrderedList(position[index], closestPosition, maxDistance, maxCount, orderedIndex[index], orderedDistance_notUse, resultWeights[index]);
+  GetWeightsFromDistanceToPositions(position[index], closestPosition, maxDistance, maxCount, orderedIndex[index], orderedDistance_notUse, resultWeights[index]);
   //  リストに沿って近いポジション値をCurveのノーマライズドパラメータに変換しリストにする
   if(resultWeights[index].count > 0){
-    normalizedParam[index].resize( resultWeights[index].count );
-    deltaPosition[index] = GenericVec3ArrayValue();
-    deltaPosition[index].resize( resultWeights[index].count );
+    lengthRatio[index].resize( resultWeights[index].count );
+    if(conputeDeltaPos){
+      deltaPosition[index].resize( resultWeights[index].count );
+    }
     for(Integer k=0; k<resultWeights[index].count; k++){
+      normalizedParam[index].resize( resultWeights[index].count );
+      // 比率（検出位置までの長さ/カーブの長さ）を格納
+      lengthRatio[index].set(k, ratio[ orderedIndex[index].first4[k] ]);
+      
+      // 検出スタートポジションからカーブ上の最も近いポジションまでの差分座標を取得
       Scalar nParam = targetCurves.getNormalizedParameterFromLengthRatio(orderedIndex[index].first4[k], ratio[ orderedIndex[index].first4[k] ]);
       normalizedParam[index].set(k, nParam);
-      // 検出スタートポジションからカーブ上の最も近いポジションまでの差分座標を取得
-      Vec3 v2 = targetCurves.getTangentAtNormalizedParam (orderedIndex[index].first4[k], nParam);
-      Vec3 v1 = Vec3(v2.z*v2.x, abs(v2.z), v2.y*-1 );
-
-      Quat qu;  qu.setFromDirectionAndUpvector(v2, v1);
-      Mat44 im = Xfo(qu, closestPosition[ orderedIndex[index].first4[k] ], Vec3(1.0)).toMat44().inverse();
-      deltaPosition[index].set(k, im.multiplyVector3(position[index]));
+      if(conputeDeltaPos){
+        Vec3 v2 = targetCurves.getTangentAtNormalizedParam (orderedIndex[index].first4[k], nParam);
+        Vec3 v1 = normalCurve.getPositionAtNormalizedParam (orderedIndex[index].first4[k], nParam) - targetCurves.getPositionAtNormalizedParam (orderedIndex[index].first4[k], nParam);
+        Quat qu;  qu.setFromDirectionAndUpvector(v2, v1);
+        Mat44 im = Xfo(qu, closestPosition[ orderedIndex[index].first4[k] ], Vec3(1.0)).toMat44().inverse();
+        deltaPosition[index][k] = im.multiplyVector3(position[index]);
+      }
     }
   }
 }
 
-function Curves.getCloseOrderedListArray(
+function Curves.getWeightsFromDistanceToCurvesArray(
   in Vec3 positions[],  
   in Scalar maxDistance,
   in Size maxCount,
   io LocalL4UInt32Array indexList[],
+  io LocalL4ScalarArray lengthRatio[],
   io LocalL4ScalarArray normalizedParam[],
-  io GenericVec3ArrayValue deltaPosition[],
+  io Vec3Array deltaPosition[],
   io LocalL4ScalarArray weights[],
+  in Boolean conputeDeltaPos
   ){
   indexList.resize(positions.size());
+  lengthRatio.resize(positions.size());
   normalizedParam.resize(positions.size());
-  deltaPosition.resize(positions.size());
   weights.resize(positions.size());
   //  これから作る各Linesの長さを取得しておくための配列を準備
   //  配列の数 = Curveの数 = Linesの数
@@ -122,7 +600,15 @@ function Curves.getCloseOrderedListArray(
   //  各CurveをLinesに変換し、空間分析の準備を行う
   for(Integer i=0; i<lines.size(); i++){
     lines[i] = Lines();
-    Vec3 linesPoi[] = this.getSamplePointPositions(i);  //  上記カスタムメソッドを使用
+    Vec3 linesPoi[] = this.getEvenlyDividPositions(i, true, 1, 0);  //  上記カスタムメソッドを使用
+    if(linesPoi.size() == 0){
+      report("!!!!!!Error!!!!!! GetCloseOrderedList ot GetCloseOrderedListArray : curve index '"+i+"'' is empty curve");
+      return;
+    }
+    if(linesPoi[0] == linesPoi[1]){
+      report("!!!!!!Error!!!!!! GetCloseOrderedList ot GetCloseOrderedListArray : chack degree value of input NURBS");
+      return;
+    }
     lines[i].addLineStrip( linesPoi );
     //  Linesの長さを取得
     for(Integer j=0; j<linesPoi.size()-1; j++){
@@ -135,13 +621,71 @@ function Curves.getCloseOrderedListArray(
     }
     lines[i].prepareForSpatialQueries(1, null);
   }
+  //  deltaPosition算出で使用するノーマル計算用のカーブを作成
+  Curves normalCurves();
+  if(conputeDeltaPos){
+    for(Integer i=0; i<this.curveCount(); i++){
+      Size poiCount = this.getPointCount(i);
+      UInt32 startID;
+      UInt32 endtID;
+      this.getPointRange(i, startID, endtID);
+      //  編集済みのノーマル情報があるならアトリビュートから取得
+      Vec3 normals[];
+      normals.resize(poiCount);
+      if(this.attributes.has("normalDirections")){
+        Ref<Vec3Attribute> normalsAttr = this.attributes.getAttribute("normalDirections");
+        for(Integer j=0; j<poiCount; j++){
+          normals[j] = normalsAttr.values[j+startID];
+          if(normalsAttr.values[j] == Vec3(0.0)){
+            report("!!!!!!Error!!!!!! ::: Curves.getCloseOrderedListArray : 'normalDirections' attribute values["+j+"] is Vec3(0.0)");
+            return;
+          }
+        }
+      }else{
+        report("!!!!!!Error!!!!!! ::: Curves.getCloseOrderedListArray : To compute deltaPosition need to 'normalDirections' attribute of Curves");
+        return;
+      }
+      
+      Vec3 pos[] = this.getAllPointPositions(); //  Curvesのすべてのポイントポジションを取得（↑で取得しておいたstartIDで必要箇所を特定できる）
+      
+      Vec3 addCurvePos[]; //  カーブ制作用のポジション格納場所を準備
+      addCurvePos.resize(poiCount);
+      for(Integer j=0; j<poiCount; j++){
+        addCurvePos[j] = pos[j+startID] + normals[j];
+      }
+      UInt8 type = this.getCurveType(i);
+        //  ベースカーブと同じタイプ、設定でカーブを作成
+        switch(type){
+          case 1:
+            normalCurves.addLinearCurve(addCurvePos, this.isClosed(i));
+            break;
+          case 2:
+            UInt8 degree = this.getDegree(i);
+            normalCurves.addBezier(addCurvePos, degree, this.isClosed(i));
+            break;
+          case 3:
+            UInt8 degree = this.getDegree(i);
+            UInt8 form = 0;
+            if(this.isClosed(i)){
+              form = 1;
+              if(this.isPeriodic(i)){
+                form = 2;
+              }
+            }
+            normalCurves.addNURBS(addCurvePos, degree, form);  
+            break;
+        }
+    }
+    deltaPosition.resize(positions.size());
+  }
+    
   //  上記オペレータを実行
   //  検索位置が3００個より多ければ並列処理
   if(positions.size() > 300){
-    getClosestTask<<<positions.size()>>>(lines, this, positions, indexList, normalizedParam, deltaPosition, weights, length, maxDistance, maxCount);
+    getClosestTask<<<positions.size()>>>(lines, this, positions, indexList, lengthRatio, normalizedParam, deltaPosition, weights, length, maxDistance, maxCount, normalCurves, conputeDeltaPos);
   }else{
     for(Integer i=0; i<positions.size(); i++){
-      getClosestTask(i, lines, this, positions, indexList, normalizedParam, deltaPosition, weights, length, maxDistance, maxCount);
+      getClosestTask(i, lines, this, positions, indexList, lengthRatio, normalizedParam, deltaPosition, weights, length, maxDistance, maxCount, normalCurves, conputeDeltaPos);
     }
   }
   //  MulWeightでターゲット数に不足がないかの確認を行えるようにターゲットの数を格納しておく
@@ -150,9 +694,11 @@ function Curves.getCloseOrderedListArray(
   indexList[0].others.resize(1);
   indexList[0].others[0] = this.curveCount();
 }
-
+//  getWeightsFromDistanceToCurvesArray //////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-//  MulWeight ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+//////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+//////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+//  getMultipliedCurvesValueByWeights ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 // GetCloseOrderedListArray等で取得した各情報を元に、ターゲットのカーブからタンジェント、ノーマル、ポジション、差分座標にウェイトを掛けた値を取得する
 
 // カーブ上のパラメータポジションのポジション値xウェイト
@@ -189,11 +735,12 @@ operator MulWeightTaskNom<<<index>>>(
   in Curves target, 
   in LocalL4UInt32Array indexList[], 
   in LocalL4ScalarArray normalizedParam[], 
-  in LocalL4ScalarArray weights[]
+  in LocalL4ScalarArray weights[],
+  in Curves normalCurves,
   ){
   Vec3 rest();
   for(Integer i=0; i<weights[index].count; i++){
-    rest += target.getNormalAtNormalizedParam(indexList[index].first4[i], normalizedParam[index].first4[i]) * weights[index].first4[i];
+    rest += normalCurves.getPositionAtNormalizedParam (indexList[index].first4[i], normalizedParam[index].first4[i]) - target.getPositionAtNormalizedParam (indexList[index].first4[i], normalizedParam[index].first4[i]) * weights[index].first4[i];
   }
   result[index] = rest;
 }
@@ -203,49 +750,134 @@ operator MulWeightTaskDlt<<<index>>>(
   in Curves target, 
   in LocalL4UInt32Array indexList[], 
   in LocalL4ScalarArray normalizedParam[], 
-  in GenericVec3ArrayValue deltaPosition[], 
+  in Vec3Array deltaPosition[], 
   in LocalL4ScalarArray weights[],
+  in Curves normalCurves,
   ){
   Vec3 rest();
   for(Integer i=0; i<weights[index].count; i++){
     Vec3 restTan = target.getTangentAtNormalizedParam(indexList[index].first4[i], normalizedParam[index].first4[i]);
-    Vec3 restNom = Vec3(restTan.z*restTan.x, abs(restTan.z), restTan.y*-1 );
+    Vec3 restNom = normalCurves.getPositionAtNormalizedParam (indexList[index].first4[i], normalizedParam[index].first4[i]) - target.getPositionAtNormalizedParam (indexList[index].first4[i], normalizedParam[index].first4[i]);
 
     Vec3 restPos = target.getPositionAtNormalizedParam(indexList[index].first4[i], normalizedParam[index].first4[i]);
     Quat qu;
     qu.setFromDirectionAndUpvector(restTan, restNom);
     Mat44 gM = Xfo(qu, restPos, Vec3(1.0)).toMat44();
-    rest += gM.multiplyVector3(deltaPosition[index].get(i)) * weights[index].first4[i];
+    rest += gM.multiplyVector3(deltaPosition[index][i]) * weights[index].first4[i];
   }
   result[index] = rest;
 }
-function Curves.mulWeight(
+function Curves.getMultipliedCurvesValueByWeights(
   io Vec3 result[], 
-  in Integer getValueType, 
+  in Integer getValueType,
+  in Integer ratioType,
   in LocalL4UInt32Array indexList[], 
+  in LocalL4ScalarArray lengthRatio[],
   in LocalL4ScalarArray normalizedParam[], 
-  in GenericVec3ArrayValue deltaPosition[], 
+  in Vec3Array deltaPosition[], 
   in LocalL4ScalarArray weights[],
   ){
   //  リストを制作した際のターゲット数と今回参照するターゲット数に不足がないかを確認する
   //  indexList[0].others[0]にターゲット数が格納されているためcountの数が実際のターゲット数とは異なるので、ループではweightsのサイズを使用する
   if(indexList[0].others[0] > this.curveCount()){
-    setError("Curves.MulWeight node : IndexList require count = "+indexList[0].others[0]+". But Curve count = "+this.curveCount());
+    report("!!!!!!Error!!!!!! ::: Curves.MulWeight : IndexList require count = "+indexList[0].others[0]+". But Curve count = "+this.curveCount());
+    return;
   }else{
+    LocalL4ScalarArray nParams[];
+    if(ratioType == 1){ // normalizedParamを使用
+      nParams = normalizedParam;
+    }else{  // lengthRatioを使用
+      nParams.resize(lengthRatio.size());
+      for(Integer i=0; i<lengthRatio.size(); i++){
+        for(Integer j=0; j<lengthRatio[i].count; j++){
+          Float32 nParam = this.getNormalizedParameterFromLengthRatio(indexList[i].first4[j], lengthRatio[i].first4[j]);
+          nParams[i].set(j, nParam);
+        }
+      }
+    }
     result.resize(weights.size());
     switch(getValueType){
-      case 0:
-        MulWeightTaskPos<<<result.size()>>>(result, this, indexList, normalizedParam, weights);
+      case 0: //  position
+        MulWeightTaskPos<<<result.size()>>>(result, this, indexList, nParams, weights);
         break;
-      case 1:
-        MulWeightTaskTan<<<result.size()>>>(result, this, indexList, normalizedParam, weights);
+      case 1: //  tangent
+        MulWeightTaskTan<<<result.size()>>>(result, this, indexList, nParams, weights);
         break;
-      case 2:
-        MulWeightTaskNom<<<result.size()>>>(result, this, indexList, normalizedParam, weights);
+      case 2: //  normal
+        if(this.attributes.has("normalDirections") == false){
+          report("!!!!!!Error!!!!!! ::: Curves.MulWeight or MulWeightArray : this Curves don't have 'normalDirections' attribute");
+          return;
+        }
+        Curves nCurve = this.createNormalDirectionAttributeCurves(0, 1.0);
+
+        MulWeightTaskNom<<<result.size()>>>(result, this, indexList, nParams, weights, nCurve);
         break;
-      case 3:
-        MulWeightTaskDlt<<<result.size()>>>(result, this, indexList, normalizedParam, deltaPosition, weights);
+      case 3: //  deltaPositon
+        if(deltaPosition.size() == 0){
+          report("!!!!!!Error!!!!!! ::: Curves.MulWeight or MulWeightArray : input deltaPosition is empty");
+          return;
+        }
+        //  ノーマル計算用のカーブを作成
+        Curves normalCurves();
+        for(Integer i=0; i<this.curveCount(); i++){
+          Size poiCount = this.getPointCount(i);
+          UInt32 startID;
+          UInt32 endtID;
+          this.getPointRange(i, startID, endtID);
+          //  編集済みのノーマル情報があるならアトリビュートから取得
+          Vec3 normals[];
+          normals.resize(poiCount);
+          if(this.attributes.has("normalDirections")){
+            Ref<Vec3Attribute> normalsAttr = this.attributes.getAttribute("normalDirections");
+            for(Integer j=0; j<poiCount; j++){
+              if(normalsAttr.values[j] == Vec3(0.0)){
+                report("!!!!!!Error!!!!!! ::: Curves.MulWeight or MulWeightArray : 'normalDirections' attribute values["+j+"] is Vec3(0.0)");
+                return;
+              }else{
+                normals[j] = normalsAttr.values[j+startID];
+              }
+            }
+          }else{
+            report("!!!!!!Error!!!!!! ::: Curves.mulWeight or MulWeightArray : this curves don't have 'normalDirections' attribute.");
+            return;
+          }
+          
+          Vec3 pos[] = this.getAllPointPositions(); //  Curvesのすべてのポイントポジションを取得（↑で取得しておいたstartIDで必要箇所を特定できる）
+          
+          Vec3 addCurvePos[]; //  カーブ制作用のポジション格納場所を準備
+          addCurvePos.resize(poiCount);
+          for(Integer j=0; j<poiCount; j++){
+            addCurvePos[j] = pos[j+startID] + normals[j];
+          }
+          UInt8 type = this.getCurveType(i);
+            //  ベースカーブと同じタイプ、設定でカーブを作成
+            switch(type){
+              case 1:
+                normalCurves.addLinearCurve(addCurvePos, this.isClosed(i));
+                break;
+              case 2:
+                UInt8 degree = this.getDegree(i);
+                normalCurves.addBezier(addCurvePos, degree, this.isClosed(i));
+                break;
+              case 3:
+                UInt8 degree = this.getDegree(i);
+                UInt8 form = 0;
+                if(this.isClosed(i)){
+                  form = 1;
+                  if(this.isPeriodic(i)){
+                    form = 2;
+                  }
+                }
+                normalCurves.addNURBS(addCurvePos, degree, form); 
+                break;
+            }
+        }
+        MulWeightTaskDlt<<<result.size()>>>(result, this, indexList, nParams, deltaPosition, weights, normalCurves);
         break;
     }
   }
 }
+//  getMultipliedCurvesValueByWeights ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+//////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+//////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+//////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////

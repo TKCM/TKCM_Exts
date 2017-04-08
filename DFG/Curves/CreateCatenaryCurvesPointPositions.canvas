@@ -1,0 +1,206 @@
+{
+  "objectType" : "Func",
+  "title" : "CreateCatenaryCurvesPointPositions",
+  "ports" : [
+    {
+      "objectType" : "ExecPort",
+      "name" : "exec",
+      "nodePortType" : "IO",
+      "defaultValues" : {
+        "Execute" : {}
+        },
+      "execPortType" : "IO",
+      "typeSpec" : "Execute"
+      },
+    {
+      "objectType" : "ExecPort",
+      "name" : "startEndPosition",
+      "nodePortType" : "Out",
+      "defaultValues" : {
+        "Vec3[]" : []
+        },
+      "execPortType" : "In",
+      "typeSpec" : "Vec3[]"
+      },
+    {
+      "objectType" : "ExecPort",
+      "metadata" : {
+        "uiCombo" : "(\"[ 0-1 ][ 1-2 ][ 2-3 ]\", \"[ 0-1 ][ 2-3 ][ 4-5 ]\")"
+        },
+      "name" : "createType",
+      "nodePortType" : "Out",
+      "defaultValues" : {
+        "Integer" : 0
+        },
+      "execPortType" : "In",
+      "typeSpec" : "Integer"
+      },
+    {
+      "objectType" : "ExecPort",
+      "metadata" : {
+        "uiCombo" : "(\"W with H\", \"P with H\", \"W with F\")"
+        },
+      "name" : "mode",
+      "nodePortType" : "Out",
+      "defaultValues" : {
+        "Integer" : 2
+        },
+      "execPortType" : "In",
+      "typeSpec" : "Integer"
+      },
+    {
+      "objectType" : "ExecPort",
+      "name" : "W_uniformlyDistributedLoad",
+      "nodePortType" : "Out",
+      "defaultValues" : {
+        "Scalar" : 5
+        },
+      "execPortType" : "In",
+      "typeSpec" : "Scalar"
+      },
+    {
+      "objectType" : "ExecPort",
+      "name" : "P_concentratedLoad",
+      "nodePortType" : "Out",
+      "defaultValues" : {
+        "Scalar" : 10
+        },
+      "execPortType" : "In",
+      "typeSpec" : "Scalar"
+      },
+    {
+      "objectType" : "ExecPort",
+      "name" : "H_tension",
+      "nodePortType" : "Out",
+      "defaultValues" : {
+        "Scalar" : 5
+        },
+      "execPortType" : "In",
+      "typeSpec" : "Scalar"
+      },
+    {
+      "objectType" : "ExecPort",
+      "name" : "F_sag",
+      "nodePortType" : "Out",
+      "defaultValues" : {
+        "Scalar" : 3
+        },
+      "execPortType" : "In",
+      "typeSpec" : "Scalar"
+      },
+    {
+      "objectType" : "ExecPort",
+      "name" : "accuracy",
+      "nodePortType" : "Out",
+      "defaultValues" : {
+        "Integer" : 10
+        },
+      "execPortType" : "In",
+      "typeSpec" : "Integer"
+      },
+    {
+      "objectType" : "ExecPort",
+      "name" : "result",
+      "nodePortType" : "In",
+      "defaultValues" : {
+        "GenericVec3ArrayValue[]" : [],
+        "Vec3Array[]" : []
+        },
+      "execPortType" : "Out",
+      "typeSpec" : "Vec3Array[]"
+      }
+    ],
+  "extDeps" : {},
+  "presetGUID" : "72CE8275436FCE360AE01B8DE90D3070",
+  "code" : "function Vec3[] CreateCatenaryCurvePositions(
+  in Vec3 v0, 
+  in Vec3 v1, 
+  in Scalar W,
+  in Scalar P,
+  in Scalar inH,
+  in Scalar F,
+  in Integer accuracy,
+  in Integer mode
+  ){
+  Vec3 result[];
+  result.resize(accuracy+2);
+  result[0] = v0;
+  result[result.size()-1] = v1;
+  
+  Scalar l = v0.distanceTo(v1);
+  Scalar m;
+  Scalar H = inH;
+  Vec3 catenary;
+  
+  switch(mode){
+    case 0:
+      for(Integer i=1; i<result.size()-1; i++){
+        m = 1.0/Scalar(result.size()-1.0) * i;
+        catenary = v0.linearInterpolate(v1, m);
+        catenary.y -= W * (m*l) * ((1.0-m)*l) / (2*H);
+        result[i] = catenary;
+      }
+      if(accuracy%2 != 0){
+        catenary = v0.linearInterpolate(v1, 0.5);
+        catenary.y -= W * pow(l,2) / (8*H);
+        result[ (result.size()-1)/2 ] = catenary;
+      }
+      break;
+    case 1:
+      for(Integer i=1; i<result.size()-1; i++){
+        m = 1.0/Scalar(result.size()-1) * i;
+        catenary = v0.linearInterpolate(v1, m );
+        catenary.y -= P * (m*l) * ((1.0-m)*l) / (l*H);
+        result[i] = catenary;
+        
+      }
+      if(accuracy%2 != 0){
+        catenary = v0.linearInterpolate(v1, 0.5);
+        catenary.y -= P * l / (4*H);
+        result[ (result.size()-1)/2 ] = catenary;
+      }
+      break;
+    case 2:
+      H = W * pow(l,2) / (8*F);
+      for(Integer i=1; i<result.size()-1; i++){
+        m = 1.0/Scalar(result.size()-1) * i;
+        catenary = v0.linearInterpolate(v1, m);
+        catenary.y -= W * (m*l) * ((1.0-m)*l) / (2*H);
+        result[i] = catenary;
+      }
+      if(accuracy%2 != 0){
+        catenary = v0.linearInterpolate(v1, 0.5);
+        catenary.y -= W * pow(l,2) / (8*H);
+        result[ (result.size()-1)/2 ] = catenary;
+      }
+      break;
+  }
+  return result;
+}
+
+dfgEntry {
+  Index cnt;
+  Vec3 pos[];
+  switch(createType){
+    case 0:
+      cnt = startEndPosition.size() - 1;
+      result.resize(cnt);
+      for(Integer i=0; i<cnt; i++){
+        result[i].resize(accuracy);
+        pos = CreateCatenaryCurvePositions( startEndPosition[i], startEndPosition[i+1], W_uniformlyDistributedLoad, P_concentratedLoad, H_tension, F_sag, accuracy, mode);
+        result[i] = pos;
+      }
+      break;
+    case 1:
+      cnt = startEndPosition.size() / 2;
+      result.resize(cnt);
+      for(Integer i=0; i<cnt; i++){
+        result[i].resize(accuracy);
+        pos = CreateCatenaryCurvePositions( startEndPosition[i*2], startEndPosition[i*2+1], W_uniformlyDistributedLoad, P_concentratedLoad, H_tension, F_sag, accuracy, mode);
+        result[i] = pos;
+      }
+      break;
+  }
+}
+"
+  }

@@ -1,0 +1,115 @@
+{
+  "objectType" : "Func",
+  "title" : "AddMultipleBezier",
+  "ports" : [
+    {
+      "objectType" : "ExecPort",
+      "name" : "exec",
+      "nodePortType" : "IO",
+      "defaultValues" : {
+        "Execute" : {}
+        },
+      "execPortType" : "IO",
+      "typeSpec" : "Execute"
+      },
+    {
+      "objectType" : "ExecPort",
+      "name" : "this",
+      "nodePortType" : "IO",
+      "defaultValues" : {
+        "Curves" : null
+        },
+      "execPortType" : "IO",
+      "typeSpec" : "Curves"
+      },
+    {
+      "objectType" : "ExecPort",
+      "name" : "CurvePositions",
+      "nodePortType" : "Out",
+      "defaultValues" : {
+        "GenericVec3ArrayValue[]" : [],
+        "Vec3Array[]" : []
+        },
+      "execPortType" : "In",
+      "typeSpec" : "Vec3Array[]"
+      },
+    {
+      "objectType" : "ExecPort",
+      "metadata" : {
+        "uiCombo" : "(\"Normal\", \"Normal + Rational\", \"Cubic\", \"Cubic + Rational\", \"Quadratic\", \"Quadratic + Rational\")"
+        },
+      "name" : "type",
+      "nodePortType" : "Out",
+      "defaultValues" : {
+        "Integer" : 0
+        },
+      "execPortType" : "In",
+      "typeSpec" : "Integer"
+      },
+    {
+      "objectType" : "ExecPort",
+      "metadata" : {
+        "uiRange" : "(1, 7)"
+        },
+      "name" : "degree",
+      "nodePortType" : "Out",
+      "defaultValues" : {
+        "UInt8" : 3
+        },
+      "execPortType" : "In",
+      "typeSpec" : "UInt8"
+      },
+    {
+      "objectType" : "ExecPort",
+      "name" : "rationalWeight",
+      "nodePortType" : "Out",
+      "defaultValues" : {
+        "Scalar" : 1
+        },
+      "execPortType" : "In",
+      "typeSpec" : "Scalar"
+      },
+    {
+      "objectType" : "ExecPort",
+      "name" : "isClosed",
+      "nodePortType" : "Out",
+      "defaultValues" : {
+        "Boolean" : false
+        },
+      "execPortType" : "In",
+      "typeSpec" : "Boolean"
+      }
+    ],
+  "extDeps" : {},
+  "presetGUID" : "9937F0F9927FA0B4C51C86823902A63B",
+  "code" : "dfgEntry {
+  if(CurvePositions.size() == 0){  return;  }
+  
+  for(Integer i=0; i<CurvePositions.size(); i++){
+    Vec3 curvePos[];
+    curvePos.resize(CurvePositions[i].size());
+    Scalar rationalWeights[];
+    rationalWeights.resize(CurvePositions[i].size());
+    
+    for(Integer j=0; j<CurvePositions[i].size(); j++){
+      curvePos[j] = CurvePositions[i][j];
+      rationalWeights[j] = 1.0;
+    }
+    if(isClosed == false){
+      for(Integer j=1; j<CurvePositions[i].size()-1; j++){
+        rationalWeights[j] = rationalWeight;
+      }
+    }
+    
+    switch(type){
+      case 0:  this.addBezier(curvePos, degree, isClosed);  break;
+      case 1:  this.addBezier(curvePos, rationalWeights, degree, isClosed);  break;
+      case 2:  this.addCubicBezier(curvePos, isClosed);  break;
+      case 3:  this.addCubicBezier(curvePos, rationalWeights, isClosed);  break;
+      case 4:  this.addQuadraticBezier(curvePos, isClosed);  break;
+      case 5:  this.addQuadraticBezier(curvePos, rationalWeights, isClosed);  break;
+    }
+  }
+}
+"
+  }

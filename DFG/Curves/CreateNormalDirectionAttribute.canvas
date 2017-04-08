@@ -1,0 +1,1082 @@
+{
+  "objectType" : "Graph",
+  "metadata" : {
+    "uiGraphZoom" : "{\n  \"value\" : 0.5516853332519531\n  }",
+    "uiGraphPan" : "{\n  \"x\" : 64.90212985072503,\n  \"y\" : -164.5531327803037\n  }"
+    },
+  "title" : "CreateNormalDirectionAttribute",
+  "ports" : [
+    {
+      "objectType" : "ExecPort",
+      "name" : "exec",
+      "nodePortType" : "IO",
+      "defaultValues" : {
+        "Execute" : {}
+        },
+      "execPortType" : "IO",
+      "typeSpec" : "Execute"
+      },
+    {
+      "objectType" : "ExecPort",
+      "name" : "this",
+      "nodePortType" : "IO",
+      "defaultValues" : {
+        "Curves" : null
+        },
+      "execPortType" : "IO",
+      "typeSpec" : "Curves"
+      },
+    {
+      "objectType" : "ExecPort",
+      "metadata" : {
+        "uiCombo" : "(\"Default\", \"Avoid Flip\", \"Fix Direction\", \"Fix UpVector\")"
+        },
+      "name" : "control",
+      "nodePortType" : "Out",
+      "defaultValues" : {
+        "Integer" : 1
+        },
+      "execPortType" : "In",
+      "typeSpec" : "Integer"
+      },
+    {
+      "objectType" : "ExecPort",
+      "name" : "fixValue",
+      "nodePortType" : "Out",
+      "defaultValues" : {
+        "Vec3" : {
+          "x" : 0,
+          "y" : 0,
+          "z" : 1
+          }
+        },
+      "execPortType" : "In",
+      "typeSpec" : "Vec3"
+      },
+    {
+      "objectType" : "ExecPort",
+      "name" : "overwrite",
+      "nodePortType" : "Out",
+      "defaultValues" : {
+        "Boolean" : false
+        },
+      "execPortType" : "In",
+      "typeSpec" : "Boolean"
+      }
+    ],
+  "extDeps" : {
+    "TKCM" : "*"
+    },
+  "presetGUID" : "5B1228EE8DAEA808D6F541D2BABACE71",
+  "nodes" : [
+    {
+      "objectType" : "Inst",
+      "metadata" : {
+        "uiGraphPos" : "{\"x\":-0.494573,\"y\":1287.32}"
+        },
+      "name" : "CreateNormalsCore",
+      "ports" : [
+        {
+          "objectType" : "InstPort",
+          "name" : "exec",
+          "nodePortType" : "IO"
+          },
+        {
+          "objectType" : "InstPort",
+          "name" : "this",
+          "nodePortType" : "IO"
+          },
+        {
+          "objectType" : "InstPort",
+          "name" : "fixValue",
+          "nodePortType" : "In",
+          "defaultValues" : {
+            "Vec3" : {
+              "x" : 0,
+              "y" : 0,
+              "z" : 1
+              }
+            }
+          },
+        {
+          "objectType" : "InstPort",
+          "name" : "result",
+          "nodePortType" : "Out"
+          },
+        {
+          "objectType" : "InstPort",
+          "name" : "control",
+          "nodePortType" : "In"
+          }
+        ],
+      "definition" : {
+        "objectType" : "Func",
+        "title" : "MakeNormalValues",
+        "ports" : [
+          {
+            "objectType" : "ExecPort",
+            "name" : "exec",
+            "nodePortType" : "IO",
+            "defaultValues" : {
+              "Execute" : {}
+              },
+            "execPortType" : "IO",
+            "typeSpec" : "Execute"
+            },
+          {
+            "objectType" : "ExecPort",
+            "name" : "this",
+            "nodePortType" : "IO",
+            "defaultValues" : {
+              "Curves" : null
+              },
+            "execPortType" : "IO",
+            "typeSpec" : "Curves"
+            },
+          {
+            "objectType" : "ExecPort",
+            "name" : "fixValue",
+            "nodePortType" : "Out",
+            "execPortType" : "In",
+            "typeSpec" : "Vec3"
+            },
+          {
+            "objectType" : "ExecPort",
+            "name" : "result",
+            "nodePortType" : "In",
+            "defaultValues" : {
+              "Vec3[]" : []
+              },
+            "execPortType" : "Out",
+            "typeSpec" : "Vec3[]"
+            },
+          {
+            "objectType" : "ExecPort",
+            "name" : "control",
+            "nodePortType" : "Out",
+            "execPortType" : "In",
+            "typeSpec" : "Integer"
+            }
+          ],
+        "extDeps" : {
+          "TKCM" : "*"
+          },
+        "code" : "dfgEntry {
+  //  check
+  if(this.hasEmptyCurve(\"CreateNormals node\")){  return;  }
+
+  this.createNormalsValue(result, control, fixValue);
+}
+"
+        }
+      },
+    {
+      "objectType" : "Inst",
+      "metadata" : {
+        "uiGraphPos" : "{\"x\":1172.37,\"y\":643.949}"
+        },
+      "name" : "CreateAttribute_1",
+      "ports" : [
+        {
+          "objectType" : "InstPort",
+          "name" : "exec",
+          "nodePortType" : "IO"
+          },
+        {
+          "objectType" : "InstPort",
+          "name" : "curves",
+          "nodePortType" : "IO"
+          },
+        {
+          "objectType" : "InstPort",
+          "name" : "attributeName",
+          "nodePortType" : "In",
+          "defaultValues" : {
+            "String" : "normalDirections"
+            }
+          },
+        {
+          "objectType" : "InstPort",
+          "name" : "type",
+          "nodePortType" : "In",
+          "defaultValues" : {
+            "SInt32" : 3
+            }
+          },
+        {
+          "objectType" : "InstPort",
+          "name" : "success",
+          "nodePortType" : "Out"
+          }
+        ],
+      "executable" : "TKCM.Curves.CreateAttribute",
+      "presetGUID" : "58CD027D51373A2024DCA05A34530489"
+      },
+    {
+      "objectType" : "Inst",
+      "metadata" : {
+        "uiGraphPos" : "{\"x\":1421.8,\"y\":644.323}"
+        },
+      "name" : "SetValueArray_1",
+      "ports" : [
+        {
+          "objectType" : "InstPort",
+          "name" : "exec",
+          "nodePortType" : "IO"
+          },
+        {
+          "objectType" : "InstPort",
+          "name" : "geometry",
+          "nodePortType" : "IO"
+          },
+        {
+          "objectType" : "InstPort",
+          "name" : "attributeName",
+          "nodePortType" : "In"
+          },
+        {
+          "objectType" : "InstPort",
+          "name" : "mode",
+          "nodePortType" : "In"
+          },
+        {
+          "objectType" : "InstPort",
+          "name" : "indices",
+          "nodePortType" : "In"
+          },
+        {
+          "objectType" : "InstPort",
+          "name" : "sint32Values",
+          "nodePortType" : "In"
+          },
+        {
+          "objectType" : "InstPort",
+          "name" : "uint32Values",
+          "nodePortType" : "In"
+          },
+        {
+          "objectType" : "InstPort",
+          "name" : "float32Values",
+          "nodePortType" : "In"
+          },
+        {
+          "objectType" : "InstPort",
+          "name" : "vec2Values",
+          "nodePortType" : "In"
+          },
+        {
+          "objectType" : "InstPort",
+          "name" : "vec3Values",
+          "nodePortType" : "In"
+          },
+        {
+          "objectType" : "InstPort",
+          "name" : "vec4Values",
+          "nodePortType" : "In"
+          },
+        {
+          "objectType" : "InstPort",
+          "name" : "quatValues",
+          "nodePortType" : "In"
+          },
+        {
+          "objectType" : "InstPort",
+          "name" : "mat33Values",
+          "nodePortType" : "In"
+          },
+        {
+          "objectType" : "InstPort",
+          "name" : "mat44Values",
+          "nodePortType" : "In"
+          },
+        {
+          "objectType" : "InstPort",
+          "name" : "colorValues",
+          "nodePortType" : "In"
+          },
+        {
+          "objectType" : "InstPort",
+          "name" : "rgbValues",
+          "nodePortType" : "In"
+          },
+        {
+          "objectType" : "InstPort",
+          "name" : "rgbaValues",
+          "nodePortType" : "In"
+          },
+        {
+          "objectType" : "InstPort",
+          "name" : "uint16ArrayValues",
+          "nodePortType" : "In"
+          },
+        {
+          "objectType" : "InstPort",
+          "name" : "uint32ArrayValues",
+          "nodePortType" : "In"
+          },
+        {
+          "objectType" : "InstPort",
+          "name" : "sint32ArrayValues",
+          "nodePortType" : "In"
+          },
+        {
+          "objectType" : "InstPort",
+          "name" : "float32ArrayValues",
+          "nodePortType" : "In"
+          },
+        {
+          "objectType" : "InstPort",
+          "name" : "skinIdValues",
+          "nodePortType" : "In"
+          },
+        {
+          "objectType" : "InstPort",
+          "name" : "skinWeightValues",
+          "nodePortType" : "In"
+          },
+        {
+          "objectType" : "InstPort",
+          "name" : "success",
+          "nodePortType" : "Out"
+          }
+        ],
+      "executable" : "Fabric.Compounds.Attributes.SetValueArray",
+      "presetGUID" : "674891D657B6A99F42E798E3527D0F1F"
+      },
+    {
+      "objectType" : "Inst",
+      "metadata" : {
+        "uiGraphPos" : "{\"x\":-25.4466,\"y\":384.936}"
+        },
+      "name" : "check",
+      "ports" : [
+        {
+          "objectType" : "InstPort",
+          "name" : "exec",
+          "nodePortType" : "IO"
+          },
+        {
+          "objectType" : "InstPort",
+          "name" : "this",
+          "nodePortType" : "In"
+          },
+        {
+          "objectType" : "InstPort",
+          "name" : "result",
+          "nodePortType" : "Out"
+          },
+        {
+          "objectType" : "InstPort",
+          "name" : "overwrite",
+          "nodePortType" : "In"
+          }
+        ],
+      "definition" : {
+        "objectType" : "Func",
+        "title" : "func",
+        "ports" : [
+          {
+            "objectType" : "ExecPort",
+            "name" : "exec",
+            "nodePortType" : "IO",
+            "execPortType" : "IO",
+            "typeSpec" : "Execute"
+            },
+          {
+            "objectType" : "ExecPort",
+            "name" : "this",
+            "nodePortType" : "Out",
+            "execPortType" : "In",
+            "typeSpec" : "Curves"
+            },
+          {
+            "objectType" : "ExecPort",
+            "name" : "result",
+            "nodePortType" : "In",
+            "execPortType" : "Out",
+            "typeSpec" : "Boolean"
+            },
+          {
+            "objectType" : "ExecPort",
+            "name" : "overwrite",
+            "nodePortType" : "Out",
+            "execPortType" : "In",
+            "typeSpec" : "Boolean"
+            }
+          ],
+        "extDeps" : {},
+        "code" : "dfgEntry {
+  if(overwrite || this.attributes.has(\"normals\") == false){
+    result = true;
+  }else{
+    result = false;
+  }
+}
+"
+        }
+      },
+    {
+      "objectType" : "Inst",
+      "metadata" : {
+        "uiGraphPos" : "{\"x\":1691.49,\"y\":454.738}"
+        },
+      "name" : "If_1",
+      "ports" : [
+        {
+          "objectType" : "InstPort",
+          "name" : "exec",
+          "nodePortType" : "IO"
+          },
+        {
+          "objectType" : "InstPort",
+          "name" : "cond",
+          "nodePortType" : "In"
+          },
+        {
+          "objectType" : "InstPort",
+          "name" : "if_true",
+          "nodePortType" : "In"
+          },
+        {
+          "objectType" : "InstPort",
+          "name" : "if_false",
+          "nodePortType" : "In"
+          },
+        {
+          "objectType" : "InstPort",
+          "name" : "result",
+          "nodePortType" : "Out"
+          }
+        ],
+      "executable" : "Fabric.Core.Control.If",
+      "presetGUID" : "3182A478A21643455D549E483D35F831"
+      },
+    {
+      "objectType" : "Inst",
+      "metadata" : {
+        "uiGraphPos" : "{\"x\":-22.4665,\"y\":490.379}"
+        },
+      "name" : "PassIO_1",
+      "ports" : [
+        {
+          "objectType" : "InstPort",
+          "name" : "exec",
+          "nodePortType" : "IO"
+          },
+        {
+          "objectType" : "InstPort",
+          "name" : "value",
+          "nodePortType" : "IO"
+          }
+        ],
+      "executable" : "Fabric.Compounds.Data.PassIO",
+      "presetGUID" : "11D3886FBE4057E4D8EF4CE1639CB453"
+      }
+    ],
+  "connections" : {
+    "this" : [
+      "CreateNormalsCore.this",
+      "check.this",
+      "PassIO_1.value"
+      ],
+    "control" : [
+      "CreateNormalsCore.control"
+      ],
+    "fixValue" : [
+      "CreateNormalsCore.fixValue"
+      ],
+    "overwrite" : [
+      "check.overwrite"
+      ],
+    "CreateNormalsCore.this" : [
+      "CreateAttribute_1.curves"
+      ],
+    "CreateNormalsCore.result" : [
+      "SetValueArray_1.vec3Values"
+      ],
+    "CreateAttribute_1.curves" : [
+      "SetValueArray_1.geometry"
+      ],
+    "CreateAttribute_1.attributeName" : [
+      "SetValueArray_1.attributeName"
+      ],
+    "SetValueArray_1.geometry" : [
+      "If_1.if_true"
+      ],
+    "check.result" : [
+      "If_1.cond"
+      ],
+    "If_1.result" : [
+      "this"
+      ],
+    "PassIO_1.value" : [
+      "If_1.if_false"
+      ]
+    },
+  "requiredPresets" : {
+    "TKCM.Curves.CreateAttribute" : {
+      "objectType" : "Func",
+      "title" : "CreateAttribute",
+      "ports" : [
+        {
+          "objectType" : "ExecPort",
+          "name" : "exec",
+          "nodePortType" : "IO",
+          "defaultValues" : {
+            "Execute" : {}
+            },
+          "execPortType" : "IO",
+          "typeSpec" : "Execute"
+          },
+        {
+          "objectType" : "ExecPort",
+          "name" : "curves",
+          "nodePortType" : "IO",
+          "defaultValues" : {
+            "Curves" : null
+            },
+          "execPortType" : "IO",
+          "typeSpec" : "Curves"
+          },
+        {
+          "objectType" : "ExecPort",
+          "name" : "attributeName",
+          "nodePortType" : "Out",
+          "defaultValues" : {
+            "String" : ""
+            },
+          "execPortType" : "In",
+          "typeSpec" : "String"
+          },
+        {
+          "objectType" : "ExecPort",
+          "metadata" : {
+            "uiCombo" : "(\"Integer\", \"Scalar\", \"Vec2\", \"Vec3\", \"Vec4\", \"Quat\", \"Mat33\", \"Mat44\", \"Color\", \"RGB\", \"RGBA\", \"Skinning\")"
+            },
+          "name" : "type",
+          "nodePortType" : "Out",
+          "defaultValues" : {
+            "SInt32" : 0
+            },
+          "execPortType" : "In",
+          "typeSpec" : "SInt32"
+          },
+        {
+          "objectType" : "ExecPort",
+          "name" : "success",
+          "nodePortType" : "In",
+          "defaultValues" : {
+            "Boolean" : false
+            },
+          "execPortType" : "Out",
+          "typeSpec" : "Boolean"
+          }
+        ],
+      "extDeps" : {},
+      "presetGUID" : "58CD027D51373A2024DCA05A34530489",
+      "code" : "dfgEntry {
+  success = false;
+  if(attributeName == \"\"){
+    report(\"Error: empty attribute name in \\\"Curves.CreateAttribute\\\"\");
+    return;
+  }
+  if(curves == null){
+    report(\"Error: missing geometry in \\\"Curves.CreateAttribute\");
+    return;
+  }
+  
+  Ref<Vec3Attribute> attr();
+  switch(type){
+    case 0:
+      attr = curves.attributes.getOrCreateIntegerAttribute(attributeName);
+      break;
+    case 1:
+      attr = curves.attributes.getOrCreateScalarAttribute(attributeName);
+      break;
+    case 2:
+      attr = curves.attributes.getOrCreateVec2Attribute(attributeName);
+      break;
+    case 3:
+      attr = curves.attributes.getOrCreateVec3Attribute(attributeName);
+      break;
+    case 4:
+      attr = curves.attributes.getOrCreateVec4Attribute(attributeName);
+      break;
+    case 5:
+      attr = curves.attributes.getOrCreateQuatAttribute(attributeName);
+      break;
+    case 6:
+      attr = curves.attributes.getOrCreateMat33Attribute(attributeName);
+      break;
+    case 7:
+      attr = curves.attributes.getOrCreateMat44Attribute(attributeName);
+      break;
+    case 8:
+      attr = curves.attributes.getOrCreateColorAttribute(attributeName);
+      break;
+    case 9:
+      attr = curves.attributes.getOrCreateRGBAttribute(attributeName);
+      break;
+    case 10:
+      attr = curves.attributes.getOrCreateRGBAAttribute(attributeName);
+      break;
+    case 11:
+      attr = curves.attributes.getOrCreateSkinningAttribute(attributeName);
+      break;
+  }
+  success = attr != null;
+}
+"
+      },
+    "Fabric.Compounds.Attributes.SetValueArray" : {
+      "objectType" : "Func",
+      "metadata" : {
+        "uiTextColor" : "{\n  \"r\" : 20,\n  \"g\" : 20,\n  \"b\" : 20\n  }",
+        "uiNodeColor" : "{\n  \"r\" : 121,\n  \"g\" : 121,\n  \"b\" : 181\n  }",
+        "uiTooltip" : "Returns the value for a given index. Only the corresponding out ports are filled.\nThe faceCorner port is only used for the Face Corner mode.\nThe Per Vertex (average) modes only works with PolygonMeshes,\nand returns the average value for all polygon corners adjacent to the vertex."
+        },
+      "title" : "SetValueArray",
+      "ports" : [
+        {
+          "objectType" : "ExecPort",
+          "name" : "exec",
+          "nodePortType" : "IO",
+          "execPortType" : "IO",
+          "typeSpec" : "Execute"
+          },
+        {
+          "objectType" : "ExecPort",
+          "name" : "geometry",
+          "nodePortType" : "IO",
+          "defaultValues" : {
+            "PolygonMesh" : null
+            },
+          "execPortType" : "IO",
+          "typeSpec" : "$TYPE$"
+          },
+        {
+          "objectType" : "ExecPort",
+          "name" : "attributeName",
+          "nodePortType" : "Out",
+          "defaultValues" : {
+            "String" : ""
+            },
+          "execPortType" : "In",
+          "typeSpec" : "String"
+          },
+        {
+          "objectType" : "ExecPort",
+          "metadata" : {
+            "uiCombo" : "(\"Per Vertex\",  \"Per Face\",  \"Per Face Corner\")"
+            },
+          "name" : "mode",
+          "nodePortType" : "Out",
+          "defaultValues" : {
+            "UInt32" : 0
+            },
+          "execPortType" : "In",
+          "typeSpec" : "UInt32"
+          },
+        {
+          "objectType" : "ExecPort",
+          "name" : "indices",
+          "nodePortType" : "Out",
+          "defaultValues" : {
+            "UInt32[]" : []
+            },
+          "execPortType" : "In",
+          "typeSpec" : "UInt32[]"
+          },
+        {
+          "objectType" : "ExecPort",
+          "name" : "sint32Values",
+          "nodePortType" : "Out",
+          "defaultValues" : {
+            "SInt32[]" : []
+            },
+          "execPortType" : "In",
+          "typeSpec" : "SInt32[]"
+          },
+        {
+          "objectType" : "ExecPort",
+          "name" : "uint32Values",
+          "nodePortType" : "Out",
+          "defaultValues" : {
+            "UInt32[]" : []
+            },
+          "execPortType" : "In",
+          "typeSpec" : "UInt32[]"
+          },
+        {
+          "objectType" : "ExecPort",
+          "name" : "float32Values",
+          "nodePortType" : "Out",
+          "defaultValues" : {
+            "Float32[]" : []
+            },
+          "execPortType" : "In",
+          "typeSpec" : "Float32[]"
+          },
+        {
+          "objectType" : "ExecPort",
+          "name" : "vec2Values",
+          "nodePortType" : "Out",
+          "defaultValues" : {
+            "Vec2[]" : []
+            },
+          "execPortType" : "In",
+          "typeSpec" : "Vec2[]"
+          },
+        {
+          "objectType" : "ExecPort",
+          "name" : "vec3Values",
+          "nodePortType" : "Out",
+          "defaultValues" : {
+            "Vec3[]" : []
+            },
+          "execPortType" : "In",
+          "typeSpec" : "Vec3[]"
+          },
+        {
+          "objectType" : "ExecPort",
+          "name" : "vec4Values",
+          "nodePortType" : "Out",
+          "defaultValues" : {
+            "Vec4[]" : []
+            },
+          "execPortType" : "In",
+          "typeSpec" : "Vec4[]"
+          },
+        {
+          "objectType" : "ExecPort",
+          "name" : "quatValues",
+          "nodePortType" : "Out",
+          "defaultValues" : {
+            "Quat[]" : []
+            },
+          "execPortType" : "In",
+          "typeSpec" : "Quat[]"
+          },
+        {
+          "objectType" : "ExecPort",
+          "name" : "mat33Values",
+          "nodePortType" : "Out",
+          "defaultValues" : {
+            "Mat33[]" : []
+            },
+          "execPortType" : "In",
+          "typeSpec" : "Mat33[]"
+          },
+        {
+          "objectType" : "ExecPort",
+          "name" : "mat44Values",
+          "nodePortType" : "Out",
+          "defaultValues" : {
+            "Mat44[]" : []
+            },
+          "execPortType" : "In",
+          "typeSpec" : "Mat44[]"
+          },
+        {
+          "objectType" : "ExecPort",
+          "name" : "colorValues",
+          "nodePortType" : "Out",
+          "defaultValues" : {
+            "Color[]" : []
+            },
+          "execPortType" : "In",
+          "typeSpec" : "Color[]"
+          },
+        {
+          "objectType" : "ExecPort",
+          "name" : "rgbValues",
+          "nodePortType" : "Out",
+          "defaultValues" : {
+            "RGB[]" : []
+            },
+          "execPortType" : "In",
+          "typeSpec" : "RGB[]"
+          },
+        {
+          "objectType" : "ExecPort",
+          "name" : "rgbaValues",
+          "nodePortType" : "Out",
+          "defaultValues" : {
+            "RGBA[]" : []
+            },
+          "execPortType" : "In",
+          "typeSpec" : "RGBA[]"
+          },
+        {
+          "objectType" : "ExecPort",
+          "name" : "uint16ArrayValues",
+          "nodePortType" : "Out",
+          "defaultValues" : {
+            "UInt16[][]" : []
+            },
+          "execPortType" : "In",
+          "typeSpec" : "UInt16[][]"
+          },
+        {
+          "objectType" : "ExecPort",
+          "name" : "uint32ArrayValues",
+          "nodePortType" : "Out",
+          "defaultValues" : {
+            "UInt32[][]" : []
+            },
+          "execPortType" : "In",
+          "typeSpec" : "UInt32[][]"
+          },
+        {
+          "objectType" : "ExecPort",
+          "name" : "sint32ArrayValues",
+          "nodePortType" : "Out",
+          "defaultValues" : {
+            "SInt32[][]" : []
+            },
+          "execPortType" : "In",
+          "typeSpec" : "SInt32[][]"
+          },
+        {
+          "objectType" : "ExecPort",
+          "name" : "float32ArrayValues",
+          "nodePortType" : "Out",
+          "defaultValues" : {
+            "Float32[][]" : []
+            },
+          "execPortType" : "In",
+          "typeSpec" : "Float32[][]"
+          },
+        {
+          "objectType" : "ExecPort",
+          "name" : "skinIdValues",
+          "nodePortType" : "Out",
+          "defaultValues" : {
+            "UInt16[][]" : []
+            },
+          "execPortType" : "In",
+          "typeSpec" : "UInt16[][]"
+          },
+        {
+          "objectType" : "ExecPort",
+          "name" : "skinWeightValues",
+          "nodePortType" : "Out",
+          "defaultValues" : {
+            "Float32[][]" : []
+            },
+          "execPortType" : "In",
+          "typeSpec" : "Float32[][]"
+          },
+        {
+          "objectType" : "ExecPort",
+          "name" : "success",
+          "nodePortType" : "In",
+          "defaultValues" : {
+            "Boolean" : false
+            },
+          "execPortType" : "Out",
+          "typeSpec" : "Boolean"
+          }
+        ],
+      "extDeps" : {
+        "AttributeHelpers" : "*"
+        },
+      "presetGUID" : "674891D657B6A99F42E798E3527D0F1F",
+      "code" : "require AttributeHelpers;
+
+dfgEntry {
+  success = false;
+  if(attributeName == \"\")
+  {
+    report(\"Error: empty attribute name in \\\"SetValueArray\\\"\");
+    return;
+  }
+
+  BaseGeometry baseGeom = geometry;
+  if(baseGeom == null)
+  {
+    report(\"Error: missing geometry in \\\"SetValueArray\\\"\");
+    return;
+  }
+
+  GeometryAttributes attributes = baseGeom.attributes;
+  GeometryAttribute attr = attributes.getAttribute(attributeName);
+  if(attr == null)
+    return;
+
+  Index idx = 0;
+  switch(attr.type())
+  {
+    case IntegerAttribute:
+    {
+      success = baseGeom.setIntegerAttributeValueArray(attr, mode, indices, sint32Values);
+      break;
+    }
+    case UInt32Attribute:
+    {
+      success = baseGeom.setUInt32AttributeValueArray(attr, mode, indices, uint32Values);
+      break;
+    }
+    case ScalarAttribute:
+    {
+      success = baseGeom.setScalarAttributeValueArray(attr, mode, indices, float32Values);
+      break;
+    }
+    case Vec2Attribute:
+    {
+      success = baseGeom.setVec2AttributeValueArray(attr, mode, indices, vec2Values);
+      break;
+    }
+    case Vec3Attribute:
+    {
+      success = baseGeom.setVec3AttributeValueArray(attr, mode, indices, vec3Values);
+      break;
+    }
+    case Vec4Attribute:
+    {
+      success = baseGeom.setVec4AttributeValueArray(attr, mode, indices, vec4Values);
+      break;
+    }
+    case QuatAttribute:
+    {
+      success = baseGeom.setQuatAttributeValueArray(attr, mode, indices, quatValues);
+      break;
+    }
+    case Mat33Attribute:
+    {
+      success = baseGeom.setMat33AttributeValueArray(attr, mode, indices, mat33Values);
+      break;
+    }
+    case Mat44Attribute:
+    {
+      success = baseGeom.setMat44AttributeValueArray(attr, mode, indices, mat44Values);
+      break;
+    }
+    case ColorAttribute:
+    {
+      success = baseGeom.setColorAttributeValueArray(attr, mode, indices, colorValues);
+      break;
+    }
+    case RGBAttribute:
+    {
+      success = baseGeom.setRGBAttributeValueArray(attr, mode, indices, rgbValues);
+      break;
+    }
+    case RGBAAttribute:
+    {
+      success = baseGeom.setRGBAAttributeValueArray(attr, mode, indices, rgbaValues);
+      break;
+    }
+    case UInt16ConstantArrayAttribute:
+    {
+      success = baseGeom.setUInt16ConstantArrayAttributeValueArray(attr, mode, indices, uint16ArrayValues);
+      break;
+    }
+    case UInt32ArrayAttribute:
+    {
+      success = baseGeom.setUInt32ArrayAttributeValueArray(attr, mode, indices, uint32ArrayValues);
+      break;
+    }
+    case IntegerArrayAttribute:
+    {
+      success = baseGeom.setIntegerArrayAttributeValueArray(attr, mode, indices, sint32ArrayValues);
+      break;
+    }
+    case ScalarConstantArrayAttribute:
+    {
+      success = baseGeom.setScalarConstantArrayAttributeValueArray(attr, mode, indices, float32ArrayValues);
+      break;
+    }
+    case ScalarArrayAttribute:
+    {
+      success = baseGeom.setScalarArrayAttributeValueArray(attr, mode, indices, float32ArrayValues);
+      break;
+    }
+    case SkinningAttribute:
+    {
+      success = baseGeom.setSkinningAttributeValueArray(attr, mode, indices, skinIdValues, skinWeightValues);
+      break;
+    }
+  }
+}
+"
+      },
+    "Fabric.Core.Control.If" : {
+      "objectType" : "Func",
+      "title" : "If",
+      "ports" : [
+        {
+          "objectType" : "ExecPort",
+          "name" : "exec",
+          "nodePortType" : "IO",
+          "execPortType" : "IO",
+          "typeSpec" : "Execute"
+          },
+        {
+          "objectType" : "ExecPort",
+          "name" : "cond",
+          "nodePortType" : "Out",
+          "execPortType" : "In",
+          "typeSpec" : "Boolean"
+          },
+        {
+          "objectType" : "ExecPort",
+          "name" : "if_true",
+          "nodePortType" : "Out",
+          "execPortType" : "In",
+          "typeSpec" : "$TYPE$"
+          },
+        {
+          "objectType" : "ExecPort",
+          "name" : "if_false",
+          "nodePortType" : "Out",
+          "execPortType" : "In",
+          "typeSpec" : "$TYPE$"
+          },
+        {
+          "objectType" : "ExecPort",
+          "name" : "result",
+          "nodePortType" : "In",
+          "execPortType" : "Out",
+          "typeSpec" : "$TYPE$"
+          }
+        ],
+      "extDeps" : {},
+      "presetGUID" : "3182A478A21643455D549E483D35F831",
+      "code" : "
+dfgEntry {
+	result = cond ? if_true : if_false;
+}
+"
+      },
+    "Fabric.Compounds.Data.PassIO" : {
+      "objectType" : "Func",
+      "title" : "PassIO",
+      "ports" : [
+        {
+          "objectType" : "ExecPort",
+          "name" : "exec",
+          "nodePortType" : "IO",
+          "defaultValues" : {
+            "Execute" : {}
+            },
+          "execPortType" : "IO",
+          "typeSpec" : "Execute"
+          },
+        {
+          "objectType" : "ExecPort",
+          "name" : "value",
+          "nodePortType" : "IO",
+          "execPortType" : "IO",
+          "typeSpec" : "$TYPE$"
+          }
+        ],
+      "extDeps" : {},
+      "presetGUID" : "11D3886FBE4057E4D8EF4CE1639CB453",
+      "code" : "dfgEntry {
+  // result = a + b;
+}
+"
+      }
+    }
+  }

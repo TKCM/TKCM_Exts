@@ -1,0 +1,54 @@
+{
+  "objectType" : "Func",
+  "title" : "GetEachCurvePointPositions",
+  "ports" : [
+    {
+      "objectType" : "ExecPort",
+      "name" : "exec",
+      "nodePortType" : "IO",
+      "defaultValues" : {
+        "Execute" : {}
+        },
+      "execPortType" : "IO",
+      "typeSpec" : "Execute"
+      },
+    {
+      "objectType" : "ExecPort",
+      "name" : "this",
+      "nodePortType" : "Out",
+      "defaultValues" : {
+        "Curves" : null
+        },
+      "execPortType" : "In",
+      "typeSpec" : "Curves"
+      },
+    {
+      "objectType" : "ExecPort",
+      "name" : "result",
+      "nodePortType" : "In",
+      "defaultValues" : {
+        "GenericVec3ArrayValue[]" : [],
+        "Vec3Array[]" : []
+        },
+      "execPortType" : "Out",
+      "typeSpec" : "Vec3Array[]"
+      }
+    ],
+  "extDeps" : {},
+  "presetGUID" : "D26916968E13D52730D8B45C56181040",
+  "code" : "dfgEntry {
+  if(this.curveCount() == 0){
+    return;
+  }
+  result.resize(this.curveCount());
+  Vec3 pos[] = this.getAllPointPositions();
+  for(Integer i=0; i<this.curveCount(); i++){
+    result[i].resize(this.getPointCount(i));
+    Index startID = this.getFirstPointIndex(i);
+    for(Integer j=0; j<this.getPointCount(i); j++){
+      result[i][j] = pos[startID+j];
+    }
+  }
+}
+"
+  }

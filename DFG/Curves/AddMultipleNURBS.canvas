@@ -1,0 +1,97 @@
+{
+  "objectType" : "Func",
+  "title" : "AddMultipleNURBS",
+  "ports" : [
+    {
+      "objectType" : "ExecPort",
+      "name" : "exec",
+      "nodePortType" : "IO",
+      "defaultValues" : {
+        "Execute" : {}
+        },
+      "execPortType" : "IO",
+      "typeSpec" : "Execute"
+      },
+    {
+      "objectType" : "ExecPort",
+      "name" : "this",
+      "nodePortType" : "IO",
+      "defaultValues" : {
+        "Curves" : null
+        },
+      "execPortType" : "IO",
+      "typeSpec" : "Curves"
+      },
+    {
+      "objectType" : "ExecPort",
+      "name" : "CurvePositions",
+      "nodePortType" : "Out",
+      "defaultValues" : {
+        "GenericVec3ArrayValue[]" : [],
+        "Vec3Array[]" : []
+        },
+      "execPortType" : "In",
+      "typeSpec" : "Vec3Array[]"
+      },
+    {
+      "objectType" : "ExecPort",
+      "metadata" : {
+        "uiRange" : "(1, 7)"
+        },
+      "name" : "degree",
+      "nodePortType" : "Out",
+      "defaultValues" : {
+        "UInt8" : 2
+        },
+      "execPortType" : "In",
+      "typeSpec" : "UInt8"
+      },
+    {
+      "objectType" : "ExecPort",
+      "metadata" : {
+        "uiCombo" : "( \"open\", \"closed\", \"periodic\" )"
+        },
+      "name" : "curveForm",
+      "nodePortType" : "Out",
+      "defaultValues" : {
+        "UInt8" : 0
+        },
+      "execPortType" : "In",
+      "typeSpec" : "UInt8"
+      },
+    {
+      "objectType" : "ExecPort",
+      "name" : "rationalWeight",
+      "nodePortType" : "Out",
+      "defaultValues" : {
+        "Scalar" : 1
+        },
+      "execPortType" : "In",
+      "typeSpec" : "Scalar"
+      }
+    ],
+  "extDeps" : {},
+  "presetGUID" : "6033398F52DCDAFB0B5E9423093709EB",
+  "code" : "dfgEntry {
+  if(CurvePositions.size() == 0){  return;  }
+  
+  for(Integer i=0; i<CurvePositions.size(); i++){
+    Vec3 curvePos[];
+    curvePos.resize(CurvePositions[i].size());
+    Scalar rationalWeights[];
+    rationalWeights.resize(CurvePositions[i].size());
+    
+    for(Integer j=0; j<CurvePositions[i].size(); j++){
+      curvePos[j] = CurvePositions[i][j];
+      rationalWeights[j] = 1.0;
+    }
+    if(curveForm == 0){
+      for(Integer j=1; j<CurvePositions[i].size()-1; j++){
+        rationalWeights[j] = rationalWeight;
+      }
+    }
+    this.addNURBS(curvePos, rationalWeights, degree, curveForm);
+  }
+}
+"
+  }

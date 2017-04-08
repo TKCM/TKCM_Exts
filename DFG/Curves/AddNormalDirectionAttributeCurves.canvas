@@ -1,0 +1,129 @@
+{
+  "objectType" : "Func",
+  "title" : "AddNormalDirectionAttributeCurves",
+  "ports" : [
+    {
+      "objectType" : "ExecPort",
+      "name" : "exec",
+      "nodePortType" : "IO",
+      "defaultValues" : {
+        "Execute" : {}
+        },
+      "execPortType" : "IO",
+      "typeSpec" : "Execute"
+      },
+    {
+      "objectType" : "ExecPort",
+      "name" : "this",
+      "nodePortType" : "IO",
+      "defaultValues" : {
+        "Curves" : null
+        },
+      "execPortType" : "IO",
+      "typeSpec" : "Curves"
+      },
+    {
+      "objectType" : "ExecPort",
+      "name" : "NormalCurve",
+      "nodePortType" : "Out",
+      "defaultValues" : {
+        "Boolean" : true
+        },
+      "execPortType" : "In",
+      "typeSpec" : "Boolean"
+      },
+    {
+      "objectType" : "ExecPort",
+      "name" : "NormalCurveDistance",
+      "nodePortType" : "Out",
+      "defaultValues" : {
+        "Scalar" : 1
+        },
+      "execPortType" : "In",
+      "typeSpec" : "Scalar"
+      },
+    {
+      "objectType" : "ExecPort",
+      "name" : "NormalInvCurve",
+      "nodePortType" : "Out",
+      "defaultValues" : {
+        "Boolean" : true
+        },
+      "execPortType" : "In",
+      "typeSpec" : "Boolean"
+      },
+    {
+      "objectType" : "ExecPort",
+      "name" : "NormalInvCurveDistance",
+      "nodePortType" : "Out",
+      "defaultValues" : {
+        "Scalar" : 1
+        },
+      "execPortType" : "In",
+      "typeSpec" : "Scalar"
+      },
+    {
+      "objectType" : "ExecPort",
+      "name" : "BinormalCurve",
+      "nodePortType" : "Out",
+      "defaultValues" : {
+        "Boolean" : true
+        },
+      "execPortType" : "In",
+      "typeSpec" : "Boolean"
+      },
+    {
+      "objectType" : "ExecPort",
+      "name" : "BinormalCurveDistance",
+      "nodePortType" : "Out",
+      "defaultValues" : {
+        "Scalar" : 1
+        },
+      "execPortType" : "In",
+      "typeSpec" : "Scalar"
+      },
+    {
+      "objectType" : "ExecPort",
+      "name" : "BinormalInvCurve",
+      "nodePortType" : "Out",
+      "defaultValues" : {
+        "Boolean" : true
+        },
+      "execPortType" : "In",
+      "typeSpec" : "Boolean"
+      },
+    {
+      "objectType" : "ExecPort",
+      "name" : "BinormalInvCurveDistance",
+      "nodePortType" : "Out",
+      "defaultValues" : {
+        "Scalar" : 1
+        },
+      "execPortType" : "In",
+      "typeSpec" : "Scalar"
+      }
+    ],
+  "extDeps" : {
+    "TKCM" : "*"
+    },
+  "presetGUID" : "B77CB5D5B26FEF703A98BA66EDB5A9DC",
+  "code" : "dfgEntry {
+  Boolean create[4];
+  create[0] = NormalCurve;
+  create[1] = NormalInvCurve;
+  create[2] = BinormalCurve;
+  create[3] = BinormalInvCurve;
+  
+  Scalar distance[4];
+  distance[0] = NormalCurveDistance;
+  distance[1] = NormalInvCurveDistance;
+  distance[2] = BinormalCurveDistance;
+  distance[3] = BinormalInvCurveDistance;
+  
+  Index cnt = this.curveCount();
+  for(Integer i=0; i<cnt; i++){
+    this.addNormalDirectionAttributeCurves(i, create, distance);
+  }
+}
+"
+  }

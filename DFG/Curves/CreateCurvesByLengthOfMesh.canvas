@@ -1,0 +1,133 @@
+{
+  "objectType" : "Func",
+  "title" : "CreateCurvesByLengthOfMesh",
+  "ports" : [
+    {
+      "objectType" : "ExecPort",
+      "name" : "exec",
+      "nodePortType" : "IO",
+      "defaultValues" : {
+        "Execute" : {}
+        },
+      "execPortType" : "IO",
+      "typeSpec" : "Execute"
+      },
+    {
+      "objectType" : "ExecPort",
+      "name" : "mesh",
+      "nodePortType" : "Out",
+      "defaultValues" : {
+        "PolygonMesh[]" : []
+        },
+      "execPortType" : "In",
+      "typeSpec" : "PolygonMesh[]"
+      },
+    {
+      "objectType" : "ExecPort",
+      "name" : "createCurveXfos",
+      "nodePortType" : "Out",
+      "defaultValues" : {
+        "Xfo[]" : []
+        },
+      "execPortType" : "In",
+      "typeSpec" : "Xfo[]"
+      },
+    {
+      "objectType" : "ExecPort",
+      "metadata" : {
+        "uiCombo" : "(\"X\", \"Y\", \"Z\")"
+        },
+      "name" : "directionOfMeasure",
+      "nodePortType" : "Out",
+      "defaultValues" : {
+        "Integer" : 1
+        },
+      "execPortType" : "In",
+      "typeSpec" : "Integer"
+      },
+    {
+      "objectType" : "ExecPort",
+      "name" : "result",
+      "nodePortType" : "In",
+      "defaultValues" : {
+        "Curves" : null
+        },
+      "execPortType" : "Out",
+      "typeSpec" : "Curves"
+      }
+    ],
+  "extDeps" : {},
+  "presetGUID" : "AF9305F8339B95B40C9BE22EF8050C91",
+  "code" : "dfgEntry {
+  if(mesh.size() == 0){
+    return;
+  }
+  Mat44 m44;
+  Scalar s0;
+  Scalar s1;
+  Vec3 pos[](2);
+  result = Curves();
+  for(Integer i=0; i<mesh.size(); i++){    
+    switch(directionOfMeasure){
+      case 0:  // X
+        s0 = mesh[i].getPointPosition(0).x;
+        s1 = mesh[i].getPointPosition(0).x;
+        for(Integer j=1; j<mesh[i].pointCount(); j++){
+          if(s0 < mesh[i].getPointPosition(j).x){
+            s0 = mesh[i].getPointPosition(j).x;
+          }
+          if(s1 > mesh[i].getPointPosition(j).x){
+            s1 = mesh[i].getPointPosition(j).x;
+          }
+        }
+        break;
+      case 1:  // Y
+        s0 = mesh[i].getPointPosition(0).y;
+        s1 = mesh[i].getPointPosition(0).y;
+        for(Integer j=1; j<mesh[i].pointCount(); j++){
+          if(s0 < mesh[i].getPointPosition(j).y){
+            s0 = mesh[i].getPointPosition(j).y;
+          }
+          if(s1 > mesh[i].getPointPosition(j).y){
+            s1 = mesh[i].getPointPosition(j).y;
+          }
+        }
+        break;
+      case 2:  // Z
+        s0 = mesh[i].getPointPosition(0).z;
+        s1 = mesh[i].getPointPosition(0).z;
+        for(Integer j=1; j<mesh[i].pointCount(); j++){
+          if(s0 < mesh[i].getPointPosition(j).z){
+            s0 = mesh[i].getPointPosition(j).z;
+          }
+          if(s1 > mesh[i].getPointPosition(j).z){
+            s1 = mesh[i].getPointPosition(j).z;
+          }
+        }
+        break;
+    }
+    if(i >= createCurveXfos.size()){
+      m44 = Mat44();
+    }else{
+      m44 = createCurveXfos[i].toMat44();
+    }
+    switch(directionOfMeasure){
+      case 0:  // X
+        pos[0] = m44.multiplyVector3( Vec3(s0, 0, 0) );
+        pos[1] = m44.multiplyVector3( Vec3(s1, 0, 0) );
+        break;
+      case 1:  // Y
+        pos[0] = m44.multiplyVector3( Vec3(0, s0, 0) );
+        pos[1] = m44.multiplyVector3( Vec3(0, s1, 0) );
+        break;
+      case 2:  // Z
+        pos[0] = m44.multiplyVector3( Vec3(0, 0, s0) );
+        pos[1] = m44.multiplyVector3( Vec3(0, 0, s1) );
+        break;
+    }
+
+    result.addLinearCurve(pos, false);
+  }
+}
+"
+  }
