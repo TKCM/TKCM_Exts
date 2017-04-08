@@ -1,0 +1,13 @@
+inline Color[] MakeRandomColors(Color colors[], Integer count){
+  Color resultColors[];
+  resultColors.resize(colors.size());
+  for(Integer i=0; i<colors.size(); i++){
+    resultColors[i] = colors[i];
+  }
+  resultColors.resize(count);
+  for(Integer i=colors.size(); i<count; i++){
+    resultColors[i] = mathRandomColor ( i+10, i, 0.05, 0.95 );
+  }
+  
+  return resultColors;
+}

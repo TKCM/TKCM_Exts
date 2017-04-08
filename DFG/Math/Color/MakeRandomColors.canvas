@@ -58,24 +58,9 @@
   "extDeps" : {
     "TKCM" : "*"
     },
+  "presetGUID" : "D03E7286B207B2A0F6E68FF9290203E9",
   "code" : "dfgEntry {
   result = MakeRandomColors(fixedColors, count);
 }
-",
-  "args" : [
-    {
-      "type" : "Color[]",
-      "value" : [],
-      "ext" : "Math"
-      },
-    {
-      "type" : "Integer",
-      "value" : 0
-      },
-    {
-      "type" : "Color[]",
-      "value" : [],
-      "ext" : "Math"
-      }
-    ]
+"
   }

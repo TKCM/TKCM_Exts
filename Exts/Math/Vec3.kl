@@ -1,13 +1,12 @@
 
 //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-// GetCloseOrderedList ///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+// GetWeightsFromDistanceToPositions /////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 // ある座標から複数の座標[]に対して近い座標のインデックス、距離、ウェイト値のリストを取得する
-//  リストは近い順、取得の１６個まで
 operator GetDistanceListTask<<<i>>>(io Scalar distance[], Vec3 source, Vec3 target[]){
   distance[i] = source.distanceTo(target[i]);
 }
 
-function GetCloseOrderedList(
+function GetWeightsFromDistanceToPositions(
 	in Vec3 source,
 	in Vec3 target[],
 	in Scalar maxDistance,
@@ -55,7 +54,7 @@ function GetCloseOrderedList(
   Integer outPutCount = 0;
   for(Integer i=0; i<distance.size(); i++){
     if(distance[i] < maxDistance && i < maxCount){
-      sum += pow(distance[i], 3); // ウェイトの計算用に距離の合計値を作る  （対象に近いほどウェイト値が強くなるように3乗した値を使用する）
+      sum += distance[i]; // ウェイトの計算用に距離の合計値を作る
       outPutCount += 1; // 条件によってターゲットから検出される数が変わるので、条件に合った数を数えておく
     }else{
       break;
@@ -70,10 +69,10 @@ function GetCloseOrderedList(
   for(Integer i=0; i<outPutCount; i++){
     orderedIndex.set(i, targetID[i]);
     orderedDistance.set(i,distance[i]);
-    sum2 += 1/(pow(distance[i], 3)/sum); // 逆比の合計を作る　（対象に近いほどウェイト値が強くなるように3乗した値を使用する）
+    sum2 += 1/(distance[i]/sum); // 逆比の合計を作る
   }
   for(Integer i=0; i<outPutCount; i++){
-    weights.set(i, 1/(pow(distance[i], 3)/sum) / sum2); //逆比から改めて比（ウェイト値）を算出　（対象に近いほどウェイト値が強くなるように3乗した値を使用する）
+    weights.set(i, 1/(distance[i]/sum) / sum2); //逆比から改めて比（ウェイト値）を算出　
   }
   //  MulWeightでターゲット数に不足がないかの確認を行えるようにターゲットの数を格納しておく
   //  カウントがothers[0]を作るために5になるが、MulWeightではweightListのcountを参照するので問題ないはず
@@ -81,9 +80,11 @@ function GetCloseOrderedList(
   orderedIndex.others.resize(1);
   orderedIndex.others[0] = target.size();
 }
-
+// GetWeightsFromDistanceToPositions /////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-// GetCloseOrderedListArray //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+//////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+//////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+// GetWeightsFromDistanceToPositionsArray ////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 // ある座標[]から複数の座標[]に対して近い座標のインデックス、距離、ウェイト値のリストを取得する
 operator getDistanceListArrayTask<<<i>>>(io Scalar distance[][], Vec3 source[], Vec3 target[]){
   for(Integer j=0; j<source.size(); j++){
@@ -97,7 +98,7 @@ operator getDistanceListArrayTask2<<<j>>>(io Scalar distance[][], Vec3 source[],
   }
 }
 
-function GetCloseOrderedListArray(
+function GetWeightsFromDistanceToPositionsArray(
 	in Vec3 source[],
 	in Vec3 target[],
 	in Scalar maxDistance,
@@ -165,7 +166,7 @@ function GetCloseOrderedListArray(
   for(Integer k=0; k<source.size(); k++){
     for(Integer i=0; i<distance[k].size(); i++){
       if(distance[k][i] < maxDistance && i < maxCount){
-        sum[k] += pow(distance[k][i], 3); // ウェイトの計算用に距離の合計値を作る  （対象に近いほどウェイト値が強くなるように3乗した値を使用する）
+        sum[k] += distance[k][i]; // ウェイトの計算用に距離の合計値を作る  
         outPutCount[k] += 1; // 条件によって最終出力のターゲット数が変わるので、条件内のターゲット数を数えておく
       }else{
         break;
@@ -188,10 +189,10 @@ function GetCloseOrderedListArray(
     for(Integer i=0; i<outPutCount[k]; i++){
       orderedIndex[k].set(i, targetID[k][i]);
       orderedDistance[k].set(i,distance[k][i]);
-      sum2[k] += 1/(pow(distance[k][i], 3)/sum[k]); // 距離の逆比を作り合計値を作成　（対象に近いほどウェイト値が強くなるように3乗した値を使用する）
+      sum2[k] += 1/(distance[k][i]/sum[k]); // 距離の逆比を作り合計値を作成　
     }
     for(Integer i=0; i<outPutCount[k]; i++){
-      weights[k].set(i, 1/(pow(distance[k][i], 3)/sum[k]) / sum2[k]); //逆比から改めて比（ウェイト値）を算出　（対象に近いほどウェイト値が強くなるように3乗した値を使用する）
+      weights[k].set(i, 1/(distance[k][i]/sum[k]) / sum2[k]); //逆比から改めて比（ウェイト値）を算出　
     }
   }
   //  MulWeightでターゲット数に不足がないかの確認を行えるようにターゲットの数を格納しておく
@@ -200,9 +201,11 @@ function GetCloseOrderedListArray(
   orderedIndex[0].others.resize(1);
   orderedIndex[0].others[0] = target.size();
 }
-
+// GetWeightsFromDistanceToPositionsArray ////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-// GetSmallAngleOrderedListArray //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+//////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+//////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+// GetWeightsFromAngleDifferenceArray ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 // 入力のベクトルからターゲットへのベクトルに対して、角度の差が小さなベクトルを順番に取得する（最大４つ）
 // 取得はターゲットの配列番号、角度の差分、ウェイト値
 function Scalar Scalar.ToAngle?(){
@@ -217,7 +220,7 @@ operator getAngleListArrayTask<<<index>>>(io Scalar delta[][], Vec3 direction[],
   }
 }
 // directionとtargetはノーマライズしておく必要がある
-function GetAngleListArray(
+function GetWeightsFromAngleDifferenceArray(
   in Vec3 direction[],
   in Vec3 target[],
   in Scalar maxAngle,
@@ -275,7 +278,7 @@ function GetAngleListArray(
   for(Integer k=0; k<direction.size(); k++){
     for(Integer i=0; i<delta[k].size(); i++){
       if(delta[k][i] < maxAngle && i < maxCount){
-        sum[k] += pow(delta[k][i], 3); // ウェイトの計算用に角度の差分の合計値を作る  （対象に近いほどウェイト値が強くなるように3乗した値を使用する）
+        sum[k] += delta[k][i]; // ウェイトの計算用に角度の差分の合計値を作る 
         outPutCount[k] += 1; // 条件によって最終出力のターゲット数が変わるので、条件内のターゲット数を数えておく
       }else{
         break;
@@ -297,10 +300,10 @@ function GetAngleListArray(
     for(Integer i=0; i<outPutCount[k]; i++){
       indexList[k].set(i, targetID[k][i]);
       deltaAngle[k].set(i,delta[k][i]);
-      sum2[k] += 1/(pow(delta[k][i], 3)/sum[k]); // 差分の逆比を作り合計値を作成 （対象に近いほどウェイト値が強くなるように3乗した値を使用する）
+      sum2[k] += 1/(delta[k][i]/sum[k]); // 差分の逆比を作り合計値を作成
     }
     for(Integer i=0; i<outPutCount[k]; i++){
-      weights[k].set(i, 1/(pow(delta[k][i], 3)/sum[k]) / sum2[k]); //逆比から改めて比（ウェイト値）を算出 （対象に近いほどウェイト値が強くなるように3乗した値を使用する）
+      weights[k].set(i, 1/(delta[k][i]/sum[k]) / sum2[k]); //逆比から改めて比（ウェイト値）を算出 
     }
   }
   //  MulWeightでターゲット数に不足がないかの確認を行えるようにターゲットの数を格納しておく
@@ -309,16 +312,18 @@ function GetAngleListArray(
   indexList[0].others.resize(1);
   indexList[0].others[0] = target.size();
 }
-
+// GetWeightsFromAngleDifferenceArray ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-// MulWeight /////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+//////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+//////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+// getMultipliedVec3ValueByWeights ///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 operator MulWeightArrayTask<<<i>>>(io Vec3 result[], in Vec3 target[], in LocalL4UInt32Array indexList[], in LocalL4ScalarArray weights[]){
   for(Integer j=0; j<weights[i].count; j++){
     result[i] += target[indexList[i].first4[j]] * weights[i].first4[j];
   }
 }
 
-function Vec3[].mulWeight!(Vec3 target[], LocalL4UInt32Array indexList[], LocalL4ScalarArray weights[]){
+function Vec3[].getMultipliedVec3ValueByWeights!(Vec3 target[], LocalL4UInt32Array indexList[], LocalL4ScalarArray weights[]){
   //  リストを制作した際のターゲット数と今回参照するターゲット数に不足がないかを確認する
   //  indexList[0].others[0]にターゲット数が格納されているためcountの数が実際のターゲット数とは異なるので、ループではweightsのサイズを使用する
   if(indexList[0].others[0] > target.size()){
@@ -334,3 +339,5 @@ function Vec3[].mulWeight!(Vec3 target[], LocalL4UInt32Array indexList[], LocalL
     }
   }
 }
+
+// getMultipliedVec3ValueByWeights ///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////

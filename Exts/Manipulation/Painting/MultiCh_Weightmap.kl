@@ -134,20 +134,6 @@ inline Scalar[] MultiChWeightmap.getMapValues?(Integer ch, Integer resize){
   return values;
 }
 
-inline Color[] MakeRandomColors(Color colors[], Integer count){
-  Color resultColors[];
-  resultColors.resize(colors.size());
-  for(Integer i=0; i<colors.size(); i++){
-    resultColors[i] = colors[i];
-  }
-  resultColors.resize(count);
-  for(Integer i=colors.size(); i<count; i++){
-    resultColors[i] = mathRandomColor ( i+10, i, 0.05, 0.95 );
-  }
-  
-  return resultColors;
-}
-
 //　getIndices用のオペレータ　i=頂点or面の数
 operator getIndicesTask<<<i>>>(
   io Boolean hasVal[], 
