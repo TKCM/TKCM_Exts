@@ -147,7 +147,7 @@ function ArrayValueManipHandle.addPositionAxisManip!(
   if(this.gizmoHandlers.has(uniqueName) && this.oldModeID[name] == mode && this.oldAxisAndNormal[name][0] == axis && this.evalType[name] == evalType){
     return;
   }
-report(setID);
+
   TransformManipulationCallback2 callback();
   callback.addTarget(transform);
   callback.setPortToDrive(portToDrive);
@@ -328,11 +328,15 @@ function ArrayValueManipHandle.addOrientationAxisManip!(
   instance = this.getGizmoInstance(name+setID, mesh, xfoToUse, color, parentInstance);
   InlineTransform transform = instance.getTransform();
 
-  String uniqueName = name + setID + this.uid();
-  if(this.gizmoHandlers.has(uniqueName) && this.oldModeID[name] == mode && this.oldAxisAndNormal[name][0] == axis && this.evalType[name] == evalType)
-    return;
   TransformManipulationCallback2 callback();
   callback.addTarget(transform);
+  callback.targets[0].setGlobalXfo(0,xfoToUse); //  入力されたポジションが変更された場合追従させる
+
+  String uniqueName = name + setID + this.uid();
+  if(this.gizmoHandlers.has(uniqueName) && this.oldModeID[name] == mode && this.oldAxisAndNormal[name][0] == axis && this.evalType[name] == evalType){
+    return;
+  }
+
   callback.setPortToDrive(portToDrive);
   callback.setGraph(hostGraphName);
   callback.setID = setID;
@@ -340,6 +344,7 @@ function ArrayValueManipHandle.addOrientationAxisManip!(
   callback.restXfo = this.manipulationResultXfo[name];
   callback.evalType = evalType;
   this.gizmoHandlers[uniqueName] = OrientationAxisGizmoHandler(instance, axis, callback);
+  
   if(setID == xfo.size()-1){
     this.oldModeID[name] = mode;
     this.oldAxisAndNormal[name][0] = axis;
@@ -383,12 +388,15 @@ function ArrayValueManipHandle.addOrientationSphericalManip!(
   instance = this.getGizmoInstance(name+setID, mesh, xfoToUse, color, parentInstance);
   InlineTransform transform = instance.getTransform();
 
-  String uniqueName = name + setID + this.uid();
-  if(this.gizmoHandlers.has(uniqueName) && this.oldModeID[name] == mode && this.evalType[name] == evalType)
-    return;
-
   TransformManipulationCallback2 callback();
   callback.addTarget(transform);
+  callback.targets[0].setGlobalXfo(0,xfoToUse); //  入力されたポジションが変更された場合追従させる
+
+  String uniqueName = name + setID + this.uid();
+  if(this.gizmoHandlers.has(uniqueName) && this.oldModeID[name] == mode && this.evalType[name] == evalType){
+    return;
+  }
+  
   callback.setPortToDrive(portToDrive);
   callback.setGraph(hostGraphName);
   callback.setID = setID;
@@ -403,7 +411,7 @@ function ArrayValueManipHandle.addOrientationSphericalManip!(
   }
 }
 
-// add manipilator ///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+// add Quat manipilator ///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////

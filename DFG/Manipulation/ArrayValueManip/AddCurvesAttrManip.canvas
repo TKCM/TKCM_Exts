@@ -1,8 +1,8 @@
 {
   "objectType" : "Graph",
   "metadata" : {
-    "uiGraphZoom" : "{\n  \"value\" : 0.5976872444152832\n  }",
-    "uiGraphPan" : "{\n  \"x\" : 634.9377417428552,\n  \"y\" : 118.7825575160193\n  }"
+    "uiGraphZoom" : "{\n  \"value\" : 0.5963396430015564\n  }",
+    "uiGraphPan" : "{\n  \"x\" : 769.150634765625,\n  \"y\" : -23.11576080322266\n  }"
     },
   "title" : "AddCurvesAttrManip",
   "ports" : [
@@ -39,6 +39,20 @@
     {
       "objectType" : "ExecPort",
       "metadata" : {
+        "uiPersistValue" : "true"
+        },
+      "name" : "activateManipulator",
+      "nodePortType" : "Out",
+      "defaultValues" : {
+        "Boolean" : true
+        },
+      "execPortType" : "In",
+      "typeSpec" : "Boolean"
+      },
+    {
+      "objectType" : "ExecPort",
+      "metadata" : {
+        "uiPersistValue" : "true",
         "uiCombo" : "(\"normals\")"
         },
       "name" : "targetAttrName",
@@ -51,13 +65,17 @@
       },
     {
       "objectType" : "ExecPort",
-      "name" : "activateManipulator",
+      "metadata" : {
+        "uiPersistValue" : "true",
+        "uiCombo" : "(\"x\", \"z\")"
+        },
+      "name" : "normals_axis",
       "nodePortType" : "Out",
       "defaultValues" : {
-        "Boolean" : true
+        "Integer" : 1
         },
       "execPortType" : "In",
-      "typeSpec" : "Boolean"
+      "typeSpec" : "Integer"
       },
     {
       "objectType" : "ExecPort",
@@ -86,10 +104,13 @@
       },
     {
       "objectType" : "ExecPort",
+      "metadata" : {
+        "uiPersistValue" : "true"
+        },
       "name" : "drawNormalsSize",
       "nodePortType" : "Out",
       "defaultValues" : {
-        "Scalar" : 3
+        "Scalar" : 20
         },
       "execPortType" : "In",
       "typeSpec" : "Scalar"
@@ -97,6 +118,7 @@
     {
       "objectType" : "ExecPort",
       "metadata" : {
+        "uiPersistValue" : "true",
         "uiCombo" : "(\"non\", \"evalCavasNode\")"
         },
       "name" : "callCommand",
@@ -109,6 +131,9 @@
       },
     {
       "objectType" : "ExecPort",
+      "metadata" : {
+        "uiPersistValue" : "true"
+        },
       "name" : "hostGraphName",
       "nodePortType" : "Out",
       "defaultValues" : {
@@ -119,6 +144,9 @@
       },
     {
       "objectType" : "ExecPort",
+      "metadata" : {
+        "uiPersistValue" : "true"
+        },
       "name" : "portName",
       "nodePortType" : "Out",
       "defaultValues" : {
@@ -139,7 +167,7 @@
       },
     {
       "objectType" : "ExecPort",
-      "name" : "drawThis",
+      "name" : "execDrawNormals",
       "nodePortType" : "In",
       "defaultValues" : {
         "DrawingHandle" : null
@@ -151,12 +179,12 @@
   "extDeps" : {
     "TKCM" : "*"
     },
-  "presetGUID" : "144CCEBDB96767B9AC5E8AF7C779F78B",
+  "presetGUID" : "9149D519BCB5D168075E6C3CA65A7A68",
   "nodes" : [
     {
       "objectType" : "Inst",
       "metadata" : {
-        "uiGraphPos" : "{\"x\":-694.39,\"y\":33.3185}"
+        "uiGraphPos" : "{\"x\":-697.334,\"y\":33.7695}"
         },
       "name" : "CreateAttribute",
       "ports" : [
@@ -198,7 +226,7 @@
     {
       "objectType" : "Inst",
       "metadata" : {
-        "uiGraphPos" : "{\"x\":-163.0621538461539,\"y\":148.2036153846154}"
+        "uiGraphPos" : "{\"x\":-228.901,\"y\":162.953}"
         },
       "name" : "AddXfoOriArrayManip_1",
       "ports" : [
@@ -295,12 +323,12 @@
           }
         ],
       "executable" : "TKCM.Manipulation.ArrayValueManip.AddXfoOriArrayManip",
-      "presetGUID" : "9CD071006D79BA4398B82884A26A788F"
+      "presetGUID" : "E8755D025D6D5FBC531C15124C3AEA29"
       },
     {
       "objectType" : "Inst",
       "metadata" : {
-        "uiGraphPos" : "{\"x\":-367.219,\"y\":147.474}"
+        "uiGraphPos" : "{\"x\":-460.644,\"y\":147.925}"
         },
       "name" : "GetXfoAtPoint",
       "ports" : [
@@ -353,7 +381,8 @@
   Size poiCount = 0;
   for(Integer i=0; i<this.curveCount(); i++){
     for(Integer j=0; j<this.getCurve(i).pointCount(); j++){
-      Scalar nParam = 1.0 / (this.getCurve(i).pointCount()-1) * j;
+      Float32 lengthRatio = 1.0 / (this.getCurve(i).pointCount()-1) * i;
+      Float32 nParam = this.getNormalizedParameterFromLengthRatio(i, lengthRatio);
       if(j == 0){  nParam = 0.0;  }
       Vec3 pos = this.getPointPosition(poiCount);
       
@@ -363,14 +392,23 @@
       if(this.getCurveType(i) == 1 || this.getDegree(i) == 1){
         normal = Vec3(0, 1, 0);
       }else{
-        normal = this.getNormalAtNormalizedParam(i, nParam);
+        if(this.attributes.has(\"normals\")){
+          Ref<Vec3Attribute> normalsAttr = this.attributes.getAttribute(\"normals\");
+          UInt32 startID = this.getFirstPointIndex(i);
+          normal = normalsAttr.values[j+startID];
+          if(normal == Vec3(0)){
+            normal = this.getNormalAtNormalizedParam(i, nParam);
+          }
+        }else{
+          normal = this.getNormalAtNormalizedParam(i, nParam);
+        }
       }
       ori.setFromDirectionAndUpvector(tangent, normal);
-      result[poiCount] = Xfo(pos, ori);
-      
+      result[poiCount] = Xfo(pos, ori);     
       poiCount += 1;
     }
   }
+  
 }
 "
         }
@@ -471,6 +509,16 @@
         {
           "objectType" : "InstPort",
           "name" : "uint16ArrayValues",
+          "nodePortType" : "In"
+          },
+        {
+          "objectType" : "InstPort",
+          "name" : "uint32ArrayValues",
+          "nodePortType" : "In"
+          },
+        {
+          "objectType" : "InstPort",
+          "name" : "sint32ArrayValues",
           "nodePortType" : "In"
           },
         {
@@ -794,7 +842,7 @@
     {
       "objectType" : "Inst",
       "metadata" : {
-        "uiGraphPos" : "{\"x\":723.42,\"y\":206.323}"
+        "uiGraphPos" : "{\"x\":695.2910000000001,\"y\":273.834}"
         },
       "name" : "GetYaxisArray_1",
       "ports" : [
@@ -820,7 +868,7 @@
     {
       "objectType" : "Inst",
       "metadata" : {
-        "uiGraphPos" : "{\"x\":529.52,\"y\":175.982}"
+        "uiGraphPos" : "{\"x\":501.391,\"y\":243.493}"
         },
       "name" : "DecomposeXfoArray_1",
       "ports" : [
@@ -852,6 +900,71 @@
         ],
       "executable" : "Fabric.Exts.Math.Xfo.DecomposeXfoArray",
       "presetGUID" : "32E2822D6AB1A2021BDFF23F3171471E"
+      },
+    {
+      "objectType" : "Inst",
+      "metadata" : {
+        "uiGraphPos" : "{\"x\":-735.321,\"y\":239.991}"
+        },
+      "name" : "SwitchCase4_1",
+      "ports" : [
+        {
+          "objectType" : "InstPort",
+          "name" : "exec",
+          "nodePortType" : "IO"
+          },
+        {
+          "objectType" : "InstPort",
+          "name" : "condition",
+          "nodePortType" : "In"
+          },
+        {
+          "objectType" : "InstPort",
+          "name" : "case0",
+          "nodePortType" : "In",
+          "defaultValues" : {
+            "Vec3" : {
+              "x" : 1,
+              "y" : 0,
+              "z" : 0
+              }
+            }
+          },
+        {
+          "objectType" : "InstPort",
+          "name" : "case1",
+          "nodePortType" : "In",
+          "defaultValues" : {
+            "Vec3" : {
+              "x" : 0,
+              "y" : 0,
+              "z" : 1
+              }
+            }
+          },
+        {
+          "objectType" : "InstPort",
+          "name" : "case2",
+          "nodePortType" : "In"
+          },
+        {
+          "objectType" : "InstPort",
+          "name" : "case3",
+          "nodePortType" : "In"
+          },
+        {
+          "objectType" : "InstPort",
+          "name" : "default_value",
+          "nodePortType" : "In"
+          },
+        {
+          "objectType" : "InstPort",
+          "name" : "result",
+          "nodePortType" : "Out"
+          }
+        ],
+      "executable" : "Fabric.Core.Control.SwitchCase4",
+      "presetGUID" : "0505855834341C76D4AFB00ECDD0E9C3"
       }
     ],
   "connections" : {
@@ -860,6 +973,9 @@
       ],
     "curves" : [
       "CreateAttribute.curves"
+      ],
+    "normals_axis" : [
+      "SwitchCase4_1.condition"
       ],
     "manipulatorColor" : [
       "AddXfoOriArrayManip_1.manipulatorColor"
@@ -903,7 +1019,7 @@
       "curves"
       ],
     "DrawXfoArray_2.drawThis" : [
-      "drawThis"
+      "execDrawNormals"
       ],
     "DecomposeXfoArray_2.ori" : [
       "XfoArray_2.ori"
@@ -941,6 +1057,9 @@
       ],
     "DecomposeXfoArray_1.ori" : [
       "GetYaxisArray_1.this"
+      ],
+    "SwitchCase4_1.result" : [
+      "AddXfoOriArrayManip_1.axis"
       ]
     },
   "requiredPresets" : {
@@ -1243,7 +1362,7 @@
         "Manipulation" : "*",
         "TKCM" : "*"
         },
-      "presetGUID" : "9CD071006D79BA4398B82884A26A788F",
+      "presetGUID" : "E8755D025D6D5FBC531C15124C3AEA29",
       "code" : "dfgEntry {
   if(this == null){
     this = ArrayValueManipHandle();
@@ -1459,6 +1578,26 @@
           },
         {
           "objectType" : "ExecPort",
+          "name" : "uint32ArrayValues",
+          "nodePortType" : "Out",
+          "defaultValues" : {
+            "UInt32[][]" : []
+            },
+          "execPortType" : "In",
+          "typeSpec" : "UInt32[][]"
+          },
+        {
+          "objectType" : "ExecPort",
+          "name" : "sint32ArrayValues",
+          "nodePortType" : "Out",
+          "defaultValues" : {
+            "SInt32[][]" : []
+            },
+          "execPortType" : "In",
+          "typeSpec" : "SInt32[][]"
+          },
+        {
+          "objectType" : "ExecPort",
           "name" : "float32ArrayValues",
           "nodePortType" : "Out",
           "defaultValues" : {
@@ -1592,9 +1731,24 @@ dfgEntry {
       success = baseGeom.setUInt16ConstantArrayAttributeValueArray(attr, mode, indices, uint16ArrayValues);
       break;
     }
+    case UInt32ArrayAttribute:
+    {
+      success = baseGeom.setUInt32ArrayAttributeValueArray(attr, mode, indices, uint32ArrayValues);
+      break;
+    }
+    case IntegerArrayAttribute:
+    {
+      success = baseGeom.setIntegerArrayAttributeValueArray(attr, mode, indices, sint32ArrayValues);
+      break;
+    }
     case ScalarConstantArrayAttribute:
     {
       success = baseGeom.setScalarConstantArrayAttributeValueArray(attr, mode, indices, float32ArrayValues);
+      break;
+    }
+    case ScalarArrayAttribute:
+    {
+      success = baseGeom.setScalarArrayAttributeValueArray(attr, mode, indices, float32ArrayValues);
       break;
     }
     case SkinningAttribute:
@@ -2988,6 +3142,128 @@ dfgEntry {
     }
   } else {
     Math_Quat_getYaxis_task<<<task_size>>>(result, this);
+  }
+}
+"
+      },
+    "Fabric.Core.Control.SwitchCase4" : {
+      "objectType" : "Func",
+      "metadata" : {
+        "uiTextColor" : "{\n  \"r\" : 20,\n  \"g\" : 20,\n  \"b\" : 20\n  }",
+        "uiNodeColor" : "{\n  \"r\" : 121,\n  \"g\" : 134,\n  \"b\" : 143\n  }"
+        },
+      "title" : "SwitchCase4",
+      "ports" : [
+        {
+          "objectType" : "ExecPort",
+          "name" : "exec",
+          "nodePortType" : "IO",
+          "defaultValues" : {
+            "Execute" : {}
+            },
+          "execPortType" : "IO",
+          "typeSpec" : "Execute"
+          },
+        {
+          "objectType" : "ExecPort",
+          "name" : "condition",
+          "nodePortType" : "Out",
+          "defaultValues" : {
+            "Integer" : -1
+            },
+          "execPortType" : "In",
+          "typeSpec" : "Integer"
+          },
+        {
+          "objectType" : "ExecPort",
+          "name" : "case0",
+          "nodePortType" : "Out",
+          "defaultValues" : {
+            "Scalar" : 0
+            },
+          "execPortType" : "In",
+          "typeSpec" : "$TYPE$"
+          },
+        {
+          "objectType" : "ExecPort",
+          "name" : "case1",
+          "nodePortType" : "Out",
+          "defaultValues" : {
+            "Scalar" : 0
+            },
+          "execPortType" : "In",
+          "typeSpec" : "$TYPE$"
+          },
+        {
+          "objectType" : "ExecPort",
+          "name" : "case2",
+          "nodePortType" : "Out",
+          "defaultValues" : {
+            "Scalar" : 0
+            },
+          "execPortType" : "In",
+          "typeSpec" : "$TYPE$"
+          },
+        {
+          "objectType" : "ExecPort",
+          "name" : "case3",
+          "nodePortType" : "Out",
+          "defaultValues" : {
+            "Scalar" : 0
+            },
+          "execPortType" : "In",
+          "typeSpec" : "$TYPE$"
+          },
+        {
+          "objectType" : "ExecPort",
+          "name" : "default_value",
+          "nodePortType" : "Out",
+          "defaultValues" : {
+            "Scalar" : 0
+            },
+          "execPortType" : "In",
+          "typeSpec" : "$TYPE$"
+          },
+        {
+          "objectType" : "ExecPort",
+          "name" : "result",
+          "nodePortType" : "In",
+          "defaultValues" : {
+            "Scalar" : 0
+            },
+          "execPortType" : "Out",
+          "typeSpec" : "$TYPE$"
+          }
+        ],
+      "extDeps" : {},
+      "presetGUID" : "0505855834341C76D4AFB00ECDD0E9C3",
+      "code" : "dfgEntry {
+
+  switch(condition) {
+    case 0:
+    {
+      result = case0;
+      break;
+    }
+    case 1:
+    {
+      result = case1;
+      break;
+    }
+    case 2:
+    {
+      result = case2;
+      break;
+    }
+    case 3:
+    {
+      result = case3;
+      break;
+    }
+    default:
+    {
+      result = default_value;
+    }
   }
 }
 "

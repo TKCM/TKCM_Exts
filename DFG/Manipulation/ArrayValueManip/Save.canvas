@@ -50,7 +50,7 @@
       "name" : "save_ExternalFile",
       "nodePortType" : "Out",
       "defaultValues" : {
-        "Boolean" : true
+        "Boolean" : false
         },
       "execPortType" : "In",
       "typeSpec" : "Boolean"
@@ -63,7 +63,9 @@
       "name" : "save_FolderPath",
       "nodePortType" : "Out",
       "defaultValues" : {
-        "FilePath" : "O:\\FabricEngine\\FabricEngine_study\\FE_study\\assets"
+        "FilePath" : {
+          "handle" : true
+          }
         },
       "execPortType" : "In",
       "typeSpec" : "FilePath"
@@ -76,7 +78,7 @@
       "name" : "save_FileName",
       "nodePortType" : "Out",
       "defaultValues" : {
-        "String" : "arrayValManip"
+        "String" : ""
         },
       "execPortType" : "In",
       "typeSpec" : "String"
@@ -85,7 +87,7 @@
   "extDeps" : {
     "TKCM" : "*"
     },
-  "presetGUID" : "BC91837E435F2A128FD0103BCBF4E7B7",
+  "presetGUID" : "135D12D28F42C05B245F0914C5BCE285",
   "code" : "dfgEntry {
   if(this == null){
     this = ArrayValueManipHandle();
