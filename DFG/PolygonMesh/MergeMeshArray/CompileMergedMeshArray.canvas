@@ -1,0 +1,63 @@
+{
+  "objectType" : "Func",
+  "metadata" : {
+    "uiDocUrl" : "http://docs.fabric-engine.com/FabricEngine/2.4.0/HTML/KLExtensionsGuide/Geometry/PolygonMesh.html",
+    "uiTooltip" : "Appends a mesh to this one, including its attributes.\n\nMerge a single mesh to this one.\n\n Supported by PolygonMesh"
+    },
+  "title" : "CompileMergedMeshArray",
+  "ports" : [
+    {
+      "objectType" : "ExecPort",
+      "name" : "exec",
+      "nodePortType" : "IO",
+      "defaultValues" : {
+        "Execute" : {}
+        },
+      "execPortType" : "IO",
+      "typeSpec" : "Execute"
+      },
+    {
+      "objectType" : "ExecPort",
+      "metadata" : {
+        "uiColor" : "{\n  \"r\" : 51,\n  \"g\" : 1,\n  \"b\" : 106\n  }"
+        },
+      "name" : "base",
+      "nodePortType" : "IO",
+      "defaultValues" : {
+        "PolygonMesh[]" : []
+        },
+      "execPortType" : "IO",
+      "typeSpec" : "PolygonMesh[]"
+      },
+    {
+      "objectType" : "ExecPort",
+      "metadata" : {
+        "uiColor" : "{\n  \"r\" : 51,\n  \"g\" : 1,\n  \"b\" : 106\n  }"
+        },
+      "name" : "source",
+      "nodePortType" : "Out",
+      "defaultValues" : {
+        "PolygonMesh[]" : []
+        },
+      "execPortType" : "In",
+      "typeSpec" : "PolygonMesh[]"
+      }
+    ],
+  "extDeps" : {
+    "Geometry" : "*"
+    },
+  "presetGUID" : "65E35CBD5AE10D81224BBFC467FA2B40",
+  "code" : "require Geometry;
+
+dfgEntry {
+  if(base.size() != source.size()){
+    report(\"!!!!!!Error!!!!!! ::: MergeMeshArray : this.size \" +base.size() +\" != source.size\" + source.size());
+    return;
+  }
+  for(Integer i=0; i<base.size(); i++){
+    Ref<PolygonMesh> source_ref = source[i];
+    base[i].mergeMesh(source_ref);
+  }
+}
+"
+  }

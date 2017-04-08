@@ -1,0 +1,844 @@
+{
+  "objectType" : "Graph",
+  "metadata" : {
+    "uiGraphZoom" : "{\n  \"value\" : 0.8793600797653198\n  }",
+    "uiGraphPan" : "{\n  \"x\" : 399.4840698242188,\n  \"y\" : -179.4859161376953\n  }"
+    },
+  "title" : "CurveWrap",
+  "ports" : [
+    {
+      "objectType" : "ExecPort",
+      "name" : "exec",
+      "nodePortType" : "IO",
+      "defaultValues" : {
+        "Execute" : {}
+        },
+      "execPortType" : "IO",
+      "typeSpec" : "Execute"
+      },
+    {
+      "objectType" : "ExecPort",
+      "name" : "mergedMesh",
+      "nodePortType" : "Out",
+      "defaultValues" : {
+        "PolygonMesh[]" : []
+        },
+      "execPortType" : "In",
+      "typeSpec" : "PolygonMesh[]"
+      },
+    {
+      "objectType" : "ExecPort",
+      "name" : "clonedSourceMeshIDList",
+      "nodePortType" : "Out",
+      "defaultValues" : {
+        "Integer[]" : []
+        },
+      "execPortType" : "In",
+      "typeSpec" : "Integer[]"
+      },
+    {
+      "objectType" : "ExecPort",
+      "name" : "wrapTargetCurves",
+      "nodePortType" : "Out",
+      "defaultValues" : {
+        "Curves" : null
+        },
+      "execPortType" : "In",
+      "typeSpec" : "Curves"
+      },
+    {
+      "objectType" : "ExecPort",
+      "name" : "sourceMeshes",
+      "nodePortType" : "Out",
+      "defaultValues" : {
+        "PolygonMesh[]" : []
+        },
+      "execPortType" : "In",
+      "typeSpec" : "PolygonMesh[]"
+      },
+    {
+      "objectType" : "ExecPort",
+      "name" : "sourceMeshTargetCurves",
+      "nodePortType" : "Out",
+      "defaultValues" : {
+        "Curves" : null
+        },
+      "execPortType" : "In",
+      "typeSpec" : "Curves"
+      },
+    {
+      "objectType" : "ExecPort",
+      "name" : "segmentValues",
+      "nodePortType" : "Out",
+      "defaultValues" : {
+        "Vec2Array[]" : []
+        },
+      "execPortType" : "In",
+      "typeSpec" : "Vec2Array[]"
+      },
+    {
+      "objectType" : "ExecPort",
+      "name" : "result",
+      "nodePortType" : "In",
+      "defaultValues" : {
+        "PolygonMesh[]" : []
+        },
+      "execPortType" : "Out",
+      "typeSpec" : "PolygonMesh[]"
+      }
+    ],
+  "extDeps" : {
+    "TKCM" : "*"
+    },
+  "presetGUID" : "D3095C5146600823CF05B4151891CEC3",
+  "nodes" : [
+    {
+      "objectType" : "Inst",
+      "metadata" : {
+        "uiGraphPos" : "{\"x\":922.979,\"y\":428.994}"
+        },
+      "name" : "CurvesWrapCore",
+      "ports" : [
+        {
+          "objectType" : "InstPort",
+          "name" : "exec",
+          "nodePortType" : "IO"
+          },
+        {
+          "objectType" : "InstPort",
+          "name" : "targetCurves",
+          "nodePortType" : "In",
+          "defaultValues" : {
+            "Curves" : null
+            }
+          },
+        {
+          "objectType" : "InstPort",
+          "name" : "useSegmentValues",
+          "nodePortType" : "In",
+          "defaultValues" : {
+            "Boolean" : false
+            }
+          },
+        {
+          "objectType" : "InstPort",
+          "name" : "clonedSegmentList",
+          "nodePortType" : "In"
+          },
+        {
+          "objectType" : "InstPort",
+          "name" : "mergedMesh",
+          "nodePortType" : "IO"
+          },
+        {
+          "objectType" : "InstPort",
+          "name" : "lengthRatioSet",
+          "nodePortType" : "In"
+          },
+        {
+          "objectType" : "InstPort",
+          "name" : "deltaPositionSet",
+          "nodePortType" : "In"
+          }
+        ],
+      "definition" : {
+        "objectType" : "Func",
+        "title" : "func",
+        "ports" : [
+          {
+            "objectType" : "ExecPort",
+            "name" : "exec",
+            "nodePortType" : "IO",
+            "execPortType" : "IO",
+            "typeSpec" : "Execute"
+            },
+          {
+            "objectType" : "ExecPort",
+            "name" : "targetCurves",
+            "nodePortType" : "Out",
+            "execPortType" : "In",
+            "typeSpec" : "Curves"
+            },
+          {
+            "objectType" : "ExecPort",
+            "name" : "useSegmentValues",
+            "nodePortType" : "Out",
+            "execPortType" : "In",
+            "typeSpec" : "Boolean"
+            },
+          {
+            "objectType" : "ExecPort",
+            "name" : "clonedSegmentList",
+            "nodePortType" : "Out",
+            "execPortType" : "In",
+            "typeSpec" : "Vec3Array[]"
+            },
+          {
+            "objectType" : "ExecPort",
+            "name" : "mergedMesh",
+            "nodePortType" : "IO",
+            "execPortType" : "IO",
+            "typeSpec" : "PolygonMesh[]"
+            },
+          {
+            "objectType" : "ExecPort",
+            "name" : "lengthRatioSet",
+            "nodePortType" : "Out",
+            "execPortType" : "In",
+            "typeSpec" : "LocalL4ScalarArray[][]"
+            },
+          {
+            "objectType" : "ExecPort",
+            "name" : "deltaPositionSet",
+            "nodePortType" : "Out",
+            "execPortType" : "In",
+            "typeSpec" : "Vec3Array[][]"
+            }
+          ],
+        "extDeps" : {
+          "TKCM" : "*"
+          },
+        "code" : "operator CurveWrapTask<<<index>>>(
+  io PolygonMeshTopology mesh,
+  io Vec3 positions[],
+  in Size sourceMeshPointCount,
+  in Curves target,
+  in Curves targetNormal,
+  in Boolean useSegmentValue,
+  in Vec3 clonedSegmentList[],  //  [Vec3(curveID, segmentStartVal, endVal), Vec3...]
+  in LocalL4ScalarArray[] sourceMeshLengthRatio,  //  [pointID][Scalar(LengthRatio), Scalar..]
+  in Vec3Array[] sourceMeshDeltaPosition  //  [pointID][Vec3(deltaPos to targetCurve), Vec3..]
+  ){
+  Index poiID = index;
+  Vec3 position = positions[poiID];
+  Index cloneID = index/sourceMeshPointCount;
+  Index soucePoiID = index % sourceMeshPointCount;
+  Index targetCurveID = clonedSegmentList[cloneID].x;
+  Scalar lengthRatioRe = sourceMeshLengthRatio[soucePoiID].first4[0];
+  if(useSegmentValue){
+    Scalar start = clonedSegmentList[cloneID].y;
+    Scalar end = clonedSegmentList[cloneID].z;
+    lengthRatioRe = start + (end - start) * lengthRatioRe / 1.0;  //  rescale
+  }
+  Scalar nParam = target.getNormalizedParameterFromLengthRatio(targetCurveID, lengthRatioRe);
+  
+  Vec3 restNom = targetNormal.getPositionAtNormalizedParam (targetCurveID, nParam) - target.getPositionAtNormalizedParam (targetCurveID, nParam);
+  Vec3 restPos = target.getPositionAtNormalizedParam(targetCurveID, nParam);
+  if(lengthRatioRe == 0.0){
+    lengthRatioRe = 0.001;
+    nParam = target.getNormalizedParameterFromLengthRatio(targetCurveID, lengthRatioRe);
+  }else if(lengthRatioRe == 1.0){
+    lengthRatioRe = 0.999;
+    nParam = target.getNormalizedParameterFromLengthRatio(targetCurveID, lengthRatioRe);
+  }
+  Vec3 restTan = target.getTangentAtNormalizedParam(targetCurveID, nParam);
+  Quat qu;
+  qu.setFromDirectionAndUpvector(restTan, restNom);
+  Mat44 gM = Xfo(qu, restPos, Vec3(1.0)).toMat44();
+  position = gM.multiplyVector3(sourceMeshDeltaPosition[soucePoiID][0]);
+  mesh.setPointAttribute( poiID, positions, position );
+}
+
+dfgEntry {
+  if(mergedMesh.size() == 0 || lengthRatioSet.size() == 0 || deltaPositionSet.size() == 0){ 
+    return;  
+  }
+  if(targetCurves.attributes.has(\"normalDirections\") == false){
+    report(\"!!!!!!Error!!!!!! ::: CurveWrap : input targetCurves don't have 'normalDirections' attribute\");
+    return;
+  }
+  
+  Curves targetNormalCurves = targetCurves.createNormalDirectionAttributeCurves(0, 1.0);
+  
+  for(Integer i=0; i<mergedMesh.size(); i++){    
+    if(mergedMesh[i] == null || mergedMesh[i].pointCount() == 0){
+      continue;
+    }
+    Ref<Vec3Attribute> positionsAttribute = mergedMesh[i].getAttributes().positionsAttribute;
+    Index sourceMeshPointCount = deltaPositionSet[i].size();
+
+    if(mergedMesh[i].pointCount() % sourceMeshPointCount != 0.0){
+      report(\"!!!!!!Error!!!!!! ::: CurveWrap : not match point count\");
+      return;
+    }
+
+    if(mergedMesh[i].pointCount() < 1000){
+      for(Integer j=0; j<mergedMesh[i].pointCount(); j++){
+        CurveWrapTask(
+          j,
+          mergedMesh[i].topology,
+          positionsAttribute.values,
+          sourceMeshPointCount,
+          targetCurves,
+          targetNormalCurves,
+          useSegmentValues,
+          clonedSegmentList[i],
+          lengthRatioSet[i],
+          deltaPositionSet[i]);
+      }
+    }else{
+      CurveWrapTask<<<mergedMesh[i].pointCount()>>>(
+        mergedMesh[i].topology,
+        positionsAttribute.values,
+        sourceMeshPointCount,
+        targetCurves,
+        targetNormalCurves,
+        useSegmentValues,
+        clonedSegmentList[i],
+        lengthRatioSet[i],
+        deltaPositionSet[i]);
+    }
+    
+  }
+}
+"
+        }
+      },
+    {
+      "objectType" : "Inst",
+      "metadata" : {
+        "uiGraphPos" : "{\"x\":49.0194,\"y\":535.25}"
+        },
+      "name" : "GetCurvesWrapValues",
+      "ports" : [
+        {
+          "objectType" : "InstPort",
+          "name" : "exec",
+          "nodePortType" : "IO"
+          },
+        {
+          "objectType" : "InstPort",
+          "name" : "sourceMeshes",
+          "nodePortType" : "In"
+          },
+        {
+          "objectType" : "InstPort",
+          "name" : "sourceMeshTargetCurves",
+          "nodePortType" : "In"
+          },
+        {
+          "objectType" : "InstPort",
+          "name" : "lengthRatioSet",
+          "nodePortType" : "Out"
+          },
+        {
+          "objectType" : "InstPort",
+          "name" : "deltaPositionSet",
+          "nodePortType" : "Out"
+          }
+        ],
+      "definition" : {
+        "objectType" : "Graph",
+        "metadata" : {
+          "uiGraphPan" : "{\n  \"x\" : 137.0,\n  \"y\" : 6.0\n  }"
+          },
+        "title" : "GetWeightsFromDistanceToCurvesArray",
+        "ports" : [
+          {
+            "objectType" : "ExecPort",
+            "name" : "exec",
+            "nodePortType" : "IO",
+            "defaultValues" : {
+              "Execute" : {}
+              },
+            "execPortType" : "IO",
+            "typeSpec" : "Execute"
+            },
+          {
+            "objectType" : "ExecPort",
+            "name" : "sourceMeshes",
+            "nodePortType" : "Out",
+            "defaultValues" : {
+              "PolygonMesh[]" : []
+              },
+            "execPortType" : "In",
+            "typeSpec" : "PolygonMesh[]"
+            },
+          {
+            "objectType" : "ExecPort",
+            "name" : "sourceMeshTargetCurves",
+            "nodePortType" : "Out",
+            "defaultValues" : {
+              "Curves" : null
+              },
+            "execPortType" : "In",
+            "typeSpec" : "Curves"
+            },
+          {
+            "objectType" : "ExecPort",
+            "name" : "lengthRatioSet",
+            "nodePortType" : "In",
+            "execPortType" : "Out",
+            "typeSpec" : "LocalL4ScalarArray[][]"
+            },
+          {
+            "objectType" : "ExecPort",
+            "name" : "deltaPositionSet",
+            "nodePortType" : "In",
+            "execPortType" : "Out",
+            "typeSpec" : "Vec3Array[][]"
+            }
+          ],
+        "extDeps" : {
+          "TKCM" : "*"
+          },
+        "nodes" : [
+          {
+            "objectType" : "Inst",
+            "metadata" : {
+              "uiGraphPos" : "{\"x\":200.0,\"y\":270.0}"
+              },
+            "name" : "GetCloseOrderedListArrayCore",
+            "ports" : [
+              {
+                "objectType" : "InstPort",
+                "name" : "exec",
+                "nodePortType" : "IO"
+                },
+              {
+                "objectType" : "InstPort",
+                "name" : "sourceMeshes",
+                "nodePortType" : "In"
+                },
+              {
+                "objectType" : "InstPort",
+                "name" : "target",
+                "nodePortType" : "In"
+                },
+              {
+                "objectType" : "InstPort",
+                "name" : "lengthRatioSet",
+                "nodePortType" : "Out"
+                },
+              {
+                "objectType" : "InstPort",
+                "name" : "deltaPositionSet",
+                "nodePortType" : "Out"
+                }
+              ],
+            "definition" : {
+              "objectType" : "Func",
+              "title" : "GetCloseOrderedListArray",
+              "ports" : [
+                {
+                  "objectType" : "ExecPort",
+                  "name" : "exec",
+                  "nodePortType" : "IO",
+                  "defaultValues" : {
+                    "Execute" : {}
+                    },
+                  "execPortType" : "IO",
+                  "typeSpec" : "Execute"
+                  },
+                {
+                  "objectType" : "ExecPort",
+                  "name" : "sourceMeshes",
+                  "nodePortType" : "Out",
+                  "execPortType" : "In",
+                  "typeSpec" : "PolygonMesh[]"
+                  },
+                {
+                  "objectType" : "ExecPort",
+                  "name" : "target",
+                  "nodePortType" : "Out",
+                  "defaultValues" : {
+                    "Curves" : null
+                    },
+                  "execPortType" : "In",
+                  "typeSpec" : "Curves"
+                  },
+                {
+                  "objectType" : "ExecPort",
+                  "name" : "lengthRatioSet",
+                  "nodePortType" : "In",
+                  "defaultValues" : {
+                    "LocalL16ScalarArray" : {
+                      "first16" : [
+                        0,
+                        0,
+                        0,
+                        0,
+                        0,
+                        0,
+                        0,
+                        0,
+                        0,
+                        0,
+                        0,
+                        0,
+                        0,
+                        0,
+                        0,
+                        0
+                        ],
+                      "others" : [],
+                      "count" : 0
+                      },
+                    "LocalL16ScalarArray[]" : [],
+                    "LocalL4ScalarArray[]" : []
+                    },
+                  "execPortType" : "Out",
+                  "typeSpec" : "LocalL4ScalarArray[][]"
+                  },
+                {
+                  "objectType" : "ExecPort",
+                  "name" : "deltaPositionSet",
+                  "nodePortType" : "In",
+                  "execPortType" : "Out",
+                  "typeSpec" : "Vec3Array[][]"
+                  }
+                ],
+              "extDeps" : {
+                "TKCM" : "*"
+                },
+              "code" : "dfgEntry {
+  LocalL4UInt32Array ind[];
+  LocalL4ScalarArray w[];
+  LocalL4ScalarArray nP[];
+  lengthRatioSet.resize(sourceMeshes.size());
+  deltaPositionSet.resize(sourceMeshes.size()); 
+  for(Integer i=0; i<sourceMeshes.size(); i++){
+    Vec3 positions[] = sourceMeshes[i].getAllPointPositions();
+    target.getWeightsFromDistanceToCurvesArray(positions, 100000, 1, ind, lengthRatioSet[i], nP, deltaPositionSet[i], w, true);
+  }
+}
+"
+              }
+            },
+          {
+            "objectType" : "Inst",
+            "metadata" : {
+              "uiGraphPos" : "{\"x\":570.0,\"y\":292.5}"
+              },
+            "name" : "Cache_1",
+            "ports" : [
+              {
+                "objectType" : "InstPort",
+                "name" : "exec",
+                "nodePortType" : "IO"
+                },
+              {
+                "objectType" : "InstPort",
+                "name" : "value",
+                "nodePortType" : "In"
+                }
+              ],
+            "executable" : "Fabric.Core.Data.Cache",
+            "presetGUID" : "D903AFD981FE9214C69943F542D5FD60"
+            },
+          {
+            "objectType" : "Inst",
+            "metadata" : {
+              "uiGraphPos" : "{\"x\":582.0,\"y\":360.5}"
+              },
+            "name" : "Cache_2",
+            "ports" : [
+              {
+                "objectType" : "InstPort",
+                "name" : "exec",
+                "nodePortType" : "IO"
+                },
+              {
+                "objectType" : "InstPort",
+                "name" : "value",
+                "nodePortType" : "In"
+                }
+              ],
+            "executable" : "Fabric.Core.Data.Cache",
+            "presetGUID" : "D903AFD981FE9214C69943F542D5FD60"
+            }
+          ],
+        "connections" : {
+          "sourceMeshes" : [
+            "GetCloseOrderedListArrayCore.sourceMeshes"
+            ],
+          "sourceMeshTargetCurves" : [
+            "GetCloseOrderedListArrayCore.target"
+            ],
+          "GetCloseOrderedListArrayCore.exec" : [
+            "exec"
+            ],
+          "GetCloseOrderedListArrayCore.lengthRatioSet" : [
+            "Cache_1.value"
+            ],
+          "GetCloseOrderedListArrayCore.deltaPositionSet" : [
+            "Cache_2.value"
+            ],
+          "Cache_1.value" : [
+            "lengthRatioSet"
+            ],
+          "Cache_2.value" : [
+            "deltaPositionSet"
+            ]
+          }
+        }
+      },
+    {
+      "objectType" : "Inst",
+      "metadata" : {
+        "uiGraphPos" : "{\"x\":519.778,\"y\":246.633}"
+        },
+      "name" : "func",
+      "ports" : [
+        {
+          "objectType" : "InstPort",
+          "name" : "exec",
+          "nodePortType" : "IO"
+          },
+        {
+          "objectType" : "InstPort",
+          "name" : "clonedSourceMeshIDList",
+          "nodePortType" : "In"
+          },
+        {
+          "objectType" : "InstPort",
+          "name" : "targetCurves",
+          "nodePortType" : "In"
+          },
+        {
+          "objectType" : "InstPort",
+          "name" : "sourceMeshCount",
+          "nodePortType" : "In"
+          },
+        {
+          "objectType" : "InstPort",
+          "name" : "segmentValues",
+          "nodePortType" : "In"
+          },
+        {
+          "objectType" : "InstPort",
+          "name" : "useSegmentValues",
+          "nodePortType" : "Out",
+          "defaultValues" : {
+            "Boolean" : false
+            }
+          },
+        {
+          "objectType" : "InstPort",
+          "name" : "clonedSegmentList",
+          "nodePortType" : "Out"
+          }
+        ],
+      "definition" : {
+        "objectType" : "Func",
+        "title" : "func",
+        "ports" : [
+          {
+            "objectType" : "ExecPort",
+            "name" : "exec",
+            "nodePortType" : "IO",
+            "execPortType" : "IO",
+            "typeSpec" : "Execute"
+            },
+          {
+            "objectType" : "ExecPort",
+            "name" : "clonedSourceMeshIDList",
+            "nodePortType" : "Out",
+            "execPortType" : "In",
+            "typeSpec" : "Integer[]"
+            },
+          {
+            "objectType" : "ExecPort",
+            "name" : "targetCurves",
+            "nodePortType" : "Out",
+            "execPortType" : "In",
+            "typeSpec" : "Curves"
+            },
+          {
+            "objectType" : "ExecPort",
+            "name" : "sourceMeshCount",
+            "nodePortType" : "Out",
+            "execPortType" : "In",
+            "typeSpec" : "UInt32"
+            },
+          {
+            "objectType" : "ExecPort",
+            "name" : "segmentValues",
+            "nodePortType" : "Out",
+            "execPortType" : "In",
+            "typeSpec" : "Vec2Array[]"
+            },
+          {
+            "objectType" : "ExecPort",
+            "name" : "useSegmentValues",
+            "nodePortType" : "In",
+            "execPortType" : "Out",
+            "typeSpec" : "Boolean"
+            },
+          {
+            "objectType" : "ExecPort",
+            "name" : "clonedSegmentList",
+            "nodePortType" : "In",
+            "execPortType" : "Out",
+            "typeSpec" : "Vec3Array[]"
+            }
+          ],
+        "extDeps" : {},
+        "code" : "dfgEntry {
+  // clonedSegmentList [Vec3(curveID, segmentStartVal, endVal), Vec3...]
+  clonedSegmentList.resize(sourceMeshCount);
+  Integer cnt = 0;
+  Scalar s;
+  Scalar e;
+  for(Integer i=0; i<targetCurves.curveCount(); i++){  //  i = curveID
+    if(segmentValues.size() != 0){
+      for(Integer j=0; j<segmentValues[i].size(); j++){  // j = segmentID of i(curveID)
+        s = segmentValues[i][j].x;
+        e = segmentValues[i][j].y;
+        clonedSegmentList[ clonedSourceMeshIDList[cnt] ].push( Vec3(i, s, e) );
+        cnt += 1;
+      }
+      useSegmentValues = true;
+    }else{
+      clonedSegmentList[ clonedSourceMeshIDList[cnt] ].push( Vec3(i, 0.0, 1.0) );
+      cnt += 1;
+      useSegmentValues = false;
+    }
+  }
+}
+"
+        }
+      },
+    {
+      "objectType" : "Inst",
+      "metadata" : {
+        "uiGraphPos" : "{\"x\":386.293,\"y\":329.347}",
+        "uiCollapsedState" : "2"
+        },
+      "name" : "Size_1",
+      "ports" : [
+        {
+          "objectType" : "InstPort",
+          "name" : "exec",
+          "nodePortType" : "IO"
+          },
+        {
+          "objectType" : "InstPort",
+          "name" : "array",
+          "nodePortType" : "In"
+          },
+        {
+          "objectType" : "InstPort",
+          "name" : "count",
+          "nodePortType" : "Out"
+          }
+        ],
+      "executable" : "Fabric.Core.Array.Size",
+      "presetGUID" : "5B186A97C79ACF32526EC844AD805421"
+      }
+    ],
+  "connections" : {
+    "mergedMesh" : [
+      "CurvesWrapCore.mergedMesh"
+      ],
+    "clonedSourceMeshIDList" : [
+      "func.clonedSourceMeshIDList"
+      ],
+    "wrapTargetCurves" : [
+      "func.targetCurves"
+      ],
+    "sourceMeshes" : [
+      "GetCurvesWrapValues.sourceMeshes"
+      ],
+    "sourceMeshTargetCurves" : [
+      "GetCurvesWrapValues.sourceMeshTargetCurves"
+      ],
+    "segmentValues" : [
+      "func.segmentValues"
+      ],
+    "CurvesWrapCore.mergedMesh" : [
+      "result"
+      ],
+    "GetCurvesWrapValues.exec" : [
+      "exec"
+      ],
+    "GetCurvesWrapValues.sourceMeshes" : [
+      "Size_1.array"
+      ],
+    "GetCurvesWrapValues.lengthRatioSet" : [
+      "CurvesWrapCore.lengthRatioSet"
+      ],
+    "GetCurvesWrapValues.deltaPositionSet" : [
+      "CurvesWrapCore.deltaPositionSet"
+      ],
+    "func.targetCurves" : [
+      "CurvesWrapCore.targetCurves"
+      ],
+    "func.useSegmentValues" : [
+      "CurvesWrapCore.useSegmentValues"
+      ],
+    "func.clonedSegmentList" : [
+      "CurvesWrapCore.clonedSegmentList"
+      ],
+    "Size_1.count" : [
+      "func.sourceMeshCount"
+      ]
+    },
+  "requiredPresets" : {
+    "Fabric.Core.Data.Cache" : {
+      "objectType" : "Func",
+      "metadata" : {
+        "uiNodeColor" : "{\n  \"r\" : 214,\n  \"g\" : 191,\n  \"b\" : 103\n  }",
+        "uiAlwaysShowDaisyChainPorts" : "true",
+        "uiHeaderColor" : "{\n  \"r\" : 188,\n  \"g\" : 129,\n  \"b\" : 83\n  }"
+        },
+      "title" : "Cache",
+      "cacheRule" : "always",
+      "ports" : [
+        {
+          "objectType" : "ExecPort",
+          "name" : "exec",
+          "nodePortType" : "IO",
+          "execPortType" : "IO",
+          "typeSpec" : "Execute"
+          },
+        {
+          "objectType" : "ExecPort",
+          "name" : "value",
+          "nodePortType" : "Out",
+          "execPortType" : "In",
+          "typeSpec" : "$TYPE$"
+          }
+        ],
+      "extDeps" : {},
+      "presetGUID" : "D903AFD981FE9214C69943F542D5FD60",
+      "code" : "dfgEntry {
+}
+"
+      },
+    "Fabric.Core.Array.Size" : {
+      "objectType" : "Func",
+      "title" : "Size[]",
+      "ports" : [
+        {
+          "objectType" : "ExecPort",
+          "name" : "exec",
+          "nodePortType" : "IO",
+          "execPortType" : "IO",
+          "typeSpec" : "Execute"
+          },
+        {
+          "objectType" : "ExecPort",
+          "name" : "array",
+          "nodePortType" : "Out",
+          "execPortType" : "In",
+          "typeSpec" : "$TYPE$"
+          },
+        {
+          "objectType" : "ExecPort",
+          "name" : "count",
+          "nodePortType" : "In",
+          "execPortType" : "Out",
+          "typeSpec" : "UInt32"
+          }
+        ],
+      "extDeps" : {},
+      "presetGUID" : "5B186A97C79ACF32526EC844AD805421",
+      "code" : "
+dfgEntry {
+	count = array.size();
+}
+"
+      }
+    }
+  }

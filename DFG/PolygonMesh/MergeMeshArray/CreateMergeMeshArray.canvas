@@ -1,0 +1,817 @@
+{
+  "objectType" : "Graph",
+  "metadata" : {
+    "uiGraphZoom" : "{\n  \"value\" : 0.6355569958686829\n  }",
+    "uiGraphPan" : "{\n  \"x\" : 420.6796875,\n  \"y\" : 40.49984741210938\n  }"
+    },
+  "title" : "CreateMergeMeshArray",
+  "ports" : [
+    {
+      "objectType" : "ExecPort",
+      "name" : "exec",
+      "nodePortType" : "IO",
+      "defaultValues" : {
+        "Execute" : {}
+        },
+      "execPortType" : "IO",
+      "typeSpec" : "Execute"
+      },
+    {
+      "objectType" : "ExecPort",
+      "name" : "source",
+      "nodePortType" : "Out",
+      "defaultValues" : {
+        "PolygonMesh[]" : []
+        },
+      "execPortType" : "In",
+      "typeSpec" : "PolygonMesh[]"
+      },
+    {
+      "objectType" : "ExecPort",
+      "name" : "transformXfos",
+      "nodePortType" : "Out",
+      "defaultValues" : {
+        "Xfo[]" : []
+        },
+      "execPortType" : "In",
+      "typeSpec" : "Xfo[]"
+      },
+    {
+      "objectType" : "ExecPort",
+      "name" : "transformNormals",
+      "nodePortType" : "Out",
+      "defaultValues" : {
+        "Boolean" : false
+        },
+      "execPortType" : "In",
+      "typeSpec" : "Boolean"
+      },
+    {
+      "objectType" : "ExecPort",
+      "metadata" : {
+        "uiCombo" : "(\"ID\", \"Random\")"
+        },
+      "name" : "selectSourceMesh",
+      "nodePortType" : "Out",
+      "defaultValues" : {
+        "Integer" : 0
+        },
+      "execPortType" : "In",
+      "typeSpec" : "Integer"
+      },
+    {
+      "objectType" : "ExecPort",
+      "name" : "ID",
+      "nodePortType" : "Out",
+      "defaultValues" : {
+        "String" : "3,6"
+        },
+      "execPortType" : "In",
+      "typeSpec" : "String"
+      },
+    {
+      "objectType" : "ExecPort",
+      "name" : "seedForRandom",
+      "nodePortType" : "Out",
+      "defaultValues" : {
+        "Scalar" : 5
+        },
+      "execPortType" : "In",
+      "typeSpec" : "Scalar"
+      },
+    {
+      "objectType" : "ExecPort",
+      "name" : "mergedMesh",
+      "nodePortType" : "In",
+      "defaultValues" : {
+        "PolygonMesh[]" : []
+        },
+      "execPortType" : "Out",
+      "typeSpec" : "PolygonMesh[]"
+      },
+    {
+      "objectType" : "ExecPort",
+      "name" : "clonedSourceMeshIDList",
+      "nodePortType" : "In",
+      "defaultValues" : {
+        "Integer[]" : []
+        },
+      "execPortType" : "Out",
+      "typeSpec" : "Integer[]"
+      }
+    ],
+  "extDeps" : {},
+  "presetGUID" : "36627CCCA949A014BE3BAD273D9EE471",
+  "nodes" : [
+    {
+      "objectType" : "Inst",
+      "metadata" : {
+        "uiGraphPos" : "{\"x\":126.0,\"y\":323.0}"
+        },
+      "name" : "CreateMergeMeshCore",
+      "ports" : [
+        {
+          "objectType" : "InstPort",
+          "name" : "exec",
+          "nodePortType" : "IO"
+          },
+        {
+          "objectType" : "InstPort",
+          "name" : "source",
+          "nodePortType" : "In",
+          "defaultValues" : {
+            "PolygonMesh" : null
+            }
+          },
+        {
+          "objectType" : "InstPort",
+          "name" : "transformXfos",
+          "nodePortType" : "In",
+          "defaultValues" : {
+            "Xfo[]" : []
+            }
+          },
+        {
+          "objectType" : "InstPort",
+          "name" : "transformNormals",
+          "nodePortType" : "In",
+          "defaultValues" : {
+            "Boolean" : false
+            }
+          },
+        {
+          "objectType" : "InstPort",
+          "name" : "selectSourceMesh",
+          "nodePortType" : "In",
+          "defaultValues" : {
+            "Integer" : 1
+            }
+          },
+        {
+          "objectType" : "InstPort",
+          "name" : "seedForRandom",
+          "nodePortType" : "In",
+          "defaultValues" : {
+            "Scalar" : 20
+            }
+          },
+        {
+          "objectType" : "InstPort",
+          "name" : "mergedMesh",
+          "nodePortType" : "Out"
+          },
+        {
+          "objectType" : "InstPort",
+          "name" : "clonedMeshIDList",
+          "nodePortType" : "Out"
+          },
+        {
+          "objectType" : "InstPort",
+          "name" : "restValue",
+          "nodePortType" : "In"
+          },
+        {
+          "objectType" : "InstPort",
+          "name" : "IDs",
+          "nodePortType" : "In"
+          }
+        ],
+      "definition" : {
+        "objectType" : "Func",
+        "title" : "func",
+        "ports" : [
+          {
+            "objectType" : "ExecPort",
+            "name" : "exec",
+            "nodePortType" : "IO",
+            "execPortType" : "IO",
+            "typeSpec" : "Execute"
+            },
+          {
+            "objectType" : "ExecPort",
+            "name" : "source",
+            "nodePortType" : "Out",
+            "execPortType" : "In",
+            "typeSpec" : "PolygonMesh[]"
+            },
+          {
+            "objectType" : "ExecPort",
+            "name" : "transformXfos",
+            "nodePortType" : "Out",
+            "execPortType" : "In",
+            "typeSpec" : "Xfo[]"
+            },
+          {
+            "objectType" : "ExecPort",
+            "name" : "transformNormals",
+            "nodePortType" : "Out",
+            "execPortType" : "In",
+            "typeSpec" : "Boolean"
+            },
+          {
+            "objectType" : "ExecPort",
+            "metadata" : {
+              "uiCombo" : "(\"ID\", \"Random\")"
+              },
+            "name" : "selectSourceMesh",
+            "nodePortType" : "Out",
+            "execPortType" : "In",
+            "typeSpec" : "Integer"
+            },
+          {
+            "objectType" : "ExecPort",
+            "name" : "seedForRandom",
+            "nodePortType" : "Out",
+            "execPortType" : "In",
+            "typeSpec" : "Scalar"
+            },
+          {
+            "objectType" : "ExecPort",
+            "name" : "mergedMesh",
+            "nodePortType" : "In",
+            "execPortType" : "Out",
+            "typeSpec" : "PolygonMesh[]"
+            },
+          {
+            "objectType" : "ExecPort",
+            "name" : "clonedMeshIDList",
+            "nodePortType" : "In",
+            "execPortType" : "Out",
+            "typeSpec" : "Integer[]"
+            },
+          {
+            "objectType" : "ExecPort",
+            "name" : "restValue",
+            "nodePortType" : "Out",
+            "execPortType" : "In",
+            "typeSpec" : "Xfo[]"
+            },
+          {
+            "objectType" : "ExecPort",
+            "name" : "IDs",
+            "nodePortType" : "Out",
+            "execPortType" : "In",
+            "typeSpec" : "String[]"
+            }
+          ],
+        "extDeps" : {},
+        "code" : "dfgEntry {
+  mergedMesh.resize(source.size());
+  for(Integer i=0; i<mergedMesh.size(); i++){
+    mergedMesh[i] = null;
+    mergedMesh[i] = PolygonMesh();
+  }
+  
+  Integer mode = selectSourceMesh;
+  Index mergeID[];
+  
+  if(1 < IDs.size() || mode == 1){
+    if(mode == 0){
+      mergeID.resize(IDs.size());
+      for(Integer i=0; i<IDs.size(); i++){
+        mergeID[i] = Integer(IDs[i].toScalar());
+      }
+    }else{
+      mergeID.resize(source.size());
+      for(Integer i=0; i<source.size(); i++){
+        mergeID[i] = i;
+      }
+    }    
+    mode = 1;
+  }
+  
+  switch(mode){
+    case 0:  // select ID
+      Index ID = Integer(IDs[0].toScalar());
+      mergedMesh[ID] = PolygonMesh();
+      Ref<PolygonMesh> source_ref = source[ID];
+      mergedMesh[ID].mergeMeshClones(source_ref, transformXfos, transformNormals);
+      
+      clonedMeshIDList.resize(transformXfos.size());
+      for(Integer i=0; i<transformXfos.size(); i++){
+        clonedMeshIDList[i] = ID;
+      }
+      break;
+    case 1:  //  random select
+      clonedMeshIDList.resize(transformXfos.size());
+      Xfo cloneXfos[][];
+      cloneXfos.resize(source.size());
+      Index sourceID;
+      for(Integer i=0; i<transformXfos.size(); i++){
+        sourceID = mathRandomUInt32(seedForRandom + i, i, 0, mergeID.size());
+        clonedMeshIDList[i] = mergeID[sourceID];
+        for(Integer j=0; j<source.size(); j++){
+          if(j == clonedMeshIDList[i]){
+            cloneXfos[j].push(transformXfos[i]);
+          }
+        }
+      }
+      for(Integer i=0; i<source.size(); i++){
+        mergedMesh[i] = PolygonMesh();
+        if(cloneXfos[i].size() > 0){
+          Ref<PolygonMesh> source_ref = source[i];
+          mergedMesh[i].mergeMeshClones(source_ref, cloneXfos[i], transformNormals);
+        }
+      }
+      break;
+  }
+}
+"
+        }
+      },
+    {
+      "objectType" : "Inst",
+      "metadata" : {
+        "uiGraphPos" : "{\"x\":392.0,\"y\":397.0}"
+        },
+      "name" : "Cache_1",
+      "ports" : [
+        {
+          "objectType" : "InstPort",
+          "name" : "exec",
+          "nodePortType" : "IO"
+          },
+        {
+          "objectType" : "InstPort",
+          "name" : "value",
+          "nodePortType" : "In"
+          }
+        ],
+      "executable" : "Fabric.Core.Data.Cache",
+      "presetGUID" : "D903AFD981FE9214C69943F542D5FD60"
+      },
+    {
+      "objectType" : "Inst",
+      "metadata" : {
+        "uiGraphPos" : "{\"x\":396.438,\"y\":511.068}"
+        },
+      "name" : "Cache_2",
+      "ports" : [
+        {
+          "objectType" : "InstPort",
+          "name" : "exec",
+          "nodePortType" : "IO"
+          },
+        {
+          "objectType" : "InstPort",
+          "name" : "value",
+          "nodePortType" : "In"
+          }
+        ],
+      "executable" : "Fabric.Core.Data.Cache",
+      "presetGUID" : "D903AFD981FE9214C69943F542D5FD60"
+      },
+    {
+      "objectType" : "Inst",
+      "metadata" : {
+        "uiGraphPos" : "{\"x\":538.013,\"y\":398.877}"
+        },
+      "name" : "Clone_1",
+      "ports" : [
+        {
+          "objectType" : "InstPort",
+          "name" : "exec",
+          "nodePortType" : "IO"
+          },
+        {
+          "objectType" : "InstPort",
+          "name" : "value",
+          "nodePortType" : "In"
+          },
+        {
+          "objectType" : "InstPort",
+          "name" : "clonedValue",
+          "nodePortType" : "Out"
+          }
+        ],
+      "executable" : "Fabric.Core.Data.Clone",
+      "presetGUID" : "30401D7851DEFCFA5C46EB3926DD8BAD"
+      },
+    {
+      "objectType" : "Var",
+      "metadata" : {
+        "uiGraphPos" : "{\"x\":-205.858,\"y\":-58.1238}"
+        },
+      "name" : "restXfos",
+      "ports" : [
+        {
+          "objectType" : "VarPort",
+          "name" : "value",
+          "nodePortType" : "IO"
+          }
+        ],
+      "dataType" : "Xfo[]"
+      },
+    {
+      "objectType" : "Set",
+      "metadata" : {
+        "uiGraphPos" : "{\"x\":-273.533,\"y\":362.028}"
+        },
+      "name" : "set",
+      "ports" : [
+        {
+          "objectType" : "SetPort",
+          "name" : "value",
+          "nodePortType" : "IO"
+          }
+        ],
+      "varPath" : "restXfos"
+      },
+    {
+      "objectType" : "Get",
+      "metadata" : {
+        "uiGraphPos" : "{\"x\":-187.529,\"y\":581.972}"
+        },
+      "name" : "get",
+      "ports" : [
+        {
+          "objectType" : "GetPort",
+          "name" : "value",
+          "nodePortType" : "Out"
+          }
+        ],
+      "varPath" : "restXfos"
+      },
+    {
+      "objectType" : "Inst",
+      "metadata" : {
+        "uiGraphPos" : "{\"x\":-437.135,\"y\":707.881}"
+        },
+      "name" : "SplitAndDeleteBlank_1",
+      "ports" : [
+        {
+          "objectType" : "InstPort",
+          "name" : "exec",
+          "nodePortType" : "IO"
+          },
+        {
+          "objectType" : "InstPort",
+          "name" : "this",
+          "nodePortType" : "In"
+          },
+        {
+          "objectType" : "InstPort",
+          "name" : "separator",
+          "nodePortType" : "In"
+          },
+        {
+          "objectType" : "InstPort",
+          "name" : "deletBlank",
+          "nodePortType" : "In"
+          },
+        {
+          "objectType" : "InstPort",
+          "name" : "result",
+          "nodePortType" : "Out"
+          }
+        ],
+      "executable" : "TKCM.Util.String.SplitAndDeleteBlank",
+      "presetGUID" : "F433EE0F045CFB5086821B670F6FEC3D"
+      }
+    ],
+  "connections" : {
+    "source" : [
+      "CreateMergeMeshCore.source"
+      ],
+    "transformXfos" : [
+      "set.value"
+      ],
+    "transformNormals" : [
+      "CreateMergeMeshCore.transformNormals"
+      ],
+    "selectSourceMesh" : [
+      "CreateMergeMeshCore.selectSourceMesh"
+      ],
+    "ID" : [
+      "SplitAndDeleteBlank_1.this"
+      ],
+    "seedForRandom" : [
+      "CreateMergeMeshCore.seedForRandom"
+      ],
+    "CreateMergeMeshCore.mergedMesh" : [
+      "Cache_1.value"
+      ],
+    "CreateMergeMeshCore.clonedMeshIDList" : [
+      "Cache_2.value"
+      ],
+    "Cache_1.value" : [
+      "Clone_1.value"
+      ],
+    "Cache_2.value" : [
+      "clonedSourceMeshIDList"
+      ],
+    "Clone_1.clonedValue" : [
+      "mergedMesh"
+      ],
+    "set.value" : [
+      "CreateMergeMeshCore.transformXfos"
+      ],
+    "get.value" : [
+      "CreateMergeMeshCore.restValue"
+      ],
+    "SplitAndDeleteBlank_1.result" : [
+      "CreateMergeMeshCore.IDs"
+      ]
+    },
+  "requiredPresets" : {
+    "Fabric.Core.Data.Cache" : {
+      "objectType" : "Func",
+      "metadata" : {
+        "uiNodeColor" : "{\n  \"r\" : 214,\n  \"g\" : 191,\n  \"b\" : 103\n  }",
+        "uiAlwaysShowDaisyChainPorts" : "true",
+        "uiHeaderColor" : "{\n  \"r\" : 188,\n  \"g\" : 129,\n  \"b\" : 83\n  }"
+        },
+      "title" : "Cache",
+      "cacheRule" : "always",
+      "ports" : [
+        {
+          "objectType" : "ExecPort",
+          "name" : "exec",
+          "nodePortType" : "IO",
+          "execPortType" : "IO",
+          "typeSpec" : "Execute"
+          },
+        {
+          "objectType" : "ExecPort",
+          "name" : "value",
+          "nodePortType" : "Out",
+          "execPortType" : "In",
+          "typeSpec" : "$TYPE$"
+          }
+        ],
+      "extDeps" : {},
+      "presetGUID" : "D903AFD981FE9214C69943F542D5FD60",
+      "code" : "dfgEntry {
+}
+"
+      },
+    "Fabric.Core.Data.Clone" : {
+      "objectType" : "Func",
+      "metadata" : {
+        "uiNodeColor" : "{\n  \"r\" : 214,\n  \"g\" : 191,\n  \"b\" : 103\n  }",
+        "uiHeaderColor" : "{\n  \"r\" : 188,\n  \"g\" : 129,\n  \"b\" : 83\n  }"
+        },
+      "title" : "Clone",
+      "ports" : [
+        {
+          "objectType" : "ExecPort",
+          "name" : "exec",
+          "nodePortType" : "IO",
+          "execPortType" : "IO",
+          "typeSpec" : "Execute"
+          },
+        {
+          "objectType" : "ExecPort",
+          "name" : "value",
+          "nodePortType" : "Out",
+          "execPortType" : "In",
+          "typeSpec" : "$TYPE$"
+          },
+        {
+          "objectType" : "ExecPort",
+          "name" : "clonedValue",
+          "nodePortType" : "In",
+          "execPortType" : "Out",
+          "typeSpec" : "$TYPE$"
+          }
+        ],
+      "extDeps" : {},
+      "presetGUID" : "30401D7851DEFCFA5C46EB3926DD8BAD",
+      "code" : "dfgEntry {
+  clonedValue = value.clone();
+}
+"
+      },
+    "TKCM.Util.String.SplitAndDeleteBlank" : {
+      "objectType" : "Graph",
+      "metadata" : {
+        "uiGraphZoom" : "{\n  \"value\" : 1.0\n  }",
+        "uiGraphPan" : "{\n  \"x\" : 1851.85498046875,\n  \"y\" : -1009.830017089844\n  }"
+        },
+      "title" : "SplitAndDeleteBlank",
+      "ports" : [
+        {
+          "objectType" : "ExecPort",
+          "name" : "exec",
+          "nodePortType" : "IO",
+          "defaultValues" : {
+            "Execute" : {}
+            },
+          "execPortType" : "IO",
+          "typeSpec" : "Execute"
+          },
+        {
+          "objectType" : "ExecPort",
+          "name" : "this",
+          "nodePortType" : "Out",
+          "defaultValues" : {
+            "String" : ""
+            },
+          "execPortType" : "In",
+          "typeSpec" : "String"
+          },
+        {
+          "objectType" : "ExecPort",
+          "name" : "separator",
+          "nodePortType" : "Out",
+          "defaultValues" : {
+            "String" : ","
+            },
+          "execPortType" : "In",
+          "typeSpec" : "String"
+          },
+        {
+          "objectType" : "ExecPort",
+          "name" : "deletBlank",
+          "nodePortType" : "Out",
+          "defaultValues" : {
+            "Boolean" : true
+            },
+          "execPortType" : "In",
+          "typeSpec" : "Boolean"
+          },
+        {
+          "objectType" : "ExecPort",
+          "name" : "result",
+          "nodePortType" : "In",
+          "defaultValues" : {
+            "String[]" : []
+            },
+          "execPortType" : "Out",
+          "typeSpec" : "String[]"
+          }
+        ],
+      "extDeps" : {},
+      "presetGUID" : "F433EE0F045CFB5086821B670F6FEC3D",
+      "nodes" : [
+        {
+          "objectType" : "Inst",
+          "metadata" : {
+            "uiGraphPos" : "{\"x\":-1667.97,\"y\":1245.8}"
+            },
+          "name" : "Split_1",
+          "ports" : [
+            {
+              "objectType" : "InstPort",
+              "name" : "exec",
+              "nodePortType" : "IO"
+              },
+            {
+              "objectType" : "InstPort",
+              "name" : "this",
+              "nodePortType" : "In"
+              },
+            {
+              "objectType" : "InstPort",
+              "name" : "separator",
+              "nodePortType" : "In",
+              "defaultValues" : {
+                "String" : ","
+                }
+              },
+            {
+              "objectType" : "InstPort",
+              "name" : "result",
+              "nodePortType" : "Out"
+              }
+            ],
+          "executable" : "Fabric.Exts.Util.String.Split",
+          "presetGUID" : "E09CFC151D7658D0FD0EAA6DB4FFB18B"
+          },
+        {
+          "objectType" : "Inst",
+          "metadata" : {
+            "uiGraphPos" : "{\"x\":-1469.74,\"y\":1305.86}"
+            },
+          "name" : "DeleteBlank",
+          "ports" : [
+            {
+              "objectType" : "InstPort",
+              "name" : "exec",
+              "nodePortType" : "IO"
+              },
+            {
+              "objectType" : "InstPort",
+              "name" : "this",
+              "nodePortType" : "IO"
+              },
+            {
+              "objectType" : "InstPort",
+              "name" : "deletBlank",
+              "nodePortType" : "In"
+              }
+            ],
+          "definition" : {
+            "objectType" : "Func",
+            "title" : "func",
+            "ports" : [
+              {
+                "objectType" : "ExecPort",
+                "name" : "exec",
+                "nodePortType" : "IO",
+                "execPortType" : "IO",
+                "typeSpec" : "Execute"
+                },
+              {
+                "objectType" : "ExecPort",
+                "name" : "this",
+                "nodePortType" : "IO",
+                "execPortType" : "IO",
+                "typeSpec" : "String[]"
+                },
+              {
+                "objectType" : "ExecPort",
+                "name" : "deletBlank",
+                "nodePortType" : "Out",
+                "execPortType" : "In",
+                "typeSpec" : "Boolean"
+                }
+              ],
+            "extDeps" : {},
+            "code" : "dfgEntry {
+  if(deletBlank){
+    Index chack[];
+    chack.resize(this.size());
+    for(Integer i=0; i<this.size(); i++){
+      chack[i]=this[i].length();
+    }
+    String result[];
+    for(Integer i=0; i<this.size(); i++){
+      if(chack[i] > 0){
+        result.push(this[i]);
+      }
+    }
+    this = result;
+  }
+}
+"
+            }
+          }
+        ],
+      "connections" : {
+        "this" : [
+          "Split_1.this"
+          ],
+        "separator" : [
+          "Split_1.separator"
+          ],
+        "deletBlank" : [
+          "DeleteBlank.deletBlank"
+          ],
+        "Split_1.result" : [
+          "DeleteBlank.this"
+          ],
+        "DeleteBlank.this" : [
+          "result"
+          ]
+        }
+      },
+    "Fabric.Exts.Util.String.Split" : {
+      "objectType" : "Func",
+      "metadata" : {
+        "uiTooltip" : "splitting this string by a given separator\n\n Supported by String"
+        },
+      "title" : "Split",
+      "ports" : [
+        {
+          "objectType" : "ExecPort",
+          "name" : "exec",
+          "nodePortType" : "IO",
+          "execPortType" : "IO",
+          "typeSpec" : "Execute"
+          },
+        {
+          "objectType" : "ExecPort",
+          "name" : "this",
+          "nodePortType" : "Out",
+          "execPortType" : "In",
+          "typeSpec" : "String"
+          },
+        {
+          "objectType" : "ExecPort",
+          "name" : "separator",
+          "nodePortType" : "Out",
+          "execPortType" : "In",
+          "typeSpec" : "String"
+          },
+        {
+          "objectType" : "ExecPort",
+          "name" : "result",
+          "nodePortType" : "In",
+          "execPortType" : "Out",
+          "typeSpec" : "String[]"
+          }
+        ],
+      "extDeps" : {
+        "Util" : "*"
+        },
+      "presetGUID" : "E09CFC151D7658D0FD0EAA6DB4FFB18B",
+      "code" : "require Util;
+
+dfgEntry {
+  result = this.split(separator);
+}
+"
+      }
+    }
+  }
