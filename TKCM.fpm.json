@@ -9,11 +9,14 @@
     "Exts/Manipulation/Legacy/Gizmos/TransformManipulationCallback2.kl",
     "Exts/Manipulation/Legacy/ArrayValueManipHandle.kl",
 
+    "Exts/Math/Util.kl",
     "Exts/Math/Vec3.kl",
+    "Exts/Math/Colors.kl",
 
     "Exts/Geometry/Curves/Curves.kl",
     "Exts/Geometry/PolygonMesh/BlendShape.kl",
     "Exts/Geometry/PolygonMesh/MergedMeshModifier.kl",
+    "Exts/Geometry/PolygonMesh/PolygonMeshPortable.kl",
 
     "Exts/Util/Valve.kl",
     "Exts/Util/DijkstraAlgorithm.kl"
