@@ -1,9 +1,9 @@
-#FabricEngine TKCM_Exts
+#FabricEngine TKCM_Exts  
 This is the sharing of technical verifications done at my free time.  
 個人的に行った技術検証の共有です。  
 
-##　Curves extension/node for procedural modeling
-[https://vimeo.com/212367038](Study FE : CurveWrap)
+##　Curves extension/node for procedural modeling  
+[linkref]:https://vimeo.com/212367038"Study FE : CurveWrap"
 
 ## MultiChannelWeightMap
 I customized basic WeightMap to multi channel weight map.  
@@ -23,5 +23,5 @@ UVをメッシュ化します。
 
 ## DijkstraAlgorithm
 Calculate the distance on the mesh.  
-メッシュ上の距離を計算します。　　
-<pic.twitter.com/ySoIAQCIWd>
+メッシュ上の距離を計算します。  
+[pic.twitter.com/ySoIAQCIWd]
