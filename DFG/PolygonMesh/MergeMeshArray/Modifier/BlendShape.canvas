@@ -1,0 +1,890 @@
+{
+  "objectType" : "Graph",
+  "metadata" : {
+    "uiGraphZoom" : "{\n  \"value\" : 1.421261548995972\n  }",
+    "uiGraphPan" : "{\n  \"x\" : 424.4901733398438,\n  \"y\" : -4.151496887207031\n  }"
+    },
+  "title" : "BlendShape",
+  "ports" : [
+    {
+      "objectType" : "ExecPort",
+      "name" : "exec",
+      "nodePortType" : "IO",
+      "defaultValues" : {
+        "Execute" : {}
+        },
+      "execPortType" : "IO",
+      "typeSpec" : "Execute"
+      },
+    {
+      "objectType" : "ExecPort",
+      "name" : "mergedMesh",
+      "nodePortType" : "Out",
+      "defaultValues" : {
+        "PolygonMesh[]" : []
+        },
+      "execPortType" : "In",
+      "typeSpec" : "PolygonMesh[]"
+      },
+    {
+      "objectType" : "ExecPort",
+      "name" : "clonedSourceMeshIDList",
+      "nodePortType" : "Out",
+      "defaultValues" : {
+        "Integer[]" : []
+        },
+      "execPortType" : "In",
+      "typeSpec" : "Integer[]"
+      },
+    {
+      "objectType" : "ExecPort",
+      "name" : "targetID",
+      "nodePortType" : "Out",
+      "defaultValues" : {
+        "Integer" : 0
+        },
+      "execPortType" : "In",
+      "typeSpec" : "Integer"
+      },
+    {
+      "objectType" : "ExecPort",
+      "metadata" : {
+        "uiHardRange" : "(0, 1)"
+        },
+      "name" : "t",
+      "nodePortType" : "Out",
+      "defaultValues" : {
+        "Scalar" : 1
+        },
+      "execPortType" : "In",
+      "typeSpec" : "Scalar"
+      },
+    {
+      "objectType" : "ExecPort",
+      "name" : "sourceMesh",
+      "nodePortType" : "Out",
+      "defaultValues" : {
+        "PolygonMesh[]" : []
+        },
+      "execPortType" : "In",
+      "typeSpec" : "PolygonMesh[]"
+      },
+    {
+      "objectType" : "ExecPort",
+      "name" : "mergedMeshXfos",
+      "nodePortType" : "Out",
+      "defaultValues" : {
+        "Xfo[]" : []
+        },
+      "execPortType" : "In",
+      "typeSpec" : "Xfo[]"
+      },
+    {
+      "objectType" : "ExecPort",
+      "name" : "blendShapeTargets",
+      "nodePortType" : "Out",
+      "defaultValues" : {
+        "PolygonMesh[]" : []
+        },
+      "execPortType" : "In",
+      "typeSpec" : "PolygonMesh[]"
+      },
+    {
+      "objectType" : "ExecPort",
+      "name" : "blendShapeIDList",
+      "nodePortType" : "Out",
+      "defaultValues" : {
+        "LocalL4UInt32Array[]" : []
+        },
+      "execPortType" : "In",
+      "typeSpec" : "LocalL4UInt32Array[]"
+      },
+    {
+      "objectType" : "ExecPort",
+      "name" : "blendShapeWeights",
+      "nodePortType" : "Out",
+      "defaultValues" : {
+        "LocalL4ScalarArray[]" : []
+        },
+      "execPortType" : "In",
+      "typeSpec" : "LocalL4ScalarArray[]"
+      },
+    {
+      "objectType" : "ExecPort",
+      "name" : "result",
+      "nodePortType" : "In",
+      "defaultValues" : {
+        "PolygonMesh[]" : []
+        },
+      "execPortType" : "Out",
+      "typeSpec" : "PolygonMesh[]"
+      }
+    ],
+  "extDeps" : {
+    "TKCM" : "*"
+    },
+  "presetGUID" : "937A385A24F46ECDC6583B4B62B291E0",
+  "nodes" : [
+    {
+      "objectType" : "Inst",
+      "metadata" : {
+        "uiGraphPos" : "{\"x\":-130.0,\"y\":270.0}",
+        "uiCollapsedState" : "0"
+        },
+      "name" : "GetDelta",
+      "ports" : [
+        {
+          "objectType" : "InstPort",
+          "name" : "exec",
+          "nodePortType" : "IO"
+          },
+        {
+          "objectType" : "InstPort",
+          "name" : "sourceMesh",
+          "nodePortType" : "In",
+          "defaultValues" : {
+            "PolygonMesh" : null
+            }
+          },
+        {
+          "objectType" : "InstPort",
+          "name" : "clonedSourceMeshIDList",
+          "nodePortType" : "In"
+          },
+        {
+          "objectType" : "InstPort",
+          "name" : "target",
+          "nodePortType" : "In"
+          },
+        {
+          "objectType" : "InstPort",
+          "name" : "blendShapeTarget",
+          "nodePortType" : "In",
+          "defaultValues" : {
+            "PolygonMesh[]" : []
+            }
+          },
+        {
+          "objectType" : "InstPort",
+          "name" : "blendshapeDelta",
+          "nodePortType" : "Out",
+          "defaultValues" : {
+            "GenericVec3Value[]" : []
+            }
+          }
+        ],
+      "definition" : {
+        "objectType" : "Func",
+        "title" : "GetBlendShapeTargetDelta",
+        "ports" : [
+          {
+            "objectType" : "ExecPort",
+            "name" : "exec",
+            "nodePortType" : "IO",
+            "execPortType" : "IO",
+            "typeSpec" : "Execute"
+            },
+          {
+            "objectType" : "ExecPort",
+            "name" : "sourceMesh",
+            "nodePortType" : "Out",
+            "execPortType" : "In",
+            "typeSpec" : "PolygonMesh[]"
+            },
+          {
+            "objectType" : "ExecPort",
+            "name" : "clonedSourceMeshIDList",
+            "nodePortType" : "Out",
+            "execPortType" : "In",
+            "typeSpec" : "Integer[]"
+            },
+          {
+            "objectType" : "ExecPort",
+            "name" : "target",
+            "nodePortType" : "Out",
+            "execPortType" : "In",
+            "typeSpec" : "Integer"
+            },
+          {
+            "objectType" : "ExecPort",
+            "name" : "blendShapeTarget",
+            "nodePortType" : "Out",
+            "execPortType" : "In",
+            "typeSpec" : "PolygonMesh[]"
+            },
+          {
+            "objectType" : "ExecPort",
+            "name" : "blendshapeDelta",
+            "nodePortType" : "In",
+            "execPortType" : "Out",
+            "typeSpec" : "Vec3Array[]"
+            }
+          ],
+        "extDeps" : {},
+        "code" : "operator setDeltaList<<<index>>>(
+  io Vec3Array blendshapeDelta[], 
+  in Ref<Vec3Attribute> sourcePoint,
+  in PolygonMesh blendShapeTarget[]
+  ){
+  for(Integer i=0; i<blendShapeTarget.size(); i++){
+    blendshapeDelta[i][index] = blendShapeTarget[i].getPointPosition(index) - sourcePoint.values[index];
+  }
+  
+}
+
+dfgEntry {
+  for(Integer i=0; i<blendShapeTarget.size(); i++){
+    if(sourceMesh[target].pointCount() != blendShapeTarget[i].pointCount()){
+      report(\"!!!!!!Error!!!!!! ::: MergedMeshBlendShape.GetDelta : sourceMesh pointCount (\"+sourceMesh[target].pointCount()+\") != targetMesh[\"+i+\"] pointCount (\" +blendShapeTarget[i].pointCount()+\")\");
+      return;
+    }
+  }
+  
+  blendshapeDelta.resize(blendShapeTarget.size());
+  for(Integer i=0; i<blendShapeTarget.size(); i++){
+    blendshapeDelta[i].resize(sourceMesh[target].pointCount());
+  }
+  
+  Ref<Vec3Attribute> sourcePoint = sourceMesh[target].getAttributes().positionsAttribute;
+  if(sourceMesh[target].pointCount() < 1000){
+    for(Integer i=0; i<sourceMesh[target].pointCount(); i++){
+      setDeltaList(i, blendshapeDelta, sourcePoint, blendShapeTarget);
+    }
+  }else{
+    setDeltaList<<<sourceMesh[target].pointCount()>>>(blendshapeDelta, sourcePoint, blendShapeTarget);
+  }
+  
+}
+"
+        }
+      },
+    {
+      "objectType" : "Inst",
+      "metadata" : {
+        "uiGraphPos" : "{\"x\":180.0,\"y\":320.0}",
+        "uiCollapsedState" : "2"
+        },
+      "name" : "Cache_2",
+      "ports" : [
+        {
+          "objectType" : "InstPort",
+          "name" : "exec",
+          "nodePortType" : "IO"
+          },
+        {
+          "objectType" : "InstPort",
+          "name" : "value",
+          "nodePortType" : "In"
+          }
+        ],
+      "executable" : "Fabric.Core.Data.Cache",
+      "presetGUID" : "D903AFD981FE9214C69943F542D5FD60"
+      },
+    {
+      "objectType" : "Inst",
+      "metadata" : {
+        "uiGraphPos" : "{\"x\":270.0,\"y\":-190.0}"
+        },
+      "name" : "Size_1",
+      "ports" : [
+        {
+          "objectType" : "InstPort",
+          "name" : "exec",
+          "nodePortType" : "IO"
+          },
+        {
+          "objectType" : "InstPort",
+          "name" : "array",
+          "nodePortType" : "In"
+          },
+        {
+          "objectType" : "InstPort",
+          "name" : "count",
+          "nodePortType" : "Out"
+          }
+        ],
+      "executable" : "Fabric.Core.Array.Size",
+      "presetGUID" : "5B186A97C79ACF32526EC844AD805421"
+      },
+    {
+      "objectType" : "Inst",
+      "metadata" : {
+        "uiGraphPos" : "{\"x\":990.0,\"y\":-30.0}"
+        },
+      "name" : "If_1",
+      "ports" : [
+        {
+          "objectType" : "InstPort",
+          "name" : "exec",
+          "nodePortType" : "IO"
+          },
+        {
+          "objectType" : "InstPort",
+          "name" : "cond",
+          "nodePortType" : "In"
+          },
+        {
+          "objectType" : "InstPort",
+          "name" : "if_true",
+          "nodePortType" : "In"
+          },
+        {
+          "objectType" : "InstPort",
+          "name" : "if_false",
+          "nodePortType" : "In"
+          },
+        {
+          "objectType" : "InstPort",
+          "name" : "result",
+          "nodePortType" : "Out"
+          }
+        ],
+      "executable" : "Fabric.Core.Control.If",
+      "presetGUID" : "3182A478A21643455D549E483D35F831"
+      },
+    {
+      "objectType" : "Inst",
+      "metadata" : {
+        "uiGraphPos" : "{\"x\":440.0,\"y\":-240.0}"
+        },
+      "name" : "Lt_1",
+      "ports" : [
+        {
+          "objectType" : "InstPort",
+          "name" : "exec",
+          "nodePortType" : "IO"
+          },
+        {
+          "objectType" : "InstPort",
+          "name" : "lhs",
+          "nodePortType" : "In"
+          },
+        {
+          "objectType" : "InstPort",
+          "name" : "rhs",
+          "nodePortType" : "In"
+          },
+        {
+          "objectType" : "InstPort",
+          "name" : "result",
+          "nodePortType" : "Out"
+          }
+        ],
+      "executable" : "Fabric.Core.Logic.Lt",
+      "presetGUID" : "F4011A958885F47D54E4955E9E46B3CA"
+      },
+    {
+      "objectType" : "Inst",
+      "metadata" : {
+        "uiGraphPos" : "{\"x\":370.0,\"y\":80.0}"
+        },
+      "name" : "MergedMeshBlendShapeCore",
+      "ports" : [
+        {
+          "objectType" : "InstPort",
+          "name" : "exec",
+          "nodePortType" : "IO"
+          },
+        {
+          "objectType" : "InstPort",
+          "name" : "mergedMesh",
+          "nodePortType" : "In"
+          },
+        {
+          "objectType" : "InstPort",
+          "name" : "clonedSourceMeshIDList",
+          "nodePortType" : "In"
+          },
+        {
+          "objectType" : "InstPort",
+          "name" : "mergedMeshXfos",
+          "nodePortType" : "In"
+          },
+        {
+          "objectType" : "InstPort",
+          "name" : "blendshapeDelta",
+          "nodePortType" : "In"
+          },
+        {
+          "objectType" : "InstPort",
+          "name" : "blendShapeIDList",
+          "nodePortType" : "In"
+          },
+        {
+          "objectType" : "InstPort",
+          "name" : "blendShapeWeights",
+          "nodePortType" : "In"
+          },
+        {
+          "objectType" : "InstPort",
+          "name" : "result",
+          "nodePortType" : "Out"
+          },
+        {
+          "objectType" : "InstPort",
+          "name" : "t",
+          "nodePortType" : "In"
+          },
+        {
+          "objectType" : "InstPort",
+          "name" : "targetID",
+          "nodePortType" : "In"
+          },
+        {
+          "objectType" : "InstPort",
+          "name" : "sourceMesh",
+          "nodePortType" : "In"
+          }
+        ],
+      "definition" : {
+        "objectType" : "Func",
+        "title" : "func",
+        "ports" : [
+          {
+            "objectType" : "ExecPort",
+            "name" : "exec",
+            "nodePortType" : "IO",
+            "execPortType" : "IO",
+            "typeSpec" : "Execute"
+            },
+          {
+            "objectType" : "ExecPort",
+            "name" : "mergedMesh",
+            "nodePortType" : "Out",
+            "execPortType" : "In",
+            "typeSpec" : "PolygonMesh[]"
+            },
+          {
+            "objectType" : "ExecPort",
+            "name" : "clonedSourceMeshIDList",
+            "nodePortType" : "Out",
+            "execPortType" : "In",
+            "typeSpec" : "Integer[]"
+            },
+          {
+            "objectType" : "ExecPort",
+            "name" : "mergedMeshXfos",
+            "nodePortType" : "Out",
+            "execPortType" : "In",
+            "typeSpec" : "Xfo[]"
+            },
+          {
+            "objectType" : "ExecPort",
+            "name" : "blendshapeDelta",
+            "nodePortType" : "Out",
+            "execPortType" : "In",
+            "typeSpec" : "Vec3Array[]"
+            },
+          {
+            "objectType" : "ExecPort",
+            "name" : "blendShapeIDList",
+            "nodePortType" : "Out",
+            "execPortType" : "In",
+            "typeSpec" : "LocalL4UInt32Array[]"
+            },
+          {
+            "objectType" : "ExecPort",
+            "name" : "blendShapeWeights",
+            "nodePortType" : "Out",
+            "execPortType" : "In",
+            "typeSpec" : "LocalL4ScalarArray[]"
+            },
+          {
+            "objectType" : "ExecPort",
+            "name" : "result",
+            "nodePortType" : "In",
+            "execPortType" : "Out",
+            "typeSpec" : "PolygonMesh[]"
+            },
+          {
+            "objectType" : "ExecPort",
+            "name" : "t",
+            "nodePortType" : "Out",
+            "execPortType" : "In",
+            "typeSpec" : "Scalar"
+            },
+          {
+            "objectType" : "ExecPort",
+            "name" : "targetID",
+            "nodePortType" : "Out",
+            "execPortType" : "In",
+            "typeSpec" : "Integer"
+            },
+          {
+            "objectType" : "ExecPort",
+            "metadata" : {},
+            "name" : "sourceMesh",
+            "nodePortType" : "Out",
+            "execPortType" : "In",
+            "typeSpec" : "PolygonMesh[]"
+            }
+          ],
+        "extDeps" : {},
+        "code" : "dfgEntry {
+  MergedMeshBlendShape(result, mergedMesh, clonedSourceMeshIDList, mergedMeshXfos, blendshapeDelta, blendShapeIDList, blendShapeWeights, sourceMesh, t, targetID);
+}
+"
+        }
+      },
+    {
+      "objectType" : "Inst",
+      "metadata" : {
+        "uiGraphPos" : "{\"x\":712.956,\"y\":-224.384}"
+        },
+      "name" : "And_1",
+      "ports" : [
+        {
+          "objectType" : "InstPort",
+          "name" : "exec",
+          "nodePortType" : "IO"
+          },
+        {
+          "objectType" : "InstPort",
+          "name" : "lhs",
+          "nodePortType" : "In"
+          },
+        {
+          "objectType" : "InstPort",
+          "name" : "rhs",
+          "nodePortType" : "In"
+          },
+        {
+          "objectType" : "InstPort",
+          "name" : "result",
+          "nodePortType" : "Out"
+          }
+        ],
+      "executable" : "Fabric.Core.Logic.And",
+      "presetGUID" : "5C4DF279926CC4AFD90CCD43A2E07655"
+      },
+    {
+      "objectType" : "Inst",
+      "metadata" : {
+        "uiGraphPos" : "{\"x\":440.0,\"y\":-110.0}"
+        },
+      "name" : "Neq_1",
+      "ports" : [
+        {
+          "objectType" : "InstPort",
+          "name" : "exec",
+          "nodePortType" : "IO"
+          },
+        {
+          "objectType" : "InstPort",
+          "name" : "lhs",
+          "nodePortType" : "In"
+          },
+        {
+          "objectType" : "InstPort",
+          "name" : "rhs",
+          "nodePortType" : "In"
+          },
+        {
+          "objectType" : "InstPort",
+          "name" : "result",
+          "nodePortType" : "Out"
+          }
+        ],
+      "executable" : "Fabric.Core.Logic.Neq",
+      "presetGUID" : "6ED44CE562AA433EE8B354939B94482E"
+      }
+    ],
+  "connections" : {
+    "mergedMesh" : [
+      "Size_1.array",
+      "MergedMeshBlendShapeCore.mergedMesh",
+      "If_1.if_false"
+      ],
+    "clonedSourceMeshIDList" : [
+      "MergedMeshBlendShapeCore.clonedSourceMeshIDList",
+      "GetDelta.clonedSourceMeshIDList"
+      ],
+    "targetID" : [
+      "Lt_1.lhs",
+      "GetDelta.target",
+      "MergedMeshBlendShapeCore.targetID"
+      ],
+    "t" : [
+      "MergedMeshBlendShapeCore.t",
+      "Neq_1.lhs"
+      ],
+    "sourceMesh" : [
+      "GetDelta.sourceMesh",
+      "MergedMeshBlendShapeCore.sourceMesh"
+      ],
+    "mergedMeshXfos" : [
+      "MergedMeshBlendShapeCore.mergedMeshXfos"
+      ],
+    "blendShapeTargets" : [
+      "GetDelta.blendShapeTarget"
+      ],
+    "blendShapeIDList" : [
+      "MergedMeshBlendShapeCore.blendShapeIDList"
+      ],
+    "blendShapeWeights" : [
+      "MergedMeshBlendShapeCore.blendShapeWeights"
+      ],
+    "GetDelta.blendshapeDelta" : [
+      "Cache_2.value"
+      ],
+    "Cache_2.value" : [
+      "MergedMeshBlendShapeCore.blendshapeDelta"
+      ],
+    "Size_1.count" : [
+      "Lt_1.rhs"
+      ],
+    "If_1.result" : [
+      "result"
+      ],
+    "Lt_1.result" : [
+      "And_1.lhs"
+      ],
+    "MergedMeshBlendShapeCore.result" : [
+      "If_1.if_true"
+      ],
+    "And_1.result" : [
+      "If_1.cond"
+      ],
+    "Neq_1.result" : [
+      "And_1.rhs"
+      ]
+    },
+  "requiredPresets" : {
+    "Fabric.Core.Data.Cache" : {
+      "objectType" : "Func",
+      "metadata" : {
+        "uiNodeColor" : "{\n  \"r\" : 214,\n  \"g\" : 191,\n  \"b\" : 103\n  }",
+        "uiAlwaysShowDaisyChainPorts" : "true",
+        "uiHeaderColor" : "{\n  \"r\" : 188,\n  \"g\" : 129,\n  \"b\" : 83\n  }"
+        },
+      "title" : "Cache",
+      "cacheRule" : "always",
+      "ports" : [
+        {
+          "objectType" : "ExecPort",
+          "name" : "exec",
+          "nodePortType" : "IO",
+          "execPortType" : "IO",
+          "typeSpec" : "Execute"
+          },
+        {
+          "objectType" : "ExecPort",
+          "name" : "value",
+          "nodePortType" : "Out",
+          "execPortType" : "In",
+          "typeSpec" : "$TYPE$"
+          }
+        ],
+      "extDeps" : {},
+      "presetGUID" : "D903AFD981FE9214C69943F542D5FD60",
+      "code" : "dfgEntry {
+}
+"
+      },
+    "Fabric.Core.Array.Size" : {
+      "objectType" : "Func",
+      "title" : "Size[]",
+      "ports" : [
+        {
+          "objectType" : "ExecPort",
+          "name" : "exec",
+          "nodePortType" : "IO",
+          "execPortType" : "IO",
+          "typeSpec" : "Execute"
+          },
+        {
+          "objectType" : "ExecPort",
+          "name" : "array",
+          "nodePortType" : "Out",
+          "execPortType" : "In",
+          "typeSpec" : "$TYPE$"
+          },
+        {
+          "objectType" : "ExecPort",
+          "name" : "count",
+          "nodePortType" : "In",
+          "execPortType" : "Out",
+          "typeSpec" : "UInt32"
+          }
+        ],
+      "extDeps" : {},
+      "presetGUID" : "5B186A97C79ACF32526EC844AD805421",
+      "code" : "
+dfgEntry {
+	count = array.size();
+}
+"
+      },
+    "Fabric.Core.Control.If" : {
+      "objectType" : "Func",
+      "title" : "If",
+      "ports" : [
+        {
+          "objectType" : "ExecPort",
+          "name" : "exec",
+          "nodePortType" : "IO",
+          "execPortType" : "IO",
+          "typeSpec" : "Execute"
+          },
+        {
+          "objectType" : "ExecPort",
+          "name" : "cond",
+          "nodePortType" : "Out",
+          "execPortType" : "In",
+          "typeSpec" : "Boolean"
+          },
+        {
+          "objectType" : "ExecPort",
+          "name" : "if_true",
+          "nodePortType" : "Out",
+          "execPortType" : "In",
+          "typeSpec" : "$TYPE$"
+          },
+        {
+          "objectType" : "ExecPort",
+          "name" : "if_false",
+          "nodePortType" : "Out",
+          "execPortType" : "In",
+          "typeSpec" : "$TYPE$"
+          },
+        {
+          "objectType" : "ExecPort",
+          "name" : "result",
+          "nodePortType" : "In",
+          "execPortType" : "Out",
+          "typeSpec" : "$TYPE$"
+          }
+        ],
+      "extDeps" : {},
+      "presetGUID" : "3182A478A21643455D549E483D35F831",
+      "code" : "
+dfgEntry {
+	result = cond ? if_true : if_false;
+}
+"
+      },
+    "Fabric.Core.Logic.Lt" : {
+      "objectType" : "Func",
+      "title" : "Lt <",
+      "ports" : [
+        {
+          "objectType" : "ExecPort",
+          "name" : "exec",
+          "nodePortType" : "IO",
+          "execPortType" : "IO",
+          "typeSpec" : "Execute"
+          },
+        {
+          "objectType" : "ExecPort",
+          "name" : "lhs",
+          "nodePortType" : "Out",
+          "execPortType" : "In",
+          "typeSpec" : "$TYPE$"
+          },
+        {
+          "objectType" : "ExecPort",
+          "name" : "rhs",
+          "nodePortType" : "Out",
+          "execPortType" : "In",
+          "typeSpec" : "$TYPE$"
+          },
+        {
+          "objectType" : "ExecPort",
+          "name" : "result",
+          "nodePortType" : "In",
+          "execPortType" : "Out",
+          "typeSpec" : "Boolean"
+          }
+        ],
+      "extDeps" : {},
+      "presetGUID" : "F4011A958885F47D54E4955E9E46B3CA",
+      "code" : "
+dfgEntry {
+	result = lhs < rhs;
+}
+"
+      },
+    "Fabric.Core.Logic.And" : {
+      "objectType" : "Func",
+      "title" : "And &&",
+      "ports" : [
+        {
+          "objectType" : "ExecPort",
+          "name" : "exec",
+          "nodePortType" : "IO",
+          "execPortType" : "IO",
+          "typeSpec" : "Execute"
+          },
+        {
+          "objectType" : "ExecPort",
+          "name" : "lhs",
+          "nodePortType" : "Out",
+          "execPortType" : "In",
+          "typeSpec" : "$TYPE$"
+          },
+        {
+          "objectType" : "ExecPort",
+          "name" : "rhs",
+          "nodePortType" : "Out",
+          "execPortType" : "In",
+          "typeSpec" : "$TYPE$"
+          },
+        {
+          "objectType" : "ExecPort",
+          "name" : "result",
+          "nodePortType" : "In",
+          "execPortType" : "Out",
+          "typeSpec" : "Boolean"
+          }
+        ],
+      "extDeps" : {},
+      "presetGUID" : "5C4DF279926CC4AFD90CCD43A2E07655",
+      "code" : "
+dfgEntry {
+	result = lhs && rhs;
+}
+"
+      },
+    "Fabric.Core.Logic.Neq" : {
+      "objectType" : "Func",
+      "title" : "Neq !=",
+      "ports" : [
+        {
+          "objectType" : "ExecPort",
+          "name" : "exec",
+          "nodePortType" : "IO",
+          "execPortType" : "IO",
+          "typeSpec" : "Execute"
+          },
+        {
+          "objectType" : "ExecPort",
+          "name" : "lhs",
+          "nodePortType" : "Out",
+          "execPortType" : "In",
+          "typeSpec" : "$TYPE$"
+          },
+        {
+          "objectType" : "ExecPort",
+          "name" : "rhs",
+          "nodePortType" : "Out",
+          "execPortType" : "In",
+          "typeSpec" : "$TYPE$"
+          },
+        {
+          "objectType" : "ExecPort",
+          "name" : "result",
+          "nodePortType" : "In",
+          "execPortType" : "Out",
+          "typeSpec" : "Boolean"
+          }
+        ],
+      "extDeps" : {},
+      "presetGUID" : "6ED44CE562AA433EE8B354939B94482E",
+      "code" : "
+dfgEntry {
+	result = lhs != rhs;
+}
+"
+      }
+    }
+  }

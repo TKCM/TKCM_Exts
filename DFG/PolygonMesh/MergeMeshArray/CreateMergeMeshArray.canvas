@@ -1,8 +1,8 @@
 {
   "objectType" : "Graph",
   "metadata" : {
-    "uiGraphZoom" : "{\n  \"value\" : 0.6355569958686829\n  }",
-    "uiGraphPan" : "{\n  \"x\" : 420.6796875,\n  \"y\" : 40.49984741210938\n  }"
+    "uiGraphZoom" : "{\n  \"value\" : 0.7492632269859314\n  }",
+    "uiGraphPan" : "{\n  \"x\" : 600.66064453125,\n  \"y\" : -27.80119895935059\n  }"
     },
   "title" : "CreateMergeMeshArray",
   "ports" : [
@@ -64,7 +64,7 @@
       "name" : "ID",
       "nodePortType" : "Out",
       "defaultValues" : {
-        "String" : "3,6"
+        "String" : "0,1"
         },
       "execPortType" : "In",
       "typeSpec" : "String"
@@ -74,7 +74,7 @@
       "name" : "seedForRandom",
       "nodePortType" : "Out",
       "defaultValues" : {
-        "Scalar" : 5
+        "Scalar" : 7
         },
       "execPortType" : "In",
       "typeSpec" : "Scalar"
@@ -100,13 +100,15 @@
       "typeSpec" : "Integer[]"
       }
     ],
-  "extDeps" : {},
+  "extDeps" : {
+    "TKCM" : "*"
+    },
   "presetGUID" : "36627CCCA949A014BE3BAD273D9EE471",
   "nodes" : [
     {
       "objectType" : "Inst",
       "metadata" : {
-        "uiGraphPos" : "{\"x\":126.0,\"y\":323.0}"
+        "uiGraphPos" : "{\"x\":430.0,\"y\":270.0}"
         },
       "name" : "CreateMergeMeshCore",
       "ports" : [
@@ -126,7 +128,7 @@
         {
           "objectType" : "InstPort",
           "name" : "transformXfos",
-          "nodePortType" : "In",
+          "nodePortType" : "IO",
           "defaultValues" : {
             "Xfo[]" : []
             }
@@ -157,6 +159,11 @@
           },
         {
           "objectType" : "InstPort",
+          "name" : "IDs",
+          "nodePortType" : "In"
+          },
+        {
+          "objectType" : "InstPort",
           "name" : "mergedMesh",
           "nodePortType" : "Out"
           },
@@ -167,12 +174,17 @@
           },
         {
           "objectType" : "InstPort",
-          "name" : "restValue",
+          "name" : "restMeshes",
           "nodePortType" : "In"
           },
         {
           "objectType" : "InstPort",
-          "name" : "IDs",
+          "name" : "restList",
+          "nodePortType" : "In"
+          },
+        {
+          "objectType" : "InstPort",
+          "name" : "reMerge",
           "nodePortType" : "In"
           }
         ],
@@ -197,8 +209,8 @@
           {
             "objectType" : "ExecPort",
             "name" : "transformXfos",
-            "nodePortType" : "Out",
-            "execPortType" : "In",
+            "nodePortType" : "IO",
+            "execPortType" : "IO",
             "typeSpec" : "Xfo[]"
             },
           {
@@ -227,6 +239,13 @@
             },
           {
             "objectType" : "ExecPort",
+            "name" : "IDs",
+            "nodePortType" : "Out",
+            "execPortType" : "In",
+            "typeSpec" : "String[]"
+            },
+          {
+            "objectType" : "ExecPort",
             "name" : "mergedMesh",
             "nodePortType" : "In",
             "execPortType" : "Out",
@@ -241,156 +260,100 @@
             },
           {
             "objectType" : "ExecPort",
-            "name" : "restValue",
+            "name" : "restMeshes",
             "nodePortType" : "Out",
             "execPortType" : "In",
-            "typeSpec" : "Xfo[]"
+            "typeSpec" : "PolygonMesh[]"
             },
           {
             "objectType" : "ExecPort",
-            "name" : "IDs",
+            "name" : "restList",
             "nodePortType" : "Out",
             "execPortType" : "In",
-            "typeSpec" : "String[]"
+            "typeSpec" : "Integer[]"
+            },
+          {
+            "objectType" : "ExecPort",
+            "name" : "reMerge",
+            "nodePortType" : "Out",
+            "execPortType" : "In",
+            "typeSpec" : "Boolean"
             }
           ],
         "extDeps" : {},
         "code" : "dfgEntry {
-  mergedMesh.resize(source.size());
-  for(Integer i=0; i<mergedMesh.size(); i++){
-    mergedMesh[i] = null;
-    mergedMesh[i] = PolygonMesh();
-  }
+  if(reMerge){
+    mergedMesh.resize(source.size());
+    for(Integer i=0; i<mergedMesh.size(); i++){
+      mergedMesh[i] = null;
+      mergedMesh[i] = PolygonMesh();
+    }
   
-  Integer mode = selectSourceMesh;
-  Index mergeID[];
+    Integer mode = selectSourceMesh;
+    Index mergeID[];
   
-  if(1 < IDs.size() || mode == 1){
-    if(mode == 0){
-      mergeID.resize(IDs.size());
-      for(Integer i=0; i<IDs.size(); i++){
-        mergeID[i] = Integer(IDs[i].toScalar());
-      }
-    }else{
-      mergeID.resize(source.size());
-      for(Integer i=0; i<source.size(); i++){
-        mergeID[i] = i;
-      }
-    }    
-    mode = 1;
-  }
+    if(1 < IDs.size() || mode == 1){
+      if(mode == 0){
+        mergeID.resize(IDs.size());
+        for(Integer i=0; i<IDs.size(); i++){
+          mergeID[i] = Integer(IDs[i].toScalar());
+        }
+      }else{
+        mergeID.resize(source.size());
+        for(Integer i=0; i<source.size(); i++){
+          mergeID[i] = i;
+        }
+      }    
+      mode = 1;
+    }
   
-  switch(mode){
-    case 0:  // select ID
-      Index ID = Integer(IDs[0].toScalar());
-      mergedMesh[ID] = PolygonMesh();
-      Ref<PolygonMesh> source_ref = source[ID];
-      mergedMesh[ID].mergeMeshClones(source_ref, transformXfos, transformNormals);
+    switch(mode){
+      case 0:  // select ID
+        Index ID = Integer(IDs[0].toScalar());
+        mergedMesh[ID] = PolygonMesh();
+        Ref<PolygonMesh> source_ref = source[ID];
+        mergedMesh[ID].mergeMeshClones(source_ref, transformXfos, transformNormals);
       
-      clonedMeshIDList.resize(transformXfos.size());
-      for(Integer i=0; i<transformXfos.size(); i++){
-        clonedMeshIDList[i] = ID;
-      }
-      break;
-    case 1:  //  random select
-      clonedMeshIDList.resize(transformXfos.size());
-      Xfo cloneXfos[][];
-      cloneXfos.resize(source.size());
-      Index sourceID;
-      for(Integer i=0; i<transformXfos.size(); i++){
-        sourceID = mathRandomUInt32(seedForRandom + i, i, 0, mergeID.size());
-        clonedMeshIDList[i] = mergeID[sourceID];
-        for(Integer j=0; j<source.size(); j++){
-          if(j == clonedMeshIDList[i]){
-            cloneXfos[j].push(transformXfos[i]);
+        clonedMeshIDList.resize(transformXfos.size());
+        for(Integer i=0; i<transformXfos.size(); i++){
+          clonedMeshIDList[i] = ID;
+        }
+        break;
+      case 1:  //  random select
+        clonedMeshIDList.resize(transformXfos.size());
+        Xfo cloneXfos[][];
+        cloneXfos.resize(source.size());
+        Index sourceID;
+        for(Integer i=0; i<transformXfos.size(); i++){
+          sourceID = mathRandomUInt32(seedForRandom + i, i, 0, mergeID.size());
+          clonedMeshIDList[i] = mergeID[sourceID];
+          for(Integer j=0; j<source.size(); j++){
+            if(j == clonedMeshIDList[i]){
+              cloneXfos[j].push(transformXfos[i]);
+            }
           }
         }
-      }
-      for(Integer i=0; i<source.size(); i++){
-        mergedMesh[i] = PolygonMesh();
-        if(cloneXfos[i].size() > 0){
-          Ref<PolygonMesh> source_ref = source[i];
-          mergedMesh[i].mergeMeshClones(source_ref, cloneXfos[i], transformNormals);
+        for(Integer i=0; i<source.size(); i++){
+          mergedMesh[i] = PolygonMesh();
+          if(cloneXfos[i].size() > 0){
+            Ref<PolygonMesh> source_ref = source[i];
+            mergedMesh[i].mergeMeshClones(source_ref, cloneXfos[i], transformNormals);
+          }
         }
-      }
-      break;
-  }
+        break;
+    }
+  }else{
+    mergedMesh = restMeshes;
+    clonedMeshIDList = restList;
+  }  
 }
 "
         }
       },
     {
-      "objectType" : "Inst",
-      "metadata" : {
-        "uiGraphPos" : "{\"x\":392.0,\"y\":397.0}"
-        },
-      "name" : "Cache_1",
-      "ports" : [
-        {
-          "objectType" : "InstPort",
-          "name" : "exec",
-          "nodePortType" : "IO"
-          },
-        {
-          "objectType" : "InstPort",
-          "name" : "value",
-          "nodePortType" : "In"
-          }
-        ],
-      "executable" : "Fabric.Core.Data.Cache",
-      "presetGUID" : "D903AFD981FE9214C69943F542D5FD60"
-      },
-    {
-      "objectType" : "Inst",
-      "metadata" : {
-        "uiGraphPos" : "{\"x\":396.438,\"y\":511.068}"
-        },
-      "name" : "Cache_2",
-      "ports" : [
-        {
-          "objectType" : "InstPort",
-          "name" : "exec",
-          "nodePortType" : "IO"
-          },
-        {
-          "objectType" : "InstPort",
-          "name" : "value",
-          "nodePortType" : "In"
-          }
-        ],
-      "executable" : "Fabric.Core.Data.Cache",
-      "presetGUID" : "D903AFD981FE9214C69943F542D5FD60"
-      },
-    {
-      "objectType" : "Inst",
-      "metadata" : {
-        "uiGraphPos" : "{\"x\":538.013,\"y\":398.877}"
-        },
-      "name" : "Clone_1",
-      "ports" : [
-        {
-          "objectType" : "InstPort",
-          "name" : "exec",
-          "nodePortType" : "IO"
-          },
-        {
-          "objectType" : "InstPort",
-          "name" : "value",
-          "nodePortType" : "In"
-          },
-        {
-          "objectType" : "InstPort",
-          "name" : "clonedValue",
-          "nodePortType" : "Out"
-          }
-        ],
-      "executable" : "Fabric.Core.Data.Clone",
-      "presetGUID" : "30401D7851DEFCFA5C46EB3926DD8BAD"
-      },
-    {
       "objectType" : "Var",
       "metadata" : {
-        "uiGraphPos" : "{\"x\":-205.858,\"y\":-58.1238}"
+        "uiGraphPos" : "{\"x\":94.142,\"y\":-268.124}"
         },
       "name" : "restXfos",
       "ports" : [
@@ -405,7 +368,7 @@
     {
       "objectType" : "Set",
       "metadata" : {
-        "uiGraphPos" : "{\"x\":-273.533,\"y\":362.028}"
+        "uiGraphPos" : "{\"x\":1330.0,\"y\":310.0}"
         },
       "name" : "set",
       "ports" : [
@@ -420,7 +383,7 @@
     {
       "objectType" : "Get",
       "metadata" : {
-        "uiGraphPos" : "{\"x\":-187.529,\"y\":581.972}"
+        "uiGraphPos" : "{\"x\":-630.0,\"y\":260.0}"
         },
       "name" : "get",
       "ports" : [
@@ -435,7 +398,7 @@
     {
       "objectType" : "Inst",
       "metadata" : {
-        "uiGraphPos" : "{\"x\":-437.135,\"y\":707.881}"
+        "uiGraphPos" : "{\"x\":-680.0,\"y\":530.0}"
         },
       "name" : "SplitAndDeleteBlank_1",
       "ports" : [
@@ -467,121 +430,862 @@
         ],
       "executable" : "TKCM.Util.String.SplitAndDeleteBlank",
       "presetGUID" : "F433EE0F045CFB5086821B670F6FEC3D"
+      },
+    {
+      "objectType" : "Var",
+      "metadata" : {
+        "uiGraphPos" : "{\"x\":90.0,\"y\":-200.0}"
+        },
+      "name" : "restPolys",
+      "ports" : [
+        {
+          "objectType" : "VarPort",
+          "name" : "value",
+          "nodePortType" : "IO"
+          }
+        ],
+      "dataType" : "PolygonMesh[]"
+      },
+    {
+      "objectType" : "Set",
+      "metadata" : {
+        "uiGraphPos" : "{\"x\":710.0,\"y\":380.0}"
+        },
+      "name" : "set_2",
+      "ports" : [
+        {
+          "objectType" : "SetPort",
+          "name" : "value",
+          "nodePortType" : "IO"
+          }
+        ],
+      "varPath" : "restPolys"
+      },
+    {
+      "objectType" : "Get",
+      "metadata" : {
+        "uiGraphPos" : "{\"x\":-50.0,\"y\":640.0}"
+        },
+      "name" : "get_2",
+      "ports" : [
+        {
+          "objectType" : "GetPort",
+          "name" : "value",
+          "nodePortType" : "Out"
+          }
+        ],
+      "varPath" : "restPolys"
+      },
+    {
+      "objectType" : "Var",
+      "metadata" : {
+        "uiGraphPos" : "{\"x\":100.0,\"y\":-130.0}"
+        },
+      "name" : "restList",
+      "ports" : [
+        {
+          "objectType" : "VarPort",
+          "name" : "value",
+          "nodePortType" : "IO"
+          }
+        ],
+      "dataType" : "Integer[]"
+      },
+    {
+      "objectType" : "Set",
+      "metadata" : {
+        "uiGraphPos" : "{\"x\":720.0,\"y\":450.0}"
+        },
+      "name" : "set_3",
+      "ports" : [
+        {
+          "objectType" : "SetPort",
+          "name" : "value",
+          "nodePortType" : "IO"
+          }
+        ],
+      "varPath" : "restList"
+      },
+    {
+      "objectType" : "Get",
+      "metadata" : {
+        "uiGraphPos" : "{\"x\":-620.0,\"y\":740.0}"
+        },
+      "name" : "get_3",
+      "ports" : [
+        {
+          "objectType" : "GetPort",
+          "name" : "value",
+          "nodePortType" : "Out"
+          }
+        ],
+      "varPath" : "restList"
+      },
+    {
+      "objectType" : "Inst",
+      "metadata" : {
+        "uiGraphPos" : "{\"x\":-370.0,\"y\":250.0}"
+        },
+      "name" : "Chacker",
+      "ports" : [
+        {
+          "objectType" : "InstPort",
+          "name" : "exec",
+          "nodePortType" : "IO"
+          },
+        {
+          "objectType" : "InstPort",
+          "name" : "source",
+          "nodePortType" : "In"
+          },
+        {
+          "objectType" : "InstPort",
+          "name" : "transformXfos",
+          "nodePortType" : "IO"
+          },
+        {
+          "objectType" : "InstPort",
+          "name" : "restXfos",
+          "nodePortType" : "In"
+          },
+        {
+          "objectType" : "InstPort",
+          "name" : "transformNormals",
+          "nodePortType" : "IO"
+          },
+        {
+          "objectType" : "InstPort",
+          "name" : "restTransformNormals",
+          "nodePortType" : "In"
+          },
+        {
+          "objectType" : "InstPort",
+          "name" : "selectSourceMesh",
+          "nodePortType" : "IO"
+          },
+        {
+          "objectType" : "InstPort",
+          "name" : "restSelectMode",
+          "nodePortType" : "In"
+          },
+        {
+          "objectType" : "InstPort",
+          "name" : "seedForRandom",
+          "nodePortType" : "IO"
+          },
+        {
+          "objectType" : "InstPort",
+          "name" : "restSeed",
+          "nodePortType" : "In"
+          },
+        {
+          "objectType" : "InstPort",
+          "name" : "IDs",
+          "nodePortType" : "IO"
+          },
+        {
+          "objectType" : "InstPort",
+          "name" : "restIDs",
+          "nodePortType" : "In"
+          },
+        {
+          "objectType" : "InstPort",
+          "name" : "restList",
+          "nodePortType" : "In"
+          },
+        {
+          "objectType" : "InstPort",
+          "name" : "reMerge",
+          "nodePortType" : "Out"
+          },
+        {
+          "objectType" : "InstPort",
+          "name" : "updateXfos",
+          "nodePortType" : "Out"
+          }
+        ],
+      "definition" : {
+        "objectType" : "Func",
+        "title" : "func",
+        "ports" : [
+          {
+            "objectType" : "ExecPort",
+            "name" : "exec",
+            "nodePortType" : "IO",
+            "execPortType" : "IO",
+            "typeSpec" : "Execute"
+            },
+          {
+            "objectType" : "ExecPort",
+            "metadata" : {},
+            "name" : "source",
+            "nodePortType" : "Out",
+            "execPortType" : "In",
+            "typeSpec" : "PolygonMesh[]"
+            },
+          {
+            "objectType" : "ExecPort",
+            "name" : "transformXfos",
+            "nodePortType" : "IO",
+            "execPortType" : "IO",
+            "typeSpec" : "Xfo[]"
+            },
+          {
+            "objectType" : "ExecPort",
+            "name" : "restXfos",
+            "nodePortType" : "Out",
+            "execPortType" : "In",
+            "typeSpec" : "Xfo[]"
+            },
+          {
+            "objectType" : "ExecPort",
+            "name" : "transformNormals",
+            "nodePortType" : "IO",
+            "execPortType" : "IO",
+            "typeSpec" : "Boolean"
+            },
+          {
+            "objectType" : "ExecPort",
+            "name" : "restTransformNormals",
+            "nodePortType" : "Out",
+            "execPortType" : "In",
+            "typeSpec" : "Boolean"
+            },
+          {
+            "objectType" : "ExecPort",
+            "name" : "selectSourceMesh",
+            "nodePortType" : "IO",
+            "execPortType" : "IO",
+            "typeSpec" : "Integer"
+            },
+          {
+            "objectType" : "ExecPort",
+            "name" : "restSelectMode",
+            "nodePortType" : "Out",
+            "execPortType" : "In",
+            "typeSpec" : "Integer"
+            },
+          {
+            "objectType" : "ExecPort",
+            "name" : "seedForRandom",
+            "nodePortType" : "IO",
+            "execPortType" : "IO",
+            "typeSpec" : "Scalar"
+            },
+          {
+            "objectType" : "ExecPort",
+            "name" : "restSeed",
+            "nodePortType" : "Out",
+            "execPortType" : "In",
+            "typeSpec" : "Scalar"
+            },
+          {
+            "objectType" : "ExecPort",
+            "name" : "IDs",
+            "nodePortType" : "IO",
+            "execPortType" : "IO",
+            "typeSpec" : "String[]"
+            },
+          {
+            "objectType" : "ExecPort",
+            "name" : "restIDs",
+            "nodePortType" : "Out",
+            "execPortType" : "In",
+            "typeSpec" : "String[]"
+            },
+          {
+            "objectType" : "ExecPort",
+            "name" : "restList",
+            "nodePortType" : "Out",
+            "execPortType" : "In",
+            "typeSpec" : "Integer[]"
+            },
+          {
+            "objectType" : "ExecPort",
+            "name" : "reMerge",
+            "nodePortType" : "In",
+            "execPortType" : "Out",
+            "typeSpec" : "Boolean"
+            },
+          {
+            "objectType" : "ExecPort",
+            "name" : "updateXfos",
+            "nodePortType" : "In",
+            "execPortType" : "Out",
+            "typeSpec" : "Boolean"
+            }
+          ],
+        "extDeps" : {},
+        "code" : "dfgEntry {
+  for(Integer i=0; i<IDs.size(); i++){
+    if(selectSourceMesh == 0 && source.size() <= IDs[i]){
+      report(\"!!!!!!Error!!!!!! ::: CreateMergedMeshArray : select mesh ID '\"+IDs[i]+\"' is out of range (\"+source.size()+\")\");
+      return;
+    }
+  }
+  if(transformXfos.size() != restXfos.size() 
+    || restList.size() == 0 
+    || IDs.size() != restIDs.size() 
+    || selectSourceMesh != restSelectMode 
+    || seedForRandom != restSeed 
+    || transformNormals != restTransformNormals
+    ){
+    reMerge = true;
+  }else{
+    for(Integer i=0; i<IDs.size(); i++){
+      if(IDs[i] != restIDs[i]){
+        reMerge = true;
+        break;
+      }
+    }
+    
+    // update Xfo values
+    for(Integer i=0; i<transformXfos.size(); i++){
+      if(transformXfos[i] != restXfos[i]){
+        updateXfos = true;
+        break;
+      }
+    }
+    
+  }
+}
+"
+        }
+      },
+    {
+      "objectType" : "Var",
+      "metadata" : {
+        "uiGraphPos" : "{\"x\":220.0,\"y\":-270.0}"
+        },
+      "name" : "restIDs",
+      "ports" : [
+        {
+          "objectType" : "VarPort",
+          "name" : "value",
+          "nodePortType" : "IO"
+          }
+        ],
+      "dataType" : "String[]"
+      },
+    {
+      "objectType" : "Set",
+      "metadata" : {
+        "uiGraphPos" : "{\"x\":-30.0,\"y\":560.0}"
+        },
+      "name" : "set_4",
+      "ports" : [
+        {
+          "objectType" : "SetPort",
+          "name" : "value",
+          "nodePortType" : "IO"
+          }
+        ],
+      "varPath" : "restIDs"
+      },
+    {
+      "objectType" : "Get",
+      "metadata" : {
+        "uiGraphPos" : "{\"x\":-620.0,\"y\":680.0}"
+        },
+      "name" : "get_4",
+      "ports" : [
+        {
+          "objectType" : "GetPort",
+          "name" : "value",
+          "nodePortType" : "Out"
+          }
+        ],
+      "varPath" : "restIDs"
+      },
+    {
+      "objectType" : "Var",
+      "metadata" : {
+        "uiGraphPos" : "{\"x\":220.0,\"y\":-200.0}"
+        },
+      "name" : "restSelectMode",
+      "ports" : [
+        {
+          "objectType" : "VarPort",
+          "name" : "value",
+          "nodePortType" : "IO"
+          }
+        ],
+      "dataType" : "Integer"
+      },
+    {
+      "objectType" : "Set",
+      "metadata" : {
+        "uiGraphPos" : "{\"x\":-40.0,\"y\":430.0}"
+        },
+      "name" : "set_5",
+      "ports" : [
+        {
+          "objectType" : "SetPort",
+          "name" : "value",
+          "nodePortType" : "IO"
+          }
+        ],
+      "varPath" : "restSelectMode"
+      },
+    {
+      "objectType" : "Get",
+      "metadata" : {
+        "uiGraphPos" : "{\"x\":-670.0,\"y\":390.0}"
+        },
+      "name" : "get_5",
+      "ports" : [
+        {
+          "objectType" : "GetPort",
+          "name" : "value",
+          "nodePortType" : "Out"
+          }
+        ],
+      "varPath" : "restSelectMode"
+      },
+    {
+      "objectType" : "Var",
+      "metadata" : {
+        "uiGraphPos" : "{\"x\":230.0,\"y\":-130.0}"
+        },
+      "name" : "restSeed",
+      "ports" : [
+        {
+          "objectType" : "VarPort",
+          "name" : "value",
+          "nodePortType" : "IO"
+          }
+        ],
+      "dataType" : "Scalar"
+      },
+    {
+      "objectType" : "Set",
+      "metadata" : {
+        "uiGraphPos" : "{\"x\":-30.0,\"y\":490.0}"
+        },
+      "name" : "set_6",
+      "ports" : [
+        {
+          "objectType" : "SetPort",
+          "name" : "value",
+          "nodePortType" : "IO"
+          }
+        ],
+      "varPath" : "restSeed"
+      },
+    {
+      "objectType" : "Get",
+      "metadata" : {
+        "uiGraphPos" : "{\"x\":-620.0,\"y\":450.0}"
+        },
+      "name" : "get_6",
+      "ports" : [
+        {
+          "objectType" : "GetPort",
+          "name" : "value",
+          "nodePortType" : "Out"
+          }
+        ],
+      "varPath" : "restSeed"
+      },
+    {
+      "objectType" : "Var",
+      "metadata" : {
+        "uiGraphPos" : "{\"x\":350.0,\"y\":-270.0}"
+        },
+      "name" : "restTransformNormals",
+      "ports" : [
+        {
+          "objectType" : "VarPort",
+          "name" : "value",
+          "nodePortType" : "IO"
+          }
+        ],
+      "dataType" : "Boolean"
+      },
+    {
+      "objectType" : "Set",
+      "metadata" : {
+        "uiGraphPos" : "{\"x\":-60.0,\"y\":370.0}"
+        },
+      "name" : "set_7",
+      "ports" : [
+        {
+          "objectType" : "SetPort",
+          "name" : "value",
+          "nodePortType" : "IO"
+          }
+        ],
+      "varPath" : "restTransformNormals"
+      },
+    {
+      "objectType" : "Get",
+      "metadata" : {
+        "uiGraphPos" : "{\"x\":-720.0,\"y\":330.0}"
+        },
+      "name" : "get_7",
+      "ports" : [
+        {
+          "objectType" : "GetPort",
+          "name" : "value",
+          "nodePortType" : "Out"
+          }
+        ],
+      "varPath" : "restTransformNormals"
+      },
+    {
+      "objectType" : "Get",
+      "metadata" : {
+        "uiGraphPos" : "{\"x\":760.0,\"y\":230.0}"
+        },
+      "name" : "get_8",
+      "ports" : [
+        {
+          "objectType" : "GetPort",
+          "name" : "value",
+          "nodePortType" : "Out"
+          }
+        ],
+      "varPath" : "restXfos"
+      },
+    {
+      "objectType" : "Inst",
+      "metadata" : {
+        "uiGraphPos" : "{\"x\":1560.0,\"y\":510.0}"
+        },
+      "name" : "If_1",
+      "ports" : [
+        {
+          "objectType" : "InstPort",
+          "name" : "exec",
+          "nodePortType" : "IO"
+          },
+        {
+          "objectType" : "InstPort",
+          "name" : "cond",
+          "nodePortType" : "In"
+          },
+        {
+          "objectType" : "InstPort",
+          "name" : "if_true",
+          "nodePortType" : "In"
+          },
+        {
+          "objectType" : "InstPort",
+          "name" : "if_false",
+          "nodePortType" : "In"
+          },
+        {
+          "objectType" : "InstPort",
+          "name" : "result",
+          "nodePortType" : "Out"
+          }
+        ],
+      "executable" : "Fabric.Core.Control.If",
+      "presetGUID" : "3182A478A21643455D549E483D35F831"
+      },
+    {
+      "objectType" : "Inst",
+      "metadata" : {
+        "uiGraphPos" : "{\"x\":1030.0,\"y\":220.0}"
+        },
+      "name" : "imploded_nodes",
+      "ports" : [
+        {
+          "objectType" : "InstPort",
+          "name" : "exec",
+          "nodePortType" : "IO"
+          },
+        {
+          "objectType" : "InstPort",
+          "name" : "mergedMesh",
+          "nodePortType" : "In",
+          "defaultValues" : {
+            "PolygonMesh[]" : []
+            }
+          },
+        {
+          "objectType" : "InstPort",
+          "name" : "clonedSourceMeshIDList",
+          "nodePortType" : "In",
+          "defaultValues" : {
+            "Integer[]" : []
+            }
+          },
+        {
+          "objectType" : "InstPort",
+          "name" : "sourceMeshes",
+          "nodePortType" : "In",
+          "defaultValues" : {
+            "PolygonMesh[]" : []
+            }
+          },
+        {
+          "objectType" : "InstPort",
+          "name" : "mergedMeshXfos",
+          "nodePortType" : "In"
+          },
+        {
+          "objectType" : "InstPort",
+          "name" : "updateXfos",
+          "nodePortType" : "IO",
+          "defaultValues" : {
+            "Xfo[]" : []
+            }
+          },
+        {
+          "objectType" : "InstPort",
+          "name" : "result",
+          "nodePortType" : "Out"
+          }
+        ],
+      "definition" : {
+        "objectType" : "Graph",
+        "title" : "imploded_nodes",
+        "ports" : [
+          {
+            "objectType" : "ExecPort",
+            "name" : "exec",
+            "nodePortType" : "IO",
+            "execPortType" : "IO",
+            "typeSpec" : "Execute"
+            },
+          {
+            "objectType" : "ExecPort",
+            "name" : "mergedMesh",
+            "nodePortType" : "Out",
+            "execPortType" : "In",
+            "typeSpec" : "PolygonMesh[]"
+            },
+          {
+            "objectType" : "ExecPort",
+            "name" : "clonedSourceMeshIDList",
+            "nodePortType" : "Out",
+            "execPortType" : "In",
+            "typeSpec" : "Integer[]"
+            },
+          {
+            "objectType" : "ExecPort",
+            "name" : "sourceMeshes",
+            "nodePortType" : "Out",
+            "execPortType" : "In",
+            "typeSpec" : "PolygonMesh[]"
+            },
+          {
+            "objectType" : "ExecPort",
+            "name" : "mergedMeshXfos",
+            "nodePortType" : "Out",
+            "defaultValues" : {
+              "Xfo[]" : []
+              },
+            "execPortType" : "In",
+            "typeSpec" : "Xfo[]"
+            },
+          {
+            "objectType" : "ExecPort",
+            "name" : "updateXfos",
+            "nodePortType" : "IO",
+            "execPortType" : "IO",
+            "typeSpec" : "Xfo[]"
+            },
+          {
+            "objectType" : "ExecPort",
+            "name" : "result",
+            "nodePortType" : "In",
+            "execPortType" : "Out",
+            "typeSpec" : "PolygonMesh[]"
+            }
+          ],
+        "extDeps" : {},
+        "nodes" : [
+          {
+            "objectType" : "Inst",
+            "metadata" : {
+              "uiGraphPos" : "{\"x\":330.0,\"y\":190.0}"
+              },
+            "name" : "UpdataXfos_1",
+            "ports" : [
+              {
+                "objectType" : "InstPort",
+                "name" : "exec",
+                "nodePortType" : "IO"
+                },
+              {
+                "objectType" : "InstPort",
+                "name" : "mergedMesh",
+                "nodePortType" : "In"
+                },
+              {
+                "objectType" : "InstPort",
+                "name" : "clonedSourceMeshIDList",
+                "nodePortType" : "In"
+                },
+              {
+                "objectType" : "InstPort",
+                "name" : "sourceMeshes",
+                "nodePortType" : "In"
+                },
+              {
+                "objectType" : "InstPort",
+                "name" : "mergedMeshXfos",
+                "nodePortType" : "In"
+                },
+              {
+                "objectType" : "InstPort",
+                "name" : "updateXfos",
+                "nodePortType" : "In"
+                },
+              {
+                "objectType" : "InstPort",
+                "name" : "result",
+                "nodePortType" : "Out"
+                }
+              ],
+            "executable" : "TKCM.PolygonMesh.MergeMeshArray.Modifier.UpdataXfos",
+            "presetGUID" : "F1392D75090F2B0B126628338F0C691D"
+            }
+          ],
+        "connections" : {
+          "mergedMesh" : [
+            "UpdataXfos_1.mergedMesh"
+            ],
+          "clonedSourceMeshIDList" : [
+            "UpdataXfos_1.clonedSourceMeshIDList"
+            ],
+          "sourceMeshes" : [
+            "UpdataXfos_1.sourceMeshes"
+            ],
+          "mergedMeshXfos" : [
+            "UpdataXfos_1.mergedMeshXfos"
+            ],
+          "updateXfos" : [
+            "UpdataXfos_1.updateXfos"
+            ],
+          "UpdataXfos_1.result" : [
+            "result"
+            ]
+          }
+        }
       }
     ],
   "connections" : {
     "source" : [
-      "CreateMergeMeshCore.source"
+      "Chacker.source"
       ],
     "transformXfos" : [
-      "set.value"
+      "Chacker.transformXfos"
       ],
     "transformNormals" : [
-      "CreateMergeMeshCore.transformNormals"
+      "Chacker.transformNormals"
       ],
     "selectSourceMesh" : [
-      "CreateMergeMeshCore.selectSourceMesh"
+      "Chacker.selectSourceMesh"
       ],
     "ID" : [
       "SplitAndDeleteBlank_1.this"
       ],
     "seedForRandom" : [
-      "CreateMergeMeshCore.seedForRandom"
+      "Chacker.seedForRandom"
+      ],
+    "CreateMergeMeshCore.source" : [
+      "imploded_nodes.sourceMeshes"
+      ],
+    "CreateMergeMeshCore.transformXfos" : [
+      "imploded_nodes.updateXfos"
       ],
     "CreateMergeMeshCore.mergedMesh" : [
-      "Cache_1.value"
+      "set_2.value"
       ],
     "CreateMergeMeshCore.clonedMeshIDList" : [
-      "Cache_2.value"
-      ],
-    "Cache_1.value" : [
-      "Clone_1.value"
-      ],
-    "Cache_2.value" : [
-      "clonedSourceMeshIDList"
-      ],
-    "Clone_1.clonedValue" : [
-      "mergedMesh"
+      "set_3.value"
       ],
     "set.value" : [
-      "CreateMergeMeshCore.transformXfos"
+      "If_1.exec"
       ],
     "get.value" : [
-      "CreateMergeMeshCore.restValue"
+      "Chacker.restXfos"
       ],
     "SplitAndDeleteBlank_1.result" : [
+      "Chacker.IDs"
+      ],
+    "set_2.value" : [
+      "If_1.if_false",
+      "imploded_nodes.mergedMesh"
+      ],
+    "get_2.value" : [
+      "CreateMergeMeshCore.restMeshes"
+      ],
+    "set_3.value" : [
+      "clonedSourceMeshIDList",
+      "imploded_nodes.clonedSourceMeshIDList"
+      ],
+    "get_3.value" : [
+      "Chacker.restList"
+      ],
+    "Chacker.source" : [
+      "CreateMergeMeshCore.source"
+      ],
+    "Chacker.transformXfos" : [
+      "CreateMergeMeshCore.transformXfos"
+      ],
+    "Chacker.transformNormals" : [
+      "set_7.value"
+      ],
+    "Chacker.selectSourceMesh" : [
+      "set_5.value"
+      ],
+    "Chacker.seedForRandom" : [
+      "set_6.value"
+      ],
+    "Chacker.IDs" : [
+      "set_4.value"
+      ],
+    "Chacker.restList" : [
+      "CreateMergeMeshCore.restList"
+      ],
+    "Chacker.reMerge" : [
+      "CreateMergeMeshCore.reMerge"
+      ],
+    "Chacker.updateXfos" : [
+      "If_1.cond"
+      ],
+    "set_4.value" : [
       "CreateMergeMeshCore.IDs"
+      ],
+    "get_4.value" : [
+      "Chacker.restIDs"
+      ],
+    "set_5.value" : [
+      "CreateMergeMeshCore.selectSourceMesh"
+      ],
+    "get_5.value" : [
+      "Chacker.restSelectMode"
+      ],
+    "set_6.value" : [
+      "CreateMergeMeshCore.seedForRandom"
+      ],
+    "get_6.value" : [
+      "Chacker.restSeed"
+      ],
+    "set_7.value" : [
+      "CreateMergeMeshCore.transformNormals"
+      ],
+    "get_7.value" : [
+      "Chacker.restTransformNormals"
+      ],
+    "get_8.value" : [
+      "imploded_nodes.mergedMeshXfos"
+      ],
+    "If_1.result" : [
+      "mergedMesh"
+      ],
+    "imploded_nodes.updateXfos" : [
+      "set.value"
+      ],
+    "imploded_nodes.result" : [
+      "If_1.if_true"
       ]
     },
   "requiredPresets" : {
-    "Fabric.Core.Data.Cache" : {
-      "objectType" : "Func",
-      "metadata" : {
-        "uiNodeColor" : "{\n  \"r\" : 214,\n  \"g\" : 191,\n  \"b\" : 103\n  }",
-        "uiAlwaysShowDaisyChainPorts" : "true",
-        "uiHeaderColor" : "{\n  \"r\" : 188,\n  \"g\" : 129,\n  \"b\" : 83\n  }"
-        },
-      "title" : "Cache",
-      "cacheRule" : "always",
-      "ports" : [
-        {
-          "objectType" : "ExecPort",
-          "name" : "exec",
-          "nodePortType" : "IO",
-          "execPortType" : "IO",
-          "typeSpec" : "Execute"
-          },
-        {
-          "objectType" : "ExecPort",
-          "name" : "value",
-          "nodePortType" : "Out",
-          "execPortType" : "In",
-          "typeSpec" : "$TYPE$"
-          }
-        ],
-      "extDeps" : {},
-      "presetGUID" : "D903AFD981FE9214C69943F542D5FD60",
-      "code" : "dfgEntry {
-}
-"
-      },
-    "Fabric.Core.Data.Clone" : {
-      "objectType" : "Func",
-      "metadata" : {
-        "uiNodeColor" : "{\n  \"r\" : 214,\n  \"g\" : 191,\n  \"b\" : 103\n  }",
-        "uiHeaderColor" : "{\n  \"r\" : 188,\n  \"g\" : 129,\n  \"b\" : 83\n  }"
-        },
-      "title" : "Clone",
-      "ports" : [
-        {
-          "objectType" : "ExecPort",
-          "name" : "exec",
-          "nodePortType" : "IO",
-          "execPortType" : "IO",
-          "typeSpec" : "Execute"
-          },
-        {
-          "objectType" : "ExecPort",
-          "name" : "value",
-          "nodePortType" : "Out",
-          "execPortType" : "In",
-          "typeSpec" : "$TYPE$"
-          },
-        {
-          "objectType" : "ExecPort",
-          "name" : "clonedValue",
-          "nodePortType" : "In",
-          "execPortType" : "Out",
-          "typeSpec" : "$TYPE$"
-          }
-        ],
-      "extDeps" : {},
-      "presetGUID" : "30401D7851DEFCFA5C46EB3926DD8BAD",
-      "code" : "dfgEntry {
-  clonedValue = value.clone();
-}
-"
-      },
     "TKCM.Util.String.SplitAndDeleteBlank" : {
       "objectType" : "Graph",
       "metadata" : {
@@ -812,6 +1516,266 @@ dfgEntry {
   result = this.split(separator);
 }
 "
+      },
+    "Fabric.Core.Control.If" : {
+      "objectType" : "Func",
+      "title" : "If",
+      "ports" : [
+        {
+          "objectType" : "ExecPort",
+          "name" : "exec",
+          "nodePortType" : "IO",
+          "execPortType" : "IO",
+          "typeSpec" : "Execute"
+          },
+        {
+          "objectType" : "ExecPort",
+          "name" : "cond",
+          "nodePortType" : "Out",
+          "execPortType" : "In",
+          "typeSpec" : "Boolean"
+          },
+        {
+          "objectType" : "ExecPort",
+          "name" : "if_true",
+          "nodePortType" : "Out",
+          "execPortType" : "In",
+          "typeSpec" : "$TYPE$"
+          },
+        {
+          "objectType" : "ExecPort",
+          "name" : "if_false",
+          "nodePortType" : "Out",
+          "execPortType" : "In",
+          "typeSpec" : "$TYPE$"
+          },
+        {
+          "objectType" : "ExecPort",
+          "name" : "result",
+          "nodePortType" : "In",
+          "execPortType" : "Out",
+          "typeSpec" : "$TYPE$"
+          }
+        ],
+      "extDeps" : {},
+      "presetGUID" : "3182A478A21643455D549E483D35F831",
+      "code" : "
+dfgEntry {
+	result = cond ? if_true : if_false;
+}
+"
+      },
+    "TKCM.PolygonMesh.MergeMeshArray.Modifier.UpdataXfos" : {
+      "objectType" : "Graph",
+      "metadata" : {
+        "uiGraphZoom" : "{\n  \"value\" : 1.20465362071991\n  }",
+        "uiGraphPan" : "{\n  \"x\" : 560.2636047636572,\n  \"y\" : -178.8594024776825\n  }"
+        },
+      "title" : "UpdataXfos",
+      "ports" : [
+        {
+          "objectType" : "ExecPort",
+          "name" : "exec",
+          "nodePortType" : "IO",
+          "defaultValues" : {
+            "Execute" : {}
+            },
+          "execPortType" : "IO",
+          "typeSpec" : "Execute"
+          },
+        {
+          "objectType" : "ExecPort",
+          "name" : "mergedMesh",
+          "nodePortType" : "Out",
+          "defaultValues" : {
+            "PolygonMesh[]" : []
+            },
+          "execPortType" : "In",
+          "typeSpec" : "PolygonMesh[]"
+          },
+        {
+          "objectType" : "ExecPort",
+          "name" : "clonedSourceMeshIDList",
+          "nodePortType" : "Out",
+          "defaultValues" : {
+            "Integer[]" : []
+            },
+          "execPortType" : "In",
+          "typeSpec" : "Integer[]"
+          },
+        {
+          "objectType" : "ExecPort",
+          "name" : "sourceMeshes",
+          "nodePortType" : "Out",
+          "defaultValues" : {
+            "PolygonMesh[]" : []
+            },
+          "execPortType" : "In",
+          "typeSpec" : "PolygonMesh[]"
+          },
+        {
+          "objectType" : "ExecPort",
+          "name" : "mergedMeshXfos",
+          "nodePortType" : "Out",
+          "defaultValues" : {
+            "Xfo[]" : []
+            },
+          "execPortType" : "In",
+          "typeSpec" : "Xfo[]"
+          },
+        {
+          "objectType" : "ExecPort",
+          "name" : "updateXfos",
+          "nodePortType" : "Out",
+          "defaultValues" : {
+            "Xfo[]" : []
+            },
+          "execPortType" : "In",
+          "typeSpec" : "Xfo[]"
+          },
+        {
+          "objectType" : "ExecPort",
+          "name" : "result",
+          "nodePortType" : "In",
+          "defaultValues" : {
+            "PolygonMesh[]" : []
+            },
+          "execPortType" : "Out",
+          "typeSpec" : "PolygonMesh[]"
+          }
+        ],
+      "extDeps" : {
+        "TKCM" : "*"
+        },
+      "presetGUID" : "F1392D75090F2B0B126628338F0C691D",
+      "nodes" : [
+        {
+          "objectType" : "Inst",
+          "metadata" : {
+            "uiGraphPos" : "{\"x\":-120.0,\"y\":230.0}"
+            },
+          "name" : "UpdataXfosCore",
+          "ports" : [
+            {
+              "objectType" : "InstPort",
+              "name" : "exec",
+              "nodePortType" : "IO"
+              },
+            {
+              "objectType" : "InstPort",
+              "name" : "mergedMesh",
+              "nodePortType" : "In"
+              },
+            {
+              "objectType" : "InstPort",
+              "name" : "clonedSourceMeshIDList",
+              "nodePortType" : "In"
+              },
+            {
+              "objectType" : "InstPort",
+              "name" : "sourceMeshes",
+              "nodePortType" : "In"
+              },
+            {
+              "objectType" : "InstPort",
+              "name" : "mergedMeshXfos",
+              "nodePortType" : "In"
+              },
+            {
+              "objectType" : "InstPort",
+              "name" : "updateXfos",
+              "nodePortType" : "In"
+              },
+            {
+              "objectType" : "InstPort",
+              "name" : "result",
+              "nodePortType" : "Out"
+              }
+            ],
+          "definition" : {
+            "objectType" : "Func",
+            "title" : "func",
+            "ports" : [
+              {
+                "objectType" : "ExecPort",
+                "name" : "exec",
+                "nodePortType" : "IO",
+                "execPortType" : "IO",
+                "typeSpec" : "Execute"
+                },
+              {
+                "objectType" : "ExecPort",
+                "name" : "mergedMesh",
+                "nodePortType" : "Out",
+                "execPortType" : "In",
+                "typeSpec" : "PolygonMesh[]"
+                },
+              {
+                "objectType" : "ExecPort",
+                "name" : "clonedSourceMeshIDList",
+                "nodePortType" : "Out",
+                "execPortType" : "In",
+                "typeSpec" : "Integer[]"
+                },
+              {
+                "objectType" : "ExecPort",
+                "name" : "sourceMeshes",
+                "nodePortType" : "Out",
+                "execPortType" : "In",
+                "typeSpec" : "PolygonMesh[]"
+                },
+              {
+                "objectType" : "ExecPort",
+                "name" : "mergedMeshXfos",
+                "nodePortType" : "Out",
+                "execPortType" : "In",
+                "typeSpec" : "Xfo[]"
+                },
+              {
+                "objectType" : "ExecPort",
+                "name" : "updateXfos",
+                "nodePortType" : "Out",
+                "execPortType" : "In",
+                "typeSpec" : "Xfo[]"
+                },
+              {
+                "objectType" : "ExecPort",
+                "name" : "result",
+                "nodePortType" : "In",
+                "execPortType" : "Out",
+                "typeSpec" : "PolygonMesh[]"
+                }
+              ],
+            "extDeps" : {
+              "TKCM" : "*"
+              },
+            "code" : "dfgEntry {
+  MergedMeshUpdateXfos(result, mergedMesh, clonedSourceMeshIDList, sourceMeshes, mergedMeshXfos, updateXfos);
+}
+"
+            }
+          }
+        ],
+      "connections" : {
+        "mergedMesh" : [
+          "UpdataXfosCore.mergedMesh"
+          ],
+        "clonedSourceMeshIDList" : [
+          "UpdataXfosCore.clonedSourceMeshIDList"
+          ],
+        "sourceMeshes" : [
+          "UpdataXfosCore.sourceMeshes"
+          ],
+        "mergedMeshXfos" : [
+          "UpdataXfosCore.mergedMeshXfos"
+          ],
+        "updateXfos" : [
+          "UpdataXfosCore.updateXfos"
+          ],
+        "UpdataXfosCore.result" : [
+          "result"
+          ]
+        }
       }
     }
   }
