@@ -1,8 +1,8 @@
 {
   "objectType" : "Graph",
   "metadata" : {
-    "uiGraphZoom" : "{\n  \"value\" : 1.0\n  }",
-    "uiGraphPan" : "{\n  \"x\" : -708.7899780273438,\n  \"y\" : -751.1755065917969\n  }"
+    "uiGraphZoom" : "{\n  \"value\" : 1.025251269340515\n  }",
+    "uiGraphPan" : "{\n  \"x\" : -767.5989990234375,\n  \"y\" : -673.7747802734375\n  }"
     },
   "title" : "MakeSegmentsOnCurves",
   "ports" : [
@@ -25,6 +25,26 @@
         },
       "execPortType" : "In",
       "typeSpec" : "Curves"
+      },
+    {
+      "objectType" : "ExecPort",
+      "name" : "souceSegmentValues",
+      "nodePortType" : "Out",
+      "defaultValues" : {
+        "Vec2Array[]" : []
+        },
+      "execPortType" : "In",
+      "typeSpec" : "Vec2Array[]"
+      },
+    {
+      "objectType" : "ExecPort",
+      "name" : "onSegment",
+      "nodePortType" : "Out",
+      "defaultValues" : {
+        "Boolean" : false
+        },
+      "execPortType" : "In",
+      "typeSpec" : "Boolean"
       },
     {
       "objectType" : "ExecPort",
@@ -67,7 +87,7 @@
       "name" : "divisionValue",
       "nodePortType" : "Out",
       "defaultValues" : {
-        "Integer" : 10
+        "Integer" : 4
         },
       "execPortType" : "In",
       "typeSpec" : "Integer"
@@ -77,7 +97,7 @@
       "name" : "intervalLength",
       "nodePortType" : "Out",
       "defaultValues" : {
-        "Scalar" : 2
+        "Scalar" : 1
         },
       "execPortType" : "In",
       "typeSpec" : "Scalar"
@@ -125,7 +145,7 @@
     {
       "objectType" : "Inst",
       "metadata" : {
-        "uiGraphPos" : "{\"x\":1061.96,\"y\":780.7910000000001}"
+        "uiGraphPos" : "{\"x\":1070.0,\"y\":760.0}"
         },
       "name" : "makeSegmentOnCurvesCore",
       "ports" : [
@@ -141,7 +161,7 @@
           },
         {
           "objectType" : "InstPort",
-          "name" : "areaType",
+          "name" : "segmentType",
           "nodePortType" : "In"
           },
         {
@@ -156,7 +176,7 @@
           },
         {
           "objectType" : "InstPort",
-          "name" : "areaLength",
+          "name" : "segmentLength",
           "nodePortType" : "In"
           },
         {
@@ -166,22 +186,32 @@
           },
         {
           "objectType" : "InstPort",
-          "name" : "spaceDistance",
+          "name" : "intervalDistance",
           "nodePortType" : "In"
           },
         {
           "objectType" : "InstPort",
-          "name" : "areaInverse",
+          "name" : "segmentInverse",
           "nodePortType" : "In"
           },
         {
           "objectType" : "InstPort",
-          "name" : "areasOnCurves",
+          "name" : "segmentOnCurves",
           "nodePortType" : "Out"
           },
         {
           "objectType" : "InstPort",
           "name" : "intervalLengthType",
+          "nodePortType" : "In"
+          },
+        {
+          "objectType" : "InstPort",
+          "name" : "souceSegmentValues",
+          "nodePortType" : "In"
+          },
+        {
+          "objectType" : "InstPort",
+          "name" : "onSegment",
           "nodePortType" : "In"
           }
         ],
@@ -205,7 +235,7 @@
             },
           {
             "objectType" : "ExecPort",
-            "name" : "areaType",
+            "name" : "segmentType",
             "nodePortType" : "Out",
             "execPortType" : "In",
             "typeSpec" : "Integer"
@@ -226,7 +256,7 @@
             },
           {
             "objectType" : "ExecPort",
-            "name" : "areaLength",
+            "name" : "segmentLength",
             "nodePortType" : "Out",
             "execPortType" : "In",
             "typeSpec" : "Scalar"
@@ -240,21 +270,21 @@
             },
           {
             "objectType" : "ExecPort",
-            "name" : "spaceDistance",
+            "name" : "intervalDistance",
             "nodePortType" : "Out",
             "execPortType" : "In",
             "typeSpec" : "Scalar"
             },
           {
             "objectType" : "ExecPort",
-            "name" : "areaInverse",
+            "name" : "segmentInverse",
             "nodePortType" : "Out",
             "execPortType" : "In",
             "typeSpec" : "Boolean"
             },
           {
             "objectType" : "ExecPort",
-            "name" : "areasOnCurves",
+            "name" : "segmentOnCurves",
             "nodePortType" : "In",
             "execPortType" : "Out",
             "typeSpec" : "Vec2Array[]"
@@ -265,200 +295,276 @@
             "nodePortType" : "Out",
             "execPortType" : "In",
             "typeSpec" : "Integer"
+            },
+          {
+            "objectType" : "ExecPort",
+            "name" : "souceSegmentValues",
+            "nodePortType" : "Out",
+            "execPortType" : "In",
+            "typeSpec" : "Vec2Array[]"
+            },
+          {
+            "objectType" : "ExecPort",
+            "name" : "onSegment",
+            "nodePortType" : "Out",
+            "execPortType" : "In",
+            "typeSpec" : "Boolean"
             }
           ],
         "extDeps" : {},
         "code" : "dfgEntry {
   if(curves.curveCount() == 0){  return;  }
-
-  switch(areaType){
+  if(onSegment && souceSegmentValues.size() != curves.curveCount()){
+    report(\"!!!!!!Error!!!!!! ::: makeSegmentOnCurvesCore : segment value array size don't same a curve count\");
+    return;
+  }
+  
+  if(onSegment){
+    segmentOnCurves = souceSegmentValues.clone();
+  }else{
+    segmentOnCurves.resize(curves.curveCount());
+    for(Integer i=0; i<curves.curveCount(); i++){
+      segmentOnCurves[i].resize(1);
+      segmentOnCurves[i][0] = Vec2(0.0, 1.0);
+    }
+  }
+  Scalar valX;
+  Scalar valY;
+  Scalar val;
+  Scalar val2;
+  
+  switch(segmentType){
     case 0:  //  full range
-      areasOnCurves.resize(curves.curveCount());
-      for(Integer i=0; i<curves.curveCount(); i++){
-        areasOnCurves[i].resize(1);
-        areasOnCurves[i][0] = Vec2(0.0,1.0);
-      }
-      if(areaInverse){  
-        report(\"!!!!!!Error!!!!!! ::: makeAreasOnCurvesCore : when area type is FullRange 'areaInverse' don't work on\");  
+      if(segmentInverse){  
+        report(\"!!!!!!Error!!!!!! ::: makeSegmentOnCurvesCore : when segment type is FullRange 'segmentInverse' don't work on\");  
         return;
       }
       break;
     case 1:  //  start side
       if(inputParam <= 0){
-        report(\"!!!!!!Error!!!!!! ::: makeAreasOnCurves : area param is less than 0 or equal 0\");
+        report(\"!!!!!!Error!!!!!! ::: makeSegmentOnCurvesCore : segment param is less than 0 or equal 0\");
         return;
       }
-      areasOnCurves.resize(curves.curveCount());
       for(Integer i=0; i<curves.curveCount(); i++){
-        Scalar val = 0.0;
-        switch(inputType){
-          case 0:  // length
-            val = inputParam / curves.getCurveLength(i);
-            break;
-          case 1:  // length ratio
-            val = Math_min(inputParam, 1.0);
-            break;
-          case 2:  // normalized param
-            val = Math_min( curves.getLengthRatioFromNormalizedParameter(i, inputParam), 1.0);
-            break;
+        for(Integer j=0; j<segmentOnCurves[i].size(); j++){
+          valX = segmentOnCurves[i][j].x;
+          valY = segmentOnCurves[i][j].y;
+          val = 0.0;
+          switch(inputType){
+            case 0:  // length
+              val = inputParam / curves.getCurveLength(i) + valX;
+              break;
+            case 1:  // length ratio
+              val = Math_min(inputParam, 1.0) + valX;
+              break;
+            case 2:  // normalized param
+              val = Math_min( curves.getLengthRatioFromNormalizedParameter(i, inputParam), 1.0) + valX;
+              break;
+          }
+          val = Math_min(val, valY);
+          segmentOnCurves[i][j] = Vec2(valX, val);
+
+          if(segmentInverse){  
+            segmentOnCurves[i][j] = Vec2(val, valY);  
+          }
         }
-        areasOnCurves[i].resize(1);
-        areasOnCurves[i][0] = Vec2(0.0,val);
-        if(areaInverse){  areasOnCurves[i][0] = Vec2(val, 1.0);  }
       }
       break;
     case 2:  //  end side
       if(inputParam <= 0){
-        report(\"!!!!!!Error!!!!!! ::: makeAreasOnCurves : area length is less than 0 or equal 0\");
+        report(\"!!!!!!Error!!!!!! ::: makesegmentOnCurves : segment length is less than 0 or equal 0\");
         return;
       }
-      areasOnCurves.resize(curves.curveCount());
       for(Integer i=0; i<curves.curveCount(); i++){
-        Scalar val = 0.0;
-        switch(inputType){
-          case 0:  // length
-            val = 1 - inputParam / curves.getCurveLength(i);
-            break;
-          case 1:  // length ratio
-            val =  Math_max(1.0-inputParam, 0.0);
-            break;
-          case 2:  // normalized param
-            val = Math_max( curves.getLengthRatioFromNormalizedParameter(i, 1-inputParam), 0.0);
-            break;
+        for(Integer j=0; j<segmentOnCurves[i].size(); j++){
+          valX = segmentOnCurves[i][j].x;
+          valY = segmentOnCurves[i][j].y;
+          val = 0.0;
+          switch(inputType){
+            case 0:  // length
+              val = valY - inputParam / curves.getCurveLength(i);
+              break;
+            case 1:  // length ratio
+              val = Math_max(valY-inputParam, 0.0);
+              break;
+            case 2:  // normalized param
+              val = Math_max( curves.getLengthRatioFromNormalizedParameter(i, valY-inputParam), 0.0);
+              break;
+          }
+          val = Math_max(val, valX);
+          segmentOnCurves[i][j] = Vec2(val, valY);
+
+          if(segmentInverse){  
+            segmentOnCurves[i][j] = Vec2(valX, val);  
+          }
         }
-        areasOnCurves[i].resize(1);
-        areasOnCurves[i][0] = Vec2(val,1.0);
-        if(areaInverse){  areasOnCurves[i][0] = Vec2(0.0,val);  }
       }
       break;
     case 3:  //  both ends
       if(inputParam <= 0){
-        report(\"!!!!!!Error!!!!!! ::: makeAreasOnCurves : area param is less than 0 or equal 0\");
+        report(\"!!!!!!Error!!!!!! ::: makesegmentOnCurves : segment param is less than 0 or equal 0\");
         return;
       }
-      areasOnCurves.resize(curves.curveCount());
       for(Integer i=0; i<curves.curveCount(); i++){
-        Scalar val = 0.0;
-        Scalar val2 = 0.0;
-        switch(inputType){
-          case 0:  // length
-            Scalar lenRatio = inputParam / curves.getCurveLength(i);
-            val = lenRatio;
-            val2 = 1-lenRatio;
-            break;
-          case 1:  // length ratio
-            val = inputParam;
-            val2 =  1-inputParam;
-            break;
-          case 2:  // normalized param
-            val = curves.getLengthRatioFromNormalizedParameter(i,inputParam);
-            val2 = curves.getLengthRatioFromNormalizedParameter(i,1-inputParam);
-            break;
+        Size loopCnt = segmentOnCurves[i].size();
+        if(!segmentInverse){ 
+          segmentOnCurves[i].resize( segmentOnCurves[i].size()*2 );
         }
-        if(areaInverse){  
-          areasOnCurves[i].resize(1);
-          areasOnCurves[i][0] = Vec2(val,val2);  
-        }else{
-          areasOnCurves[i].resize(2);
-          areasOnCurves[i][0] = Vec2(0.0,val);
-          areasOnCurves[i][1] = Vec2(val2,1.0);
-        }        
-      }
-      break;
-    case 4:  //  Evenly Divid
-      if(areaInverse){
-        report(\"!!!!!!Error!!!!!! ::: makeAreasOnCurvesCore : when area type is EvenlyDiv, 'areaInverse' don't work on\");  
-        return;
-      }
-      areasOnCurves.resize(curves.curveCount());
-      for(Integer i=0; i<curves.curveCount(); i++){
-        Scalar lenRatio = 1.0 / Scalar(divisionNumber);
-        Scalar val = lenRatio;
-        Scalar val2 = 1-lenRatio;
-        areasOnCurves[i].resize(divisionNumber);
-        areasOnCurves[i][0] = Vec2(0.0,val);
-        areasOnCurves[i][1] = Vec2(val2,1.0);
-        for(Integer j=0; j<divisionNumber-2; j++){
-          val = lenRatio*(j+1);
-          val2 = lenRatio*(j+2);
-          areasOnCurves[i][2+j] = Vec2(val,val2);
+        for(Integer j=0; j<loopCnt; j++){
+          valX = segmentOnCurves[i][j].x;
+          valY = segmentOnCurves[i][j].y;
+          val = 0.0;
+          val2 = 0.0;
+          switch(inputType){
+            case 0:  // length
+              Scalar lenRatio = inputParam / curves.getCurveLength(i);
+              val = valX + lenRatio;
+              val2 = valY - lenRatio;
+              break;
+            case 1:  // length ratio
+              val = valX + inputParam;
+              val2 =  valY - inputParam;
+              break;
+            case 2:  // normalized param
+              val = curves.getLengthRatioFromNormalizedParameter(i,valX+inputParam);
+              val2 = curves.getLengthRatioFromNormalizedParameter(i,valY-inputParam);
+              break;
+          }
+          val = Math_min(val, valY);
+          val2 = Math_max(val2, valX);
+        
+          if(segmentInverse){  
+            segmentOnCurves[i][j] = Vec2(val, val2);  
+          }else{
+            segmentOnCurves[i][j] = Vec2(valX, val);
+            segmentOnCurves[i][loopCnt+j] = Vec2(val2, valY);
+          }
         }
       }
       
       break;
-    case 5:  //  Evenly Divid Position Area
-      if(areaLength <= 0){
-        report(\"!!!!!!Error!!!!!! ::: makeAreasOnCurves : area length is less than 0 or equal 0\");
+    case 4:  //  Evenly Divid
+      Vec2 rest[][];
+      rest.resize(curves.curveCount());
+      for(Integer i=0; i<curves.curveCount(); i++){
+        rest[i].resize( segmentOnCurves[i].size()*divisionNumber );
+        for(Integer j=0; j<segmentOnCurves[i].size(); j++){
+          valX = segmentOnCurves[i][j].x;
+          valY = segmentOnCurves[i][j].y;
+          Scalar lenRatio = (valY-valX) / Scalar(divisionNumber);
+          val = valX + lenRatio;
+          val2 = valY - lenRatio;
+          rest[i][divisionNumber*j] = Vec2(valX, val);
+          rest[i][divisionNumber*j+1] = Vec2(val2, valY);
+          for(Integer k=0; k<divisionNumber-2; k++){
+            val = valX + lenRatio*(k+1);
+            val2 = val + lenRatio;
+            rest[i][divisionNumber*j+2+k] = Vec2(val,val2);
+          }
+        }
+      }
+      segmentOnCurves = rest;
+      if(segmentInverse){
+        report(\"!!!!!!Error!!!!!! ::: makesegmentOnCurvesCore : when segment type is EvenlyDiv, 'segmentInverse' don't work on\");  
         return;
       }
-      areasOnCurves.resize(curves.curveCount());
+      break;
+    case 5:  //  Evenly Divid Position segment
+      if(segmentLength <= 0){
+        report(\"!!!!!!Error!!!!!! ::: makesegmentOnCurves : segment length is less than 0 or equal 0\");
+        return;
+      }
+      Vec2 rest[][];
+      rest.resize(curves.curveCount());
       Scalar length;
       for(Integer i=0; i<curves.curveCount(); i++){
         switch(inputType){
           case 0:  // length
-            length = areaLength;
+            length = segmentLength;
             break;
           case 1:  // length Ratio
-            length = Math_min( areaLength, 1.0)  * curves.getCurveLength(i);
+            length = Math_min( segmentLength, 1.0)  * curves.getCurveLength(i);
             break;
           case 2:  // Normalized Param
-            length = curves.getLengthRatioFromNormalizedParameter(i, areaLength) * curves.getCurveLength(i);
+            length = curves.getLengthRatioFromNormalizedParameter(i, segmentLength) * curves.getCurveLength(i);
             break;
         }
-
-        areasOnCurves[i].resize(divisionNumber);
-        Scalar len = (curves.getCurveLength(i)+length) / (divisionNumber+1);
-        for(Integer j=0; j<divisionNumber; j++){ 
-          Scalar lenS = len * (j+1) - length;
-          Scalar lenE = len * (j+1);
-          Scalar lenRatioS = lenS / curves.getCurveLength(i);
-          Scalar lenRatioE = lenE / curves.getCurveLength(i);
-          areasOnCurves[i][j] = Vec2(lenRatioS,lenRatioE);
+        if(segmentInverse){
+          rest[i].resize(segmentOnCurves[i].size() * (divisionNumber+1));
+        }else{
+          rest[i].resize(segmentOnCurves[i].size() * divisionNumber);
         }
-        if(areaInverse){
-          Vec2 rest[][] = areasOnCurves.clone();
-          areasOnCurves[i].resize(divisionNumber+1);
-          areasOnCurves[i][0] = Vec2(0.0,rest[i][0].x);
-          areasOnCurves[i][1] = Vec2(rest[i][divisionNumber-1].y, 1.0);
-          for(Integer j=0; j<divisionNumber-1; j++){
-            areasOnCurves[i][2+j] = Vec2(rest[i][j].y, rest[i][j+1].x);
+        Vec2 rest2[];
+        rest2.resize(segmentOnCurves[i].size() * (divisionNumber+1));
+        for(Integer j=0; j<segmentOnCurves[i].size(); j++){
+          valX = segmentOnCurves[i][j].x;
+          valY = segmentOnCurves[i][j].y;
+          Scalar baseSegmentlength = curves.getCurveLength(i) * (valY-valX);
+          Scalar len = (baseSegmentlength+length) / (divisionNumber+1);
+          for(Integer k=0; k<divisionNumber; k++){ 
+            Scalar lenS = len * (k+1) - length;
+            Scalar lenE = len * (k+1);
+            Scalar lenRatioS = valX + lenS / curves.getCurveLength(i);
+            Scalar lenRatioE = valX +  lenE / curves.getCurveLength(i);
+            rest[i][divisionNumber*j+k] = Vec2(lenRatioS,lenRatioE);
           }
-        }        
+          if(segmentInverse){
+            rest2[(divisionNumber+1)*j] = Vec2(valX, rest[i][divisionNumber*j].x);
+            rest2[(divisionNumber+1)*j+1] = Vec2(rest[i][divisionNumber*j + divisionNumber-1].y, valY);
+            for(Integer k=0; k<divisionNumber-1; k++){
+              rest2[(divisionNumber+1)*j+2+k] = Vec2(rest[i][divisionNumber*j+k].y, rest[i][divisionNumber*j+k+1].x);
+            }
+          }
+        }
+        if(segmentInverse){
+          rest[i] = rest2;
+        }   
       }
+      segmentOnCurves = rest;
       break;
-    case 6:  //  Evenly Space
-      if(spaceDistance < 0){
-        report(\"!!!!!!Error!!!!!! ::: makeAreasOnCurves : space distance is less than 0\");
+    case 6:  //  Evenly interval
+      if(intervalDistance < 0){
+        report(\"!!!!!!Error!!!!!! ::: makesegmentOnCurves : interval value is less than 0\");
         return;
       }
-      areasOnCurves.resize(curves.curveCount());
-      if(areaInverse){
+      Vec2 rest[][];
+      rest.resize(curves.curveCount());
+      if(segmentInverse){
         for(Integer i=0; i<curves.curveCount(); i++){
-          Index quotient = curves.getCurveLength(i) / (areaLength + spaceDistance);
-          areasOnCurves[i].resize(quotient);
-          Scalar lenE = 0.0;
-          for(Integer j=0; j<quotient; j++){
-            Scalar lenRatioS = (lenE + areaLength) / curves.getCurveLength(i);
-            Scalar lenRatioE = (lenE + areaLength + spaceDistance) / curves.getCurveLength(i);
-            areasOnCurves[i][j] = Vec2(lenRatioS,lenRatioE);
-            lenE = lenE + spaceDistance + areaLength;
+          for(Integer j=0; j<segmentOnCurves[i].size(); j++){
+            valX = segmentOnCurves[i][j].x;
+            valY = segmentOnCurves[i][j].y;
+            Scalar baseSegmentlength = curves.getCurveLength(i) * (valY-valX);
+            Index quotient = baseSegmentlength / (segmentLength + intervalDistance);
+            Scalar lenE = 0.0;
+            for(Integer k=0; k<quotient; k++){
+              Scalar lenRatioS = segmentOnCurves[i][j].x + (lenE + segmentLength) / curves.getCurveLength(i);
+              Scalar lenRatioE = segmentOnCurves[i][j].x + (lenE + segmentLength + intervalDistance) / curves.getCurveLength(i);
+              rest[i].push( Vec2(lenRatioS,lenRatioE) );
+              lenE = lenE + intervalDistance + segmentLength;
+            }
           }
         }
       }else{
         for(Integer i=0; i<curves.curveCount(); i++){
-          Index quotient = (curves.getCurveLength(i) - areaLength) / (spaceDistance + areaLength);
-          areasOnCurves[i].resize(quotient+1);
-          Scalar lenRatio = areaLength / curves.getCurveLength(i);
-          areasOnCurves[i][0] = Vec2(0.0,lenRatio);
-          Scalar lenE = areaLength;
-          for(Integer j=0; j<quotient; j++){
-            Scalar lenRatioS = (lenE + spaceDistance) / curves.getCurveLength(i);
-            Scalar lenRatioE = (lenE + spaceDistance + areaLength) / curves.getCurveLength(i);
-            areasOnCurves[i][1+j] = Vec2(lenRatioS,lenRatioE);
-            lenE = lenE + spaceDistance + areaLength;
+          for(Integer j=0; j<segmentOnCurves[i].size(); j++){
+            valX = segmentOnCurves[i][j].x;
+            valY = segmentOnCurves[i][j].y;
+            Scalar baseSegmentlength = curves.getCurveLength(i) * (valY-valX);
+            Index quotient = (baseSegmentlength - segmentLength) / (intervalDistance + segmentLength);
+            Scalar lenRatio = segmentLength / curves.getCurveLength(i);          
+            rest[i].push( Vec2(valX,valX+lenRatio) );
+            Scalar lenE = segmentLength;
+            for(Integer k=0; k<quotient; k++){
+              Scalar lenRatioS = valX + (lenE + intervalDistance) / curves.getCurveLength(i);
+              Scalar lenRatioE = valX + (lenE + intervalDistance + segmentLength) / curves.getCurveLength(i);
+              rest[i].push( Vec2(lenRatioS,lenRatioE) );
+              lenE = lenE + intervalDistance + segmentLength;
+            }
           }
         }
       }
+      segmentOnCurves = rest;
       break;
   }
 }
@@ -468,7 +574,7 @@
     {
       "objectType" : "Inst",
       "metadata" : {
-        "uiGraphPos" : "{\"x\":1372.62,\"y\":1005.56}"
+        "uiGraphPos" : "{\n  \"x\" : 1370.0,\n  \"y\" : 960.0\n  }"
         },
       "name" : "Cache_1",
       "ports" : [
@@ -491,12 +597,18 @@
     "this" : [
       "makeSegmentOnCurvesCore.curves"
       ],
+    "souceSegmentValues" : [
+      "makeSegmentOnCurvesCore.souceSegmentValues"
+      ],
+    "onSegment" : [
+      "makeSegmentOnCurvesCore.onSegment"
+      ],
     "HowToDivide" : [
-      "makeSegmentOnCurvesCore.areaType"
+      "makeSegmentOnCurvesCore.segmentType"
       ],
     "segmentLength" : [
       "makeSegmentOnCurvesCore.inputParam",
-      "makeSegmentOnCurvesCore.areaLength"
+      "makeSegmentOnCurvesCore.segmentLength"
       ],
     "segmentLengthType" : [
       "makeSegmentOnCurvesCore.inputType"
@@ -505,15 +617,15 @@
       "makeSegmentOnCurvesCore.divisionNumber"
       ],
     "intervalLength" : [
-      "makeSegmentOnCurvesCore.spaceDistance"
+      "makeSegmentOnCurvesCore.intervalDistance"
       ],
     "intervalLengthType" : [
       "makeSegmentOnCurvesCore.intervalLengthType"
       ],
     "inverse" : [
-      "makeSegmentOnCurvesCore.areaInverse"
+      "makeSegmentOnCurvesCore.segmentInverse"
       ],
-    "makeSegmentOnCurvesCore.areasOnCurves" : [
+    "makeSegmentOnCurvesCore.segmentOnCurves" : [
       "Cache_1.value"
       ],
     "Cache_1.value" : [

@@ -24,6 +24,26 @@
       },
     {
       "objectType" : "ExecPort",
+      "name" : "sourceSegmentValues",
+      "nodePortType" : "Out",
+      "defaultValues" : {
+        "Vec2Array[]" : []
+        },
+      "execPortType" : "In",
+      "typeSpec" : "Vec2Array[]"
+      },
+    {
+      "objectType" : "ExecPort",
+      "name" : "onSegment",
+      "nodePortType" : "Out",
+      "defaultValues" : {
+        "Boolean" : false
+        },
+      "execPortType" : "In",
+      "typeSpec" : "Boolean"
+      },
+    {
+      "objectType" : "ExecPort",
       "metadata" : {
         "uiCombo" : "(\"Evenly Divide\", \"Evenly Interval\")"
         },
@@ -47,6 +67,16 @@
       },
     {
       "objectType" : "ExecPort",
+      "name" : "intervalValue",
+      "nodePortType" : "Out",
+      "defaultValues" : {
+        "Scalar" : 2
+        },
+      "execPortType" : "In",
+      "typeSpec" : "Scalar"
+      },
+    {
+      "objectType" : "ExecPort",
       "metadata" : {
         "uiCombo" : "(\"Length\", \"Lengrth Ratio\", \"Normalized Param\")"
         },
@@ -60,23 +90,13 @@
       },
     {
       "objectType" : "ExecPort",
-      "name" : "intervalValue",
-      "nodePortType" : "Out",
-      "defaultValues" : {
-        "Scalar" : 5
-        },
-      "execPortType" : "In",
-      "typeSpec" : "Scalar"
-      },
-    {
-      "objectType" : "ExecPort",
       "metadata" : {
-        "uiCombo" : "(\"non\", \"Curve Tangent\", \"Normal Direction Attribute\")"
+        "uiCombo" : "(\"non\", \"Curve Tangent\", \"curve NormalDirAttr\")"
         },
       "name" : "directionType",
       "nodePortType" : "Out",
       "defaultValues" : {
-        "Integer" : 0
+        "Integer" : 1
         },
       "execPortType" : "In",
       "typeSpec" : "Integer"
@@ -125,14 +145,27 @@
   "extDeps" : {
     "TKCM" : "*"
     },
-  "presetGUID" : "E22E31D4FC3492DD65EB2E40D62EEFFC",
+  "presetGUID" : "953F500AF87C693A02B109193F72B00E",
   "code" : "dfgEntry {
   Curves normalCurves();
   if(directionType != 0){
     normalCurves = this.createNormalDirectionAttributeCurves(0, 1.0);
   }
 
-  this.GetEvenlyDividXfos(resultEachCurve, result, normalCurves, mode, divisionValue, intervalValueType, intervalValue, directionType, addStartPosition, addEndPosition);
+  this.GetEvenlyDividXfos(
+    resultEachCurve, 
+    result, 
+    normalCurves, 
+    mode, 
+    divisionValue, 
+    intervalValueType, 
+    intervalValue, 
+    directionType, 
+    addStartPosition, 
+    addEndPosition,
+    sourceSegmentValues,
+    onSegment
+  );
 }
 "
   }

@@ -24,51 +24,6 @@ function Boolean Curves.hasEmptyCurve?(String functionName){
 //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 //  createNormalsValue //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-//  カーブのポイント位置でのノーマルを取得する
-/*function Curves.createNormalsValue(io Vec3 result[], in Integer control, in Vec3 fixValue){
-  result.resize(this.allCurvesPointRange());
-  
-  Size poiCount = 0;
-  for(Integer i=0; i<this.curveCount(); i++){
-    for(Integer j=0; j<this.getCurve(i).pointCount(); j++){
-      Float32 nParam = 1.0 / Scalar(this.getCurve(i).pointCount()-1.0) * j;;
-      if(j == 0 ){
-        nParam = 0.001;
-      }else if(j == this.getCurve(i).pointCount() -1){
-        nParam = 0.999;
-      }
-      
-      
-      //  LinearCurveの場合はcurvatureの取得も出来ないので、処理をスキップする
-      Vec3 curvature;
-      Vec3 tangent;
-      if(this.getCurveType(i) != 1){
-        this.getTangentAndCurvatureAtNormalizedParam(i, nParam, tangent, curvature);
-      }
-      
-      //  リニアカーブ、Degreeが1、curvatureがVec3(0)、固定値の入力が指示、の場合はFixValueを使用し、それ以外の場合はカーブ上からノーマルを取得する
-      if(this.getCurveType(i) == 1 || this.getDegree(i) == 1 || curvature.almostEqual(Vec3(0.0)) || control == 2 || control == 3){
-        if(fixValue == Vec3(0.0)){
-          report("!!!!!!Error!!!!!! ::: CreateNormals node : input fixNormals value is Vec3(0,0,0)");
-          return;
-        }else{
-          Quat q();
-          if(control != 3){
-            result[poiCount] = fixValue.unit();
-          }else{
-            result[poiCount] = q.setFromDirectionAndUpvector(tangent, fixValue).getYaxis().unit();
-          }
-        }
-      }else{ 
-        result[poiCount] = this.getNormalAtNormalizedParam(i, nParam).unit();
-      }
-      if(j == this.getCurve(i).pointCount()-1 && this.getCurve(i).isClosed()){
-        result[poiCount] = result[ poiCount-this.getCurve(i).pointCount()+1];
-      }
-      poiCount += 1;
-    }
-  }
-}*/
 function Curves.createNormalsValue(io Vec3 result[], in Integer control, in Vec3 fixValue){
   result.resize(this.allCurvesPointRange());
   
@@ -406,7 +361,7 @@ function Vec3[] Curves.getEvenlyDividPositions?(Index curveIndex, Boolean auto, 
 //  Curveを指定数で均等に分割した場所のXfoを取得する
 //  getEvenlyDividPositionsとの違いは、”分割数の指定もしくは分割の間隔を指定するモードを選択できる””向きも取得できる”の2点
 //  mode 0　＝ divisionValueの数で均等に分割、　1　＝　intervalValueの長さの間隔で分割
-//  directionType 0　＝　角度の計算しない、　1　＝　カーブのタンジェントをZの向きにする、　2　＝　normalDirectionAttributeの値をZの向きにする
+//  directionType 0　＝　角度の計算しない、　1　＝　カーブのタンジェントをZの向きにする、　2 = normalDirectionAttributeをZの向きにする
 //  intervalValueは長さ（Length）なので、LenrthRatioやNormalizedParamで指定したい場合はlengthに変換しておく必要がある
 function Curves.GetEvenlyDividXfos(
   io XfoArray result[], 
@@ -418,7 +373,9 @@ function Curves.GetEvenlyDividXfos(
   in Scalar intervalValue,
   in Integer directionType,
   in Boolean addStartPosition,
-  in Boolean addEndPosition
+  in Boolean addEndPosition,
+  in Vec2Array[] segmentValues,
+  in Boolean onSegment
   ){
   result.resize(this.curveCount());
   if(this == null || this.curveCount() == 0){  return;  }
@@ -426,77 +383,122 @@ function Curves.GetEvenlyDividXfos(
   Xfo rest();
   Scalar base;
   Integer cnt;
+  Vec2 segmentCopy[];
   Vec3 direction;
   Vec3 upVector;
   Quat q();
   for(Integer i=0; i<this.curveCount(); i++){
-    
-    if(mode == 0){
-      base = this.getCurveLength(i) / Scalar(divisionValue+1);
-      cnt = divisionValue;
+    if(onSegment){
+      segmentCopy = segmentValues[i];
     }else{
-      switch(intervalValueType){
-        case 0:
-          base = intervalValue;
-          break;
-        case 1:
-          base = this.getCurveLength(i) * intervalValue;
-          break;
-        case 2:
-          base = this.getCurveLength(i) * this.getLengthRatioFromNormalizedParameter(i, intervalValue);
-          break;
-      }
-      cnt = this.getCurveLength(i) / base;
-    }
-
-    if(addStartPosition){
-      rest.tr = this.getPositionAtNormalizedParam(i, 0.0);
-      if(directionType != 0){
-        direction = this.getTangentAtNormalizedParam(i, 0.001);
-        upVector = nomalCurve.getPositionAtNormalizedParam(i, 0.001) - rest.tr;
-        if(directionType == 1){  // curve tagent
-          rest.ori = q.setFromDirectionAndUpvector(direction, upVector.unit());
-        }else if(directionType == 2){  //  normal direction atribute
-          rest.ori = q.setFromDirectionAndUpvector(upVector.unit(), direction);
+      segmentCopy.resize(1);
+      segmentCopy[0] = Vec2(0.0, 1.0);
+    }    
+    for(Integer j=0; j<segmentCopy.size(); j++){
+      //  各セグメント内で取得するXfoの数を算出
+      if(mode == 0){  // mode = divide　の場合
+        base = (this.getCurveLength(i)*segmentCopy[j].y - this.getCurveLength(i)*segmentCopy[j].x) / Scalar(divisionValue+1);
+        cnt = divisionValue;
+      }else{ // mode = interval　の場合
+        switch(intervalValueType){
+          case 0:
+            base = intervalValue;
+            break;
+          case 1:
+            base = this.getCurveLength(i) * intervalValue;
+            break;
+          case 2:
+            base = this.getCurveLength(i) * this.getLengthRatioFromNormalizedParameter(i, intervalValue);
+            break;
         }
+        cnt = (this.getCurveLength(i)*segmentCopy[j].y - this.getCurveLength(i)*segmentCopy[j].x) / base;
       }
-      result[i].push(rest);
-      result2.push(rest);
-    }
-    for(Integer j=0; j<cnt; j++){
-      Scalar lengthRatio = (base * (j+1)) / this.getCurveLength(i);
-      if(lengthRatio < 1.0){
-        Scalar nParam = this.getNormalizedParameterFromLengthRatio(i, lengthRatio);
-        rest.tr = this.getPositionAtNormalizedParam(i, nParam);
+      Scalar startVal;
+      Scalar nParam;
+      //  start pos Xfo
+      if(addStartPosition){
+        startVal = 0.0;
+        //  get position
+        if(onSegment){
+          nParam = this.getNormalizedParameterFromLengthRatio(i, segmentCopy[j].x);
+          startVal = nParam;
+        }
+        //  get orientation
+        rest.tr = this.getPositionAtNormalizedParam(i, startVal);
         if(directionType != 0){
-          direction = this.getTangentAtNormalizedParam(i, nParam);
-          upVector = nomalCurve.getPositionAtNormalizedParam(i, nParam) - rest.tr;
-          if(directionType == 1){  // curve tagent
-            rest.ori = q.setFromDirectionAndUpvector(direction, upVector.unit());
-          }else if(directionType == 2){  //  normal direction atribute
-            rest.ori = q.setFromDirectionAndUpvector(upVector.unit(), direction);
+          direction = this.getTangentAtNormalizedParam(i, startVal+0.0001);
+          upVector = nomalCurve.getPositionAtNormalizedParam(i, startVal+0.0001) - rest.tr;
+          switch(directionType){
+            case 0:
+              break;
+            case 1:   // curve Tagent
+              rest.ori = q.setFromDirectionAndUpvector(direction, upVector.unit());
+              break;
+            case 2:   // curve NormalDirAttr
+              rest.ori = q.setFromDirectionAndUpvector(upVector.unit(), direction);
+              break;
           }
         }
         result[i].push(rest);
         result2.push(rest);
       }
-    }
-    if(addEndPosition){
-      rest.tr = this.getPositionAtNormalizedParam(i, 1.0);
-      if(directionType != 0){
-        direction = this.getTangentAtNormalizedParam(i, 0.999);
-        upVector = nomalCurve.getPositionAtNormalizedParam(i, 0.999) - rest.tr;
-        if(directionType == 1){  // curve tagent
-          rest.ori = q.setFromDirectionAndUpvector(direction, upVector.unit());
-        }else if(directionType == 2){  //  normal direction atribute
-          rest.ori = q.setFromDirectionAndUpvector(upVector.unit(), direction);
+      
+      for(Integer k=0; k<cnt; k++){
+        Scalar lengthRatio = (this.getCurveLength(i)*segmentCopy[j].x + base * (k+1)) / this.getCurveLength(i);
+        if(lengthRatio < 1.0){
+          nParam = this.getNormalizedParameterFromLengthRatio(i, lengthRatio);
+          //  get position
+          rest.tr = this.getPositionAtNormalizedParam(i, nParam);
+          //  get orientation
+          if(directionType != 0){
+            direction = this.getTangentAtNormalizedParam(i, nParam);
+            upVector = nomalCurve.getPositionAtNormalizedParam(i, nParam) - rest.tr;
+            switch(directionType){
+              case 0:
+                break;
+              case 1:  // curve Tagent
+                rest.ori = q.setFromDirectionAndUpvector(direction, upVector.unit());
+                break;
+              case 2:  // curve NormalDirAttr
+                rest.ori = q.setFromDirectionAndUpvector(upVector.unit(), direction);
+                break;
+            }
+          }
+          result[i].push(rest);
+          result2.push(rest);
         }
       }
-      result[i].push(rest);
-      result2.push(rest);
-    }    
+      //  end pos Xfo
+      if(addEndPosition){
+        Scalar endVal = 1.0;
+        if(onSegment){
+          nParam = this.getNormalizedParameterFromLengthRatio(i, segmentCopy[j].y);
+          endVal = nParam;
+        }
+        //  get position
+        rest.tr = this.getPositionAtNormalizedParam(i, endVal);
+        //  get orientation
+        if(directionType != 0){
+          direction = this.getTangentAtNormalizedParam(i, endVal-0.0001);
+          upVector = nomalCurve.getPositionAtNormalizedParam(i, endVal-0.0001) - rest.tr;
+          switch(directionType){
+            case 0:
+              break;
+            case 1:  // curve Tagent
+              rest.ori = q.setFromDirectionAndUpvector(direction, upVector.unit());
+              break;
+            case 2:  // curve NormalDirAttr
+              rest.ori = q.setFromDirectionAndUpvector(upVector.unit(), direction);
+              break;
+          }
+        }
+        result[i].push(rest);
+        result2.push(rest);
+      }    
+    }
   }
 }
+
 //  GetEvenlyDividXfos ///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
