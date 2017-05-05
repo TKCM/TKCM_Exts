@@ -15,7 +15,7 @@
 
     "Exts/Geometry/Curves/Curves.kl",
     "Exts/Geometry/PolygonMesh/BlendShape.kl",
-    "Exts/Geometry/PolygonMesh/MergedMeshModifier.kl",
+    "Exts/Geometry/PolygonMesh/MergedMeshArrayModifier.kl",
     "Exts/Geometry/PolygonMesh/PolygonMeshPortable.kl",
 
     "Exts/Util/Valve.kl",

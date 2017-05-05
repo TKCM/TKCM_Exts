@@ -1,0 +1,158 @@
+//////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+//////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+//////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+//////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+// MergedMeshUpdateXfos ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+// MergedMeshに対してマージ時の情報を元にしてXfoの更新だけを行う
+
+//  クローンマージメッシュに対して、マージ時の各クローンメッシュのXfoを更新するためのオペレータ
+//  indexはマージメッシュの頂点数
+operator MergedMeshUpdateXfosTask<<<index>>>(
+  io PolygonMeshTopology mesh,
+  io Vec3 positions[], 
+  in Vec3 sourcePositions[], 
+  in Size sourceMeshPointCount,
+  in Xfo updateXfo[],
+  ){
+  Vec3 position;
+  Size XfoID = index / sourceMeshPointCount;  //  マージを行ったXfo群の中から何個目のXfoでクローン配置されたメッシュなのかを検出
+  Size sourceMeshPoiID = index % sourceMeshPointCount;  //  クローンメッシュの何番目の頂点なのかを算出
+  position = updateXfo[XfoID].transformVector(sourcePositions[sourceMeshPoiID]);  //  アップデートするXfo（グローバル値）にクローンメッシュの頂点位置Vec3（ローカル値）を掛ける
+
+  mesh.setPointAttribute(index, positions, position );
+}
+
+function MergedMeshUpdateXfos(
+  io PolygonMesh result[],  //  出力先
+  in PolygonMesh mergedMesh[],  //  編集を行うメッシュ群
+  in Integer clonedSourceMeshIDList[],  //  マージメッシュを作った際の情報
+  in PolygonMesh sourceMeshes[],  //  マージメッシュの元素材
+  in Xfo mergedMeshXfos[],  //  マージメッシュ制作時に使用したXfo
+  in Xfo updateXfos[]
+  ){
+  if(mergedMeshXfos.size() != updateXfos.size() && mergedMeshXfos.size() != clonedSourceMeshIDList.size()){
+    setError("!!!!!!Error!!!!!! ::: UpdataXfos : mergedMeshXfos count ("+mergedMeshXfos.size()+") != updateXfos count ("+ updateXfos.size()+")!= updateXfos count ("+clonedSourceMeshIDList.size()+")");
+    return;
+  }
+  //  マージメッシュで使用したXfoを各メッシュごとに振り分けなおす
+  Xfo updateXfosList[][](mergedMesh.size());  //[mergedMeshSize][clonedXfos]
+  for(Integer i=0; i<updateXfos.size(); i++){
+    updateXfosList[ clonedSourceMeshIDList[i] ].push(updateXfos[i]);
+  }
+
+  result = mergedMesh.clone();
+  //  各メッシュごとに処理を行っていく
+  for(Integer i=0; i<mergedMesh.size(); i++){
+    if(0 < result[i].pointCount()){
+      Ref<Vec3Attribute> positionsAttribute = result[i].getAttributes().positionsAttribute;
+      Ref<Vec3Attribute> positionsAttribute2 = sourceMeshes[i].getAttributes().positionsAttribute;
+      
+      MergedMeshUpdateXfosTask<<<result[i].pointCount()>>>(
+        result[i].topology, 
+        positionsAttribute.values, 
+        positionsAttribute2.values, 
+        sourceMeshes[i].pointCount(),
+        updateXfosList[i]
+      );
+    }
+  }
+}
+//////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+//////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+//////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+//////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+// MergedMeshBlendShape ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+// MergedMesh内の1つのメッシュに対してブレンドシェイプを行う
+
+//  indexはマージメッシュの頂点数
+operator MergedMeshBlendShapeTask<<<index>>>(
+  io PolygonMeshTopology mergedMesh,
+  io Ref<Vec3Attribute> mergedMeshPoiPos, 
+  in Vec3 sourceMeshPoiPos[], 
+  in Vec3Array blendshapeDelta[],
+  in Size targetID[],
+  in LocalL4UInt32Array[] BSIndexList,
+  in LocalL4ScalarArray[] blendshapeWeights,
+  in Xfo mergedMeshXfos[],
+  in Scalar t
+  ){
+  Vec3 position;
+  Size sourceMeshPointCount = sourceMeshPoiPos.size();
+  Size meshID = index / sourceMeshPointCount;  //  マージを行ったXfo群の中から何個目のXfoでクローン配置されたメッシュなのかを検出
+  Size ID = targetID[meshID]; //　
+  Size sourceMeshPoiID = index % sourceMeshPointCount;  //  クローンメッシュの何番目の頂点なのかを算出
+    
+  
+  for(Integer j=0; j<blendshapeWeights[ID].count; j++){
+    position += blendshapeDelta[ BSIndexList[ID].first4[j] ][sourceMeshPoiID] * blendshapeWeights[ID].first4[j];
+  }
+  position = mergedMeshXfos[ID].transformVector(sourceMeshPoiPos[sourceMeshPoiID] + Vec3(0.0).linearInterpolate(position, t));  //  クローン配置Xfoから各頂点のローカル座標を掛けてグローバル座標を取得
+  mergedMesh.setPointAttribute(index, mergedMeshPoiPos.values, position);
+}
+
+function MergedMeshBlendShape(
+  io PolygonMesh[] result,  //  出力先
+  in PolygonMesh[] mergedMesh,  //  ブレンドシェイプを行うメッシュ群（"targetID"でどれか1つのメッシュを指定）
+  in Integer[] clonedSourceMeshIDList,  //　マージメッシュを作った際の情報
+  in Xfo[] mergedMeshXfos,  //  マージメッシュを作った際のXfo
+  in Vec3Array[] blendshapeDelta, //  ブレンドシェイプターゲットのデルタ情報群
+  in LocalL4UInt32Array[] blendShapeIDList, //　　ブレンドシェイプを行うターゲットIDリスト
+  in LocalL4ScalarArray[] blendShapeWeights,  //　　"blendShapeIDList"に登録されたターゲットへのブレンドウェイト
+  in PolygonMesh[] sourceMesh, //　　マージメッシュを作った際の元素材群
+  in Scalar t,  //　ブレンドシェイプ処理全体のウェイト
+  in Integer targetID  //　　ブレンドシェイプを行うメッシュID
+  ){
+  //　データ確認
+  if(blendshapeDelta.size() == 0 || blendShapeIDList.size() == 0 || blendShapeWeights.size() == 0 || mergedMeshXfos.size() == 0 || sourceMesh.size() == 0){
+    return;
+  }  
+  if(blendShapeIDList[0].others[0] > blendshapeDelta.size()){
+    setError("!!!!!!Error!!!!!! ::: MergedMeshBlendShapeCore : IndexList require count = "+blendShapeIDList[0].others[0]+". But blend shape target count = "+blendshapeDelta.size());
+    return;
+  }
+  //  マージメッシュを作った際にtargetIDのメッシュが使用したXfoの配列番号をリスト化
+  Size targetIDs[];
+  for(Integer i=0; i<clonedSourceMeshIDList.size(); i++){
+    if(clonedSourceMeshIDList[i] == targetID){
+      targetIDs.push(i);
+    }
+  }
+
+  result = mergedMesh.clone();
+  if(0 < result[targetID].pointCount()){
+    Ref<Vec3Attribute> positionsAttribute = result[targetID].getAttributes().positionsAttribute;
+
+    if(result[targetID].pointCount() < 1000){
+      for(Integer i=0; i<result[targetID].pointCount(); i++){
+        MergedMeshBlendShapeTask(
+          i,
+          result[targetID].topology, 
+          positionsAttribute,
+          sourceMesh[targetID].getAllPointPositions(),
+          blendshapeDelta,
+          targetIDs,
+          blendShapeIDList,
+          blendShapeWeights,
+          mergedMeshXfos,
+          t
+        );
+      }
+    }else{
+      MergedMeshBlendShapeTask<<<result[targetID].pointCount()>>>(
+        result[targetID].topology, 
+        positionsAttribute,
+        sourceMesh[targetID].getAllPointPositions(),
+        blendshapeDelta,
+        targetIDs,
+        blendShapeIDList,
+        blendShapeWeights,
+        mergedMeshXfos,
+        t
+      );
+    }
+  }  
+}
+//////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+//////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+//////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+//////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
