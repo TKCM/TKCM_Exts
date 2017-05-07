@@ -68,7 +68,8 @@ function DijkstraGraph.setFromPolygonMesh!(in PolygonMesh mesh, in Boolean inclu
   this.setedVertex = true;
 }
 //	ダイクストラ法グラフのスタートを設定し、指定した距離内でバーテックスへの移動コストを計算し経路図を作る
-function DijkstraGraph.computeRouteCost!(Index startVertexID, Scalar maxDistance){
+//  順次範囲を広げていきmaxDistanceの範囲外になった頂点は計算対象外になるので、不要な計算コストはかかっていない
+function DijkstraGraph.computeRouteCost!(String startVertexIDs[], Scalar maxDistance){
   if(maxDistance <= 0.0){
   	return;
   }
@@ -77,54 +78,62 @@ function DijkstraGraph.computeRouteCost!(Index startVertexID, Scalar maxDistance
   	setError("DijkstraGraph.computeRouteCost node : this DijkstraGraph not yet set vertex. have to do for example 'DijkstraGraph.setFromPolygonMesh'");
   	return;
   }
-  //	スタートバーテックスの移動コストを０にする
-  this.vertex[startVertexID].cost = 0;
-  // 経路が見つかるまでループする
-  while(true){
-  	// 現在処理中のバーテックスを格納（これが見つからなければ終了）
-    DijkstraVertex processVertex = null;
-    for(Integer i=0; i<this.vertex.size(); i++){
-      // 訪問済み or まだコストが未設定の場合はスキップ
-      // 結果として最初はスタートバーテックスだけがコスト `0` になっているため、スタートバーテックスが選択される
-      if(this.vertex[i].done || this.vertex[i].cost<0){
-        continue;
-      }
-      // 処理中バーテックスがなければ現在のバーテックスを保持して次へ
-      if(processVertex == null) {
-        processVertex = this.vertex[i];
-        continue;
-      }
-      // 訪問済み（確定済み）でないバーテックスのうち、一番小さいコストのバーテックスを探す
-      if(this.vertex[i].cost < processVertex.cost) {
-        processVertex = this.vertex[i];
-      }
+  //  それぞれのスタート地点からコスト計算を行っていき、コストが小さくなる場合のみコストの更新を行う
+  for(Integer h=0; h<startVertexIDs.size(); h++){
+    //  スタート地点が複数ある場合用
+    //  別のスタート地点からの計算を行う際に、訪問済みの判定をリセットする
+    for(Integer g=0; g<this.vertex.size(); g++){
+      this.vertex[g].done = false;
     }
-    // 処理中のバーテックスがなくなったら、つまりすべてチェックが終わったらループ終了
-    if(processVertex == null){
-      break;
-    }
-    // 処理中バーテックスに「訪問済み」のフラグを設定する
-    // （未確定バーテックスのうち、一番コストが小さい場合はそこにいたるまでの経路が計算された結果なので「確定」できる
-    processVertex.done = true;
-    
-    // コストのアップデート
-    // 選択されたバーテックス（processNode）の現在のコストと接続されているエッジのコストを足し、それを接続先のバーテックスに設定されているコストと比較し、
-    // もしそれよりも小さければその値にアップデートする
-    for(Integer i=0; i<processVertex.surroundingVertex.count; i++){
-      DijkstraVertex node();
-      Scalar cost;
-      if(i < 16){
-      	node = this.vertex[processVertex.surroundingVertex.first16[i]];
-      	cost = processVertex.cost + processVertex.toVertexCost.first16[i];
-    	}else{
-    		node = this.vertex[ processVertex.surroundingVertex.others[i-16] ];
-      	cost = processVertex.cost + processVertex.toVertexCost.others[i-16];
-    	}
-      // コストが未設定 or コストの少ない経路がある場合はアップデート
-      if(node.cost < 0 || node.cost > cost){
-        //	コストの合計値がmaxDistance内の場合のみ値を更新
-        if(cost < maxDistance){
-          node.cost = cost;
+    //	スタートバーテックスの移動コストを０にする
+    this.vertex[startVertexIDs[h].toScalar()].cost = 0;
+    // 経路が見つかるまでループする
+    while(true){
+    	// 処理を行うバーテックスを格納（これが見つからなければ終了）
+      DijkstraVertex processVertex = null;
+      for(Integer i=0; i<this.vertex.size(); i++){
+        // 訪問済み or まだコストが未設定の場合はスキップ
+        // 結果として最初はスタートバーテックスだけがコスト `0` 、それ以外は全てが”未訪問+コストは-1”になっているため、i=スタートバーテックスの場合だけ次へ進む
+        if(this.vertex[i].done || this.vertex[i].cost<0){
+          continue;
+        }
+        // バーテックスが未選択であれば現在のバーテックスを選択して処理へと進む
+        if(processVertex == null) {
+          processVertex = this.vertex[i];
+          continue;
+        }
+        // 訪問済み（確定済み）でないバーテックスのうち、一番小さいコストのバーテックスを探す
+        if(this.vertex[i].cost < processVertex.cost) {
+          processVertex = this.vertex[i];
+        }
+      }
+      // 処理中のバーテックスがなくなったら、つまりすべてチェックが終わったらループ終了
+      if(processVertex == null){
+        break;
+      }
+      // 処理中バーテックスに「訪問済み」のフラグを設定する
+      // （未確定バーテックスのうち、一番コストが小さい場合はそこにいたるまでの経路が計算された結果なので「確定」できる
+      processVertex.done = true;
+      
+      // コストのアップデート
+      // 選択されたバーテックス（processNode）の現在のコストと接続されているエッジのコストを足し、それを接続先のバーテックスに設定されているコストと比較し、
+      // もしそれよりも小さければその値にアップデートする
+      for(Integer i=0; i<processVertex.surroundingVertex.count; i++){
+        DijkstraVertex node();
+        Scalar cost;
+        if(i < 16){
+        	node = this.vertex[processVertex.surroundingVertex.first16[i]];
+        	cost = processVertex.cost + processVertex.toVertexCost.first16[i];
+      	}else{
+      		node = this.vertex[ processVertex.surroundingVertex.others[i-16] ];
+        	cost = processVertex.cost + processVertex.toVertexCost.others[i-16];
+      	}
+        // コストが未設定 or コストの少ない経路がある場合はアップデート
+        if(node.cost < 0 || cost < node.cost){
+          //	コストの合計値がmaxDistance内の場合のみ値を更新
+          if(cost < maxDistance){
+            node.cost = cost;
+          }
         }
       }
     }

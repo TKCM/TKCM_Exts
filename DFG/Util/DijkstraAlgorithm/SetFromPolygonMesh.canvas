@@ -26,16 +26,17 @@
       },
     {
       "objectType" : "ExecPort",
-      "name" : "clonedValue",
+      "metadata" : {},
+      "name" : "mesh",
       "nodePortType" : "Out",
       "defaultValues" : {
         "PolygonMesh" : null
         },
-      "execPortType" : "In"
+      "execPortType" : "In",
+      "typeSpec" : "PolygonMesh"
       },
     {
       "objectType" : "ExecPort",
-      "metadata" : {},
       "name" : "includeAllPolygonPoints",
       "nodePortType" : "Out",
       "defaultValues" : {
@@ -53,7 +54,7 @@
     {
       "objectType" : "Inst",
       "metadata" : {
-        "uiGraphPos" : "{\"x\":231.891,\"y\":155.29}"
+        "uiGraphPos" : "{\"x\":310.0,\"y\":160.0}"
         },
       "name" : "SetFromPolygonMeshCore",
       "ports" : [
@@ -134,143 +135,20 @@
 }
 "
         }
-      },
-    {
-      "objectType" : "Inst",
-      "metadata" : {
-        "uiGraphPos" : "{\"x\":536.0,\"y\":150.0}"
-        },
-      "name" : "Cache_1",
-      "ports" : [
-        {
-          "objectType" : "InstPort",
-          "name" : "exec",
-          "nodePortType" : "IO"
-          },
-        {
-          "objectType" : "InstPort",
-          "name" : "value",
-          "nodePortType" : "In"
-          }
-        ],
-      "executable" : "Fabric.Core.Data.Cache",
-      "presetGUID" : "D903AFD981FE9214C69943F542D5FD60"
-      },
-    {
-      "objectType" : "Inst",
-      "metadata" : {
-        "uiGraphPos" : "{\"x\":730.0,\"y\":161.0}"
-        },
-      "name" : "Clone_1",
-      "ports" : [
-        {
-          "objectType" : "InstPort",
-          "name" : "exec",
-          "nodePortType" : "IO"
-          },
-        {
-          "objectType" : "InstPort",
-          "name" : "value",
-          "nodePortType" : "In"
-          },
-        {
-          "objectType" : "InstPort",
-          "name" : "clonedValue",
-          "nodePortType" : "Out"
-          }
-        ],
-      "executable" : "Fabric.Core.Data.Clone",
-      "presetGUID" : "30401D7851DEFCFA5C46EB3926DD8BAD"
       }
     ],
   "connections" : {
     "dijkstraGraph" : [
       "SetFromPolygonMeshCore.dijkstraGraph"
       ],
-    "clonedValue" : [
+    "mesh" : [
       "SetFromPolygonMeshCore.mesh"
       ],
     "includeAllPolygonPoints" : [
       "SetFromPolygonMeshCore.includeAllPolygonPoints"
       ],
     "SetFromPolygonMeshCore.dijkstraGraph" : [
-      "Cache_1.value"
-      ],
-    "Cache_1.value" : [
-      "Clone_1.value"
-      ],
-    "Clone_1.clonedValue" : [
       "dijkstraGraph"
       ]
-    },
-  "requiredPresets" : {
-    "Fabric.Core.Data.Cache" : {
-      "objectType" : "Func",
-      "metadata" : {
-        "uiNodeColor" : "{\n  \"r\" : 214,\n  \"g\" : 191,\n  \"b\" : 103\n  }",
-        "uiAlwaysShowDaisyChainPorts" : "true",
-        "uiHeaderColor" : "{\n  \"r\" : 188,\n  \"g\" : 129,\n  \"b\" : 83\n  }"
-        },
-      "title" : "Cache",
-      "cacheRule" : "always",
-      "ports" : [
-        {
-          "objectType" : "ExecPort",
-          "name" : "exec",
-          "nodePortType" : "IO",
-          "execPortType" : "IO",
-          "typeSpec" : "Execute"
-          },
-        {
-          "objectType" : "ExecPort",
-          "name" : "value",
-          "nodePortType" : "Out",
-          "execPortType" : "In",
-          "typeSpec" : "$TYPE$"
-          }
-        ],
-      "extDeps" : {},
-      "presetGUID" : "D903AFD981FE9214C69943F542D5FD60",
-      "code" : "dfgEntry {
-}
-"
-      },
-    "Fabric.Core.Data.Clone" : {
-      "objectType" : "Func",
-      "metadata" : {
-        "uiNodeColor" : "{\n  \"r\" : 214,\n  \"g\" : 191,\n  \"b\" : 103\n  }",
-        "uiHeaderColor" : "{\n  \"r\" : 188,\n  \"g\" : 129,\n  \"b\" : 83\n  }"
-        },
-      "title" : "Clone",
-      "ports" : [
-        {
-          "objectType" : "ExecPort",
-          "name" : "exec",
-          "nodePortType" : "IO",
-          "execPortType" : "IO",
-          "typeSpec" : "Execute"
-          },
-        {
-          "objectType" : "ExecPort",
-          "name" : "value",
-          "nodePortType" : "Out",
-          "execPortType" : "In",
-          "typeSpec" : "$TYPE$"
-          },
-        {
-          "objectType" : "ExecPort",
-          "name" : "clonedValue",
-          "nodePortType" : "In",
-          "execPortType" : "Out",
-          "typeSpec" : "$TYPE$"
-          }
-        ],
-      "extDeps" : {},
-      "presetGUID" : "30401D7851DEFCFA5C46EB3926DD8BAD",
-      "code" : "dfgEntry {
-  clonedValue = value.clone();
-}
-"
-      }
     }
   }

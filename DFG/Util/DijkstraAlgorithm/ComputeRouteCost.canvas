@@ -2,7 +2,7 @@
   "objectType" : "Graph",
   "metadata" : {
     "uiGraphZoom" : "{\n  \"value\" : 1.0\n  }",
-    "uiGraphPan" : "{\n  \"x\" : -549.9210205078125,\n  \"y\" : 9.710006713867188\n  }"
+    "uiGraphPan" : "{\n  \"x\" : -146.4205322265625,\n  \"y\" : 186.2100067138672\n  }"
     },
   "title" : "ComputeRouteCost",
   "ports" : [
@@ -28,21 +28,23 @@
     {
       "objectType" : "ExecPort",
       "metadata" : {},
-      "name" : "startVertexID",
+      "name" : "startVertexIDs",
       "nodePortType" : "Out",
       "defaultValues" : {
-        "Index" : 0
+        "String" : "0,10,15"
         },
       "execPortType" : "In",
-      "typeSpec" : "Index"
+      "typeSpec" : "String"
       },
     {
       "objectType" : "ExecPort",
-      "metadata" : {},
+      "metadata" : {
+        "uiHardRange" : "(0, 2)"
+        },
       "name" : "maxDistance",
       "nodePortType" : "Out",
       "defaultValues" : {
-        "Scalar" : 10
+        "Scalar" : 1
         },
       "execPortType" : "In",
       "typeSpec" : "Scalar"
@@ -56,7 +58,7 @@
     {
       "objectType" : "Inst",
       "metadata" : {
-        "uiGraphPos" : "{\"x\":620.4210000000001,\"y\":166.29}"
+        "uiGraphPos" : "{\"x\":670.0,\"y\":60.0}"
         },
       "name" : "ComputeRouteCostCore",
       "ports" : [
@@ -82,6 +84,11 @@
           "defaultValues" : {
             "Scalar" : 10
             }
+          },
+        {
+          "objectType" : "InstPort",
+          "name" : "startVertexIDs",
+          "nodePortType" : "In"
           }
         ],
       "definition" : {
@@ -127,13 +134,22 @@
               },
             "execPortType" : "In",
             "typeSpec" : "Scalar"
+            },
+          {
+            "objectType" : "ExecPort",
+            "metadata" : {},
+            "name" : "startVertexIDs",
+            "nodePortType" : "Out",
+            "execPortType" : "In",
+            "typeSpec" : "String[]"
             }
           ],
         "extDeps" : {
           "TKCM" : "*"
           },
         "code" : "dfgEntry {
-  dijkstraGraph.computeRouteCost(startVertexID, maxDistance);
+  
+  dijkstraGraph.computeRouteCost(startVertexIDs, maxDistance);
 }
 "
         }
@@ -141,9 +157,9 @@
     {
       "objectType" : "Inst",
       "metadata" : {
-        "uiGraphPos" : "{\"x\":948.92,\"y\":159.29}"
+        "uiGraphPos" : "{\"x\":290.0,\"y\":230.0}"
         },
-      "name" : "Cache_1",
+      "name" : "SplitAndDeleteBlank_1",
       "ports" : [
         {
           "objectType" : "InstPort",
@@ -152,99 +168,237 @@
           },
         {
           "objectType" : "InstPort",
-          "name" : "value",
-          "nodePortType" : "In"
-          }
-        ],
-      "executable" : "Fabric.Core.Data.Cache",
-      "presetGUID" : "D903AFD981FE9214C69943F542D5FD60"
-      },
-    {
-      "objectType" : "Inst",
-      "metadata" : {
-        "uiGraphPos" : "{\"x\":1100.92,\"y\":193.29}"
-        },
-      "name" : "Clone_1",
-      "ports" : [
-        {
-          "objectType" : "InstPort",
-          "name" : "exec",
-          "nodePortType" : "IO"
-          },
-        {
-          "objectType" : "InstPort",
-          "name" : "value",
+          "name" : "this",
           "nodePortType" : "In"
           },
         {
           "objectType" : "InstPort",
-          "name" : "clonedValue",
+          "name" : "separator",
+          "nodePortType" : "In"
+          },
+        {
+          "objectType" : "InstPort",
+          "name" : "deletBlank",
+          "nodePortType" : "In"
+          },
+        {
+          "objectType" : "InstPort",
+          "name" : "result",
           "nodePortType" : "Out"
           }
         ],
-      "executable" : "Fabric.Core.Data.Clone",
-      "presetGUID" : "30401D7851DEFCFA5C46EB3926DD8BAD"
+      "executable" : "TKCM.Util.String.SplitAndDeleteBlank",
+      "presetGUID" : "F433EE0F045CFB5086821B670F6FEC3D"
       }
     ],
   "connections" : {
     "dijkstraGraph" : [
       "ComputeRouteCostCore.dijkstraGraph"
       ],
-    "startVertexID" : [
-      "ComputeRouteCostCore.startVertexID"
+    "startVertexIDs" : [
+      "SplitAndDeleteBlank_1.this"
       ],
     "maxDistance" : [
       "ComputeRouteCostCore.maxDistance"
       ],
     "ComputeRouteCostCore.dijkstraGraph" : [
-      "Cache_1.value"
-      ],
-    "Cache_1.value" : [
-      "Clone_1.value"
-      ],
-    "Clone_1.clonedValue" : [
       "dijkstraGraph"
+      ],
+    "SplitAndDeleteBlank_1.result" : [
+      "ComputeRouteCostCore.startVertexIDs"
       ]
     },
   "requiredPresets" : {
-    "Fabric.Core.Data.Cache" : {
-      "objectType" : "Func",
+    "TKCM.Util.String.SplitAndDeleteBlank" : {
+      "objectType" : "Graph",
       "metadata" : {
-        "uiNodeColor" : "{\n  \"r\" : 214,\n  \"g\" : 191,\n  \"b\" : 103\n  }",
-        "uiAlwaysShowDaisyChainPorts" : "true",
-        "uiHeaderColor" : "{\n  \"r\" : 188,\n  \"g\" : 129,\n  \"b\" : 83\n  }"
+        "uiGraphZoom" : "{\n  \"value\" : 1.0\n  }",
+        "uiGraphPan" : "{\n  \"x\" : 1851.85498046875,\n  \"y\" : -1009.830017089844\n  }"
         },
-      "title" : "Cache",
-      "cacheRule" : "always",
+      "title" : "SplitAndDeleteBlank",
       "ports" : [
         {
           "objectType" : "ExecPort",
           "name" : "exec",
           "nodePortType" : "IO",
+          "defaultValues" : {
+            "Execute" : {}
+            },
           "execPortType" : "IO",
           "typeSpec" : "Execute"
           },
         {
           "objectType" : "ExecPort",
-          "name" : "value",
+          "name" : "this",
           "nodePortType" : "Out",
+          "defaultValues" : {
+            "String" : ""
+            },
           "execPortType" : "In",
-          "typeSpec" : "$TYPE$"
+          "typeSpec" : "String"
+          },
+        {
+          "objectType" : "ExecPort",
+          "name" : "separator",
+          "nodePortType" : "Out",
+          "defaultValues" : {
+            "String" : ","
+            },
+          "execPortType" : "In",
+          "typeSpec" : "String"
+          },
+        {
+          "objectType" : "ExecPort",
+          "name" : "deletBlank",
+          "nodePortType" : "Out",
+          "defaultValues" : {
+            "Boolean" : true
+            },
+          "execPortType" : "In",
+          "typeSpec" : "Boolean"
+          },
+        {
+          "objectType" : "ExecPort",
+          "name" : "result",
+          "nodePortType" : "In",
+          "defaultValues" : {
+            "String[]" : []
+            },
+          "execPortType" : "Out",
+          "typeSpec" : "String[]"
           }
         ],
       "extDeps" : {},
-      "presetGUID" : "D903AFD981FE9214C69943F542D5FD60",
-      "code" : "dfgEntry {
+      "presetGUID" : "F433EE0F045CFB5086821B670F6FEC3D",
+      "nodes" : [
+        {
+          "objectType" : "Inst",
+          "metadata" : {
+            "uiGraphPos" : "{\"x\":-1667.97,\"y\":1245.8}"
+            },
+          "name" : "Split_1",
+          "ports" : [
+            {
+              "objectType" : "InstPort",
+              "name" : "exec",
+              "nodePortType" : "IO"
+              },
+            {
+              "objectType" : "InstPort",
+              "name" : "this",
+              "nodePortType" : "In"
+              },
+            {
+              "objectType" : "InstPort",
+              "name" : "separator",
+              "nodePortType" : "In",
+              "defaultValues" : {
+                "String" : ","
+                }
+              },
+            {
+              "objectType" : "InstPort",
+              "name" : "result",
+              "nodePortType" : "Out"
+              }
+            ],
+          "executable" : "Fabric.Exts.Util.String.Split",
+          "presetGUID" : "E09CFC151D7658D0FD0EAA6DB4FFB18B"
+          },
+        {
+          "objectType" : "Inst",
+          "metadata" : {
+            "uiGraphPos" : "{\"x\":-1469.74,\"y\":1305.86}"
+            },
+          "name" : "DeleteBlank",
+          "ports" : [
+            {
+              "objectType" : "InstPort",
+              "name" : "exec",
+              "nodePortType" : "IO"
+              },
+            {
+              "objectType" : "InstPort",
+              "name" : "this",
+              "nodePortType" : "IO"
+              },
+            {
+              "objectType" : "InstPort",
+              "name" : "deletBlank",
+              "nodePortType" : "In"
+              }
+            ],
+          "definition" : {
+            "objectType" : "Func",
+            "title" : "func",
+            "ports" : [
+              {
+                "objectType" : "ExecPort",
+                "name" : "exec",
+                "nodePortType" : "IO",
+                "execPortType" : "IO",
+                "typeSpec" : "Execute"
+                },
+              {
+                "objectType" : "ExecPort",
+                "name" : "this",
+                "nodePortType" : "IO",
+                "execPortType" : "IO",
+                "typeSpec" : "String[]"
+                },
+              {
+                "objectType" : "ExecPort",
+                "name" : "deletBlank",
+                "nodePortType" : "Out",
+                "execPortType" : "In",
+                "typeSpec" : "Boolean"
+                }
+              ],
+            "extDeps" : {},
+            "code" : "dfgEntry {
+  if(deletBlank){
+    Index chack[];
+    chack.resize(this.size());
+    for(Integer i=0; i<this.size(); i++){
+      chack[i]=this[i].length();
+    }
+    String result[];
+    for(Integer i=0; i<this.size(); i++){
+      if(chack[i] > 0){
+        result.push(this[i]);
+      }
+    }
+    this = result;
+  }
 }
 "
+            }
+          }
+        ],
+      "connections" : {
+        "this" : [
+          "Split_1.this"
+          ],
+        "separator" : [
+          "Split_1.separator"
+          ],
+        "deletBlank" : [
+          "DeleteBlank.deletBlank"
+          ],
+        "Split_1.result" : [
+          "DeleteBlank.this"
+          ],
+        "DeleteBlank.this" : [
+          "result"
+          ]
+        }
       },
-    "Fabric.Core.Data.Clone" : {
+    "Fabric.Exts.Util.String.Split" : {
       "objectType" : "Func",
       "metadata" : {
-        "uiNodeColor" : "{\n  \"r\" : 214,\n  \"g\" : 191,\n  \"b\" : 103\n  }",
-        "uiHeaderColor" : "{\n  \"r\" : 188,\n  \"g\" : 129,\n  \"b\" : 83\n  }"
+        "uiTooltip" : "splitting this string by a given separator\n\n Supported by String"
         },
-      "title" : "Clone",
+      "title" : "Split",
       "ports" : [
         {
           "objectType" : "ExecPort",
@@ -255,23 +409,34 @@
           },
         {
           "objectType" : "ExecPort",
-          "name" : "value",
+          "name" : "this",
           "nodePortType" : "Out",
           "execPortType" : "In",
-          "typeSpec" : "$TYPE$"
+          "typeSpec" : "String"
           },
         {
           "objectType" : "ExecPort",
-          "name" : "clonedValue",
+          "name" : "separator",
+          "nodePortType" : "Out",
+          "execPortType" : "In",
+          "typeSpec" : "String"
+          },
+        {
+          "objectType" : "ExecPort",
+          "name" : "result",
           "nodePortType" : "In",
           "execPortType" : "Out",
-          "typeSpec" : "$TYPE$"
+          "typeSpec" : "String[]"
           }
         ],
-      "extDeps" : {},
-      "presetGUID" : "30401D7851DEFCFA5C46EB3926DD8BAD",
-      "code" : "dfgEntry {
-  clonedValue = value.clone();
+      "extDeps" : {
+        "Util" : "*"
+        },
+      "presetGUID" : "E09CFC151D7658D0FD0EAA6DB4FFB18B",
+      "code" : "require Util;
+
+dfgEntry {
+  result = this.split(separator);
 }
 "
       }

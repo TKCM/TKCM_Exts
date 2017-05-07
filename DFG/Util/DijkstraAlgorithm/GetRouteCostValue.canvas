@@ -57,7 +57,7 @@
     {
       "objectType" : "Inst",
       "metadata" : {
-        "uiGraphPos" : "{\"x\":913.53,\"y\":186.524}"
+        "uiGraphPos" : "{\"x\":1183.53,\"y\":176.524}"
         },
       "name" : "GetRouteCostValueCore",
       "ports" : [
@@ -145,9 +145,30 @@
     {
       "objectType" : "Inst",
       "metadata" : {
-        "uiGraphPos" : "{\"x\":1267.03,\"y\":254.524}"
+        "uiGraphPos" : "{\"x\":1537.03,\"y\":244.524}"
         },
       "name" : "Cache_1",
+      "ports" : [
+        {
+          "objectType" : "InstPort",
+          "name" : "exec",
+          "nodePortType" : "IO"
+          },
+        {
+          "objectType" : "InstPort",
+          "name" : "value",
+          "nodePortType" : "In"
+          }
+        ],
+      "executable" : "Fabric.Core.Data.Cache",
+      "presetGUID" : "D903AFD981FE9214C69943F542D5FD60"
+      },
+    {
+      "objectType" : "Inst",
+      "metadata" : {
+        "uiGraphPos" : "{\"x\":1000.0,\"y\":120.0}"
+        },
+      "name" : "Cache_2",
       "ports" : [
         {
           "objectType" : "InstPort",
@@ -166,7 +187,7 @@
     ],
   "connections" : {
     "dijkstraGraph" : [
-      "GetRouteCostValueCore.dijkstraGraph"
+      "Cache_2.value"
       ],
     "type" : [
       "GetRouteCostValueCore.type"
@@ -176,6 +197,9 @@
       ],
     "Cache_1.value" : [
       "result"
+      ],
+    "Cache_2.value" : [
+      "GetRouteCostValueCore.dijkstraGraph"
       ]
     },
   "requiredPresets" : {
