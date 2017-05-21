@@ -1,8 +1,8 @@
 {
   "objectType" : "Graph",
   "metadata" : {
-    "uiGraphZoom" : "{\n  \"value\" : 0.8793600797653198\n  }",
-    "uiGraphPan" : "{\n  \"x\" : 399.4840698242188,\n  \"y\" : -179.4859161376953\n  }"
+    "uiGraphZoom" : "{\n  \"value\" : 0.8119135499000549\n  }",
+    "uiGraphPan" : "{\n  \"x\" : -324.991455078125,\n  \"y\" : -125.6361694335938\n  }"
     },
   "title" : "CurveWrap",
   "ports" : [
@@ -39,6 +39,28 @@
     {
       "objectType" : "ExecPort",
       "name" : "wrapTargetCurves",
+      "nodePortType" : "Out",
+      "defaultValues" : {
+        "Curves" : null
+        },
+      "execPortType" : "In",
+      "typeSpec" : "Curves"
+      },
+    {
+      "objectType" : "ExecPort",
+      "metadata" : {},
+      "name" : "useNormalCurves",
+      "nodePortType" : "Out",
+      "defaultValues" : {
+        "Boolean" : false
+        },
+      "execPortType" : "In",
+      "typeSpec" : "Boolean"
+      },
+    {
+      "objectType" : "ExecPort",
+      "metadata" : {},
+      "name" : "wrapTargetNormalCurve",
       "nodePortType" : "Out",
       "defaultValues" : {
         "Curves" : null
@@ -95,7 +117,7 @@
     {
       "objectType" : "Inst",
       "metadata" : {
-        "uiGraphPos" : "{\"x\":922.979,\"y\":428.994}"
+        "uiGraphPos" : "{\"x\":930.0,\"y\":430.0}"
         },
       "name" : "CurvesWrapCore",
       "ports" : [
@@ -129,6 +151,16 @@
           "objectType" : "InstPort",
           "name" : "mergedMesh",
           "nodePortType" : "IO"
+          },
+        {
+          "objectType" : "InstPort",
+          "name" : "useNormalCurves",
+          "nodePortType" : "In"
+          },
+        {
+          "objectType" : "InstPort",
+          "name" : "wrapTargetNormalCurve",
+          "nodePortType" : "In"
           },
         {
           "objectType" : "InstPort",
@@ -179,6 +211,22 @@
             "nodePortType" : "IO",
             "execPortType" : "IO",
             "typeSpec" : "PolygonMesh[]"
+            },
+          {
+            "objectType" : "ExecPort",
+            "metadata" : {},
+            "name" : "useNormalCurves",
+            "nodePortType" : "Out",
+            "execPortType" : "In",
+            "typeSpec" : "Boolean"
+            },
+          {
+            "objectType" : "ExecPort",
+            "metadata" : {},
+            "name" : "wrapTargetNormalCurve",
+            "nodePortType" : "Out",
+            "execPortType" : "In",
+            "typeSpec" : "Curves"
             },
           {
             "objectType" : "ExecPort",
@@ -248,7 +296,12 @@ dfgEntry {
     return;
   }
   
-  Curves targetNormalCurves = targetCurves.createNormalDirectionAttributeCurves(0, 1.0);
+  Curves targetNormalCurves();
+  if(useNormalCurves){
+    targetNormalCurves = wrapTargetNormalCurve;
+  }else{
+    targetNormalCurves = targetCurves.createNormalDirectionAttributeCurves(0, 1.0);
+  }
   
   for(Integer i=0; i<mergedMesh.size(); i++){    
     if(mergedMesh[i] == null || mergedMesh[i].pointCount() == 0){
@@ -736,6 +789,12 @@ dfgEntry {
       ],
     "wrapTargetCurves" : [
       "func.targetCurves"
+      ],
+    "useNormalCurves" : [
+      "CurvesWrapCore.useNormalCurves"
+      ],
+    "wrapTargetNormalCurve" : [
+      "CurvesWrapCore.wrapTargetNormalCurve"
       ],
     "sourceMeshes" : [
       "GetCurvesWrapValues.sourceMeshes"
