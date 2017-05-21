@@ -1,0 +1,2640 @@
+{
+  "objectType" : "Graph",
+  "metadata" : {
+    "uiGraphZoom" : "{\n  \"value\" : 0.5922582745552063\n  }",
+    "uiGraphPan" : "{\n  \"x\" : 328.0418090820313,\n  \"y\" : -151.8644256591797\n  }"
+    },
+  "title" : "CreateTwistCurvesPointPositions",
+  "ports" : [
+    {
+      "objectType" : "ExecPort",
+      "name" : "exec",
+      "nodePortType" : "IO",
+      "defaultValues" : {
+        "Execute" : {}
+        },
+      "execPortType" : "IO",
+      "typeSpec" : "Execute"
+      },
+    {
+      "objectType" : "ExecPort",
+      "name" : "this",
+      "nodePortType" : "Out",
+      "defaultValues" : {
+        "Curves" : null
+        },
+      "execPortType" : "In",
+      "typeSpec" : "Curves"
+      },
+    {
+      "objectType" : "ExecPort",
+      "name" : "twist",
+      "nodePortType" : "Out",
+      "defaultValues" : {
+        "Float32" : 10
+        },
+      "execPortType" : "In",
+      "typeSpec" : "Scalar"
+      },
+    {
+      "objectType" : "ExecPort",
+      "metadata" : {
+        "uiPersistValue" : "true",
+        "uiRange" : "(-1, 1)"
+        },
+      "name" : "twistRatio",
+      "nodePortType" : "Out",
+      "defaultValues" : {
+        "Scalar" : 0
+        },
+      "execPortType" : "In",
+      "typeSpec" : "Scalar"
+      },
+    {
+      "objectType" : "ExecPort",
+      "metadata" : {},
+      "name" : "startDistance",
+      "nodePortType" : "Out",
+      "defaultValues" : {
+        "Float32" : 10
+        },
+      "execPortType" : "In",
+      "typeSpec" : "Scalar"
+      },
+    {
+      "objectType" : "ExecPort",
+      "metadata" : {},
+      "name" : "endDistance",
+      "nodePortType" : "Out",
+      "defaultValues" : {
+        "Scalar" : 10
+        },
+      "execPortType" : "In",
+      "typeSpec" : "Scalar"
+      },
+    {
+      "objectType" : "ExecPort",
+      "metadata" : {
+        "uiRange" : "(-1, 1)"
+        },
+      "name" : "distanceRatio",
+      "nodePortType" : "Out",
+      "defaultValues" : {
+        "Scalar" : 0
+        },
+      "execPortType" : "In",
+      "typeSpec" : "Scalar"
+      },
+    {
+      "objectType" : "ExecPort",
+      "metadata" : {
+        "uiHardRange" : "(1, 100)"
+        },
+      "name" : "accuracy",
+      "nodePortType" : "Out",
+      "defaultValues" : {
+        "Integer" : 50
+        },
+      "execPortType" : "In",
+      "typeSpec" : "Integer"
+      },
+    {
+      "objectType" : "ExecPort",
+      "metadata" : {
+        "uiCombo" : "(\"non\", \"Curve Tangent\", \"curve NormalDirAttr\")"
+        },
+      "name" : "directionType",
+      "nodePortType" : "Out",
+      "defaultValues" : {
+        "Integer" : 0
+        },
+      "execPortType" : "In",
+      "typeSpec" : "Integer"
+      },
+    {
+      "objectType" : "ExecPort",
+      "name" : "result",
+      "nodePortType" : "In",
+      "defaultValues" : {
+        "Vec3Array[]" : []
+        },
+      "execPortType" : "Out",
+      "typeSpec" : "Vec3Array[]"
+      }
+    ],
+  "extDeps" : {},
+  "presetGUID" : "1E8D4DDBD2ED35E90121225D784C79E7",
+  "nodes" : [
+    {
+      "objectType" : "Inst",
+      "metadata" : {
+        "uiGraphPos" : "{\"x\":410.0,\"y\":120.0}"
+        },
+      "name" : "GetEvenlyDividedXfos_1",
+      "ports" : [
+        {
+          "objectType" : "InstPort",
+          "name" : "exec",
+          "nodePortType" : "IO"
+          },
+        {
+          "objectType" : "InstPort",
+          "name" : "this",
+          "nodePortType" : "In"
+          },
+        {
+          "objectType" : "InstPort",
+          "name" : "sourceSegmentValues",
+          "nodePortType" : "In"
+          },
+        {
+          "objectType" : "InstPort",
+          "name" : "onSegment",
+          "nodePortType" : "In"
+          },
+        {
+          "objectType" : "InstPort",
+          "name" : "mode",
+          "nodePortType" : "In"
+          },
+        {
+          "objectType" : "InstPort",
+          "name" : "divisionValue",
+          "nodePortType" : "In"
+          },
+        {
+          "objectType" : "InstPort",
+          "name" : "intervalValue",
+          "nodePortType" : "In"
+          },
+        {
+          "objectType" : "InstPort",
+          "name" : "intervalValueType",
+          "nodePortType" : "In"
+          },
+        {
+          "objectType" : "InstPort",
+          "name" : "directionType",
+          "nodePortType" : "In",
+          "defaultValues" : {
+            "Integer" : 0
+            }
+          },
+        {
+          "objectType" : "InstPort",
+          "name" : "addStartPosition",
+          "nodePortType" : "In"
+          },
+        {
+          "objectType" : "InstPort",
+          "name" : "addEndPosition",
+          "nodePortType" : "In"
+          },
+        {
+          "objectType" : "InstPort",
+          "name" : "resultEachCurve",
+          "nodePortType" : "Out"
+          },
+        {
+          "objectType" : "InstPort",
+          "name" : "result",
+          "nodePortType" : "Out"
+          }
+        ],
+      "executable" : "TKCM.Curves.GetEvenlyDividedXfos",
+      "presetGUID" : "953F500AF87C693A02B109193F72B00E"
+      },
+    {
+      "objectType" : "Inst",
+      "metadata" : {
+        "uiGraphPos" : "{\"x\":750.0,\"y\":440.0}"
+        },
+      "name" : "CreateTwistPositions",
+      "ports" : [
+        {
+          "objectType" : "InstPort",
+          "name" : "exec",
+          "nodePortType" : "IO"
+          },
+        {
+          "objectType" : "InstPort",
+          "name" : "lhs",
+          "nodePortType" : "In"
+          },
+        {
+          "objectType" : "InstPort",
+          "name" : "rhs",
+          "nodePortType" : "In"
+          },
+        {
+          "objectType" : "InstPort",
+          "name" : "result",
+          "nodePortType" : "Out"
+          }
+        ],
+      "definition" : {
+        "objectType" : "Func",
+        "title" : "Mul[]",
+        "ports" : [
+          {
+            "objectType" : "ExecPort",
+            "name" : "exec",
+            "nodePortType" : "IO",
+            "execPortType" : "IO",
+            "typeSpec" : "Execute"
+            },
+          {
+            "objectType" : "ExecPort",
+            "name" : "lhs",
+            "nodePortType" : "Out",
+            "execPortType" : "In",
+            "typeSpec" : "XfoArray[]"
+            },
+          {
+            "objectType" : "ExecPort",
+            "name" : "rhs",
+            "nodePortType" : "Out",
+            "execPortType" : "In",
+            "typeSpec" : "XfoArray[]"
+            },
+          {
+            "objectType" : "ExecPort",
+            "name" : "result",
+            "nodePortType" : "In",
+            "execPortType" : "Out",
+            "typeSpec" : "XfoArray[]"
+            }
+          ],
+        "extDeps" : {},
+        "code" : "
+operator core_array_mul_task<<<index>>>(Xfo[] lhs, Xfo[] rhs, io Xfo[] result) {
+  result[index] = lhs[index < lhs.size() ? index : lhs.size() - 1] * rhs[index < rhs.size() ? index : rhs.size() - 1];
+}
+
+dfgEntry {
+  if(lhs.size() == 0) return;
+  if(rhs.size() == 0) return;
+  result.resize(lhs.size());
+  
+  for(Integer j=0; j<lhs.size(); j++){
+    if(lhs[j].size() == 0) return;
+    Size size = lhs[j].size() > rhs[j].size() ? lhs[j].size() : rhs[j].size();
+    result[j].resize(size);
+
+    if(size < 10000)
+    {
+      for(Size i=0;i<size;i++)
+        core_array_mul_task(i, lhs[j], rhs[j], result[j]);
+    }
+    else
+    {
+      core_array_mul_task<<<size>>>(lhs[j], rhs[j], result[j]);
+    }
+  }
+}
+"
+        }
+      },
+    {
+      "objectType" : "Inst",
+      "metadata" : {
+        "uiGraphPos" : "{\"x\":420.0,\"y\":440.0}"
+        },
+      "name" : "CreateTwistMap",
+      "ports" : [
+        {
+          "objectType" : "InstPort",
+          "name" : "exec",
+          "nodePortType" : "IO"
+          },
+        {
+          "objectType" : "InstPort",
+          "name" : "count",
+          "nodePortType" : "In"
+          },
+        {
+          "objectType" : "InstPort",
+          "name" : "result",
+          "nodePortType" : "Out"
+          }
+        ],
+      "blocks" : [
+        {
+          "name" : "body",
+          "objectType" : "InstBlock",
+          "execBlockRelPath" : "body",
+          "ports" : [
+            {
+              "objectType" : "InstBlockPort",
+              "name" : "accuracy",
+              "nodePortType" : "In",
+              "outsidePortType" : "In"
+              },
+            {
+              "objectType" : "InstBlockPort",
+              "name" : "twist",
+              "nodePortType" : "In",
+              "outsidePortType" : "In"
+              },
+            {
+              "objectType" : "InstBlockPort",
+              "name" : "twistRatio",
+              "nodePortType" : "In",
+              "outsidePortType" : "In"
+              }
+            ],
+          "exec" : {
+            "objectType" : "Graph",
+            "metadata" : {
+              "uiGraphZoom" : "{\n  \"value\" : 0.9325565099716187\n  }",
+              "uiGraphPan" : "{\n  \"x\" : 301.6433715820313,\n  \"y\" : -94.10664367675781\n  }"
+              },
+            "title" : "",
+            "ports" : [
+              {
+                "objectType" : "ExecPort",
+                "metadata" : {},
+                "name" : "accuracy",
+                "nodePortType" : "Out",
+                "execPortType" : "In",
+                "typeSpec" : "Integer"
+                },
+              {
+                "objectType" : "ExecPort",
+                "metadata" : {},
+                "name" : "twist",
+                "nodePortType" : "Out",
+                "execPortType" : "In",
+                "typeSpec" : "Scalar[]"
+                },
+              {
+                "objectType" : "ExecPort",
+                "metadata" : {},
+                "name" : "twistRatio",
+                "nodePortType" : "Out",
+                "execPortType" : "In",
+                "typeSpec" : "Scalar[]"
+                }
+              ],
+            "fixedPorts" : [
+              {
+                "objectType" : "ExecFixedPort",
+                "name" : "exec",
+                "nodePortType" : "IO",
+                "outsidePortType" : "IO"
+                },
+              {
+                "objectType" : "ExecFixedPort",
+                "name" : "index",
+                "nodePortType" : "Out",
+                "outsidePortType" : "In"
+                },
+              {
+                "objectType" : "ExecFixedPort",
+                "name" : "count",
+                "nodePortType" : "Out",
+                "outsidePortType" : "In"
+                },
+              {
+                "objectType" : "ExecFixedPort",
+                "name" : "xfos",
+                "nodePortType" : "IO",
+                "outsidePortType" : "IO"
+                }
+              ],
+            "extDeps" : {},
+            "nodes" : [
+              {
+                "objectType" : "Inst",
+                "metadata" : {
+                  "uiGraphPos" : "{\"x\":551.9002,\"y\":223.5276}"
+                  },
+                "name" : "FillInterpolated_2",
+                "ports" : [
+                  {
+                    "objectType" : "InstPort",
+                    "name" : "exec",
+                    "nodePortType" : "IO"
+                    },
+                  {
+                    "objectType" : "InstPort",
+                    "name" : "a",
+                    "nodePortType" : "In"
+                    },
+                  {
+                    "objectType" : "InstPort",
+                    "name" : "b",
+                    "nodePortType" : "In"
+                    },
+                  {
+                    "objectType" : "InstPort",
+                    "name" : "count",
+                    "nodePortType" : "In",
+                    "defaultValues" : {
+                      "SInt32" : 20
+                      }
+                    },
+                  {
+                    "objectType" : "InstPort",
+                    "name" : "popLast",
+                    "nodePortType" : "In",
+                    "defaultValues" : {
+                      "Boolean" : true
+                      }
+                    },
+                  {
+                    "objectType" : "InstPort",
+                    "name" : "array",
+                    "nodePortType" : "Out"
+                    },
+                  {
+                    "objectType" : "InstPort",
+                    "name" : "twistRatio",
+                    "nodePortType" : "In"
+                    }
+                  ],
+                "definition" : {
+                  "objectType" : "Func",
+                  "title" : "FillInterpolated[]",
+                  "ports" : [
+                    {
+                      "objectType" : "ExecPort",
+                      "name" : "exec",
+                      "nodePortType" : "IO",
+                      "execPortType" : "IO",
+                      "typeSpec" : "Execute"
+                      },
+                    {
+                      "objectType" : "ExecPort",
+                      "name" : "a",
+                      "nodePortType" : "Out",
+                      "execPortType" : "In",
+                      "typeSpec" : "$TYPE$"
+                      },
+                    {
+                      "objectType" : "ExecPort",
+                      "name" : "b",
+                      "nodePortType" : "Out",
+                      "execPortType" : "In",
+                      "typeSpec" : "$TYPE$"
+                      },
+                    {
+                      "objectType" : "ExecPort",
+                      "name" : "count",
+                      "nodePortType" : "Out",
+                      "execPortType" : "In",
+                      "typeSpec" : "SInt32"
+                      },
+                    {
+                      "objectType" : "ExecPort",
+                      "name" : "popLast",
+                      "nodePortType" : "Out",
+                      "execPortType" : "In",
+                      "typeSpec" : "Boolean"
+                      },
+                    {
+                      "objectType" : "ExecPort",
+                      "name" : "array",
+                      "nodePortType" : "In",
+                      "execPortType" : "Out",
+                      "typeSpec" : "$TYPE$[]"
+                      },
+                    {
+                      "objectType" : "ExecPort",
+                      "name" : "twistRatio",
+                      "nodePortType" : "Out",
+                      "execPortType" : "In",
+                      "typeSpec" : "Scalar"
+                      }
+                    ],
+                  "extDeps" : {},
+                  "origPresetGUID" : "D8D7CE7623346752225F003C62B17879",
+                  "code" : "
+dfgEntry {
+	array.resize(count);
+  for(Size i=0;i<count;i++)
+  {
+    Float32 ratio = Float32(i) / Float32(popLast ? count : count-1);
+    if(0 < twistRatio){
+      ratio = pow(ratio, 1.0+twistRatio);
+    }else{
+      ratio = 1.0-pow(1.0-ratio, 1.0+abs(twistRatio));
+    }
+    array[i] = (1.0 - ratio) * a + ratio * b;
+  }
+}
+"
+                  }
+                },
+              {
+                "objectType" : "Inst",
+                "metadata" : {
+                  "uiGraphPos" : "{\"x\":980.0,\"y\":260.0}"
+                  },
+                "name" : "Xfo",
+                "ports" : [
+                  {
+                    "objectType" : "InstPort",
+                    "name" : "exec",
+                    "nodePortType" : "IO"
+                    },
+                  {
+                    "objectType" : "InstPort",
+                    "name" : "ori",
+                    "nodePortType" : "In"
+                    },
+                  {
+                    "objectType" : "InstPort",
+                    "name" : "tr",
+                    "nodePortType" : "In"
+                    },
+                  {
+                    "objectType" : "InstPort",
+                    "name" : "sc",
+                    "nodePortType" : "In"
+                    },
+                  {
+                    "objectType" : "InstPort",
+                    "name" : "result",
+                    "nodePortType" : "Out"
+                    }
+                  ],
+                "executable" : "Fabric.Exts.Math.Xfo.ComposeXfoArray",
+                "presetGUID" : "E0DB876D26B040DF8CE7A8165189FE01"
+                },
+              {
+                "objectType" : "Inst",
+                "metadata" : {
+                  "uiGraphPos" : "{\"x\":761.9,\"y\":243.528}"
+                  },
+                "name" : "SetFromEulerAngles_3",
+                "ports" : [
+                  {
+                    "objectType" : "InstPort",
+                    "name" : "exec",
+                    "nodePortType" : "IO"
+                    },
+                  {
+                    "objectType" : "InstPort",
+                    "name" : "eulerX",
+                    "nodePortType" : "In"
+                    },
+                  {
+                    "objectType" : "InstPort",
+                    "name" : "eulerY",
+                    "nodePortType" : "In"
+                    },
+                  {
+                    "objectType" : "InstPort",
+                    "name" : "eulerZ",
+                    "nodePortType" : "In"
+                    },
+                  {
+                    "objectType" : "InstPort",
+                    "name" : "ro",
+                    "nodePortType" : "In"
+                    },
+                  {
+                    "objectType" : "InstPort",
+                    "name" : "result",
+                    "nodePortType" : "Out"
+                    }
+                  ],
+                "executable" : "Fabric.Exts.Math.Quat.SetFromEulerAnglesArray",
+                "presetGUID" : "5A447FEBD6558BCE682FFF2DFECFC027"
+                },
+              {
+                "objectType" : "Inst",
+                "metadata" : {
+                  "uiGraphPos" : "{\"x\":422.3992000000001,\"y\":310.8896}",
+                  "uiCollapsedState" : "2"
+                  },
+                "name" : "Neg",
+                "ports" : [
+                  {
+                    "objectType" : "InstPort",
+                    "name" : "exec",
+                    "nodePortType" : "IO"
+                    },
+                  {
+                    "objectType" : "InstPort",
+                    "name" : "val",
+                    "nodePortType" : "In"
+                    },
+                  {
+                    "objectType" : "InstPort",
+                    "name" : "result",
+                    "nodePortType" : "Out"
+                    }
+                  ],
+                "executable" : "Fabric.Core.Math.Neg",
+                "presetGUID" : "1F91540079A3B78F57207297072A16B4"
+                },
+              {
+                "objectType" : "Inst",
+                "metadata" : {
+                  "uiComment" : "twist!",
+                  "uiGraphPos" : "{\"x\":261.9002,\"y\":263.5276}",
+                  "uiCommentExpanded" : "true"
+                  },
+                "name" : "Scalar",
+                "ports" : [
+                  {
+                    "objectType" : "InstPort",
+                    "name" : "exec",
+                    "nodePortType" : "IO"
+                    },
+                  {
+                    "objectType" : "InstPort",
+                    "name" : "value",
+                    "nodePortType" : "In",
+                    "defaultValues" : {
+                      "Float32" : 20
+                      }
+                    }
+                  ],
+                "executable" : "Fabric.Core.Constants.Scalar",
+                "presetGUID" : "E0E96C6E234F70063BC98887B83327DC"
+                },
+              {
+                "objectType" : "Inst",
+                "metadata" : {
+                  "uiGraphPos" : "{\"x\":1150.0,\"y\":170.0}"
+                  },
+                "name" : "Set_1",
+                "ports" : [
+                  {
+                    "objectType" : "InstPort",
+                    "name" : "exec",
+                    "nodePortType" : "IO"
+                    },
+                  {
+                    "objectType" : "InstPort",
+                    "name" : "array",
+                    "nodePortType" : "IO"
+                    },
+                  {
+                    "objectType" : "InstPort",
+                    "name" : "index",
+                    "nodePortType" : "In"
+                    },
+                  {
+                    "objectType" : "InstPort",
+                    "name" : "element",
+                    "nodePortType" : "In"
+                    }
+                  ],
+                "executable" : "Fabric.Core.Array.Set",
+                "presetGUID" : "D4D13729AE7853F59417AF7DD50571E2"
+                },
+              {
+                "objectType" : "Inst",
+                "metadata" : {
+                  "uiGraphPos" : "{\"x\":-150.0,\"y\":250.0}"
+                  },
+                "name" : "Get_1",
+                "ports" : [
+                  {
+                    "objectType" : "InstPort",
+                    "name" : "exec",
+                    "nodePortType" : "IO"
+                    },
+                  {
+                    "objectType" : "InstPort",
+                    "name" : "array",
+                    "nodePortType" : "In"
+                    },
+                  {
+                    "objectType" : "InstPort",
+                    "name" : "index",
+                    "nodePortType" : "In"
+                    },
+                  {
+                    "objectType" : "InstPort",
+                    "name" : "element",
+                    "nodePortType" : "Out"
+                    }
+                  ],
+                "executable" : "Fabric.Core.Array.Get",
+                "presetGUID" : "880D755392299678EEB93260424986E2"
+                },
+              {
+                "objectType" : "Inst",
+                "metadata" : {
+                  "uiGraphPos" : "{\n  \"x\" : -150.0,\n  \"y\" : 410.0\n  }"
+                  },
+                "name" : "Get_2",
+                "ports" : [
+                  {
+                    "objectType" : "InstPort",
+                    "name" : "exec",
+                    "nodePortType" : "IO"
+                    },
+                  {
+                    "objectType" : "InstPort",
+                    "name" : "array",
+                    "nodePortType" : "In"
+                    },
+                  {
+                    "objectType" : "InstPort",
+                    "name" : "index",
+                    "nodePortType" : "In"
+                    },
+                  {
+                    "objectType" : "InstPort",
+                    "name" : "element",
+                    "nodePortType" : "Out"
+                    }
+                  ],
+                "executable" : "Fabric.Core.Array.Get",
+                "presetGUID" : "880D755392299678EEB93260424986E2"
+                }
+              ],
+            "connections" : {
+              "index" : [
+                "Set_1.index",
+                "Get_1.index",
+                "Get_2.index"
+                ],
+              "xfos" : [
+                "Set_1.array"
+                ],
+              "accuracy" : [
+                "FillInterpolated_2.count"
+                ],
+              "twist" : [
+                "Get_1.array"
+                ],
+              "twistRatio" : [
+                "Get_2.array"
+                ],
+              "FillInterpolated_2.array" : [
+                "SetFromEulerAngles_3.eulerZ"
+                ],
+              "Xfo.result" : [
+                "Set_1.element"
+                ],
+              "SetFromEulerAngles_3.result" : [
+                "Xfo.ori"
+                ],
+              "Neg.result" : [
+                "FillInterpolated_2.b"
+                ],
+              "Scalar.value" : [
+                "FillInterpolated_2.a",
+                "Neg.val"
+                ],
+              "Set_1.exec" : [
+                "exec"
+                ],
+              "Get_1.element" : [
+                "Scalar.value"
+                ],
+              "Get_2.element" : [
+                "FillInterpolated_2.twistRatio"
+                ]
+              }
+            }
+          }
+        ],
+      "definition" : {
+        "objectType" : "Func",
+        "title" : "ForLoop",
+        "ports" : [
+          {
+            "objectType" : "ExecPort",
+            "name" : "exec",
+            "nodePortType" : "IO",
+            "defaultValues" : {
+              "Execute" : {}
+              },
+            "execPortType" : "IO",
+            "typeSpec" : "Execute"
+            },
+          {
+            "objectType" : "ExecPort",
+            "metadata" : {
+              "uiPersistValue" : "true"
+              },
+            "name" : "count",
+            "nodePortType" : "Out",
+            "defaultValues" : {
+              "Count" : 3
+              },
+            "execPortType" : "In",
+            "typeSpec" : "$TYPE$"
+            },
+          {
+            "objectType" : "ExecPort",
+            "name" : "result",
+            "nodePortType" : "In",
+            "execPortType" : "Out",
+            "typeSpec" : "XfoArray[]"
+            }
+          ],
+        "blocks" : [
+          {
+            "objectType" : "ExecBlock",
+            "name" : "body",
+            "ports" : [
+              {
+                "objectType" : "ExecBlockPort",
+                "name" : "exec",
+                "nodePortType" : "IO",
+                "outsidePortType" : "IO",
+                "typeSpec" : "Execute"
+                },
+              {
+                "objectType" : "ExecBlockPort",
+                "name" : "index",
+                "nodePortType" : "In",
+                "outsidePortType" : "In",
+                "typeSpec" : "Index"
+                },
+              {
+                "objectType" : "ExecBlockPort",
+                "name" : "count",
+                "nodePortType" : "In",
+                "outsidePortType" : "In",
+                "typeSpec" : "$TYPE$"
+                },
+              {
+                "objectType" : "ExecBlockPort",
+                "name" : "xfos",
+                "nodePortType" : "IO",
+                "outsidePortType" : "IO",
+                "typeSpec" : "XfoArray[]"
+                }
+              ],
+            "defaultExec" : {
+              "objectType" : "Graph",
+              "title" : "",
+              "ports" : [],
+              "fixedPorts" : [
+                {
+                  "objectType" : "ExecFixedPort",
+                  "name" : "exec",
+                  "nodePortType" : "IO",
+                  "outsidePortType" : "IO"
+                  },
+                {
+                  "objectType" : "ExecFixedPort",
+                  "name" : "index",
+                  "nodePortType" : "Out",
+                  "outsidePortType" : "In"
+                  },
+                {
+                  "objectType" : "ExecFixedPort",
+                  "name" : "count",
+                  "nodePortType" : "Out",
+                  "outsidePortType" : "In"
+                  },
+                {
+                  "objectType" : "ExecFixedPort",
+                  "name" : "xfos",
+                  "nodePortType" : "IO",
+                  "outsidePortType" : "IO"
+                  }
+                ],
+              "extDeps" : {},
+              "nodes" : [],
+              "connections" : {}
+              }
+            }
+          ],
+        "extDeps" : {},
+        "origPresetGUID" : "3F6896C3844799D09EA3F8C78850EC3B",
+        "code" : "
+dfgEntry {
+  XfoArray xfos[] (count);
+  for ($TYPE$ index = 0; index < count; ++index)
+    dfgPullBlockPort('body.exec', index, count, xfos);
+  result = xfos;
+}
+"
+        }
+      },
+    {
+      "objectType" : "Inst",
+      "metadata" : {
+        "uiGraphPos" : "{\"x\":-200.0,\"y\":410.0}"
+        },
+      "name" : "CurveCount_1",
+      "ports" : [
+        {
+          "objectType" : "InstPort",
+          "name" : "exec",
+          "nodePortType" : "IO"
+          },
+        {
+          "objectType" : "InstPort",
+          "name" : "this",
+          "nodePortType" : "In"
+          },
+        {
+          "objectType" : "InstPort",
+          "name" : "result",
+          "nodePortType" : "Out"
+          }
+        ],
+      "executable" : "Fabric.Exts.Geometry.Curves.CurveCount",
+      "presetGUID" : "725701C62F02DBE4208288F4644045D8"
+      },
+    {
+      "objectType" : "Inst",
+      "metadata" : {
+        "uiGraphPos" : "{\"x\":420.0,\"y\":630.0}"
+        },
+      "name" : "CreateDistanceMap",
+      "ports" : [
+        {
+          "objectType" : "InstPort",
+          "name" : "exec",
+          "nodePortType" : "IO"
+          },
+        {
+          "objectType" : "InstPort",
+          "name" : "count",
+          "nodePortType" : "In"
+          },
+        {
+          "objectType" : "InstPort",
+          "name" : "result",
+          "nodePortType" : "Out"
+          }
+        ],
+      "blocks" : [
+        {
+          "name" : "body",
+          "objectType" : "InstBlock",
+          "execBlockRelPath" : "body",
+          "ports" : [
+            {
+              "objectType" : "InstBlockPort",
+              "name" : "accuracy",
+              "nodePortType" : "In",
+              "outsidePortType" : "In"
+              },
+            {
+              "objectType" : "InstBlockPort",
+              "name" : "sDistance",
+              "nodePortType" : "In",
+              "outsidePortType" : "In"
+              },
+            {
+              "objectType" : "InstBlockPort",
+              "name" : "eDistance",
+              "nodePortType" : "In",
+              "outsidePortType" : "In"
+              },
+            {
+              "objectType" : "InstBlockPort",
+              "name" : "ratio",
+              "nodePortType" : "In",
+              "outsidePortType" : "In"
+              }
+            ],
+          "exec" : {
+            "objectType" : "Graph",
+            "metadata" : {
+              "uiGraphZoom" : "{\n  \"value\" : 0.9325565099716187\n  }",
+              "uiGraphPan" : "{\n  \"x\" : 23.64335632324219,\n  \"y\" : -195.1066436767578\n  }"
+              },
+            "title" : "",
+            "ports" : [
+              {
+                "objectType" : "ExecPort",
+                "metadata" : {},
+                "name" : "accuracy",
+                "nodePortType" : "Out",
+                "defaultValues" : {
+                  "UInt32" : 0
+                  },
+                "execPortType" : "In",
+                "typeSpec" : "UInt32"
+                },
+              {
+                "objectType" : "ExecPort",
+                "metadata" : {},
+                "name" : "sDistance",
+                "nodePortType" : "Out",
+                "execPortType" : "In",
+                "typeSpec" : "Scalar[]"
+                },
+              {
+                "objectType" : "ExecPort",
+                "metadata" : {},
+                "name" : "eDistance",
+                "nodePortType" : "Out",
+                "execPortType" : "In",
+                "typeSpec" : "Scalar[]"
+                },
+              {
+                "objectType" : "ExecPort",
+                "metadata" : {},
+                "name" : "ratio",
+                "nodePortType" : "Out",
+                "execPortType" : "In",
+                "typeSpec" : "Scalar[]"
+                }
+              ],
+            "fixedPorts" : [
+              {
+                "objectType" : "ExecFixedPort",
+                "name" : "exec",
+                "nodePortType" : "IO",
+                "outsidePortType" : "IO"
+                },
+              {
+                "objectType" : "ExecFixedPort",
+                "name" : "index",
+                "nodePortType" : "Out",
+                "outsidePortType" : "In"
+                },
+              {
+                "objectType" : "ExecFixedPort",
+                "name" : "count",
+                "nodePortType" : "Out",
+                "outsidePortType" : "In"
+                },
+              {
+                "objectType" : "ExecFixedPort",
+                "name" : "vec3s",
+                "nodePortType" : "IO",
+                "outsidePortType" : "IO"
+                }
+              ],
+            "extDeps" : {},
+            "nodes" : [
+              {
+                "objectType" : "Inst",
+                "metadata" : {
+                  "uiGraphPos" : "{\"x\":1130.0,\"y\":200.0}"
+                  },
+                "name" : "Set_1",
+                "ports" : [
+                  {
+                    "objectType" : "InstPort",
+                    "name" : "exec",
+                    "nodePortType" : "IO"
+                    },
+                  {
+                    "objectType" : "InstPort",
+                    "name" : "array",
+                    "nodePortType" : "IO"
+                    },
+                  {
+                    "objectType" : "InstPort",
+                    "name" : "index",
+                    "nodePortType" : "In"
+                    },
+                  {
+                    "objectType" : "InstPort",
+                    "name" : "element",
+                    "nodePortType" : "In"
+                    }
+                  ],
+                "executable" : "Fabric.Core.Array.Set",
+                "presetGUID" : "D4D13729AE7853F59417AF7DD50571E2"
+                },
+              {
+                "objectType" : "Inst",
+                "metadata" : {
+                  "uiGraphPos" : "{\"x\":175.171,\"y\":287.496}"
+                  },
+                "name" : "Get_1",
+                "ports" : [
+                  {
+                    "objectType" : "InstPort",
+                    "name" : "exec",
+                    "nodePortType" : "IO"
+                    },
+                  {
+                    "objectType" : "InstPort",
+                    "name" : "array",
+                    "nodePortType" : "In"
+                    },
+                  {
+                    "objectType" : "InstPort",
+                    "name" : "index",
+                    "nodePortType" : "In"
+                    },
+                  {
+                    "objectType" : "InstPort",
+                    "name" : "element",
+                    "nodePortType" : "Out"
+                    }
+                  ],
+                "executable" : "Fabric.Core.Array.Get",
+                "presetGUID" : "880D755392299678EEB93260424986E2"
+                },
+              {
+                "objectType" : "Inst",
+                "metadata" : {
+                  "uiGraphPos" : "{\"x\":170.0,\"y\":550.0}"
+                  },
+                "name" : "Get_2",
+                "ports" : [
+                  {
+                    "objectType" : "InstPort",
+                    "name" : "exec",
+                    "nodePortType" : "IO"
+                    },
+                  {
+                    "objectType" : "InstPort",
+                    "name" : "array",
+                    "nodePortType" : "In"
+                    },
+                  {
+                    "objectType" : "InstPort",
+                    "name" : "index",
+                    "nodePortType" : "In"
+                    },
+                  {
+                    "objectType" : "InstPort",
+                    "name" : "element",
+                    "nodePortType" : "Out"
+                    }
+                  ],
+                "executable" : "Fabric.Core.Array.Get",
+                "presetGUID" : "880D755392299678EEB93260424986E2"
+                },
+              {
+                "objectType" : "Inst",
+                "metadata" : {
+                  "uiGraphPos" : "{\"x\":170.0,\"y\":420.0}"
+                  },
+                "name" : "Get_3",
+                "ports" : [
+                  {
+                    "objectType" : "InstPort",
+                    "name" : "exec",
+                    "nodePortType" : "IO"
+                    },
+                  {
+                    "objectType" : "InstPort",
+                    "name" : "array",
+                    "nodePortType" : "In"
+                    },
+                  {
+                    "objectType" : "InstPort",
+                    "name" : "index",
+                    "nodePortType" : "In"
+                    },
+                  {
+                    "objectType" : "InstPort",
+                    "name" : "element",
+                    "nodePortType" : "Out"
+                    }
+                  ],
+                "executable" : "Fabric.Core.Array.Get",
+                "presetGUID" : "880D755392299678EEB93260424986E2"
+                },
+              {
+                "objectType" : "Inst",
+                "metadata" : {
+                  "uiGraphPos" : "{\"x\":450.0,\"y\":380.0}"
+                  },
+                "name" : "FillInterpolated_3",
+                "ports" : [
+                  {
+                    "objectType" : "InstPort",
+                    "name" : "exec",
+                    "nodePortType" : "IO"
+                    },
+                  {
+                    "objectType" : "InstPort",
+                    "name" : "a",
+                    "nodePortType" : "In"
+                    },
+                  {
+                    "objectType" : "InstPort",
+                    "name" : "b",
+                    "nodePortType" : "In"
+                    },
+                  {
+                    "objectType" : "InstPort",
+                    "name" : "count",
+                    "nodePortType" : "In",
+                    "defaultValues" : {
+                      "SInt32" : 20
+                      }
+                    },
+                  {
+                    "objectType" : "InstPort",
+                    "name" : "popLast",
+                    "nodePortType" : "In",
+                    "defaultValues" : {
+                      "Boolean" : true
+                      }
+                    },
+                  {
+                    "objectType" : "InstPort",
+                    "name" : "array",
+                    "nodePortType" : "Out"
+                    },
+                  {
+                    "objectType" : "InstPort",
+                    "name" : "twistRatio",
+                    "nodePortType" : "In"
+                    }
+                  ],
+                "definition" : {
+                  "objectType" : "Func",
+                  "title" : "FillInterpolated[]",
+                  "ports" : [
+                    {
+                      "objectType" : "ExecPort",
+                      "name" : "exec",
+                      "nodePortType" : "IO",
+                      "execPortType" : "IO",
+                      "typeSpec" : "Execute"
+                      },
+                    {
+                      "objectType" : "ExecPort",
+                      "name" : "a",
+                      "nodePortType" : "Out",
+                      "execPortType" : "In",
+                      "typeSpec" : "$TYPE$"
+                      },
+                    {
+                      "objectType" : "ExecPort",
+                      "name" : "b",
+                      "nodePortType" : "Out",
+                      "execPortType" : "In",
+                      "typeSpec" : "$TYPE$"
+                      },
+                    {
+                      "objectType" : "ExecPort",
+                      "name" : "count",
+                      "nodePortType" : "Out",
+                      "execPortType" : "In",
+                      "typeSpec" : "SInt32"
+                      },
+                    {
+                      "objectType" : "ExecPort",
+                      "name" : "popLast",
+                      "nodePortType" : "Out",
+                      "execPortType" : "In",
+                      "typeSpec" : "Boolean"
+                      },
+                    {
+                      "objectType" : "ExecPort",
+                      "name" : "array",
+                      "nodePortType" : "In",
+                      "execPortType" : "Out",
+                      "typeSpec" : "$TYPE$[]"
+                      },
+                    {
+                      "objectType" : "ExecPort",
+                      "name" : "twistRatio",
+                      "nodePortType" : "Out",
+                      "execPortType" : "In",
+                      "typeSpec" : "Scalar"
+                      }
+                    ],
+                  "extDeps" : {},
+                  "origPresetGUID" : "D8D7CE7623346752225F003C62B17879",
+                  "code" : "
+dfgEntry {
+	array.resize(count);
+  for(Size i=0;i<count;i++)
+  {
+    Float32 ratio = Float32(i) / Float32(popLast ? count : count-1);
+    if(0 < twistRatio){
+      ratio = pow(ratio, 1.0+twistRatio);
+    }else{
+      ratio = 1.0-pow(1.0-ratio, 1.0+abs(twistRatio));
+    }
+    array[i] = (1.0 - ratio) * a + ratio * b;
+  }
+}
+"
+                  }
+                },
+              {
+                "objectType" : "Inst",
+                "metadata" : {
+                  "uiGraphPos" : "{\"x\":701.68,\"y\":420.464}"
+                  },
+                "name" : "Vec3Array_1",
+                "ports" : [
+                  {
+                    "objectType" : "InstPort",
+                    "name" : "exec",
+                    "nodePortType" : "IO"
+                    },
+                  {
+                    "objectType" : "InstPort",
+                    "name" : "x",
+                    "nodePortType" : "In"
+                    },
+                  {
+                    "objectType" : "InstPort",
+                    "name" : "y",
+                    "nodePortType" : "In"
+                    },
+                  {
+                    "objectType" : "InstPort",
+                    "name" : "z",
+                    "nodePortType" : "In"
+                    },
+                  {
+                    "objectType" : "InstPort",
+                    "name" : "result",
+                    "nodePortType" : "Out"
+                    }
+                  ],
+                "executable" : "Fabric.Exts.Math.Vec3.Vec3Array",
+                "presetGUID" : "116B02251AAB0A666731AD1141FE197F"
+                }
+              ],
+            "connections" : {
+              "index" : [
+                "Set_1.index",
+                "Get_1.index",
+                "Get_2.index",
+                "Get_3.index"
+                ],
+              "vec3s" : [
+                "Set_1.array"
+                ],
+              "accuracy" : [
+                "FillInterpolated_3.count"
+                ],
+              "sDistance" : [
+                "Get_1.array"
+                ],
+              "eDistance" : [
+                "Get_3.array"
+                ],
+              "ratio" : [
+                "Get_2.array"
+                ],
+              "Set_1.exec" : [
+                "exec"
+                ],
+              "Get_1.element" : [
+                "FillInterpolated_3.a"
+                ],
+              "Get_2.element" : [
+                "FillInterpolated_3.twistRatio"
+                ],
+              "Get_3.element" : [
+                "FillInterpolated_3.b"
+                ],
+              "FillInterpolated_3.array" : [
+                "Vec3Array_1.x"
+                ],
+              "Vec3Array_1.result" : [
+                "Set_1.element"
+                ]
+              }
+            }
+          }
+        ],
+      "definition" : {
+        "objectType" : "Func",
+        "title" : "ForLoop",
+        "ports" : [
+          {
+            "objectType" : "ExecPort",
+            "name" : "exec",
+            "nodePortType" : "IO",
+            "defaultValues" : {
+              "Execute" : {}
+              },
+            "execPortType" : "IO",
+            "typeSpec" : "Execute"
+            },
+          {
+            "objectType" : "ExecPort",
+            "metadata" : {
+              "uiPersistValue" : "true"
+              },
+            "name" : "count",
+            "nodePortType" : "Out",
+            "defaultValues" : {
+              "Count" : 3
+              },
+            "execPortType" : "In",
+            "typeSpec" : "$TYPE$"
+            },
+          {
+            "objectType" : "ExecPort",
+            "name" : "result",
+            "nodePortType" : "In",
+            "execPortType" : "Out",
+            "typeSpec" : "Vec3Array[]"
+            }
+          ],
+        "blocks" : [
+          {
+            "objectType" : "ExecBlock",
+            "name" : "body",
+            "ports" : [
+              {
+                "objectType" : "ExecBlockPort",
+                "name" : "exec",
+                "nodePortType" : "IO",
+                "outsidePortType" : "IO",
+                "typeSpec" : "Execute"
+                },
+              {
+                "objectType" : "ExecBlockPort",
+                "name" : "index",
+                "nodePortType" : "In",
+                "outsidePortType" : "In",
+                "typeSpec" : "Index"
+                },
+              {
+                "objectType" : "ExecBlockPort",
+                "name" : "count",
+                "nodePortType" : "In",
+                "outsidePortType" : "In",
+                "typeSpec" : "$TYPE$"
+                },
+              {
+                "objectType" : "ExecBlockPort",
+                "name" : "vec3s",
+                "nodePortType" : "IO",
+                "outsidePortType" : "IO",
+                "typeSpec" : "Vec3Array[]"
+                }
+              ],
+            "defaultExec" : {
+              "objectType" : "Graph",
+              "title" : "",
+              "ports" : [],
+              "fixedPorts" : [
+                {
+                  "objectType" : "ExecFixedPort",
+                  "name" : "exec",
+                  "nodePortType" : "IO",
+                  "outsidePortType" : "IO"
+                  },
+                {
+                  "objectType" : "ExecFixedPort",
+                  "name" : "index",
+                  "nodePortType" : "Out",
+                  "outsidePortType" : "In"
+                  },
+                {
+                  "objectType" : "ExecFixedPort",
+                  "name" : "count",
+                  "nodePortType" : "Out",
+                  "outsidePortType" : "In"
+                  },
+                {
+                  "objectType" : "ExecFixedPort",
+                  "name" : "vec3s",
+                  "nodePortType" : "IO",
+                  "outsidePortType" : "IO"
+                  }
+                ],
+              "extDeps" : {},
+              "nodes" : [],
+              "connections" : {}
+              }
+            }
+          ],
+        "extDeps" : {},
+        "origPresetGUID" : "3F6896C3844799D09EA3F8C78850EC3B",
+        "code" : "
+dfgEntry {
+  Vec3Array vec3s[] (count);
+  for ($TYPE$ index = 0; index < count; ++index)
+    dfgPullBlockPort('body.exec', index, count, vec3s);
+  result = vec3s;
+}
+"
+        }
+      },
+    {
+      "objectType" : "Inst",
+      "metadata" : {
+        "uiGraphPos" : "{\"x\":40.0,\"y\":770.0}"
+        },
+      "name" : "ScalarArray_1",
+      "ports" : [
+        {
+          "objectType" : "InstPort",
+          "name" : "exec",
+          "nodePortType" : "IO"
+          },
+        {
+          "objectType" : "InstPort",
+          "name" : "element",
+          "nodePortType" : "In"
+          },
+        {
+          "objectType" : "InstPort",
+          "name" : "count",
+          "nodePortType" : "In"
+          },
+        {
+          "objectType" : "InstPort",
+          "name" : "array",
+          "nodePortType" : "Out"
+          }
+        ],
+      "executable" : "Fabric.Core.Constants.ScalarArray",
+      "presetGUID" : "16E54806C913C68781AEB2E7472A41D2"
+      },
+    {
+      "objectType" : "Inst",
+      "metadata" : {
+        "uiGraphPos" : "{\"x\":40.0,\"y\":870.0}"
+        },
+      "name" : "ScalarArray_2",
+      "ports" : [
+        {
+          "objectType" : "InstPort",
+          "name" : "exec",
+          "nodePortType" : "IO"
+          },
+        {
+          "objectType" : "InstPort",
+          "name" : "element",
+          "nodePortType" : "In"
+          },
+        {
+          "objectType" : "InstPort",
+          "name" : "count",
+          "nodePortType" : "In"
+          },
+        {
+          "objectType" : "InstPort",
+          "name" : "array",
+          "nodePortType" : "Out"
+          }
+        ],
+      "executable" : "Fabric.Core.Constants.ScalarArray",
+      "presetGUID" : "16E54806C913C68781AEB2E7472A41D2"
+      },
+    {
+      "objectType" : "Inst",
+      "metadata" : {
+        "uiGraphPos" : "{\"x\":40.0,\"y\":970.0}"
+        },
+      "name" : "ScalarArray_3",
+      "ports" : [
+        {
+          "objectType" : "InstPort",
+          "name" : "exec",
+          "nodePortType" : "IO"
+          },
+        {
+          "objectType" : "InstPort",
+          "name" : "element",
+          "nodePortType" : "In"
+          },
+        {
+          "objectType" : "InstPort",
+          "name" : "count",
+          "nodePortType" : "In"
+          },
+        {
+          "objectType" : "InstPort",
+          "name" : "array",
+          "nodePortType" : "Out"
+          }
+        ],
+      "executable" : "Fabric.Core.Constants.ScalarArray",
+      "presetGUID" : "16E54806C913C68781AEB2E7472A41D2"
+      },
+    {
+      "objectType" : "Inst",
+      "metadata" : {
+        "uiGraphPos" : "{\"x\":1190.0,\"y\":550.0}"
+        },
+      "name" : "TransformVector_2",
+      "ports" : [
+        {
+          "objectType" : "InstPort",
+          "name" : "exec",
+          "nodePortType" : "IO"
+          },
+        {
+          "objectType" : "InstPort",
+          "name" : "this",
+          "nodePortType" : "In"
+          },
+        {
+          "objectType" : "InstPort",
+          "name" : "v",
+          "nodePortType" : "In"
+          },
+        {
+          "objectType" : "InstPort",
+          "name" : "result",
+          "nodePortType" : "Out"
+          }
+        ],
+      "definition" : {
+        "objectType" : "Func",
+        "metadata" : {
+          "uiNodeColor" : "{\n  \"r\" : 99,\n  \"g\" : 129,\n  \"b\" : 92\n  }",
+          "uiDocUrl" : "http://docs.fabric-engine.com/FabricEngine/2.5.0/HTML/KLExtensionsGuide/Math/Xfo.html",
+          "uiTooltip" : "Transforms a vector with this transform\n\n Supported by Xfo"
+          },
+        "title" : "TransformVector[]",
+        "ports" : [
+          {
+            "objectType" : "ExecPort",
+            "name" : "exec",
+            "nodePortType" : "IO",
+            "execPortType" : "IO",
+            "typeSpec" : "Execute"
+            },
+          {
+            "objectType" : "ExecPort",
+            "metadata" : {
+              "uiColor" : "{\n  \"r\" : 249,\n  \"g\" : 157,\n  \"b\" : 28\n  }"
+              },
+            "name" : "this",
+            "nodePortType" : "Out",
+            "defaultValues" : {
+              "Xfo[]" : [
+                {
+                  "ori" : {
+                    "v" : {
+                      "x" : 0,
+                      "y" : 0,
+                      "z" : 0
+                      },
+                    "w" : 1
+                    },
+                  "tr" : {
+                    "x" : 0,
+                    "y" : 0,
+                    "z" : 0
+                    },
+                  "sc" : {
+                    "x" : 1,
+                    "y" : 1,
+                    "z" : 1
+                    }
+                  }
+                ]
+              },
+            "execPortType" : "In",
+            "typeSpec" : "XfoArray[]"
+            },
+          {
+            "objectType" : "ExecPort",
+            "metadata" : {
+              "uiColor" : "{\n  \"r\" : 255,\n  \"g\" : 242,\n  \"b\" : 0\n  }"
+              },
+            "name" : "v",
+            "nodePortType" : "Out",
+            "defaultValues" : {
+              "Vec3[]" : [
+                {
+                  "x" : 0,
+                  "y" : 0,
+                  "z" : 0
+                  }
+                ]
+              },
+            "execPortType" : "In",
+            "typeSpec" : "Vec3Array[]"
+            },
+          {
+            "objectType" : "ExecPort",
+            "metadata" : {
+              "uiColor" : "{\n  \"r\" : 255,\n  \"g\" : 242,\n  \"b\" : 0\n  }"
+              },
+            "name" : "result",
+            "nodePortType" : "In",
+            "execPortType" : "Out",
+            "typeSpec" : "Vec3Array[]"
+            }
+          ],
+        "extDeps" : {
+          "Math" : "*"
+          },
+        "code" : "require Math;
+
+operator Math_Xfo_transformVector_task<<<index>>>(
+  io Vec3[] result
+, in Xfo[] this
+, in Vec3[] v
+) {
+  result[index] = this[index < this.size() ? index : this.size() - 1].transformVector(v[index < v.size() ? index : v.size() - 1]);
+}
+
+dfgEntry {
+  if( this.size() == 0) return;
+  if( v.size() == 0) return;
+  result.resize(this.size());
+  
+  for(Integer j=0; j<this.size(); j++){
+    if( this[j].size() == 0) return;
+    
+    Size task_size = this[j].size();
+    if(task_size < v[j].size()) task_size = v[j].size();
+    result[j].resize(task_size);
+    if(task_size < 10000 /* pex margin */) {
+      for(Size index = 0; index < task_size; index++) {
+        Math_Xfo_transformVector_task(index, result[j], this[j], v[j]);
+      }
+    } else {
+      Math_Xfo_transformVector_task<<<task_size>>>(result[j], this[j], v[j]);
+    }
+  }
+}
+"
+        }
+      },
+    {
+      "objectType" : "User",
+      "metadata" : {
+        "uiTitle" : "backdrop",
+        "uiComment" : "Give the same value to all curves",
+        "uiGraphPos" : "{\"x\":-50.0,\"y\":730.0}",
+        "uiCommentExpanded" : "true",
+        "uiGraphSize" : "{\"w\":322.754,\"h\":565.573}"
+        },
+      "name" : "backDrop",
+      "ports" : []
+      },
+    {
+      "objectType" : "Inst",
+      "metadata" : {
+        "uiGraphPos" : "{\"x\":40.0,\"y\":1190.0}"
+        },
+      "name" : "ScalarArray_4",
+      "ports" : [
+        {
+          "objectType" : "InstPort",
+          "name" : "exec",
+          "nodePortType" : "IO"
+          },
+        {
+          "objectType" : "InstPort",
+          "name" : "element",
+          "nodePortType" : "In"
+          },
+        {
+          "objectType" : "InstPort",
+          "name" : "count",
+          "nodePortType" : "In"
+          },
+        {
+          "objectType" : "InstPort",
+          "name" : "array",
+          "nodePortType" : "Out"
+          }
+        ],
+      "executable" : "Fabric.Core.Constants.ScalarArray",
+      "presetGUID" : "16E54806C913C68781AEB2E7472A41D2"
+      },
+    {
+      "objectType" : "Inst",
+      "metadata" : {
+        "uiGraphPos" : "{\n  \"x\" : 40.0,\n  \"y\" : 1080.0\n  }"
+        },
+      "name" : "ScalarArray_5",
+      "ports" : [
+        {
+          "objectType" : "InstPort",
+          "name" : "exec",
+          "nodePortType" : "IO"
+          },
+        {
+          "objectType" : "InstPort",
+          "name" : "element",
+          "nodePortType" : "In"
+          },
+        {
+          "objectType" : "InstPort",
+          "name" : "count",
+          "nodePortType" : "In"
+          },
+        {
+          "objectType" : "InstPort",
+          "name" : "array",
+          "nodePortType" : "Out"
+          }
+        ],
+      "executable" : "Fabric.Core.Constants.ScalarArray",
+      "presetGUID" : "16E54806C913C68781AEB2E7472A41D2"
+      }
+    ],
+  "connections" : {
+    "this" : [
+      "GetEvenlyDividedXfos_1.this",
+      "CurveCount_1.this"
+      ],
+    "twist" : [
+      "ScalarArray_1.element"
+      ],
+    "twistRatio" : [
+      "ScalarArray_2.element"
+      ],
+    "startDistance" : [
+      "ScalarArray_3.element"
+      ],
+    "endDistance" : [
+      "ScalarArray_5.element"
+      ],
+    "distanceRatio" : [
+      "ScalarArray_4.element"
+      ],
+    "accuracy" : [
+      "GetEvenlyDividedXfos_1.divisionValue",
+      "CreateTwistMap.body.accuracy",
+      "CreateDistanceMap.body.accuracy"
+      ],
+    "directionType" : [
+      "GetEvenlyDividedXfos_1.directionType"
+      ],
+    "GetEvenlyDividedXfos_1.resultEachCurve" : [
+      "CreateTwistPositions.lhs"
+      ],
+    "CreateTwistPositions.result" : [
+      "TransformVector_2.this"
+      ],
+    "CreateTwistMap.result" : [
+      "CreateTwistPositions.rhs"
+      ],
+    "CurveCount_1.result" : [
+      "CreateTwistMap.count",
+      "CreateDistanceMap.count",
+      "ScalarArray_1.count",
+      "ScalarArray_2.count",
+      "ScalarArray_3.count",
+      "ScalarArray_4.count",
+      "ScalarArray_5.count"
+      ],
+    "CreateDistanceMap.result" : [
+      "TransformVector_2.v"
+      ],
+    "ScalarArray_1.array" : [
+      "CreateTwistMap.body.twist"
+      ],
+    "ScalarArray_2.array" : [
+      "CreateTwistMap.body.twistRatio"
+      ],
+    "ScalarArray_3.array" : [
+      "CreateDistanceMap.body.sDistance"
+      ],
+    "TransformVector_2.result" : [
+      "result"
+      ],
+    "ScalarArray_4.array" : [
+      "CreateDistanceMap.body.ratio"
+      ],
+    "ScalarArray_5.array" : [
+      "CreateDistanceMap.body.eDistance"
+      ]
+    },
+  "requiredPresets" : {
+    "TKCM.Curves.GetEvenlyDividedXfos" : {
+      "objectType" : "Func",
+      "title" : "GetEvenlyDividedXfos",
+      "ports" : [
+        {
+          "objectType" : "ExecPort",
+          "name" : "exec",
+          "nodePortType" : "IO",
+          "defaultValues" : {
+            "Execute" : {}
+            },
+          "execPortType" : "IO",
+          "typeSpec" : "Execute"
+          },
+        {
+          "objectType" : "ExecPort",
+          "name" : "this",
+          "nodePortType" : "Out",
+          "defaultValues" : {
+            "Curves" : null
+            },
+          "execPortType" : "In",
+          "typeSpec" : "Curves"
+          },
+        {
+          "objectType" : "ExecPort",
+          "name" : "sourceSegmentValues",
+          "nodePortType" : "Out",
+          "defaultValues" : {
+            "Vec2Array[]" : []
+            },
+          "execPortType" : "In",
+          "typeSpec" : "Vec2Array[]"
+          },
+        {
+          "objectType" : "ExecPort",
+          "name" : "onSegment",
+          "nodePortType" : "Out",
+          "defaultValues" : {
+            "Boolean" : false
+            },
+          "execPortType" : "In",
+          "typeSpec" : "Boolean"
+          },
+        {
+          "objectType" : "ExecPort",
+          "metadata" : {
+            "uiCombo" : "(\"Evenly Divide\", \"Evenly Interval\")"
+            },
+          "name" : "mode",
+          "nodePortType" : "Out",
+          "defaultValues" : {
+            "Integer" : 0
+            },
+          "execPortType" : "In",
+          "typeSpec" : "Integer"
+          },
+        {
+          "objectType" : "ExecPort",
+          "name" : "divisionValue",
+          "nodePortType" : "Out",
+          "defaultValues" : {
+            "Integer" : 3
+            },
+          "execPortType" : "In",
+          "typeSpec" : "Integer"
+          },
+        {
+          "objectType" : "ExecPort",
+          "name" : "intervalValue",
+          "nodePortType" : "Out",
+          "defaultValues" : {
+            "Scalar" : 2
+            },
+          "execPortType" : "In",
+          "typeSpec" : "Scalar"
+          },
+        {
+          "objectType" : "ExecPort",
+          "metadata" : {
+            "uiCombo" : "(\"Length\", \"Lengrth Ratio\", \"Normalized Param\")"
+            },
+          "name" : "intervalValueType",
+          "nodePortType" : "Out",
+          "defaultValues" : {
+            "Integer" : 0
+            },
+          "execPortType" : "In",
+          "typeSpec" : "Integer"
+          },
+        {
+          "objectType" : "ExecPort",
+          "metadata" : {
+            "uiCombo" : "(\"non\", \"Curve Tangent\", \"curve NormalDirAttr\")"
+            },
+          "name" : "directionType",
+          "nodePortType" : "Out",
+          "defaultValues" : {
+            "Integer" : 1
+            },
+          "execPortType" : "In",
+          "typeSpec" : "Integer"
+          },
+        {
+          "objectType" : "ExecPort",
+          "name" : "addStartPosition",
+          "nodePortType" : "Out",
+          "defaultValues" : {
+            "Boolean" : true
+            },
+          "execPortType" : "In",
+          "typeSpec" : "Boolean"
+          },
+        {
+          "objectType" : "ExecPort",
+          "name" : "addEndPosition",
+          "nodePortType" : "Out",
+          "defaultValues" : {
+            "Boolean" : true
+            },
+          "execPortType" : "In",
+          "typeSpec" : "Boolean"
+          },
+        {
+          "objectType" : "ExecPort",
+          "name" : "resultEachCurve",
+          "nodePortType" : "In",
+          "defaultValues" : {
+            "XfoArray[]" : []
+            },
+          "execPortType" : "Out",
+          "typeSpec" : "XfoArray[]"
+          },
+        {
+          "objectType" : "ExecPort",
+          "name" : "result",
+          "nodePortType" : "In",
+          "defaultValues" : {
+            "Xfo[]" : []
+            },
+          "execPortType" : "Out",
+          "typeSpec" : "Xfo[]"
+          }
+        ],
+      "extDeps" : {
+        "TKCM" : "*"
+        },
+      "presetGUID" : "953F500AF87C693A02B109193F72B00E",
+      "code" : "dfgEntry {
+  Curves normalCurves();
+  if(directionType != 0){
+    normalCurves = this.createNormalDirectionAttributeCurves(0, 1.0);
+  }
+
+  this.GetEvenlyDividXfos(
+    resultEachCurve, 
+    result, 
+    normalCurves, 
+    mode, 
+    divisionValue, 
+    intervalValueType, 
+    intervalValue, 
+    directionType, 
+    addStartPosition, 
+    addEndPosition,
+    sourceSegmentValues,
+    onSegment
+  );
+}
+"
+      },
+    "Fabric.Exts.Math.Xfo.ComposeXfoArray" : {
+      "objectType" : "Func",
+      "metadata" : {
+        "uiNodeColor" : "{\n  \"r\" : 99,\n  \"g\" : 129,\n  \"b\" : 92\n  }",
+        "uiDocUrl" : "http://docs.fabric-engine.com/FabricEngine/2.5.0/HTML/KLExtensionsGuide/Math/Xfo.html"
+        },
+      "title" : "-> Xfo[]",
+      "ports" : [
+        {
+          "objectType" : "ExecPort",
+          "name" : "exec",
+          "nodePortType" : "IO",
+          "execPortType" : "IO",
+          "typeSpec" : "Execute"
+          },
+        {
+          "objectType" : "ExecPort",
+          "metadata" : {
+            "uiColor" : "{\n  \"r\" : 0,\n  \"g\" : 191,\n  \"b\" : 232\n  }"
+            },
+          "name" : "ori",
+          "nodePortType" : "Out",
+          "defaultValues" : {
+            "Quat[]" : [
+              {
+                "v" : {
+                  "x" : 0,
+                  "y" : 0,
+                  "z" : 0
+                  },
+                "w" : 1
+                }
+              ]
+            },
+          "execPortType" : "In",
+          "typeSpec" : "Quat[]"
+          },
+        {
+          "objectType" : "ExecPort",
+          "metadata" : {
+            "uiColor" : "{\n  \"r\" : 255,\n  \"g\" : 242,\n  \"b\" : 0\n  }"
+            },
+          "name" : "tr",
+          "nodePortType" : "Out",
+          "defaultValues" : {
+            "Vec3[]" : [
+              {
+                "x" : 0,
+                "y" : 0,
+                "z" : 0
+                }
+              ]
+            },
+          "execPortType" : "In",
+          "typeSpec" : "Vec3[]"
+          },
+        {
+          "objectType" : "ExecPort",
+          "metadata" : {
+            "uiColor" : "{\n  \"r\" : 255,\n  \"g\" : 242,\n  \"b\" : 0\n  }"
+            },
+          "name" : "sc",
+          "nodePortType" : "Out",
+          "defaultValues" : {
+            "Vec3[]" : [
+              {
+                "x" : 1,
+                "y" : 1,
+                "z" : 1
+                }
+              ]
+            },
+          "execPortType" : "In",
+          "typeSpec" : "Vec3[]"
+          },
+        {
+          "objectType" : "ExecPort",
+          "metadata" : {
+            "uiColor" : "{\n  \"r\" : 249,\n  \"g\" : 157,\n  \"b\" : 28\n  }"
+            },
+          "name" : "result",
+          "nodePortType" : "In",
+          "execPortType" : "Out",
+          "typeSpec" : "Xfo[]"
+          }
+        ],
+      "extDeps" : {
+        "Math" : "*"
+        },
+      "presetGUID" : "E0DB876D26B040DF8CE7A8165189FE01",
+      "code" : "require Math;
+
+operator Math_Xfo_compose_task<<<index>>>(io Xfo[] result, in Quat[] ori, in Vec3[] tr, in Vec3[] sc) {
+  result[index].ori = ori[index < ori.size() ? index : ori.size() - 1];
+  result[index].tr = tr[index < tr.size() ? index : tr.size() - 1];
+  result[index].sc = sc[index < sc.size() ? index : sc.size() - 1];
+}
+
+dfgEntry {
+  if(ori.size() == 0) return;
+  if(tr.size() == 0) return;
+  if(sc.size() == 0) return;
+  Size task_size = 0;
+  if(task_size < ori.size()) task_size = ori.size();
+  if(task_size < tr.size()) task_size = tr.size();
+  if(task_size < sc.size()) task_size = sc.size();
+  result.resize(task_size);
+  if(task_size < 10000 /* pex margin */) {
+    for(Size i = 0; i < task_size; i++) {
+      Math_Xfo_compose_task(i, result, ori, tr, sc);
+    }
+  } else {
+    Math_Xfo_compose_task<<<task_size>>>(result, ori, tr, sc);
+  }
+}
+"
+      },
+    "Fabric.Exts.Math.Quat.SetFromEulerAnglesArray" : {
+      "objectType" : "Func",
+      "metadata" : {
+        "uiNodeColor" : "{\n  \"r\" : 99,\n  \"g\" : 129,\n  \"b\" : 92\n  }",
+        "uiDocUrl" : "http://docs.fabric-engine.com/FabricEngine/2.5.0/HTML/KLExtensionsGuide/Math/Quat.html",
+        "uiTooltip" : "Set this quat to a given angles vector (in radians) and a rotation order\n\n Supported by Quat"
+        },
+      "title" : "SetFromEulerAngles[]",
+      "ports" : [
+        {
+          "objectType" : "ExecPort",
+          "name" : "exec",
+          "nodePortType" : "IO",
+          "execPortType" : "IO",
+          "typeSpec" : "Execute"
+          },
+        {
+          "objectType" : "ExecPort",
+          "metadata" : {
+            "uiRange" : "(-3.14, 3.14)"
+            },
+          "name" : "eulerX",
+          "nodePortType" : "Out",
+          "defaultValues" : {
+            "Scalar[]" : [
+              0
+              ]
+            },
+          "execPortType" : "In",
+          "typeSpec" : "Scalar[]"
+          },
+        {
+          "objectType" : "ExecPort",
+          "metadata" : {
+            "uiRange" : "(-3.14, 3.14)"
+            },
+          "name" : "eulerY",
+          "nodePortType" : "Out",
+          "defaultValues" : {
+            "Scalar[]" : [
+              0
+              ]
+            },
+          "execPortType" : "In",
+          "typeSpec" : "Scalar[]"
+          },
+        {
+          "objectType" : "ExecPort",
+          "metadata" : {
+            "uiRange" : "(-3.14, 3.14)"
+            },
+          "name" : "eulerZ",
+          "nodePortType" : "Out",
+          "defaultValues" : {
+            "Scalar[]" : [
+              0
+              ]
+            },
+          "execPortType" : "In",
+          "typeSpec" : "Scalar[]"
+          },
+        {
+          "objectType" : "ExecPort",
+          "metadata" : {
+            "uiColor" : "{\n  \"r\" : 0,\n  \"g\" : 191,\n  \"b\" : 232\n  }"
+            },
+          "name" : "ro",
+          "nodePortType" : "Out",
+          "defaultValues" : {
+            "RotationOrder[]" : [
+              {
+                "order" : 0
+                }
+              ]
+            },
+          "execPortType" : "In",
+          "typeSpec" : "RotationOrder[]"
+          },
+        {
+          "objectType" : "ExecPort",
+          "metadata" : {
+            "uiColor" : "{\n  \"r\" : 0,\n  \"g\" : 191,\n  \"b\" : 232\n  }"
+            },
+          "name" : "result",
+          "nodePortType" : "In",
+          "execPortType" : "Out",
+          "typeSpec" : "Quat[]"
+          }
+        ],
+      "extDeps" : {
+        "Math" : "*"
+        },
+      "presetGUID" : "5A447FEBD6558BCE682FFF2DFECFC027",
+      "code" : "require Math;
+
+operator Math_Quat_setFromEulerAngles_task<<<index>>>(
+  io Quat[] result
+, in Scalar[] eulerX
+, in Scalar[] eulerY
+, in Scalar[] eulerZ
+, in RotationOrder[] ro
+) {
+  result[index].setFromEulerAngles(eulerX[index < eulerX.size() ? index : eulerX.size() - 1], eulerY[index < eulerY.size() ? index : eulerY.size() - 1], eulerZ[index < eulerZ.size() ? index : eulerZ.size() - 1], ro[index < ro.size() ? index : ro.size() - 1]);
+}
+
+dfgEntry {
+  if( eulerX.size() == 0) return;
+  if( eulerY.size() == 0) return;
+  if( eulerZ.size() == 0) return;
+  if( ro.size() == 0) return;
+  Size task_size = 0;
+  if(task_size < eulerX.size()) task_size = eulerX.size();
+  if(task_size < eulerY.size()) task_size = eulerY.size();
+  if(task_size < eulerZ.size()) task_size = eulerZ.size();
+  if(task_size < ro.size()) task_size = ro.size();
+  result.resize(task_size);
+  if(task_size < 10000 /* pex margin */) {
+    for(Size index = 0; index < task_size; index++) {
+      Math_Quat_setFromEulerAngles_task(index, result, eulerX, eulerY, eulerZ, ro);
+    }
+  } else {
+    Math_Quat_setFromEulerAngles_task<<<task_size>>>(result, eulerX, eulerY, eulerZ, ro);
+  }
+}
+"
+      },
+    "Fabric.Core.Math.Neg" : {
+      "objectType" : "Func",
+      "title" : "Neg",
+      "ports" : [
+        {
+          "objectType" : "ExecPort",
+          "name" : "exec",
+          "nodePortType" : "IO",
+          "execPortType" : "IO",
+          "typeSpec" : "Execute"
+          },
+        {
+          "objectType" : "ExecPort",
+          "name" : "val",
+          "nodePortType" : "Out",
+          "execPortType" : "In",
+          "typeSpec" : "$TYPE$"
+          },
+        {
+          "objectType" : "ExecPort",
+          "name" : "result",
+          "nodePortType" : "In",
+          "execPortType" : "Out",
+          "typeSpec" : "$TYPE$"
+          }
+        ],
+      "extDeps" : {},
+      "presetGUID" : "1F91540079A3B78F57207297072A16B4",
+      "code" : "
+dfgEntry {
+	result = -val;
+}
+"
+      },
+    "Fabric.Core.Constants.Scalar" : {
+      "objectType" : "Func",
+      "metadata" : {
+        "uiAlwaysShowDaisyChainPorts" : "true"
+        },
+      "title" : "Scalar",
+      "ports" : [
+        {
+          "objectType" : "ExecPort",
+          "name" : "exec",
+          "nodePortType" : "IO",
+          "execPortType" : "IO",
+          "typeSpec" : "Execute"
+          },
+        {
+          "objectType" : "ExecPort",
+          "name" : "value",
+          "nodePortType" : "Out",
+          "execPortType" : "In",
+          "typeSpec" : "Scalar"
+          }
+        ],
+      "extDeps" : {},
+      "presetGUID" : "E0E96C6E234F70063BC98887B83327DC",
+      "code" : "dfgEntry {
+}
+"
+      },
+    "Fabric.Core.Array.Set" : {
+      "objectType" : "Func",
+      "title" : "Set[]",
+      "ports" : [
+        {
+          "objectType" : "ExecPort",
+          "name" : "exec",
+          "nodePortType" : "IO",
+          "execPortType" : "IO",
+          "typeSpec" : "Execute"
+          },
+        {
+          "objectType" : "ExecPort",
+          "name" : "array",
+          "nodePortType" : "IO",
+          "execPortType" : "IO",
+          "typeSpec" : "$TYPE$[]"
+          },
+        {
+          "objectType" : "ExecPort",
+          "name" : "index",
+          "nodePortType" : "Out",
+          "execPortType" : "In",
+          "typeSpec" : "UInt32"
+          },
+        {
+          "objectType" : "ExecPort",
+          "name" : "element",
+          "nodePortType" : "Out",
+          "execPortType" : "In",
+          "typeSpec" : "$TYPE$"
+          }
+        ],
+      "extDeps" : {},
+      "presetGUID" : "D4D13729AE7853F59417AF7DD50571E2",
+      "code" : "
+dfgEntry {
+	array[index] = element;
+}
+"
+      },
+    "Fabric.Core.Array.Get" : {
+      "objectType" : "Func",
+      "title" : "Get[]",
+      "ports" : [
+        {
+          "objectType" : "ExecPort",
+          "name" : "exec",
+          "nodePortType" : "IO",
+          "execPortType" : "IO",
+          "typeSpec" : "Execute"
+          },
+        {
+          "objectType" : "ExecPort",
+          "name" : "array",
+          "nodePortType" : "Out",
+          "execPortType" : "In",
+          "typeSpec" : "$TYPE$[]"
+          },
+        {
+          "objectType" : "ExecPort",
+          "name" : "index",
+          "nodePortType" : "Out",
+          "execPortType" : "In",
+          "typeSpec" : "UInt32"
+          },
+        {
+          "objectType" : "ExecPort",
+          "name" : "element",
+          "nodePortType" : "In",
+          "execPortType" : "Out",
+          "typeSpec" : "$TYPE$"
+          }
+        ],
+      "extDeps" : {},
+      "presetGUID" : "880D755392299678EEB93260424986E2",
+      "code" : "
+dfgEntry {
+	element = array[index];
+}
+"
+      },
+    "Fabric.Exts.Geometry.Curves.CurveCount" : {
+      "objectType" : "Func",
+      "metadata" : {
+        "uiDocUrl" : "http://docs.fabric-engine.com/FabricEngine/2.5.0/HTML/KLExtensionsGuide/Geometry/Curves.html",
+        "uiTooltip" : "Returns the number of curves.\n\nSupported types:\n  this: Curves\n  result: UInt32\n"
+        },
+      "title" : "CurveCount",
+      "ports" : [
+        {
+          "objectType" : "ExecPort",
+          "name" : "exec",
+          "nodePortType" : "IO",
+          "execPortType" : "IO",
+          "typeSpec" : "Execute"
+          },
+        {
+          "objectType" : "ExecPort",
+          "metadata" : {
+            "uiColor" : "{\n  \"r\" : 51,\n  \"g\" : 1,\n  \"b\" : 106\n  }"
+            },
+          "name" : "this",
+          "nodePortType" : "Out",
+          "execPortType" : "In",
+          "typeSpec" : "Curves"
+          },
+        {
+          "objectType" : "ExecPort",
+          "name" : "result",
+          "nodePortType" : "In",
+          "execPortType" : "Out",
+          "typeSpec" : "UInt32"
+          }
+        ],
+      "extDeps" : {
+        "Geometry" : "*"
+        },
+      "presetGUID" : "725701C62F02DBE4208288F4644045D8",
+      "code" : "require Geometry;
+
+dfgEntry {
+  result = this.curveCount();
+}
+"
+      },
+    "Fabric.Exts.Math.Vec3.Vec3Array" : {
+      "objectType" : "Func",
+      "metadata" : {
+        "uiNodeColor" : "{\n  \"r\" : 99,\n  \"g\" : 129,\n  \"b\" : 92\n  }",
+        "uiDocUrl" : "http://docs.fabric-engine.com/FabricEngine/2.5.0/HTML/KLExtensionsGuide/Math/Vec3.html",
+        "uiTooltip" : "Constructor from scalar components\n\n Supported by Vec3"
+        },
+      "title" : "Vec3[]",
+      "ports" : [
+        {
+          "objectType" : "ExecPort",
+          "name" : "exec",
+          "nodePortType" : "IO",
+          "execPortType" : "IO",
+          "typeSpec" : "Execute"
+          },
+        {
+          "objectType" : "ExecPort",
+          "name" : "x",
+          "nodePortType" : "Out",
+          "defaultValues" : {
+            "Scalar[]" : [
+              0
+              ]
+            },
+          "execPortType" : "In",
+          "typeSpec" : "Scalar[]"
+          },
+        {
+          "objectType" : "ExecPort",
+          "name" : "y",
+          "nodePortType" : "Out",
+          "defaultValues" : {
+            "Scalar[]" : [
+              0
+              ]
+            },
+          "execPortType" : "In",
+          "typeSpec" : "Scalar[]"
+          },
+        {
+          "objectType" : "ExecPort",
+          "name" : "z",
+          "nodePortType" : "Out",
+          "defaultValues" : {
+            "Scalar[]" : [
+              0
+              ]
+            },
+          "execPortType" : "In",
+          "typeSpec" : "Scalar[]"
+          },
+        {
+          "objectType" : "ExecPort",
+          "metadata" : {
+            "uiColor" : "{\n  \"r\" : 255,\n  \"g\" : 242,\n  \"b\" : 0\n  }"
+            },
+          "name" : "result",
+          "nodePortType" : "In",
+          "execPortType" : "Out",
+          "typeSpec" : "Vec3[]"
+          }
+        ],
+      "extDeps" : {
+        "Math" : "*"
+        },
+      "presetGUID" : "116B02251AAB0A666731AD1141FE197F",
+      "code" : "require Math;
+
+operator Math_Vec3_Vec3_task<<<index>>>(
+  io Vec3[] result
+, in Scalar[] x
+, in Scalar[] y
+, in Scalar[] z
+) {
+  result[index] = Vec3(x[index < x.size() ? index : x.size() - 1], y[index < y.size() ? index : y.size() - 1], z[index < z.size() ? index : z.size() - 1]);
+}
+
+dfgEntry {
+  if( x.size() == 0) return;
+  if( y.size() == 0) return;
+  if( z.size() == 0) return;
+  Size task_size = 0;
+  if(task_size < x.size()) task_size = x.size();
+  if(task_size < y.size()) task_size = y.size();
+  if(task_size < z.size()) task_size = z.size();
+  result.resize(task_size);
+  if(task_size < 10000 /* pex margin */) {
+    for(Size index = 0; index < task_size; index++) {
+      Math_Vec3_Vec3_task(index, result, x, y, z);
+    }
+  } else {
+    Math_Vec3_Vec3_task<<<task_size>>>(result, x, y, z);
+  }
+}
+"
+      },
+    "Fabric.Core.Constants.ScalarArray" : {
+      "objectType" : "Func",
+      "title" : "Scalar[]",
+      "ports" : [
+        {
+          "objectType" : "ExecPort",
+          "name" : "exec",
+          "nodePortType" : "IO",
+          "execPortType" : "IO",
+          "typeSpec" : "Execute"
+          },
+        {
+          "objectType" : "ExecPort",
+          "name" : "element",
+          "nodePortType" : "Out",
+          "execPortType" : "In",
+          "typeSpec" : "Scalar"
+          },
+        {
+          "objectType" : "ExecPort",
+          "name" : "count",
+          "nodePortType" : "Out",
+          "defaultValues" : {
+            "SInt32" : 1
+            },
+          "execPortType" : "In",
+          "typeSpec" : "SInt32"
+          },
+        {
+          "objectType" : "ExecPort",
+          "name" : "array",
+          "nodePortType" : "In",
+          "execPortType" : "Out",
+          "typeSpec" : "Scalar[]"
+          }
+        ],
+      "extDeps" : {},
+      "presetGUID" : "16E54806C913C68781AEB2E7472A41D2",
+      "code" : "
+dfgEntry {
+  array.resize(count);
+  for(Size i=0;i<count;i++)
+    array[i] = element;
+}
+"
+      }
+    }
+  }
