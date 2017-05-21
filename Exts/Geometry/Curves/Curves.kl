@@ -30,16 +30,17 @@ function Curves.createNormalsValue(io Vec3 result[], in Integer control, in Vec3
   Size poiCount = 0;
   Vec3 curvature;
   Vec3 tangent;
+  Vec3 fixPosVec;
   Vec3 cross[];
   Vec3 crossV0;
   Vec3 crossV1;
   Vec3 crossV2;
-  Integer mode;  //  0=default, 1=avoid flip, 2=direction, 3=upvector
+  Integer mode;  //  0=default, 1=avoid flip, 2=direction, 3=upvector, 4=direstion pos, 5=upvector pos
   
   for(Integer i=0; i<this.curveCount(); i++){
     cross.resize(this.getCurve(i).pointCount());
     for(Integer j=0; j<this.getCurve(i).pointCount(); j++){
-      Float32 nParam = 1.0 / Scalar(this.getCurve(i).pointCount()-1.0) * j;;
+      Float32 nParam = 1.0 / Scalar(this.getCurve(i).pointCount()-1.0) * j;
       if(j == 0 ){
         nParam = 0.001;
       }else if(j == this.getCurve(i).pointCount() -1){
@@ -63,7 +64,7 @@ function Curves.createNormalsValue(io Vec3 result[], in Integer control, in Vec3
         if(this.getDegree(i) == 1 || curvature.almostEqual(Vec3(0.0))){
           mode = 2;
         }
-      }      
+      }
 
       switch(mode){
         case 0:
@@ -103,6 +104,16 @@ function Curves.createNormalsValue(io Vec3 result[], in Integer control, in Vec3
           Quat q();
           result[poiCount] = q.setFromDirectionAndUpvector(tangent, fixValue).getYaxis().unit();
           break;
+        case 4:
+          fixPosVec = fixValue - this.getPositionAtNormalizedParam(i, nParam);
+          Quat q();
+          result[poiCount] = q.setFromDirectionAndUpvector(fixPosVec, tangent).getZaxis().unit();
+          break;
+        case 5:
+          fixPosVec = fixValue - this.getPositionAtNormalizedParam(i, nParam);
+          Quat q();
+          result[poiCount] = q.setFromDirectionAndUpvector(tangent, fixPosVec).getYaxis().unit();
+          break;
       }
       
       if(j == this.getCurve(i).pointCount()-1 && this.getCurve(i).isClosed()){
@@ -113,11 +124,80 @@ function Curves.createNormalsValue(io Vec3 result[], in Integer control, in Vec3
   }
 }
 //  createNormalsValue //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+//  createTwistNormalsValue /////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+//  ツイストしたノーマルディレクションアトリビュートと、ツイストの各情報を登録するtwistValuesを制作
+//  twistValuesはcreateNormalDirCurvesで使用
+//  各カーブの先頭のcreateNormalsValueの向きをアップベクターにして算出したベクトルからツイストを始めるため、使用にはcreateNormalsValueのresultの値が必要になる（result = io normalDir[]）
+function Curves.createTwistNormalsValue(
+  io Vec3 twistValues[],  //  Vec3(twistAngle, twistRatio, mode) : mode 0=full length, 1=unit length, 2=full length&RatioInv, 3=unit length&RatioInv
+  io Vec3 normalDir[],
+  in Scalar twistAngle, //  ツイスト値
+  in Integer twistAngleOf,  //  0=ツイスト値をカーブの始点から終点までで適応、1＝カーブの長さ1.0ごとにツイスト値を適応
+  in Scalar twistRatio, //  y=X^nのグラフを使用しカーブの始点から終点に向けてツイスト値の適応具合に強弱をつける
+  in Boolean twistRatioInv  //  twistRatioの計算をy=1.0-X^(1.0-n)のグラフにする
+  ){
+  Size poiCount = 0;
+  Scalar nParam;
+  Vec3 curvature, upV, tangent, crossV1, crossV2;
+  Quat q,q2;
+  
+  twistValues.resize(this.allCurvesPointRange());
+  for(Integer i=0; i<this.curveCount(); i++){
+    for(Integer j=0; j<this.getCurve(i).pointCount(); j++){
+      nParam = 1.0 / Scalar(this.getCurve(i).pointCount()-1.0) * j;
+      //  ポイント位置が0だとカーブのタンジェントの取得が出来ないので、微数を入れる
+      if(j==0){  nParam = 0.001;  }
+      //  ポイント位置におけるカーブのタンジェントの取得
+      if(this.getCurveType(i) == 1){
+        crossV1 = this.getPositionAtNormalizedParam(i, nParam-0.001);
+        crossV2 = this.getPositionAtNormalizedParam(i, nParam+0.001);
+        tangent = crossV2 - crossV1;
+      }else{
+        this.getTangentAndCurvatureAtNormalizedParam(i, nParam, tangent, curvature);
+      }
+      
+      if(j==0){
+        upV = normalDir[poiCount];
+        normalDir[poiCount] = q.setFromDirectionAndUpvector(tangent, upV).getYaxis().unit();
+
+        Integer mode = twistAngleOf;
+        if(twistRatioInv == true){
+          mode += 2;
+        }
+        twistValues[poiCount] = Vec3(twistAngle, twistRatio, mode);
+
+      }else{
+        Scalar angle, t;
+        if(twistRatioInv == false){
+          t = pow(this.getLengthRatioFromNormalizedParameter(i, nParam) ,twistRatio);
+        }else{
+          t = 1.0 - pow(1.0-this.getLengthRatioFromNormalizedParameter(i, nParam) ,twistRatio);
+        }
+        switch(twistAngleOf){
+          case 0:
+            angle = twistAngle * t;
+            break;
+          case 1:
+            angle = this.getCurveLength(i) * twistAngle * t;
+            break;
+        }
+        //  ポイントごとにツイストするべき角度（angle）のQuatを作り、normalDirに加算する
+        Scalar radian = angle*PI/180.0;
+        Scalar halfAngle = radian / 2.0;
+        q2.set(cos(halfAngle),sin(halfAngle) * tangent).unit();
+        upV= normalDir[ this.getFirstPointIndex(i) ];
+        q.setFromDirectionAndUpvector(tangent, upV).unit();
+        normalDir[poiCount] = q2*q.getYaxis();
+      }
+      poiCount += 1;
+    }
+  }
+}
+//  createTwistNormalsValue //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-//  addNormalDirectionAttributeCurves //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-//  指定した番号のカーブに対してのノーマル、逆ノーマル、バイノーマル、逆バイノーマルのカーブを"追加"制作する
+//  addNormalDirectionAttributeCurves ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 function Curves.addNormalDirectionAttributeCurves!(Index baseCurveID, Boolean create[4], Scalar distance[4]){
   //  create[4] = ノーマル、逆ノーマル、バイノーマル、逆バイノーマル
   //  distance[4] = ↑それぞれのカーブを作成する距離

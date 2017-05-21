@@ -1,8 +1,8 @@
 {
   "objectType" : "Graph",
   "metadata" : {
-    "uiGraphZoom" : "{\n  \"value\" : 0.5516853332519531\n  }",
-    "uiGraphPan" : "{\n  \"x\" : 64.90212985072503,\n  \"y\" : -164.5531327803037\n  }"
+    "uiGraphZoom" : "{\n  \"value\" : 0.4108307063579559\n  }",
+    "uiGraphPan" : "{\n  \"x\" : 362.4317685214,\n  \"y\" : -159.0174898882377\n  }"
     },
   "title" : "CreateNormalDirectionAttribute",
   "ports" : [
@@ -29,7 +29,7 @@
     {
       "objectType" : "ExecPort",
       "metadata" : {
-        "uiCombo" : "(\"Default\", \"Avoid Flip\", \"Fix Direction\", \"Fix UpVector\")"
+        "uiCombo" : "(\"Default\", \"Avoid Flip\", \"Fix Direction\", \"Fix UpVector\", \"Fix Direction Pos\", \"Fix UpVector Pos\")"
         },
       "name" : "control",
       "nodePortType" : "Out",
@@ -45,9 +45,9 @@
       "nodePortType" : "Out",
       "defaultValues" : {
         "Vec3" : {
-          "x" : 0,
-          "y" : 0,
-          "z" : 1
+          "x" : 0.001000000047497451,
+          "y" : 1,
+          "z" : 0.001000000047497451
           }
         },
       "execPortType" : "In",
@@ -72,7 +72,7 @@
     {
       "objectType" : "Inst",
       "metadata" : {
-        "uiGraphPos" : "{\"x\":-0.494573,\"y\":1287.32}"
+        "uiGraphPos" : "{\"x\":-130.0,\"y\":1110.0}"
         },
       "name" : "CreateNormalsCore",
       "ports" : [
@@ -85,6 +85,11 @@
           "objectType" : "InstPort",
           "name" : "this",
           "nodePortType" : "IO"
+          },
+        {
+          "objectType" : "InstPort",
+          "name" : "control",
+          "nodePortType" : "In"
           },
         {
           "objectType" : "InstPort",
@@ -102,11 +107,6 @@
           "objectType" : "InstPort",
           "name" : "result",
           "nodePortType" : "Out"
-          },
-        {
-          "objectType" : "InstPort",
-          "name" : "control",
-          "nodePortType" : "In"
           }
         ],
       "definition" : {
@@ -135,6 +135,13 @@
             },
           {
             "objectType" : "ExecPort",
+            "name" : "control",
+            "nodePortType" : "Out",
+            "execPortType" : "In",
+            "typeSpec" : "Integer"
+            },
+          {
+            "objectType" : "ExecPort",
             "name" : "fixValue",
             "nodePortType" : "Out",
             "execPortType" : "In",
@@ -149,13 +156,6 @@
               },
             "execPortType" : "Out",
             "typeSpec" : "Vec3[]"
-            },
-          {
-            "objectType" : "ExecPort",
-            "name" : "control",
-            "nodePortType" : "Out",
-            "execPortType" : "In",
-            "typeSpec" : "Integer"
             }
           ],
         "extDeps" : {
@@ -173,7 +173,8 @@
     {
       "objectType" : "Inst",
       "metadata" : {
-        "uiGraphPos" : "{\"x\":1172.37,\"y\":643.949}"
+        "uiGraphPos" : "{\"x\":520.0,\"y\":940.0}",
+        "uiCollapsedState" : "1"
         },
       "name" : "CreateAttribute_1",
       "ports" : [
@@ -215,7 +216,8 @@
     {
       "objectType" : "Inst",
       "metadata" : {
-        "uiGraphPos" : "{\"x\":1421.8,\"y\":644.323}"
+        "uiGraphPos" : "{\"x\":721.8,\"y\":934.323}",
+        "uiCollapsedState" : "1"
         },
       "name" : "SetValueArray_1",
       "ports" : [
