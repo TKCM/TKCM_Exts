@@ -1,5 +1,8 @@
 {
-  "objectType" : "Func",
+  "objectType" : "Graph",
+  "metadata" : {
+    "uiGraphPan" : "{\n  \"x\" : 115.0,\n  \"y\" : -110.0\n  }"
+    },
   "title" : "CreateCurvesByLengthOfMesh",
   "ports" : [
     {
@@ -14,6 +17,7 @@
       },
     {
       "objectType" : "ExecPort",
+      "metadata" : {},
       "name" : "mesh",
       "nodePortType" : "Out",
       "defaultValues" : {
@@ -24,9 +28,11 @@
       },
     {
       "objectType" : "ExecPort",
-      "name" : "createCurveXfos",
+      "metadata" : {},
+      "name" : "createCurvePos",
       "nodePortType" : "Out",
       "defaultValues" : {
+        "Vec3[]" : [],
         "Xfo[]" : []
         },
       "execPortType" : "In",
@@ -40,7 +46,7 @@
       "name" : "directionOfMeasure",
       "nodePortType" : "Out",
       "defaultValues" : {
-        "Integer" : 1
+        "Integer" : 2
         },
       "execPortType" : "In",
       "typeSpec" : "Integer"
@@ -54,80 +60,411 @@
         },
       "execPortType" : "Out",
       "typeSpec" : "Curves"
+      },
+    {
+      "objectType" : "ExecPort",
+      "name" : "lengthX",
+      "nodePortType" : "In",
+      "defaultValues" : {
+        "Scalar[]" : []
+        },
+      "execPortType" : "Out",
+      "typeSpec" : "Scalar[]"
+      },
+    {
+      "objectType" : "ExecPort",
+      "name" : "lengthY",
+      "nodePortType" : "In",
+      "defaultValues" : {
+        "Scalar[]" : []
+        },
+      "execPortType" : "Out",
+      "typeSpec" : "Scalar[]"
+      },
+    {
+      "objectType" : "ExecPort",
+      "name" : "lengthZ",
+      "nodePortType" : "In",
+      "defaultValues" : {
+        "Scalar[]" : []
+        },
+      "execPortType" : "Out",
+      "typeSpec" : "Scalar[]"
       }
     ],
   "extDeps" : {},
   "presetGUID" : "AF9305F8339B95B40C9BE22EF8050C91",
-  "code" : "dfgEntry {
+  "nodes" : [
+    {
+      "objectType" : "Inst",
+      "metadata" : {
+        "uiGraphPos" : "{\"x\":160.0,\"y\":300.0}"
+        },
+      "name" : "CreateCurvesByLengthOfMeshCore",
+      "ports" : [
+        {
+          "objectType" : "InstPort",
+          "name" : "exec",
+          "nodePortType" : "IO"
+          },
+        {
+          "objectType" : "InstPort",
+          "name" : "mesh",
+          "nodePortType" : "In"
+          },
+        {
+          "objectType" : "InstPort",
+          "name" : "createCurvePos",
+          "nodePortType" : "In"
+          },
+        {
+          "objectType" : "InstPort",
+          "name" : "directionOfMeasure",
+          "nodePortType" : "In",
+          "defaultValues" : {
+            "Integer" : 2
+            }
+          },
+        {
+          "objectType" : "InstPort",
+          "name" : "result",
+          "nodePortType" : "Out"
+          },
+        {
+          "objectType" : "InstPort",
+          "name" : "lengthX",
+          "nodePortType" : "Out"
+          },
+        {
+          "objectType" : "InstPort",
+          "name" : "lengthY",
+          "nodePortType" : "Out"
+          },
+        {
+          "objectType" : "InstPort",
+          "name" : "lengthZ",
+          "nodePortType" : "Out"
+          }
+        ],
+      "definition" : {
+        "objectType" : "Func",
+        "title" : "CreateCurvesByLengthOfMesh",
+        "ports" : [
+          {
+            "objectType" : "ExecPort",
+            "name" : "exec",
+            "nodePortType" : "IO",
+            "defaultValues" : {
+              "Execute" : {}
+              },
+            "execPortType" : "IO",
+            "typeSpec" : "Execute"
+            },
+          {
+            "objectType" : "ExecPort",
+            "name" : "mesh",
+            "nodePortType" : "Out",
+            "defaultValues" : {
+              "PolygonMesh[]" : []
+              },
+            "execPortType" : "In",
+            "typeSpec" : "PolygonMesh[]"
+            },
+          {
+            "objectType" : "ExecPort",
+            "name" : "createCurvePos",
+            "nodePortType" : "Out",
+            "defaultValues" : {
+              "Xfo[]" : []
+              },
+            "execPortType" : "In",
+            "typeSpec" : "Vec3[]"
+            },
+          {
+            "objectType" : "ExecPort",
+            "metadata" : {
+              "uiCombo" : "(\"X\", \"Y\", \"Z\")"
+              },
+            "name" : "directionOfMeasure",
+            "nodePortType" : "Out",
+            "defaultValues" : {
+              "Integer" : 1
+              },
+            "execPortType" : "In",
+            "typeSpec" : "Integer"
+            },
+          {
+            "objectType" : "ExecPort",
+            "name" : "result",
+            "nodePortType" : "In",
+            "defaultValues" : {
+              "Curves" : null
+              },
+            "execPortType" : "Out",
+            "typeSpec" : "Curves"
+            },
+          {
+            "objectType" : "ExecPort",
+            "name" : "lengthX",
+            "nodePortType" : "In",
+            "execPortType" : "Out",
+            "typeSpec" : "Scalar[]"
+            },
+          {
+            "objectType" : "ExecPort",
+            "name" : "lengthY",
+            "nodePortType" : "In",
+            "execPortType" : "Out",
+            "typeSpec" : "Scalar[]"
+            },
+          {
+            "objectType" : "ExecPort",
+            "name" : "lengthZ",
+            "nodePortType" : "In",
+            "execPortType" : "Out",
+            "typeSpec" : "Scalar[]"
+            }
+          ],
+        "extDeps" : {},
+        "code" : "dfgEntry {
   if(mesh.size() == 0){
     return;
   }
-  Mat44 m44;
-  Scalar s0;
-  Scalar s1;
-  Vec3 pos[](2);
   result = Curves();
+  lengthX.resize(mesh.size());
+  lengthY.resize(mesh.size());
+  lengthZ.resize(mesh.size());
+  
   for(Integer i=0; i<mesh.size(); i++){    
-    switch(directionOfMeasure){
-      case 0:  // X
-        s0 = mesh[i].getPointPosition(0).x;
-        s1 = mesh[i].getPointPosition(0).x;
-        for(Integer j=1; j<mesh[i].pointCount(); j++){
-          if(s0 < mesh[i].getPointPosition(j).x){
-            s0 = mesh[i].getPointPosition(j).x;
-          }
-          if(s1 > mesh[i].getPointPosition(j).x){
-            s1 = mesh[i].getPointPosition(j).x;
-          }
-        }
-        break;
-      case 1:  // Y
-        s0 = mesh[i].getPointPosition(0).y;
-        s1 = mesh[i].getPointPosition(0).y;
-        for(Integer j=1; j<mesh[i].pointCount(); j++){
-          if(s0 < mesh[i].getPointPosition(j).y){
-            s0 = mesh[i].getPointPosition(j).y;
-          }
-          if(s1 > mesh[i].getPointPosition(j).y){
-            s1 = mesh[i].getPointPosition(j).y;
-          }
-        }
-        break;
-      case 2:  // Z
-        s0 = mesh[i].getPointPosition(0).z;
-        s1 = mesh[i].getPointPosition(0).z;
-        for(Integer j=1; j<mesh[i].pointCount(); j++){
-          if(s0 < mesh[i].getPointPosition(j).z){
-            s0 = mesh[i].getPointPosition(j).z;
-          }
-          if(s1 > mesh[i].getPointPosition(j).z){
-            s1 = mesh[i].getPointPosition(j).z;
-          }
-        }
-        break;
+    Mat44 m44;
+    Scalar sx0,sx1,sy0,sy1,sz0,sz1;
+    Vec3 pos[](2);
+    
+    sx0 = mesh[i].getPointPosition(0).x;
+    sx1 = mesh[i].getPointPosition(0).x;
+    sy0 = mesh[i].getPointPosition(0).y;
+    sy1 = mesh[i].getPointPosition(0).y;
+    sz0 = mesh[i].getPointPosition(0).z;
+    sz1 = mesh[i].getPointPosition(0).z;
+    for(Integer j=1; j<mesh[i].pointCount(); j++){
+      if(sx0 < mesh[i].getPointPosition(j).x){
+        sx0 = mesh[i].getPointPosition(j).x;
+      }
+      if(sx1 > mesh[i].getPointPosition(j).x){
+        sx1 = mesh[i].getPointPosition(j).x;
+      }
+      if(sy0 < mesh[i].getPointPosition(j).y){
+        sy0 = mesh[i].getPointPosition(j).y;
+      }
+      if(sy1 > mesh[i].getPointPosition(j).y){
+        sy1 = mesh[i].getPointPosition(j).y;
+      }
+      if(sz0 < mesh[i].getPointPosition(j).z){
+        sz0 = mesh[i].getPointPosition(j).z;
+      }
+      if(sz1 > mesh[i].getPointPosition(j).z){
+        sz1 = mesh[i].getPointPosition(j).z;
+      }
     }
-    if(i >= createCurveXfos.size()){
+    if(i >= createCurvePos.size()){
       m44 = Mat44();
     }else{
-      m44 = createCurveXfos[i].toMat44();
+      m44.setTranslation(createCurvePos[i]);
     }
     switch(directionOfMeasure){
       case 0:  // X
-        pos[0] = m44.multiplyVector3( Vec3(s0, 0, 0) );
-        pos[1] = m44.multiplyVector3( Vec3(s1, 0, 0) );
+        pos[0] = m44.multiplyVector3( Vec3(sx0, 0, 0) );
+        pos[1] = m44.multiplyVector3( Vec3(sx1, 0, 0) );
         break;
       case 1:  // Y
-        pos[0] = m44.multiplyVector3( Vec3(0, s0, 0) );
-        pos[1] = m44.multiplyVector3( Vec3(0, s1, 0) );
+        pos[0] = m44.multiplyVector3( Vec3(0, sy0, 0) );
+        pos[1] = m44.multiplyVector3( Vec3(0, sy1, 0) );
         break;
       case 2:  // Z
-        pos[0] = m44.multiplyVector3( Vec3(0, 0, s0) );
-        pos[1] = m44.multiplyVector3( Vec3(0, 0, s1) );
+        pos[0] = m44.multiplyVector3( Vec3(0, 0, sz0) );
+        pos[1] = m44.multiplyVector3( Vec3(0, 0, sz1) );
         break;
     }
-
     result.addLinearCurve(pos, false);
+    
+    lengthX[i] = abs(sx0 - sx1);
+    lengthY[i] = abs(sy0 - sy1);
+    lengthZ[i] = abs(sz0 - sz1);
   }
 }
 "
+        }
+      },
+    {
+      "objectType" : "Inst",
+      "metadata" : {
+        "uiGraphPos" : "{\"x\":-80.0,\"y\":340.0}"
+        },
+      "name" : "DecomposeXfoArray_2",
+      "ports" : [
+        {
+          "objectType" : "InstPort",
+          "name" : "exec",
+          "nodePortType" : "IO"
+          },
+        {
+          "objectType" : "InstPort",
+          "name" : "value",
+          "nodePortType" : "In"
+          },
+        {
+          "objectType" : "InstPort",
+          "name" : "ori",
+          "nodePortType" : "Out"
+          },
+        {
+          "objectType" : "InstPort",
+          "name" : "tr",
+          "nodePortType" : "Out"
+          },
+        {
+          "objectType" : "InstPort",
+          "name" : "sc",
+          "nodePortType" : "Out"
+          }
+        ],
+      "executable" : "Fabric.Exts.Math.Xfo.DecomposeXfoArray",
+      "presetGUID" : "32E2822D6AB1A2021BDFF23F3171471E"
+      }
+    ],
+  "connections" : {
+    "mesh" : [
+      "CreateCurvesByLengthOfMeshCore.mesh"
+      ],
+    "createCurvePos" : [
+      "DecomposeXfoArray_2.value"
+      ],
+    "directionOfMeasure" : [
+      "CreateCurvesByLengthOfMeshCore.directionOfMeasure"
+      ],
+    "CreateCurvesByLengthOfMeshCore.result" : [
+      "result"
+      ],
+    "CreateCurvesByLengthOfMeshCore.lengthX" : [
+      "lengthX"
+      ],
+    "CreateCurvesByLengthOfMeshCore.lengthY" : [
+      "lengthY"
+      ],
+    "CreateCurvesByLengthOfMeshCore.lengthZ" : [
+      "lengthZ"
+      ],
+    "DecomposeXfoArray_2.tr" : [
+      "CreateCurvesByLengthOfMeshCore.createCurvePos"
+      ]
+    },
+  "requiredPresets" : {
+    "Fabric.Exts.Math.Xfo.DecomposeXfoArray" : {
+      "objectType" : "Func",
+      "metadata" : {
+        "uiNodeColor" : "{\n  \"r\" : 99,\n  \"g\" : 129,\n  \"b\" : 92\n  }",
+        "uiDocUrl" : "http://docs.fabric-engine.com/FabricEngine/2.5.0/HTML/KLExtensionsGuide/Math/Xfo.html"
+        },
+      "title" : "Xfo[] ->",
+      "ports" : [
+        {
+          "objectType" : "ExecPort",
+          "name" : "exec",
+          "nodePortType" : "IO",
+          "execPortType" : "IO",
+          "typeSpec" : "Execute"
+          },
+        {
+          "objectType" : "ExecPort",
+          "metadata" : {
+            "uiColor" : "{\n  \"r\" : 249,\n  \"g\" : 157,\n  \"b\" : 28\n  }"
+            },
+          "name" : "value",
+          "nodePortType" : "Out",
+          "defaultValues" : {
+            "Xfo[]" : [
+              {
+                "ori" : {
+                  "v" : {
+                    "x" : 0,
+                    "y" : 0,
+                    "z" : 0
+                    },
+                  "w" : 1
+                  },
+                "tr" : {
+                  "x" : 0,
+                  "y" : 0,
+                  "z" : 0
+                  },
+                "sc" : {
+                  "x" : 1,
+                  "y" : 1,
+                  "z" : 1
+                  }
+                }
+              ]
+            },
+          "execPortType" : "In",
+          "typeSpec" : "Xfo[]"
+          },
+        {
+          "objectType" : "ExecPort",
+          "metadata" : {
+            "uiColor" : "{\n  \"r\" : 0,\n  \"g\" : 191,\n  \"b\" : 232\n  }"
+            },
+          "name" : "ori",
+          "nodePortType" : "In",
+          "execPortType" : "Out",
+          "typeSpec" : "Quat[]"
+          },
+        {
+          "objectType" : "ExecPort",
+          "metadata" : {
+            "uiColor" : "{\n  \"r\" : 255,\n  \"g\" : 242,\n  \"b\" : 0\n  }"
+            },
+          "name" : "tr",
+          "nodePortType" : "In",
+          "execPortType" : "Out",
+          "typeSpec" : "Vec3[]"
+          },
+        {
+          "objectType" : "ExecPort",
+          "metadata" : {
+            "uiColor" : "{\n  \"r\" : 255,\n  \"g\" : 242,\n  \"b\" : 0\n  }"
+            },
+          "name" : "sc",
+          "nodePortType" : "In",
+          "execPortType" : "Out",
+          "typeSpec" : "Vec3[]"
+          }
+        ],
+      "extDeps" : {
+        "Math" : "*"
+        },
+      "presetGUID" : "32E2822D6AB1A2021BDFF23F3171471E",
+      "code" : "require Math;
+
+operator Math_Xfo_decompose_task<<<index>>>(in Xfo[] value, io Quat[] ori, io Vec3[] tr, io Vec3[] sc) {
+  ori[index] = value[index].ori;
+  tr[index] = value[index].tr;
+  sc[index] = value[index].sc;
+}
+
+dfgEntry {
+  Size task_size = value.size();
+  ori.resize(task_size);
+  tr.resize(task_size);
+  sc.resize(task_size);
+  if(task_size < 10000 /* pex margin */) {
+    for(Size i = 0; i < task_size; i++) {
+      Math_Xfo_decompose_task(i, value, ori, tr, sc);
+    }
+  } else {
+    Math_Xfo_decompose_task<<<task_size>>>(value, ori, tr, sc);
+  }
+}
+"
+      }
+    }
   }
