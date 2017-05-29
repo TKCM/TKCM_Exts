@@ -14,9 +14,8 @@
     "Exts/Math/Colors.kl",
 
     "Exts/Geometry/Curves/Curves.kl",
-    "Exts/Geometry/PolygonMesh/BlendShape.kl",
+    //"Exts/Geometry/PolygonMesh/BlendShape.kl",
     "Exts/Geometry/PolygonMesh/MergedMeshArrayModifier.kl",
-    "Exts/Geometry/PolygonMesh/PolygonMeshPortable.kl",
 
     "Exts/Util/Valve.kl",
     "Exts/Util/DijkstraAlgorithm.kl"

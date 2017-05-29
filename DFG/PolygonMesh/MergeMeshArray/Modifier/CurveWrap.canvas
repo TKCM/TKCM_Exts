@@ -1,8 +1,8 @@
 {
   "objectType" : "Graph",
   "metadata" : {
-    "uiGraphZoom" : "{\n  \"value\" : 0.8119135499000549\n  }",
-    "uiGraphPan" : "{\n  \"x\" : -324.991455078125,\n  \"y\" : -125.6361694335938\n  }"
+    "uiGraphZoom" : "{\n  \"value\" : 0.5871053338050842\n  }",
+    "uiGraphPan" : "{\n  \"x\" : -138.3516540527344,\n  \"y\" : 25.91574859619141\n  }"
     },
   "title" : "CurveWrap",
   "ports" : [
@@ -48,7 +48,6 @@
       },
     {
       "objectType" : "ExecPort",
-      "metadata" : {},
       "name" : "useNormalCurves",
       "nodePortType" : "Out",
       "defaultValues" : {
@@ -59,7 +58,6 @@
       },
     {
       "objectType" : "ExecPort",
-      "metadata" : {},
       "name" : "wrapTargetNormalCurve",
       "nodePortType" : "Out",
       "defaultValues" : {
@@ -77,6 +75,17 @@
         },
       "execPortType" : "In",
       "typeSpec" : "PolygonMesh[]"
+      },
+    {
+      "objectType" : "ExecPort",
+      "metadata" : {},
+      "name" : "scale",
+      "nodePortType" : "Out",
+      "defaultValues" : {
+        "Scalar" : 1
+        },
+      "execPortType" : "In",
+      "typeSpec" : "Scalar"
       },
     {
       "objectType" : "ExecPort",
@@ -171,6 +180,14 @@
           "objectType" : "InstPort",
           "name" : "deltaPositionSet",
           "nodePortType" : "In"
+          },
+        {
+          "objectType" : "InstPort",
+          "name" : "scl",
+          "nodePortType" : "In",
+          "defaultValues" : {
+            "Scalar" : 1
+            }
           }
         ],
       "definition" : {
@@ -214,7 +231,6 @@
             },
           {
             "objectType" : "ExecPort",
-            "metadata" : {},
             "name" : "useNormalCurves",
             "nodePortType" : "Out",
             "execPortType" : "In",
@@ -222,7 +238,6 @@
             },
           {
             "objectType" : "ExecPort",
-            "metadata" : {},
             "name" : "wrapTargetNormalCurve",
             "nodePortType" : "Out",
             "execPortType" : "In",
@@ -241,6 +256,13 @@
             "nodePortType" : "Out",
             "execPortType" : "In",
             "typeSpec" : "Vec3Array[][]"
+            },
+          {
+            "objectType" : "ExecPort",
+            "name" : "scl",
+            "nodePortType" : "Out",
+            "execPortType" : "In",
+            "typeSpec" : "Scalar[]"
             }
           ],
         "extDeps" : {
@@ -255,7 +277,8 @@
   in Boolean useSegmentValue,
   in Vec3 clonedSegmentList[],  //  [Vec3(curveID, segmentStartVal, endVal), Vec3...]
   in LocalL4ScalarArray[] sourceMeshLengthRatio,  //  [pointID][Scalar(LengthRatio), Scalar..]
-  in Vec3Array[] sourceMeshDeltaPosition  //  [pointID][Vec3(deltaPos to targetCurve), Vec3..]
+  in Vec3Array[] sourceMeshDeltaPosition,  //  [pointID][Vec3(deltaPos to targetCurve), Vec3..]
+  in Scalar scl[],
   ){
   Index poiID = index;
   Vec3 position = positions[poiID];
@@ -282,7 +305,7 @@
   Vec3 restTan = target.getTangentAtNormalizedParam(targetCurveID, nParam);
   Quat qu;
   qu.setFromDirectionAndUpvector(restTan, restNom);
-  Mat44 gM = Xfo(qu, restPos, Vec3(1.0)).toMat44();
+  Mat44 gM = Xfo(qu, restPos, Vec3(scl[cloneID],scl[cloneID],1.0)).toMat44();
   position = gM.multiplyVector3(sourceMeshDeltaPosition[soucePoiID][0]);
   mesh.setPointAttribute( poiID, positions, position );
 }
@@ -327,7 +350,8 @@ dfgEntry {
           useSegmentValues,
           clonedSegmentList[i],
           lengthRatioSet[i],
-          deltaPositionSet[i]);
+          deltaPositionSet[i],
+          scl);
       }
     }else{
       CurveWrapTask<<<mergedMesh[i].pointCount()>>>(
@@ -339,7 +363,8 @@ dfgEntry {
         useSegmentValues,
         clonedSegmentList[i],
         lengthRatioSet[i],
-        deltaPositionSet[i]);
+        deltaPositionSet[i],
+        scl);
     }
     
   }
@@ -778,6 +803,97 @@ dfgEntry {
         ],
       "executable" : "Fabric.Core.Array.Size",
       "presetGUID" : "5B186A97C79ACF32526EC844AD805421"
+      },
+    {
+      "objectType" : "Inst",
+      "metadata" : {
+        "uiGraphPos" : "{\"x\":-100.0,\"y\":770.0}"
+        },
+      "name" : "GetSegmentCount_1",
+      "ports" : [
+        {
+          "objectType" : "InstPort",
+          "name" : "exec",
+          "nodePortType" : "IO"
+          },
+        {
+          "objectType" : "InstPort",
+          "name" : "segmentValues",
+          "nodePortType" : "In"
+          },
+        {
+          "objectType" : "InstPort",
+          "name" : "result",
+          "nodePortType" : "Out"
+          }
+        ],
+      "executable" : "TKCM.Curves.GetSegmentCount",
+      "presetGUID" : "32BF9044CD14F2C479972426CFE65D2A"
+      },
+    {
+      "objectType" : "Inst",
+      "metadata" : {
+        "uiGraphPos" : "{\"x\":140.0,\"y\":700.0}"
+        },
+      "name" : "ScalarArray_1",
+      "ports" : [
+        {
+          "objectType" : "InstPort",
+          "name" : "exec",
+          "nodePortType" : "IO"
+          },
+        {
+          "objectType" : "InstPort",
+          "name" : "element",
+          "nodePortType" : "In"
+          },
+        {
+          "objectType" : "InstPort",
+          "name" : "count",
+          "nodePortType" : "In"
+          },
+        {
+          "objectType" : "InstPort",
+          "name" : "array",
+          "nodePortType" : "Out"
+          }
+        ],
+      "executable" : "Fabric.Core.Constants.ScalarArray",
+      "presetGUID" : "16E54806C913C68781AEB2E7472A41D2"
+      },
+    {
+      "objectType" : "Inst",
+      "metadata" : {
+        "uiGraphPos" : "{\"x\":-100.0,\"y\":660.0}"
+        },
+      "name" : "Math_max_1",
+      "ports" : [
+        {
+          "objectType" : "InstPort",
+          "name" : "exec",
+          "nodePortType" : "IO"
+          },
+        {
+          "objectType" : "InstPort",
+          "name" : "val1",
+          "nodePortType" : "In"
+          },
+        {
+          "objectType" : "InstPort",
+          "name" : "val2",
+          "nodePortType" : "In",
+          "defaultValues" : {
+            "Scalar" : 0.009999999776482582
+            }
+          },
+        {
+          "objectType" : "InstPort",
+          "name" : "result",
+          "nodePortType" : "Out"
+          }
+        ],
+      "executable" : "Fabric.Exts.Math.Func.Math_max",
+      "presetGUID" : "2BA355E40799979F7BA995D89A07F1A5"
       }
     ],
   "connections" : {
@@ -799,11 +915,15 @@ dfgEntry {
     "sourceMeshes" : [
       "GetCurvesWrapValues.sourceMeshes"
       ],
+    "scale" : [
+      "Math_max_1.val1"
+      ],
     "sourceMeshTargetCurves" : [
       "GetCurvesWrapValues.sourceMeshTargetCurves"
       ],
     "segmentValues" : [
-      "func.segmentValues"
+      "func.segmentValues",
+      "GetSegmentCount_1.segmentValues"
       ],
     "CurvesWrapCore.mergedMesh" : [
       "result"
@@ -831,6 +951,15 @@ dfgEntry {
       ],
     "Size_1.count" : [
       "func.sourceMeshCount"
+      ],
+    "GetSegmentCount_1.result" : [
+      "ScalarArray_1.count"
+      ],
+    "ScalarArray_1.array" : [
+      "CurvesWrapCore.scl"
+      ],
+    "Math_max_1.result" : [
+      "ScalarArray_1.element"
       ]
     },
   "requiredPresets" : {
@@ -896,6 +1025,144 @@ dfgEntry {
       "code" : "
 dfgEntry {
 	count = array.size();
+}
+"
+      },
+    "TKCM.Curves.GetSegmentCount" : {
+      "objectType" : "Func",
+      "title" : "GetSegmentCount",
+      "ports" : [
+        {
+          "objectType" : "ExecPort",
+          "name" : "exec",
+          "nodePortType" : "IO",
+          "defaultValues" : {
+            "Execute" : {}
+            },
+          "execPortType" : "IO",
+          "typeSpec" : "Execute"
+          },
+        {
+          "objectType" : "ExecPort",
+          "name" : "segmentValues",
+          "nodePortType" : "Out",
+          "defaultValues" : {
+            "Vec2Array[]" : []
+            },
+          "execPortType" : "In",
+          "typeSpec" : "Vec2Array[]"
+          },
+        {
+          "objectType" : "ExecPort",
+          "name" : "result",
+          "nodePortType" : "In",
+          "defaultValues" : {
+            "Size" : 0
+            },
+          "execPortType" : "Out",
+          "typeSpec" : "Size"
+          }
+        ],
+      "extDeps" : {},
+      "presetGUID" : "32BF9044CD14F2C479972426CFE65D2A",
+      "code" : "dfgEntry {
+  for(Integer i=0; i<segmentValues.size(); i++){
+    result += segmentValues[i].size();
+  }
+}
+"
+      },
+    "Fabric.Core.Constants.ScalarArray" : {
+      "objectType" : "Func",
+      "title" : "Scalar[]",
+      "ports" : [
+        {
+          "objectType" : "ExecPort",
+          "name" : "exec",
+          "nodePortType" : "IO",
+          "execPortType" : "IO",
+          "typeSpec" : "Execute"
+          },
+        {
+          "objectType" : "ExecPort",
+          "name" : "element",
+          "nodePortType" : "Out",
+          "execPortType" : "In",
+          "typeSpec" : "Scalar"
+          },
+        {
+          "objectType" : "ExecPort",
+          "name" : "count",
+          "nodePortType" : "Out",
+          "defaultValues" : {
+            "SInt32" : 1
+            },
+          "execPortType" : "In",
+          "typeSpec" : "SInt32"
+          },
+        {
+          "objectType" : "ExecPort",
+          "name" : "array",
+          "nodePortType" : "In",
+          "execPortType" : "Out",
+          "typeSpec" : "Scalar[]"
+          }
+        ],
+      "extDeps" : {},
+      "presetGUID" : "16E54806C913C68781AEB2E7472A41D2",
+      "code" : "
+dfgEntry {
+  array.resize(count);
+  for(Size i=0;i<count;i++)
+    array[i] = element;
+}
+"
+      },
+    "Fabric.Exts.Math.Func.Math_max" : {
+      "objectType" : "Func",
+      "metadata" : {
+        "uiNodeColor" : "{\n  \"r\" : 99,\n  \"g\" : 129,\n  \"b\" : 92\n  }",
+        "uiTooltip" : "Returns the maximum of two scalar values\n\n Supported by Scalar,Float64"
+        },
+      "title" : "Math_max",
+      "ports" : [
+        {
+          "objectType" : "ExecPort",
+          "name" : "exec",
+          "nodePortType" : "IO",
+          "execPortType" : "IO",
+          "typeSpec" : "Execute"
+          },
+        {
+          "objectType" : "ExecPort",
+          "name" : "val1",
+          "nodePortType" : "Out",
+          "execPortType" : "In",
+          "typeSpec" : "$TYPE$"
+          },
+        {
+          "objectType" : "ExecPort",
+          "name" : "val2",
+          "nodePortType" : "Out",
+          "execPortType" : "In",
+          "typeSpec" : "$TYPE$"
+          },
+        {
+          "objectType" : "ExecPort",
+          "name" : "result",
+          "nodePortType" : "In",
+          "execPortType" : "Out",
+          "typeSpec" : "$TYPE$"
+          }
+        ],
+      "extDeps" : {
+        "Math" : "*"
+        },
+      "presetGUID" : "2BA355E40799979F7BA995D89A07F1A5",
+      "code" : "require Math;
+
+dfgEntry {
+  result = Math_max(val1, val2);
 }
 "
       }
