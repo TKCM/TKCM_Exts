@@ -1,8 +1,8 @@
 {
   "objectType" : "Graph",
   "metadata" : {
-    "uiGraphZoom" : "{\n  \"value\" : 1.025251269340515\n  }",
-    "uiGraphPan" : "{\n  \"x\" : -767.5989990234375,\n  \"y\" : -673.7747802734375\n  }"
+    "uiGraphZoom" : "{\n  \"value\" : 1.030377507209778\n  }",
+    "uiGraphPan" : "{\n  \"x\" : -827.0519799195072,\n  \"y\" : -619.2552510196506\n  }"
     },
   "title" : "MakeSegmentsOnCurves",
   "ports" : [
@@ -49,12 +49,12 @@
     {
       "objectType" : "ExecPort",
       "metadata" : {
-        "uiCombo" : "(\"Full Range\", \"Start Side\", \"End Side\", \"Both Ends\", \"Evenly Div\", \"Evenly Div Pos Area\", \"Evenly Interval\")"
+        "uiCombo" : "(\"Full Range\", \"Start Side\", \"End Side\", \"Both Ends\", \"Evenly Div\", \"Evenly Div Pos Area\", \"Evenly Interval Fix\", \"Evenly Interval Free\")"
         },
       "name" : "HowToDivide",
       "nodePortType" : "Out",
       "defaultValues" : {
-        "Integer" : 0
+        "Integer" : 7
         },
       "execPortType" : "In",
       "typeSpec" : "Integer"
@@ -64,7 +64,7 @@
       "name" : "segmentLength",
       "nodePortType" : "Out",
       "defaultValues" : {
-        "Scalar" : 1
+        "Scalar" : 1.399999976158142
         },
       "execPortType" : "In",
       "typeSpec" : "Scalar"
@@ -87,7 +87,7 @@
       "name" : "divisionValue",
       "nodePortType" : "Out",
       "defaultValues" : {
-        "Integer" : 4
+        "Integer" : 0
         },
       "execPortType" : "In",
       "typeSpec" : "Integer"
@@ -97,7 +97,7 @@
       "name" : "intervalLength",
       "nodePortType" : "Out",
       "defaultValues" : {
-        "Scalar" : 1
+        "Scalar" : 0
         },
       "execPortType" : "In",
       "typeSpec" : "Scalar"
@@ -328,10 +328,8 @@
       segmentOnCurves[i][0] = Vec2(0.0, 1.0);
     }
   }
-  Scalar valX;
-  Scalar valY;
-  Scalar val;
-  Scalar val2;
+  
+  Scalar valX, valY, val, val2;
   
   switch(segmentType){
     case 0:  //  full range
@@ -566,6 +564,62 @@
       }
       segmentOnCurves = rest;
       break;
+    case 7:
+      if(intervalDistance < 0){
+        report(\"!!!!!!Error!!!!!! ::: makesegmentOnCurves : interval value is less than 0\");
+        return;
+      }
+      Vec2 rest[][];
+      rest.resize(curves.curveCount());
+      if(segmentInverse){
+        for(Integer i=0; i<curves.curveCount(); i++){
+          for(Integer j=0; j<segmentOnCurves[i].size(); j++){
+            valX = segmentOnCurves[i][j].x;
+            valY = segmentOnCurves[i][j].y;
+            Scalar baseSegmentlength = curves.getCurveLength(i) * (valY-valX);
+            Index quotient = baseSegmentlength / (segmentLength + intervalDistance);
+            Scalar divRest = baseSegmentlength % (segmentLength + intervalDistance);
+            if(segmentLength + intervalDistance < divRest){
+              quotient += 1;
+            }
+            Scalar addLength;
+            addLength = divRest / quotient;
+            Scalar lenE = 0.0;
+            for(Integer k=0; k<quotient; k++){
+              Scalar lenRatioS = segmentOnCurves[i][j].x + (lenE + segmentLength + addLength) / curves.getCurveLength(i);
+              Scalar lenRatioE = segmentOnCurves[i][j].x + (lenE + segmentLength + intervalDistance + addLength) / curves.getCurveLength(i);
+              rest[i].push( Vec2(lenRatioS,lenRatioE) );
+              lenE = lenE + intervalDistance + segmentLength + addLength;
+            }
+          }
+        }
+      }else{
+        for(Integer i=0; i<curves.curveCount(); i++){
+          for(Integer j=0; j<segmentOnCurves[i].size(); j++){
+            valX = segmentOnCurves[i][j].x;
+            valY = segmentOnCurves[i][j].y;
+            Scalar baseSegmentlength = curves.getCurveLength(i) * (valY-valX);
+            Index quotient = (baseSegmentlength - segmentLength) / (intervalDistance + segmentLength);
+            Scalar divRest = (baseSegmentlength - segmentLength) % (intervalDistance + segmentLength);
+            if(intervalDistance + segmentLength < divRest){
+              quotient += 1;
+            }
+            Scalar addLength;
+            addLength = divRest / quotient;
+            Scalar lenRatio = (segmentLength+addLength) / curves.getCurveLength(i);          
+            rest[i].push( Vec2(valX,valX+lenRatio) );
+            Scalar lenE = segmentLength+addLength;
+            for(Integer k=0; k<quotient; k++){
+              Scalar lenRatioS = valX + (lenE + intervalDistance) / curves.getCurveLength(i);
+              Scalar lenRatioE = valX + (lenE + intervalDistance + segmentLength + addLength) / curves.getCurveLength(i);
+              rest[i].push( Vec2(lenRatioS,lenRatioE) );
+              lenE = lenE + intervalDistance + segmentLength + addLength;
+            }
+          }
+        }
+      }
+      segmentOnCurves = rest;
+      break; 
   }
 }
 "
