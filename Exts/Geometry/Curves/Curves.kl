@@ -11,6 +11,7 @@ function Boolean Curves.hasEmptyCurve?(String functionName){
     if(this.getCurve(i).getLength() == 0.0){
       report("!!!!!!Error!!!!!! "+functionName+" : curve index '"+i+"'' is empty curve");
       check += 1;
+      break;
     }
   }
   if(check > 0){
@@ -373,10 +374,10 @@ function Vec3[] Curves.getEvenlyDividPositions?(Index curveIndex, Boolean auto, 
 //  mode 0　＝ divisionValueの数で均等に分割、　1　＝　intervalValueの長さの間隔で分割
 //  directionType 0　＝　角度の計算しない、　1　＝　カーブのタンジェントをZの向きにする、　2 = normalDirectionAttributeをZの向きにする
 //  intervalValueは長さ（Length）なので、LenrthRatioやNormalizedParamで指定したい場合はlengthに変換しておく必要がある
-function Curves.GetEvenlyDividXfos(
+function Curves.getEvenlyDividXfos(
   io XfoArray result[], 
   io Xfo result2[],
-  in Curves nomalCurve,
+  in Curves normalCurve,
   in Integer mode,
   in Integer divisionValue,
   in Integer intervalValueType,
@@ -388,7 +389,7 @@ function Curves.GetEvenlyDividXfos(
   in Boolean onSegment
   ){
   result.resize(this.curveCount());
-  if(this == null || this.curveCount() == 0){  return;  }
+  if(this == null || this.curveCount() == 0 || normalCurve == null){  return;  }
   
   Xfo rest();
   Scalar base;
@@ -437,7 +438,7 @@ function Curves.GetEvenlyDividXfos(
         rest.tr = this.getPositionAtNormalizedParam(i, startVal);
         if(directionType != 0){
           direction = this.getTangentAtNormalizedParam(i, startVal+0.0001);
-          upVector = nomalCurve.getPositionAtNormalizedParam(i, startVal+0.0001) - rest.tr;
+          upVector = normalCurve.getPositionAtNormalizedParam(i, startVal+0.0001) - rest.tr;
           switch(directionType){
             case 0:
               break;
@@ -462,7 +463,7 @@ function Curves.GetEvenlyDividXfos(
           //  get orientation
           if(directionType != 0){
             direction = this.getTangentAtNormalizedParam(i, nParam);
-            upVector = nomalCurve.getPositionAtNormalizedParam(i, nParam) - rest.tr;
+            upVector = normalCurve.getPositionAtNormalizedParam(i, nParam) - rest.tr;
             switch(directionType){
               case 0:
                 break;
@@ -490,7 +491,7 @@ function Curves.GetEvenlyDividXfos(
         //  get orientation
         if(directionType != 0){
           direction = this.getTangentAtNormalizedParam(i, endVal-0.0001);
-          upVector = nomalCurve.getPositionAtNormalizedParam(i, endVal-0.0001) - rest.tr;
+          upVector = normalCurve.getPositionAtNormalizedParam(i, endVal-0.0001) - rest.tr;
           switch(directionType){
             case 0:
               break;
@@ -614,11 +615,11 @@ function Curves.getWeightsFromDistanceToCurvesArray(
     lines[i] = Lines();
     Vec3 linesPoi[] = this.getEvenlyDividPositions(i, true, 1, 0);  //  上記カスタムメソッドを使用
     if(linesPoi.size() == 0){
-      report("!!!!!!Error!!!!!! GetCloseOrderedList ot GetCloseOrderedListArray : curve index '"+i+"'' is empty curve");
+      report("!!!!!!Error!!!!!! getWeightsFromDistanceToCurvesArray : curve index '"+i+"'' is empty curve");
       return;
     }
     if(linesPoi[0] == linesPoi[1]){
-      report("!!!!!!Error!!!!!! GetCloseOrderedList ot GetCloseOrderedListArray : chack degree value of input NURBS");
+      report("!!!!!!Error!!!!!! getWeightsFromDistanceToCurvesArray : chack degree value of input NURBS");
       return;
     }
     lines[i].addLineStrip( linesPoi );
@@ -649,12 +650,12 @@ function Curves.getWeightsFromDistanceToCurvesArray(
         for(Integer j=0; j<poiCount; j++){
           normals[j] = normalsAttr.values[j+startID];
           if(normalsAttr.values[j] == Vec3(0.0)){
-            report("!!!!!!Error!!!!!! ::: Curves.getCloseOrderedListArray : 'normalDirections' attribute values["+j+"] is Vec3(0.0)");
+            report("!!!!!!Error!!!!!! ::: getWeightsFromDistanceToCurvesArray : 'normalDirections' attribute values["+j+"] is Vec3(0.0)");
             return;
           }
         }
       }else{
-        report("!!!!!!Error!!!!!! ::: Curves.getCloseOrderedListArray : To compute deltaPosition need to 'normalDirections' attribute of Curves");
+        report("!!!!!!Error!!!!!! ::: getWeightsFromDistanceToCurvesArray : To compute deltaPosition need to 'normalDirections' attribute of Curves");
         return;
       }
       
@@ -792,7 +793,7 @@ function Curves.getMultipliedCurvesValueByWeights(
   //  リストを制作した際のターゲット数と今回参照するターゲット数に不足がないかを確認する
   //  indexList[0].others[0]にターゲット数が格納されているためcountの数が実際のターゲット数とは異なるので、ループではweightsのサイズを使用する
   if(indexList[0].others[0] > this.curveCount()){
-    report("!!!!!!Error!!!!!! ::: Curves.MulWeight : IndexList require count = "+indexList[0].others[0]+". But Curve count = "+this.curveCount());
+    report("!!!!!!Error!!!!!! ::: getMultipliedCurvesValueByWeights : IndexList require count = "+indexList[0].others[0]+". But Curve count = "+this.curveCount());
     return;
   }else{
     LocalL4ScalarArray nParams[];
@@ -817,7 +818,7 @@ function Curves.getMultipliedCurvesValueByWeights(
         break;
       case 2: //  normal
         if(this.attributes.has("normalDirections") == false){
-          report("!!!!!!Error!!!!!! ::: Curves.MulWeight or MulWeightArray : this Curves don't have 'normalDirections' attribute");
+          report("!!!!!!Error!!!!!! ::: getMultipliedCurvesValueByWeights : this Curves don't have 'normalDirections' attribute");
           return;
         }
         Curves nCurve = this.createNormalDirectionAttributeCurves(0, 1.0);
@@ -826,7 +827,7 @@ function Curves.getMultipliedCurvesValueByWeights(
         break;
       case 3: //  deltaPositon
         if(deltaPosition.size() == 0){
-          report("!!!!!!Error!!!!!! ::: Curves.MulWeight or MulWeightArray : input deltaPosition is empty");
+          report("!!!!!!Error!!!!!! ::: getMultipliedCurvesValueByWeights : input deltaPosition is empty");
           return;
         }
         //  ノーマル計算用のカーブを作成
@@ -843,14 +844,14 @@ function Curves.getMultipliedCurvesValueByWeights(
             Ref<Vec3Attribute> normalsAttr = this.attributes.getAttribute("normalDirections");
             for(Integer j=0; j<poiCount; j++){
               if(normalsAttr.values[j] == Vec3(0.0)){
-                report("!!!!!!Error!!!!!! ::: Curves.MulWeight or MulWeightArray : 'normalDirections' attribute values["+j+"] is Vec3(0.0)");
+                report("!!!!!!Error!!!!!! ::: getMultipliedCurvesValueByWeights : 'normalDirections' attribute values["+j+"] is Vec3(0.0)");
                 return;
               }else{
                 normals[j] = normalsAttr.values[j+startID];
               }
             }
           }else{
-            report("!!!!!!Error!!!!!! ::: Curves.mulWeight or MulWeightArray : this curves don't have 'normalDirections' attribute.");
+            report("!!!!!!Error!!!!!! ::: getMultipliedCurvesValueByWeights : this curves don't have 'normalDirections' attribute.");
             return;
           }
           
@@ -893,3 +894,39 @@ function Curves.getMultipliedCurvesValueByWeights(
 //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+//  inverseSegment ///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+//  セグメント情報を反転する
+//  MakeSegmentOnCurveの使用回数を減らす目的
+
+function Vec2Array[].inverseSegment?(io Vec2Array[] result){
+  if(this.size() == 0){
+    return;
+  }
+  
+  result.resize(this.size());
+  for(Integer i=0; i<this.size(); i++){
+    Scalar rest[];
+    for(Integer j=0; j<this[i].size(); j++){
+      Vec2 invSeg;
+      if(this[i][j] == Vec2(0.0, 1.0)){
+        report("!!!!!!Error!!!!!! InverseSegment: segmentValues["+i+"]["+j+"] is full range");
+        continue;
+      }
+      //  segmentの情報はカーブの両端の後に間の分割という流れの配列なため、前から順番に反転するだけでは正確な値が取得できない
+      //  0.0,1.0以外の全ての値を一旦restに格納していき、ソートした後に前から順にVec2にしていく
+      if(this[i][j].x != 0.0){
+        rest.push(this[i][j].x);
+      }
+      if(this[i][j].y != 1.0){
+        rest.push(this[i][j].y);
+      }
+      if(j == this[i].size()-1 || this[i][j].y != 1.0){
+        rest.push(1.0);
+      }
+      sort(rest);
+    }
+    for(Integer j=0; j<rest.size()/2; j++){
+      result[i].push( Vec2(rest[j*2], rest[j*2+1]) );
+    }
+  }
+}

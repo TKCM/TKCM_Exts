@@ -1,0 +1,450 @@
+{
+  "objectType" : "Graph",
+  "metadata" : {
+    "uiGraphZoom" : "{\n  \"value\" : 0.6288635730743408\n  }",
+    "uiGraphPan" : "{\n  \"x\" : 269.3083801269531,\n  \"y\" : 107.2223052978516\n  }"
+    },
+  "title" : "SplitPolygon2Array",
+  "ports" : [
+    {
+      "objectType" : "ExecPort",
+      "name" : "exec",
+      "nodePortType" : "IO",
+      "defaultValues" : {
+        "Execute" : {}
+        },
+      "execPortType" : "IO",
+      "typeSpec" : "Execute"
+      },
+    {
+      "objectType" : "ExecPort",
+      "name" : "this",
+      "nodePortType" : "IO",
+      "defaultValues" : {
+        "PolygonMesh" : null
+        },
+      "execPortType" : "IO",
+      "typeSpec" : "PolygonMesh"
+      },
+    {
+      "objectType" : "ExecPort",
+      "name" : "polygonID",
+      "nodePortType" : "Out",
+      "defaultValues" : {
+        "Size[]" : [
+          1,
+          3
+          ]
+        },
+      "execPortType" : "In",
+      "typeSpec" : "Size[]"
+      },
+    {
+      "objectType" : "ExecPort",
+      "name" : "polygonPointIndex1",
+      "nodePortType" : "Out",
+      "defaultValues" : {
+        "Size[]" : [
+          3,
+          0
+          ]
+        },
+      "execPortType" : "In",
+      "typeSpec" : "Size[]"
+      },
+    {
+      "objectType" : "ExecPort",
+      "name" : "edgeSplitRatio1",
+      "nodePortType" : "Out",
+      "defaultValues" : {
+        "Scalar[]" : [
+          0.25,
+          0.25
+          ]
+        },
+      "execPortType" : "In",
+      "typeSpec" : "Scalar[]"
+      },
+    {
+      "objectType" : "ExecPort",
+      "name" : "polygonPointIndex2",
+      "nodePortType" : "Out",
+      "defaultValues" : {
+        "Size[]" : [
+          2,
+          3
+          ]
+        },
+      "execPortType" : "In",
+      "typeSpec" : "Size[]"
+      },
+    {
+      "objectType" : "ExecPort",
+      "name" : "edgeSplitRatio2",
+      "nodePortType" : "Out",
+      "defaultValues" : {
+        "Scalar[]" : [
+          0.75,
+          0.25
+          ]
+        },
+      "execPortType" : "In",
+      "typeSpec" : "Scalar[]"
+      },
+    {
+      "objectType" : "ExecPort",
+      "name" : "addPointsPosition",
+      "nodePortType" : "Out",
+      "defaultValues" : {
+        "Vec3Array[]" : [
+          [],
+          []
+          ]
+        },
+      "execPortType" : "In",
+      "typeSpec" : "Vec3Array[]"
+      },
+    {
+      "objectType" : "ExecPort",
+      "name" : "mergeWithNeighborPolygon",
+      "nodePortType" : "Out",
+      "defaultValues" : {
+        "Boolean" : true
+        },
+      "execPortType" : "In",
+      "typeSpec" : "Boolean"
+      }
+    ],
+  "extDeps" : {},
+  "presetGUID" : "5D528BF379BD0DF6260BBD0DE4554ACE",
+  "nodes" : [
+    {
+      "objectType" : "Inst",
+      "metadata" : {
+        "uiGraphPos" : "{\"x\":580.0,\"y\":90.0}"
+        },
+      "name" : "EndStructureChanges_1",
+      "ports" : [
+        {
+          "objectType" : "InstPort",
+          "name" : "exec",
+          "nodePortType" : "IO"
+          },
+        {
+          "objectType" : "InstPort",
+          "name" : "this",
+          "nodePortType" : "IO"
+          }
+        ],
+      "executable" : "Fabric.Exts.Geometry.PolygonMesh.EndStructureChanges",
+      "presetGUID" : "F325D6DBAD2407309B6B396DC346AED6"
+      },
+    {
+      "objectType" : "Inst",
+      "metadata" : {
+        "uiGraphPos" : "{\"x\":230.0,\"y\":130.0}"
+        },
+      "name" : "SplitPolygon2ArrayCore",
+      "ports" : [
+        {
+          "objectType" : "InstPort",
+          "name" : "exec",
+          "nodePortType" : "IO"
+          },
+        {
+          "objectType" : "InstPort",
+          "name" : "this",
+          "nodePortType" : "IO"
+          },
+        {
+          "objectType" : "InstPort",
+          "name" : "polygonID",
+          "nodePortType" : "In",
+          "defaultValues" : {
+            "Size" : 0
+            }
+          },
+        {
+          "objectType" : "InstPort",
+          "name" : "polygonPointIndex1",
+          "nodePortType" : "In",
+          "defaultValues" : {
+            "Size" : 0
+            }
+          },
+        {
+          "objectType" : "InstPort",
+          "name" : "edgeSplitRatio1",
+          "nodePortType" : "In",
+          "defaultValues" : {
+            "Scalar" : 0.5
+            }
+          },
+        {
+          "objectType" : "InstPort",
+          "name" : "polygonPointIndex2",
+          "nodePortType" : "In",
+          "defaultValues" : {
+            "Size" : 1
+            }
+          },
+        {
+          "objectType" : "InstPort",
+          "name" : "edgeSplitRatio2",
+          "nodePortType" : "In",
+          "defaultValues" : {
+            "Scalar" : 0.5
+            }
+          },
+        {
+          "objectType" : "InstPort",
+          "name" : "addPointsPosition",
+          "nodePortType" : "In"
+          },
+        {
+          "objectType" : "InstPort",
+          "name" : "mergeWithNeighborPolygon",
+          "nodePortType" : "In",
+          "defaultValues" : {
+            "Boolean" : true
+            }
+          }
+        ],
+      "definition" : {
+        "objectType" : "Func",
+        "title" : "SplitPolygon2",
+        "ports" : [
+          {
+            "objectType" : "ExecPort",
+            "name" : "exec",
+            "nodePortType" : "IO",
+            "defaultValues" : {
+              "Execute" : {}
+              },
+            "execPortType" : "IO",
+            "typeSpec" : "Execute"
+            },
+          {
+            "objectType" : "ExecPort",
+            "name" : "this",
+            "nodePortType" : "IO",
+            "defaultValues" : {
+              "PolygonMesh" : null
+              },
+            "execPortType" : "IO",
+            "typeSpec" : "PolygonMesh"
+            },
+          {
+            "objectType" : "ExecPort",
+            "name" : "polygonID",
+            "nodePortType" : "Out",
+            "defaultValues" : {
+              "Size" : 3
+              },
+            "execPortType" : "In",
+            "typeSpec" : "Size[]"
+            },
+          {
+            "objectType" : "ExecPort",
+            "name" : "polygonPointIndex1",
+            "nodePortType" : "Out",
+            "defaultValues" : {
+              "Size" : 0
+              },
+            "execPortType" : "In",
+            "typeSpec" : "Size[]"
+            },
+          {
+            "objectType" : "ExecPort",
+            "name" : "edgeSplitRatio1",
+            "nodePortType" : "Out",
+            "defaultValues" : {
+              "Scalar" : 0.5
+              },
+            "execPortType" : "In",
+            "typeSpec" : "Scalar[]"
+            },
+          {
+            "objectType" : "ExecPort",
+            "name" : "polygonPointIndex2",
+            "nodePortType" : "Out",
+            "defaultValues" : {
+              "Size" : 3
+              },
+            "execPortType" : "In",
+            "typeSpec" : "Size[]"
+            },
+          {
+            "objectType" : "ExecPort",
+            "name" : "edgeSplitRatio2",
+            "nodePortType" : "Out",
+            "defaultValues" : {
+              "Scalar" : 0.300000011920929
+              },
+            "execPortType" : "In",
+            "typeSpec" : "Scalar[]"
+            },
+          {
+            "objectType" : "ExecPort",
+            "name" : "addPointsPosition",
+            "nodePortType" : "Out",
+            "defaultValues" : {
+              "Vec3[]" : []
+              },
+            "execPortType" : "In",
+            "typeSpec" : "Vec3Array[]"
+            },
+          {
+            "objectType" : "ExecPort",
+            "name" : "mergeWithNeighborPolygon",
+            "nodePortType" : "Out",
+            "defaultValues" : {
+              "Boolean" : false
+              },
+            "execPortType" : "In",
+            "typeSpec" : "Boolean"
+            }
+          ],
+        "extDeps" : {
+          "TKCM" : "*"
+          },
+        "code" : "dfgEntry {
+  this.splitPolygon2Array(polygonID, polygonPointIndex1, edgeSplitRatio1, polygonPointIndex2, edgeSplitRatio2, addPointsPosition, mergeWithNeighborPolygon); 
+}
+"
+        }
+      },
+    {
+      "objectType" : "Inst",
+      "metadata" : {
+        "uiGraphPos" : "{\"x\":-40.0,\"y\":80.0}"
+        },
+      "name" : "BeginStructureChanges_2",
+      "ports" : [
+        {
+          "objectType" : "InstPort",
+          "name" : "exec",
+          "nodePortType" : "IO"
+          },
+        {
+          "objectType" : "InstPort",
+          "name" : "this",
+          "nodePortType" : "IO"
+          }
+        ],
+      "executable" : "Fabric.Exts.Geometry.PolygonMesh.BeginStructureChanges",
+      "presetGUID" : "5B17096A444447AD63418F4F9A8A0DEA"
+      }
+    ],
+  "connections" : {
+    "this" : [
+      "BeginStructureChanges_2.this"
+      ],
+    "polygonID" : [
+      "SplitPolygon2ArrayCore.polygonID"
+      ],
+    "polygonPointIndex1" : [
+      "SplitPolygon2ArrayCore.polygonPointIndex1"
+      ],
+    "edgeSplitRatio1" : [
+      "SplitPolygon2ArrayCore.edgeSplitRatio1"
+      ],
+    "polygonPointIndex2" : [
+      "SplitPolygon2ArrayCore.polygonPointIndex2"
+      ],
+    "edgeSplitRatio2" : [
+      "SplitPolygon2ArrayCore.edgeSplitRatio2"
+      ],
+    "addPointsPosition" : [
+      "SplitPolygon2ArrayCore.addPointsPosition"
+      ],
+    "mergeWithNeighborPolygon" : [
+      "SplitPolygon2ArrayCore.mergeWithNeighborPolygon"
+      ],
+    "EndStructureChanges_1.this" : [
+      "this"
+      ],
+    "SplitPolygon2ArrayCore.this" : [
+      "EndStructureChanges_1.this"
+      ],
+    "BeginStructureChanges_2.this" : [
+      "SplitPolygon2ArrayCore.this"
+      ]
+    },
+  "requiredPresets" : {
+    "Fabric.Exts.Geometry.PolygonMesh.EndStructureChanges" : {
+      "objectType" : "Func",
+      "metadata" : {
+        "uiDocUrl" : "http://docs.fabric-engine.com/FabricEngine/2.5.0/HTML/KLExtensionsGuide/Geometry/PolygonMesh.html",
+        "uiTooltip" : "Marks the ends structural changes for the polygon mesh, like adding or removing polygons.\nSome methods, such as :kl-ref:`PolygonMesh.addPolygon` and :kl-ref:`PolygonMesh.deletePolygon`, need to be made\nbetween calls to :kl-ref:`PolygonMesh.beginStructureChanges` and :kl-ref:`PolygonMesh.endStructureChanges`.\nSee :ref:`modifyingpolygonmeshstructure` for more details.\n\nReplace deleted components if applicable\n\n Supported by PolygonMesh"
+        },
+      "title" : "EndStructureChanges",
+      "ports" : [
+        {
+          "objectType" : "ExecPort",
+          "name" : "exec",
+          "nodePortType" : "IO",
+          "execPortType" : "IO",
+          "typeSpec" : "Execute"
+          },
+        {
+          "objectType" : "ExecPort",
+          "metadata" : {
+            "uiColor" : "{\n  \"r\" : 51,\n  \"g\" : 1,\n  \"b\" : 106\n  }"
+            },
+          "name" : "this",
+          "nodePortType" : "IO",
+          "execPortType" : "IO",
+          "typeSpec" : "PolygonMesh"
+          }
+        ],
+      "extDeps" : {
+        "Geometry" : "*"
+        },
+      "presetGUID" : "F325D6DBAD2407309B6B396DC346AED6",
+      "code" : "require Geometry;
+
+dfgEntry {
+  this.endStructureChanges();
+}
+"
+      },
+    "Fabric.Exts.Geometry.PolygonMesh.BeginStructureChanges" : {
+      "objectType" : "Func",
+      "metadata" : {
+        "uiDocUrl" : "http://docs.fabric-engine.com/FabricEngine/2.5.0/HTML/KLExtensionsGuide/Geometry/PolygonMesh.html",
+        "uiTooltip" : "Signals the beginning of structural changes for the polygon mesh, like adding or removing polygons.\nSome methods, such as :kl-ref:`PolygonMesh.addPolygon` and :kl-ref:`PolygonMesh.deletePolygon`, need to be called\nbetween :kl-ref:`PolygonMesh.beginStructureChanges` and :kl-ref:`PolygonMesh.endStructureChanges` brackets.\nSee :ref:`modifyingpolygonmeshstructure` for more details.\n\n\n Supported by PolygonMesh"
+        },
+      "title" : "BeginStructureChanges",
+      "ports" : [
+        {
+          "objectType" : "ExecPort",
+          "name" : "exec",
+          "nodePortType" : "IO",
+          "execPortType" : "IO",
+          "typeSpec" : "Execute"
+          },
+        {
+          "objectType" : "ExecPort",
+          "metadata" : {
+            "uiColor" : "{\n  \"r\" : 51,\n  \"g\" : 1,\n  \"b\" : 106\n  }"
+            },
+          "name" : "this",
+          "nodePortType" : "IO",
+          "execPortType" : "IO",
+          "typeSpec" : "PolygonMesh"
+          }
+        ],
+      "extDeps" : {
+        "Geometry" : "*"
+        },
+      "presetGUID" : "5B17096A444447AD63418F4F9A8A0DEA",
+      "code" : "require Geometry;
+
+dfgEntry {
+  this.beginStructureChanges();
+}
+"
+      }
+    }
+  }

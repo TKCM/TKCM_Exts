@@ -1,0 +1,45 @@
+{
+  "objectType" : "Func",
+  "title" : "InverseSegmentValues",
+  "ports" : [
+    {
+      "objectType" : "ExecPort",
+      "name" : "exec",
+      "nodePortType" : "IO",
+      "defaultValues" : {
+        "Execute" : {}
+        },
+      "execPortType" : "IO",
+      "typeSpec" : "Execute"
+      },
+    {
+      "objectType" : "ExecPort",
+      "metadata" : {},
+      "name" : "segmentValues",
+      "nodePortType" : "Out",
+      "defaultValues" : {
+        "Vec2Array[]" : []
+        },
+      "execPortType" : "In",
+      "typeSpec" : "Vec2Array[]"
+      },
+    {
+      "objectType" : "ExecPort",
+      "name" : "result",
+      "nodePortType" : "In",
+      "defaultValues" : {
+        "Vec2Array[]" : []
+        },
+      "execPortType" : "Out",
+      "typeSpec" : "Vec2Array[]"
+      }
+    ],
+  "extDeps" : {
+    "TKCM" : "*"
+    },
+  "presetGUID" : "3762D604A37456B8517BB20BCC291B36",
+  "code" : "dfgEntry {
+  segmentValues.inverseSegment(result);
+}
+"
+  }
