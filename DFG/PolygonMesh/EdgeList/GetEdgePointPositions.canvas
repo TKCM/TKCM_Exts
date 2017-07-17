@@ -1,0 +1,73 @@
+{
+  "objectType" : "Func",
+  "title" : "GetEdgePointPositions",
+  "ports" : [
+    {
+      "objectType" : "ExecPort",
+      "name" : "exec",
+      "nodePortType" : "IO",
+      "defaultValues" : {
+        "Execute" : {}
+        },
+      "execPortType" : "IO",
+      "typeSpec" : "Execute"
+      },
+    {
+      "objectType" : "ExecPort",
+      "name" : "edgeList",
+      "nodePortType" : "Out",
+      "defaultValues" : {
+        "EdgeList" : null
+        },
+      "execPortType" : "In",
+      "typeSpec" : "EdgeList"
+      },
+    {
+      "objectType" : "ExecPort",
+      "name" : "id",
+      "nodePortType" : "Out",
+      "defaultValues" : {
+        "Size" : 50
+        },
+      "execPortType" : "In",
+      "typeSpec" : "Size"
+      },
+    {
+      "objectType" : "ExecPort",
+      "name" : "firstPosition",
+      "nodePortType" : "In",
+      "defaultValues" : {
+        "Vec3" : {
+          "x" : 0,
+          "y" : 0,
+          "z" : 0
+          }
+        },
+      "execPortType" : "Out",
+      "typeSpec" : "Vec3"
+      },
+    {
+      "objectType" : "ExecPort",
+      "name" : "secondPosition",
+      "nodePortType" : "In",
+      "defaultValues" : {
+        "Vec3" : {
+          "x" : 0,
+          "y" : 0,
+          "z" : 0
+          }
+        },
+      "execPortType" : "Out",
+      "typeSpec" : "Vec3"
+      }
+    ],
+  "extDeps" : {
+    "TKCM" : "*"
+    },
+  "presetGUID" : "8B3EB32FC3C3863BB4DB172E2D2E52E7",
+  "code" : "dfgEntry {
+  firstPosition = edgeList.getEdgeFirstPointPosition(id);
+  secondPosition = edgeList.getEdgeSecondPointPosition(id);
+}
+"
+  }

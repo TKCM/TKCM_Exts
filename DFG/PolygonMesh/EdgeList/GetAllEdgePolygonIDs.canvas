@@ -1,0 +1,69 @@
+{
+  "objectType" : "Func",
+  "title" : "GetAllEdgePolygonIDs",
+  "ports" : [
+    {
+      "objectType" : "ExecPort",
+      "name" : "exec",
+      "nodePortType" : "IO",
+      "defaultValues" : {
+        "Execute" : {}
+        },
+      "execPortType" : "IO",
+      "typeSpec" : "Execute"
+      },
+    {
+      "objectType" : "ExecPort",
+      "name" : "edgeList",
+      "nodePortType" : "Out",
+      "defaultValues" : {
+        "EdgeList" : null
+        },
+      "execPortType" : "In",
+      "typeSpec" : "EdgeList"
+      },
+    {
+      "objectType" : "ExecPort",
+      "name" : "leftPolygonIDs",
+      "nodePortType" : "In",
+      "defaultValues" : {
+        "Size" : 0,
+        "Size[]" : []
+        },
+      "execPortType" : "Out",
+      "typeSpec" : "Size[]"
+      },
+    {
+      "objectType" : "ExecPort",
+      "name" : "rightPolygonIDs",
+      "nodePortType" : "In",
+      "defaultValues" : {
+        "Size" : 0,
+        "Size[]" : []
+        },
+      "execPortType" : "Out",
+      "typeSpec" : "Size[]"
+      }
+    ],
+  "extDeps" : {
+    "TKCM" : "*"
+    },
+  "presetGUID" : "5963243F28A77FABA0F3A5A4B761D995",
+  "code" : "operator GetEdgePolygonsTask<<<i>>>(in EdgeList edgeList, io Size leftPolygonIDs[], io Size rightPolygonIDs[]){
+  edgeList.getEdgePolygons(i, leftPolygonIDs[i], rightPolygonIDs[i]);
+}
+
+dfgEntry {
+  leftPolygonIDs.resize(edgeList.edge.size());
+  rightPolygonIDs.resize(edgeList.edge.size());
+  
+  if(edgeList.edge.size() < 1000){
+    for(Integer i=0; i<edgeList.edge.size(); i++){
+      GetEdgePolygonsTask(i, edgeList, leftPolygonIDs, rightPolygonIDs);
+    }
+  }else{
+    GetEdgePolygonsTask<<< edgeList.edge.size() >>>(edgeList, leftPolygonIDs, rightPolygonIDs);
+  }
+}
+"
+  }

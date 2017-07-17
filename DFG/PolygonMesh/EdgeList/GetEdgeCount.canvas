@@ -1,0 +1,44 @@
+{
+  "objectType" : "Func",
+  "title" : "GetEdgeCount",
+  "ports" : [
+    {
+      "objectType" : "ExecPort",
+      "name" : "exec",
+      "nodePortType" : "IO",
+      "defaultValues" : {
+        "Execute" : {}
+        },
+      "execPortType" : "IO",
+      "typeSpec" : "Execute"
+      },
+    {
+      "objectType" : "ExecPort",
+      "name" : "edgeList",
+      "nodePortType" : "Out",
+      "defaultValues" : {
+        "EdgeList" : null
+        },
+      "execPortType" : "In",
+      "typeSpec" : "EdgeList"
+      },
+    {
+      "objectType" : "ExecPort",
+      "name" : "result",
+      "nodePortType" : "In",
+      "defaultValues" : {
+        "Size" : 0
+        },
+      "execPortType" : "Out",
+      "typeSpec" : "Size"
+      }
+    ],
+  "extDeps" : {
+    "TKCM" : "*"
+    },
+  "presetGUID" : "59A2E6A354C92A13778850FD043AE3C2",
+  "code" : "dfgEntry {
+  result = edgeList.count();
+}
+"
+  }

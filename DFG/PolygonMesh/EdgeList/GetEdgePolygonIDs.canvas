@@ -1,0 +1,64 @@
+{
+  "objectType" : "Func",
+  "title" : "GetEdgePolygonIDs",
+  "ports" : [
+    {
+      "objectType" : "ExecPort",
+      "name" : "exec",
+      "nodePortType" : "IO",
+      "defaultValues" : {
+        "Execute" : {}
+        },
+      "execPortType" : "IO",
+      "typeSpec" : "Execute"
+      },
+    {
+      "objectType" : "ExecPort",
+      "name" : "edgeList",
+      "nodePortType" : "Out",
+      "defaultValues" : {
+        "EdgeList" : null
+        },
+      "execPortType" : "In",
+      "typeSpec" : "EdgeList"
+      },
+    {
+      "objectType" : "ExecPort",
+      "name" : "id",
+      "nodePortType" : "Out",
+      "defaultValues" : {
+        "Size" : 0
+        },
+      "execPortType" : "In",
+      "typeSpec" : "Size"
+      },
+    {
+      "objectType" : "ExecPort",
+      "name" : "leftPolygonID",
+      "nodePortType" : "In",
+      "defaultValues" : {
+        "Size" : 0
+        },
+      "execPortType" : "Out",
+      "typeSpec" : "Size"
+      },
+    {
+      "objectType" : "ExecPort",
+      "name" : "rightPolygonID",
+      "nodePortType" : "In",
+      "defaultValues" : {
+        "Size" : 0
+        },
+      "execPortType" : "Out",
+      "typeSpec" : "Size"
+      }
+    ],
+  "extDeps" : {
+    "TKCM" : "*"
+    },
+  "presetGUID" : "4373D5BBB8CEAB205DF928EA3777433A",
+  "code" : "dfgEntry {
+  edgeList.getEdgePolygons(id, leftPolygonID, rightPolygonID);
+}
+"
+  }

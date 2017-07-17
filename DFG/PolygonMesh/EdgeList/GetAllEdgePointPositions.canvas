@@ -1,0 +1,77 @@
+{
+  "objectType" : "Func",
+  "title" : "GetAllEdgePointPositions",
+  "ports" : [
+    {
+      "objectType" : "ExecPort",
+      "name" : "exec",
+      "nodePortType" : "IO",
+      "defaultValues" : {
+        "Execute" : {}
+        },
+      "execPortType" : "IO",
+      "typeSpec" : "Execute"
+      },
+    {
+      "objectType" : "ExecPort",
+      "name" : "edgeList",
+      "nodePortType" : "Out",
+      "defaultValues" : {
+        "EdgeList" : null
+        },
+      "execPortType" : "In",
+      "typeSpec" : "EdgeList"
+      },
+    {
+      "objectType" : "ExecPort",
+      "name" : "firstPositions",
+      "nodePortType" : "In",
+      "defaultValues" : {
+        "Vec3" : {
+          "x" : 0,
+          "y" : 0,
+          "z" : 0
+          },
+        "Vec3[]" : []
+        },
+      "execPortType" : "Out",
+      "typeSpec" : "Vec3[]"
+      },
+    {
+      "objectType" : "ExecPort",
+      "name" : "secondPositions",
+      "nodePortType" : "In",
+      "defaultValues" : {
+        "Vec3" : {
+          "x" : 0,
+          "y" : 0,
+          "z" : 0
+          },
+        "Vec3[]" : []
+        },
+      "execPortType" : "Out",
+      "typeSpec" : "Vec3[]"
+      }
+    ],
+  "extDeps" : {
+    "TKCM" : "*"
+    },
+  "presetGUID" : "3C3F74B4B07B0BB58FB51B7D5DE22659",
+  "code" : "operator GetEdgePointPosTask<<<i>>>(in EdgeList edgeList, io Vec3 firstPositions[], io Vec3 secondPositions[]){
+  firstPositions[i] = edgeList.getEdgeFirstPointPosition(i);
+  secondPositions[i] = edgeList.getEdgeSecondPointPosition(i);
+}
+
+dfgEntry {
+  firstPositions.resize(edgeList.edge.size());
+  secondPositions.resize(edgeList.edge.size());
+  if(edgeList.edge.size() < 1000){
+    for(Integer i=0; i<edgeList.edge.size(); i++){
+      GetEdgePointPosTask(i, edgeList, firstPositions, secondPositions);
+    }
+  }else{
+    GetEdgePointPosTask<<< edgeList.edge.size() >>>(edgeList, firstPositions, secondPositions);
+  }
+}
+"
+  }

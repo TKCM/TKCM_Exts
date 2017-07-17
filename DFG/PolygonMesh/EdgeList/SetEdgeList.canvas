@@ -1,0 +1,44 @@
+{
+  "objectType" : "Func",
+  "title" : "SetEdgeList",
+  "ports" : [
+    {
+      "objectType" : "ExecPort",
+      "name" : "exec",
+      "nodePortType" : "IO",
+      "defaultValues" : {
+        "Execute" : {}
+        },
+      "execPortType" : "IO",
+      "typeSpec" : "Execute"
+      },
+    {
+      "objectType" : "ExecPort",
+      "name" : "edgeList",
+      "nodePortType" : "IO",
+      "defaultValues" : {
+        "EdgeList" : null
+        },
+      "execPortType" : "IO",
+      "typeSpec" : "EdgeList"
+      },
+    {
+      "objectType" : "ExecPort",
+      "name" : "mesh",
+      "nodePortType" : "Out",
+      "defaultValues" : {
+        "PolygonMesh" : null
+        },
+      "execPortType" : "In",
+      "typeSpec" : "PolygonMesh"
+      }
+    ],
+  "extDeps" : {
+    "TKCM" : "*"
+    },
+  "presetGUID" : "E87D73A289B53522900C66E694C21357",
+  "code" : "dfgEntry {
+  edgeList.set(mesh);
+}
+"
+  }

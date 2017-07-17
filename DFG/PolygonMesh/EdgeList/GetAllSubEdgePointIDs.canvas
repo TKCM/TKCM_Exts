@@ -1,0 +1,71 @@
+{
+  "objectType" : "Func",
+  "title" : "GetAllSubEdgePointIDs",
+  "ports" : [
+    {
+      "objectType" : "ExecPort",
+      "name" : "exec",
+      "nodePortType" : "IO",
+      "defaultValues" : {
+        "Execute" : {}
+        },
+      "execPortType" : "IO",
+      "typeSpec" : "Execute"
+      },
+    {
+      "objectType" : "ExecPort",
+      "name" : "edgeList",
+      "nodePortType" : "Out",
+      "defaultValues" : {
+        "EdgeList" : null
+        },
+      "execPortType" : "In",
+      "typeSpec" : "EdgeList"
+      },
+    {
+      "objectType" : "ExecPort",
+      "name" : "firstPoints",
+      "nodePortType" : "In",
+      "defaultValues" : {
+        "Vec3" : {
+          "x" : 0,
+          "y" : 0,
+          "z" : 0
+          },
+        "Vec3[]" : [],
+        "Size[]" : []
+        },
+      "execPortType" : "Out",
+      "typeSpec" : "Size[]"
+      },
+    {
+      "objectType" : "ExecPort",
+      "name" : "secondPoints",
+      "nodePortType" : "In",
+      "defaultValues" : {
+        "Vec3" : {
+          "x" : 0,
+          "y" : 0,
+          "z" : 0
+          },
+        "Vec3[]" : [],
+        "Size[]" : []
+        },
+      "execPortType" : "Out",
+      "typeSpec" : "Size[]"
+      }
+    ],
+  "extDeps" : {
+    "TKCM" : "*"
+    },
+  "presetGUID" : "05D5B4CC8DD1880FEF2DD1776FD7B2E1",
+  "code" : "dfgEntry {
+  for(Integer i=0; i<this.mesh.polygonCount(); i++){
+	  for(Integer j=0; j<this.mesh.getPolygonSubTriangleCount(i)-1; j++){
+      firstPoints.push(this.getSubEdgeFirstPoint(i,j));
+      secondPoints.push(this.getSubEdgeSecondPoint(i,j));
+		}
+	}
+}
+"
+  }

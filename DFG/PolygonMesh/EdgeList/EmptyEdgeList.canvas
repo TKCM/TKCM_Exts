@@ -1,0 +1,34 @@
+{
+  "objectType" : "Func",
+  "title" : "EmptyEdgeList",
+  "ports" : [
+    {
+      "objectType" : "ExecPort",
+      "name" : "exec",
+      "nodePortType" : "IO",
+      "defaultValues" : {
+        "Execute" : {}
+        },
+      "execPortType" : "IO",
+      "typeSpec" : "Execute"
+      },
+    {
+      "objectType" : "ExecPort",
+      "name" : "edgeList",
+      "nodePortType" : "In",
+      "defaultValues" : {
+        "EdgeList" : null
+        },
+      "execPortType" : "Out",
+      "typeSpec" : "EdgeList"
+      }
+    ],
+  "extDeps" : {
+    "TKCM" : "*"
+    },
+  "presetGUID" : "4BBC046D459BDB1BB7928438D9A930A4",
+  "code" : "dfgEntry {
+  edgeList = EdgeList();
+}
+"
+  }
