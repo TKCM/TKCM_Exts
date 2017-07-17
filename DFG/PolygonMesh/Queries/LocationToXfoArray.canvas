@@ -4,7 +4,7 @@
     "uiGraphZoom" : "{\n  \"value\" : 0.7989642024040222\n  }",
     "uiGraphPan" : "{\n  \"x\" : -51.92343139648438,\n  \"y\" : -237.2187347412109\n  }"
     },
-  "title" : "LocationToXfo_Array",
+  "title" : "LocationToXfoArray",
   "ports" : [
     {
       "objectType" : "ExecPort",
@@ -99,7 +99,7 @@
       }
     ],
   "extDeps" : {},
-  "presetGUID" : "22D4F62F4AF6DEF411B035FE5D774CF1",
+  "presetGUID" : "59337643E6BD4860B37A038282D7EBEA",
   "nodes" : [
     {
       "objectType" : "Inst",
@@ -271,279 +271,6 @@
       ]
     },
   "requiredPresets" : {
-    "TKCM.PolygonMesh.Queries.LocationToXfo_Array" : {
-      "objectType" : "Graph",
-      "metadata" : {
-        "uiGraphZoom" : "{\n  \"value\" : 0.7989642024040222\n  }",
-        "uiGraphPan" : "{\n  \"x\" : -51.92343139648438,\n  \"y\" : -237.2187347412109\n  }"
-        },
-      "title" : "LocationToXfo_Array",
-      "ports" : [
-        {
-          "objectType" : "ExecPort",
-          "name" : "exec",
-          "nodePortType" : "IO",
-          "defaultValues" : {
-            "Execute" : {}
-            },
-          "execPortType" : "IO",
-          "typeSpec" : "Execute"
-          },
-        {
-          "objectType" : "ExecPort",
-          "metadata" : {
-            "uiPersistValue" : "true"
-            },
-          "name" : "polygonMesh",
-          "nodePortType" : "Out",
-          "defaultValues" : {
-            "PolygonMesh" : null
-            },
-          "execPortType" : "In",
-          "typeSpec" : "PolygonMesh"
-          },
-        {
-          "objectType" : "ExecPort",
-          "metadata" : {
-            "uiPersistValue" : "true"
-            },
-          "name" : "meshXfo",
-          "nodePortType" : "Out",
-          "defaultValues" : {
-            "Xfo" : {
-              "ori" : {
-                "v" : {
-                  "x" : 0,
-                  "y" : 0,
-                  "z" : 0
-                  },
-                "w" : 1
-                },
-              "tr" : {
-                "x" : 0,
-                "y" : 0,
-                "z" : 0
-                },
-              "sc" : {
-                "x" : 1,
-                "y" : 1,
-                "z" : 1
-                }
-              }
-            },
-          "execPortType" : "In",
-          "typeSpec" : "Xfo"
-          },
-        {
-          "objectType" : "ExecPort",
-          "name" : "location",
-          "nodePortType" : "Out",
-          "defaultValues" : {
-            "GeometryLocation[]" : []
-            },
-          "execPortType" : "In",
-          "typeSpec" : "GeometryLocation[]"
-          },
-        {
-          "objectType" : "ExecPort",
-          "name" : "upvector",
-          "nodePortType" : "Out",
-          "defaultValues" : {
-            "Vec3[]" : [
-              {
-                "x" : 0,
-                "y" : 1,
-                "z" : 0
-                }
-              ]
-            },
-          "execPortType" : "In",
-          "typeSpec" : "Vec3[]"
-          },
-        {
-          "objectType" : "ExecPort",
-          "name" : "result",
-          "nodePortType" : "In",
-          "defaultValues" : {
-            "Xfo[]" : []
-            },
-          "execPortType" : "Out",
-          "typeSpec" : "Xfo[]"
-          }
-        ],
-      "extDeps" : {},
-      "presetGUID" : "22D4F62F4AF6DEF411B035FE5D774CF1",
-      "nodes" : [
-        {
-          "objectType" : "Inst",
-          "metadata" : {
-            "uiGraphPos" : "{\"x\":199.529,\"y\":714.718}"
-            },
-          "name" : "LocationToPositionArray_1",
-          "ports" : [
-            {
-              "objectType" : "InstPort",
-              "name" : "exec",
-              "nodePortType" : "IO"
-              },
-            {
-              "objectType" : "InstPort",
-              "name" : "mesh",
-              "nodePortType" : "In"
-              },
-            {
-              "objectType" : "InstPort",
-              "name" : "meshXfo",
-              "nodePortType" : "In"
-              },
-            {
-              "objectType" : "InstPort",
-              "name" : "location",
-              "nodePortType" : "In"
-              },
-            {
-              "objectType" : "InstPort",
-              "name" : "position",
-              "nodePortType" : "Out"
-              }
-            ],
-          "executable" : "Fabric.Compounds.PolygonMesh.Queries.Conversion.LocationToPositionArray",
-          "presetGUID" : "6FD0D318C9B4EB5F122AFB648D053132"
-          },
-        {
-          "objectType" : "Inst",
-          "metadata" : {
-            "uiGraphPos" : "{\"x\":197.523,\"y\":414.624}"
-            },
-          "name" : "LocationToNormalArray_1",
-          "ports" : [
-            {
-              "objectType" : "InstPort",
-              "name" : "exec",
-              "nodePortType" : "IO"
-              },
-            {
-              "objectType" : "InstPort",
-              "name" : "mesh",
-              "nodePortType" : "In"
-              },
-            {
-              "objectType" : "InstPort",
-              "name" : "meshXfo",
-              "nodePortType" : "In"
-              },
-            {
-              "objectType" : "InstPort",
-              "name" : "location",
-              "nodePortType" : "In"
-              },
-            {
-              "objectType" : "InstPort",
-              "name" : "normal",
-              "nodePortType" : "Out"
-              }
-            ],
-          "executable" : "Fabric.Compounds.PolygonMesh.Queries.Conversion.LocationToNormalArray",
-          "presetGUID" : "7FF91B032357C314584394A3FA0434F2"
-          },
-        {
-          "objectType" : "Inst",
-          "metadata" : {
-            "uiGraphPos" : "{\"x\":542.0,\"y\":583.0}"
-            },
-          "name" : "SetFromDirectionAndUpvectorArray_1",
-          "ports" : [
-            {
-              "objectType" : "InstPort",
-              "name" : "exec",
-              "nodePortType" : "IO"
-              },
-            {
-              "objectType" : "InstPort",
-              "name" : "direction",
-              "nodePortType" : "In"
-              },
-            {
-              "objectType" : "InstPort",
-              "name" : "upvector",
-              "nodePortType" : "In"
-              },
-            {
-              "objectType" : "InstPort",
-              "name" : "result",
-              "nodePortType" : "Out"
-              }
-            ],
-          "executable" : "Fabric.Exts.Math.Quat.SetFromDirectionAndUpvectorArray",
-          "presetGUID" : "5F4BF2874FAB408441D086CD719C4C54"
-          },
-        {
-          "objectType" : "Inst",
-          "metadata" : {
-            "uiGraphPos" : "{\"x\":872.0,\"y\":640.0}"
-            },
-          "name" : "XfoArray_1",
-          "ports" : [
-            {
-              "objectType" : "InstPort",
-              "name" : "exec",
-              "nodePortType" : "IO"
-              },
-            {
-              "objectType" : "InstPort",
-              "name" : "ori",
-              "nodePortType" : "In"
-              },
-            {
-              "objectType" : "InstPort",
-              "name" : "tr",
-              "nodePortType" : "In"
-              },
-            {
-              "objectType" : "InstPort",
-              "name" : "sc",
-              "nodePortType" : "In"
-              },
-            {
-              "objectType" : "InstPort",
-              "name" : "result",
-              "nodePortType" : "Out"
-              }
-            ],
-          "executable" : "Fabric.Exts.Math.Xfo.XfoArray",
-          "presetGUID" : "E47C5165235C7C2A172D6844B0BE4BE5"
-          }
-        ],
-      "connections" : {
-        "polygonMesh" : [
-          "LocationToPositionArray_1.mesh",
-          "LocationToNormalArray_1.mesh"
-          ],
-        "meshXfo" : [
-          "LocationToPositionArray_1.meshXfo",
-          "LocationToNormalArray_1.meshXfo"
-          ],
-        "location" : [
-          "LocationToPositionArray_1.location",
-          "LocationToNormalArray_1.location"
-          ],
-        "upvector" : [
-          "SetFromDirectionAndUpvectorArray_1.upvector"
-          ],
-        "LocationToPositionArray_1.position" : [
-          "XfoArray_1.tr"
-          ],
-        "LocationToNormalArray_1.normal" : [
-          "SetFromDirectionAndUpvectorArray_1.direction"
-          ],
-        "SetFromDirectionAndUpvectorArray_1.result" : [
-          "XfoArray_1.ori"
-          ],
-        "XfoArray_1.result" : [
-          "result"
-          ]
-        }
-      },
     "Fabric.Compounds.PolygonMesh.Queries.Conversion.LocationToPositionArray" : {
       "objectType" : "Func",
       "metadata" : {
@@ -705,7 +432,7 @@
       "objectType" : "Func",
       "metadata" : {
         "uiNodeColor" : "{\n  \"r\" : 99,\n  \"g\" : 129,\n  \"b\" : 92\n  }",
-        "uiDocUrl" : "http://docs.fabric-engine.com/FabricEngine/2.3.0/HTML/KLExtensionsGuide/Math/Quat.html",
+        "uiDocUrl" : "http://docs.fabric-engine.com/FabricEngine/2.5.0/HTML/KLExtensionsGuide/Math/Quat.html",
         "uiTooltip" : "Set the quat to represent the direction as the Z axis\nand the upvector pointing along the XY plane.\n\n Supported by Quat"
         },
       "title" : "SetFromDirectionAndUpvector[]",
@@ -801,7 +528,7 @@ dfgEntry {
       "objectType" : "Func",
       "metadata" : {
         "uiNodeColor" : "{\n  \"r\" : 99,\n  \"g\" : 129,\n  \"b\" : 92\n  }",
-        "uiDocUrl" : "http://docs.fabric-engine.com/FabricEngine/2.3.0/HTML/KLExtensionsGuide/Math/Xfo.html",
+        "uiDocUrl" : "http://docs.fabric-engine.com/FabricEngine/2.5.0/HTML/KLExtensionsGuide/Math/Xfo.html",
         "uiTooltip" : "Constructor from the orientation, translation and scaling\n\n Supported by Xfo"
         },
       "title" : "Xfo[]",
