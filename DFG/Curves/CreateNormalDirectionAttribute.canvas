@@ -1,8 +1,8 @@
 {
   "objectType" : "Graph",
   "metadata" : {
-    "uiGraphZoom" : "{\n  \"value\" : 0.4108307063579559\n  }",
-    "uiGraphPan" : "{\n  \"x\" : 362.4317685214,\n  \"y\" : -159.0174898882377\n  }"
+    "uiGraphZoom" : "{\n  \"value\" : 0.6069375276565552\n  }",
+    "uiGraphPan" : "{\n  \"x\" : -39.93812561035156,\n  \"y\" : -102.3673858642578\n  }"
     },
   "title" : "CreateNormalDirectionAttribute",
   "ports" : [
@@ -34,7 +34,7 @@
       "name" : "control",
       "nodePortType" : "Out",
       "defaultValues" : {
-        "Integer" : 1
+        "Integer" : 2
         },
       "execPortType" : "In",
       "typeSpec" : "Integer"
@@ -45,9 +45,9 @@
       "nodePortType" : "Out",
       "defaultValues" : {
         "Vec3" : {
-          "x" : 0.001000000047497451,
-          "y" : 1,
-          "z" : 0.001000000047497451
+          "x" : 0,
+          "y" : 0,
+          "z" : 1
           }
         },
       "execPortType" : "In",
@@ -67,12 +67,12 @@
   "extDeps" : {
     "TKCM" : "*"
     },
-  "presetGUID" : "5B1228EE8DAEA808D6F541D2BABACE71",
+  "presetGUID" : "AB47340170761358C8CA316033768520",
   "nodes" : [
     {
       "objectType" : "Inst",
       "metadata" : {
-        "uiGraphPos" : "{\"x\":-130.0,\"y\":1110.0}"
+        "uiGraphPos" : "{\"x\":140.0,\"y\":600.0}"
         },
       "name" : "CreateNormalsCore",
       "ports" : [
@@ -162,9 +162,6 @@
           "TKCM" : "*"
           },
         "code" : "dfgEntry {
-  //  check
-  if(this.hasEmptyCurve(\"CreateNormals node\")){  return;  }
-
   this.createNormalsValue(result, control, fixValue);
 }
 "
@@ -173,7 +170,7 @@
     {
       "objectType" : "Inst",
       "metadata" : {
-        "uiGraphPos" : "{\"x\":520.0,\"y\":940.0}",
+        "uiGraphPos" : "{\"x\":460.0,\"y\":600.0}",
         "uiCollapsedState" : "1"
         },
       "name" : "CreateAttribute_1",
@@ -216,7 +213,7 @@
     {
       "objectType" : "Inst",
       "metadata" : {
-        "uiGraphPos" : "{\"x\":721.8,\"y\":934.323}",
+        "uiGraphPos" : "{\"x\":691.8,\"y\":604.323}",
         "uiCollapsedState" : "1"
         },
       "name" : "SetValueArray_1",
@@ -348,7 +345,7 @@
     {
       "objectType" : "Inst",
       "metadata" : {
-        "uiGraphPos" : "{\"x\":-25.4466,\"y\":384.936}"
+        "uiGraphPos" : "{\"x\":720.0,\"y\":260.0}"
         },
       "name" : "check",
       "ports" : [
@@ -408,6 +405,10 @@
           ],
         "extDeps" : {},
         "code" : "dfgEntry {
+  if(this == null || this.curveCount() == 0 || this.hasEmptyCurve(\"CreateNormalDirectionAttr node\")){
+    result = false;
+    return;
+  }
   if(overwrite || this.attributes.has(\"normals\") == false){
     result = true;
   }else{
@@ -452,34 +453,13 @@
         ],
       "executable" : "Fabric.Core.Control.If",
       "presetGUID" : "3182A478A21643455D549E483D35F831"
-      },
-    {
-      "objectType" : "Inst",
-      "metadata" : {
-        "uiGraphPos" : "{\"x\":-22.4665,\"y\":490.379}"
-        },
-      "name" : "PassIO_1",
-      "ports" : [
-        {
-          "objectType" : "InstPort",
-          "name" : "exec",
-          "nodePortType" : "IO"
-          },
-        {
-          "objectType" : "InstPort",
-          "name" : "value",
-          "nodePortType" : "IO"
-          }
-        ],
-      "executable" : "Fabric.Compounds.Data.PassIO",
-      "presetGUID" : "11D3886FBE4057E4D8EF4CE1639CB453"
       }
     ],
   "connections" : {
     "this" : [
       "CreateNormalsCore.this",
       "check.this",
-      "PassIO_1.value"
+      "If_1.if_false"
       ],
     "control" : [
       "CreateNormalsCore.control"
@@ -510,9 +490,6 @@
       ],
     "If_1.result" : [
       "this"
-      ],
-    "PassIO_1.value" : [
-      "If_1.if_false"
       ]
     },
   "requiredPresets" : {
@@ -1048,35 +1025,6 @@ dfgEntry {
       "code" : "
 dfgEntry {
 	result = cond ? if_true : if_false;
-}
-"
-      },
-    "Fabric.Compounds.Data.PassIO" : {
-      "objectType" : "Func",
-      "title" : "PassIO",
-      "ports" : [
-        {
-          "objectType" : "ExecPort",
-          "name" : "exec",
-          "nodePortType" : "IO",
-          "defaultValues" : {
-            "Execute" : {}
-            },
-          "execPortType" : "IO",
-          "typeSpec" : "Execute"
-          },
-        {
-          "objectType" : "ExecPort",
-          "name" : "value",
-          "nodePortType" : "IO",
-          "execPortType" : "IO",
-          "typeSpec" : "$TYPE$"
-          }
-        ],
-      "extDeps" : {},
-      "presetGUID" : "11D3886FBE4057E4D8EF4CE1639CB453",
-      "code" : "dfgEntry {
-  // result = a + b;
 }
 "
       }

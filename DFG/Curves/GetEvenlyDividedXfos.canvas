@@ -50,7 +50,7 @@
       "name" : "mode",
       "nodePortType" : "Out",
       "defaultValues" : {
-        "Integer" : 0
+        "Integer" : 1
         },
       "execPortType" : "In",
       "typeSpec" : "Integer"
@@ -60,7 +60,7 @@
       "name" : "divisionValue",
       "nodePortType" : "Out",
       "defaultValues" : {
-        "Integer" : 3
+        "Integer" : 2
         },
       "execPortType" : "In",
       "typeSpec" : "Integer"
@@ -70,7 +70,7 @@
       "name" : "intervalValue",
       "nodePortType" : "Out",
       "defaultValues" : {
-        "Scalar" : 2
+        "Scalar" : 1
         },
       "execPortType" : "In",
       "typeSpec" : "Scalar"
@@ -96,7 +96,7 @@
       "name" : "directionType",
       "nodePortType" : "Out",
       "defaultValues" : {
-        "Integer" : 1
+        "Integer" : 2
         },
       "execPortType" : "In",
       "typeSpec" : "Integer"
@@ -106,7 +106,7 @@
       "name" : "addStartPosition",
       "nodePortType" : "Out",
       "defaultValues" : {
-        "Boolean" : true
+        "Boolean" : false
         },
       "execPortType" : "In",
       "typeSpec" : "Boolean"
@@ -116,7 +116,7 @@
       "name" : "addEndPosition",
       "nodePortType" : "Out",
       "defaultValues" : {
-        "Boolean" : true
+        "Boolean" : false
         },
       "execPortType" : "In",
       "typeSpec" : "Boolean"
@@ -145,14 +145,14 @@
   "extDeps" : {
     "TKCM" : "*"
     },
-  "presetGUID" : "953F500AF87C693A02B109193F72B00E",
+  "presetGUID" : "5C48E754D3625E9AD6EE067CE35DE65D",
   "code" : "dfgEntry {
   Curves normalCurves();
   if(directionType != 0){
     normalCurves = this.createNormalDirectionAttributeCurves(0, 1.0);
   }
 
-  this.GetEvenlyDividXfos(
+  this.getEvenlyDividXfos(
     resultEachCurve, 
     result, 
     normalCurves, 

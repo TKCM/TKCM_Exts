@@ -1,0 +1,240 @@
+require Math;
+require Geometry;
+require Parameters;
+require JSON;
+
+//////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+//////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+//////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+// analyzeInto ///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+//  ポリゴンメッシュ構造を各ioデータに分解
+function PolygonMesh.analyzeInto(io Size poiSize, io Vec3 poiPos[], io Size polySizees[], io Size polyPoiIDs[], io Boolean haveUV, io Float32 uvValue[]){
+  
+  UInt32 dummy0[];  
+	dummy0.resize(this.polygonCount());
+  UInt32 polygonSizes<>(dummy0); 
+  UInt32 dummy1[];  
+	dummy1.resize(this.polygonPointsCount());
+  UInt32 PolygonPointIndicesPack<>(dummy1); 
+	PolygonMesh P = this.clone();	
+  P.getTopologyAsCountsIndicesExternalArrays(polygonSizes, PolygonPointIndicesPack);
+  polySizees.resize(this.polygonCount());
+  for(Size i=0; i<this.polygonCount(); i++){
+    polySizees[i] = polygonSizes[i];
+  }
+  polyPoiIDs.resize(this.polygonPointsCount());
+  for(Size i=0; i<this.polygonPointsCount(); i++){
+    polyPoiIDs[i] = PolygonPointIndicesPack[i];
+  }
+  //get UV
+  Float32 dummy2[];  
+	dummy2.resize(this.polygonPointsCount() * 2);
+  Float32 uvValues<>(dummy2);
+  this.getUVsAsExternalArray(uvValues,2); 
+  uvValue.resize(this.polygonPointsCount() * 2);
+  for(Size i=0; i<this.polygonPointsCount() * 2; i++){
+    uvValue[i] = uvValues[i];
+  }
+  //get point size & position
+	poiSize = this.pointCount();
+	poiPos = this.positionsAttribute.values.clone();
+} 
+
+// analyzeInto /////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////// 
+//////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+//////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+//////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+// PolygonMeshCombine ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+//  各inデータからポリゴンメッシュを構築
+function PolygonMeshCombine(io PolygonMesh mesh, in Size poiSize, in Vec3 poiPos[], in Size polySizees[], in Size polyPoiIDs[], in Boolean haveUV, in Float32 uvValue[]){
+  PolygonMesh empty();
+  empty.createPoints(poiSize);//make points
+  empty.beginStructureChanges(); 
+	empty.addPolygons(polySizees, polyPoiIDs);//make polygons  
+  empty.endStructureChanges();
+  empty.getAttributes().getPositions().values = poiPos;//set pointPositions
+  if(haveUV){
+	empty.setUVsFromExternalArray(uvValue,2);//set UV
+  }
+  empty.recomputePointNormals();
+  mesh = empty;
+}
+
+// PolygonMeshCombine ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+//////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+//////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+//////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+//  スキンウェイトリストをFabricDeformノードのweightListと繋ぐmel
+/*MEL  get skinning weight list
+int $kazu[] = ` polyEvaluate  -v set_maskSkinning`;
+for ( $i = 0; $i < $kazu[0]; $i++ ){
+    connectAttr -f skinClusterName.weightList[$i] FabricSpliceDefomerNodoName.weightList[$i];
+}
+*/
+
+/*test2
+int $kazu[] = ` polyEvaluate  -v pPlane1`;
+for ( $i = 0; $i < $kazu[0]; $i++ ){
+    float  $trans2[] = getAttr("skinCluster1.weightList["+$i+"].weights");
+    connectAttr -f skinCluster1.weightList[$i] spliceMayaDeformer1.weightList[$i];
+    for ($ii=0; $ii<size($trans2); $ii++){
+        connectAttr -f skinCluster1.weightList[$i].weights[$ii] spliceMayaDeformer1.weightList[$i].weights[$ii];
+    }
+}
+*/
+/*test3
+int $kazu[] = ` polyEvaluate  -v polyginName`;
+for ( $i = 0; $i < $kazu[0]; $i++ ){
+    connectAttr -f skinClusterName.weightList[$i] spliceMayaDeformerName.weightList[$i];
+    for ($ii=0; $ii<boneCount; $ii++){
+        connectAttr -f skinClusterName.weightList[$i].weights[$ii] spliceMayaDeformerName.weightList[$i].weights[$ii];
+    }
+}
+*/
+//////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+//////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+//////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+//  WeightListPack　　//////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+//  ウェイトリストを転送しやすいようにするためのオブジェクト
+object WeightListPack : Persistable{
+	Size pointSize;
+	Scalar weight[][];
+	Size ids[][];
+	Boolean saveEnable;
+	String name;
+};
+
+function WeightListPack(){
+	this.weight.resize(1);
+	this.weight[0].resize(1);
+	this.saveEnable = true;
+	this.name = "WeightListPack";
+}
+
+//  FabricDefomerノードから取得したウェイトリスト（weightList）を格納
+function WeightListPack.getFrom!(in CompoundArrayParam weightList, Size meshPointSize){
+	this.pointSize = meshPointSize;
+	this.weight.resize(meshPointSize);
+	this.ids.resize(meshPointSize);
+	for(Size i=0; i<meshPointSize; i++){
+		this.weight[i].resize(0);
+		this.ids[i].resize(0);
+		CompoundParam copy(weightList.params[i][0]);
+		Float64ArrayParam p(copy.getParam(0));
+		for(Size ii=0; ii<p.values.size(); ii++){
+			if(p.values[ii] != 0){
+				UInt32 boneWeight = p.values[ii]*1000;
+				Scalar boneWeightS = boneWeight;
+				this.weight[i].push(boneWeightS/1000);
+				this.ids[i].push(ii);
+			}	
+		}
+	}
+}
+
+//  WeightListPackからmeshのSkinningAttribute（名前は「skinningData」）を構築
+function skinningAttributeCombine(io PolygonMesh mesh, in WeightListPack weightListPack){
+  if(weightListPack.pointSize != mesh.pointCount()){
+    setError("ERROR: skinningData dose not same size as mesh pointCount ::" + weightListPack.pointSize + " != " + mesh.pointCount()); 
+    return;
+  }
+  Ref<SkinningAttribute> skinAttr = mesh.getOrCreateSkinningAttribute("skinningData");
+  for(Size i=0; i<weightListPack.pointSize; i++){
+    LocalL16UInt32Array ids;
+    LocalL16ScalarArray wei;
+    for(Size ii=0; ii<weightListPack.ids[i].size(); ii++){
+      ids.push(weightListPack.ids[i][ii]);
+      wei.push(weightListPack.weight[i][ii]);
+    }
+    skinAttr.setPairs(i, ids, wei);
+    skinAttr.normalize(i);
+  }
+}
+
+//  WeightListPack　　//////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+//////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+//////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+//////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+//  saveJSON//////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+function JSONDictValue WeightListPack.saveJSON(PersistenceContext persistenceContext){
+  JSONDictValue root();
+  root.setString("name", this.name);
+  if(this.saveEnable){
+	JSONArrayValue weightData();
+	for(Integer i=0; i<this.pointSize; i++){
+		JSONArrayValue weightData2();
+		weightData2.values.resize(this.weight[i].size());
+		for(Integer ii=0; ii<this.weight[i].size(); ii++){
+			weightData2.values[ii] = JSONNumberValue(this.weight[i][ii]);
+		}
+		weightData.add(weightData2);
+	}
+	root.set("weightData", weightData);
+	
+	JSONArrayValue idsData();
+	for(Integer i=0; i<this.pointSize; i++){
+		JSONArrayValue idsData2();
+		idsData2.values.resize(this.ids[i].size());
+		for(Integer ii=0; ii<this.ids[i].size(); ii++){
+			idsData2.values[ii] = JSONNumberValue(this.ids[i][ii]);
+		}
+		idsData.add(idsData2);
+	}
+	root.set("idsData", idsData);
+  }
+  JSONNumberValue poiSize(this.pointSize);
+  root.set("poiSize", poiSize);
+  return root;
+}
+
+function WeightListPack.loadJSON!(PersistenceContext persistenceContext, JSONDictValue json){
+  if(json.has("name")){
+    this.name = json.getString("name");
+  }
+  if(json.has("weightData")){
+      JSONArrayValue weightData = json.get("weightData");
+      this.weight.resize(weightData.size());
+      for(Integer i=0; i<weightData.size(); i++){
+        JSONArrayValue weightData2 = weightData.get(i);
+        this.weight[i].resize(weightData2.size());
+        for(Integer ii=0; ii<this.weight[i].size(); ii++){
+          this.weight[i][ii] = weightData2.getScalar(ii);
+		}
+      }
+  }
+  if(json.has("idsData")){
+      JSONArrayValue idsData = json.get("idsData");
+      this.ids.resize(idsData.size());
+      for(Integer i=0; i<idsData.size(); i++){
+        JSONArrayValue idsData2 = idsData.get(i);
+        this.ids[i].resize(idsData2.size());
+        for(Integer ii=0; ii<this.ids[i].size(); ii++){
+          this.ids[i][ii] = idsData2.getScalar(ii);
+		}
+      }
+  }
+  if(json.has("poiSize")){
+	JSONNumberValue poiSize = json.get("poiSize");
+	this.pointSize =poiSize.toInteger();
+  }
+}
+
+function String WeightListPack.saveDataToString(PersistenceContext persistenceContext){
+  JSONDoc doc();
+  doc.root = this.saveJSON(persistenceContext);
+  String json = doc.write();
+  return json;
+}
+
+function WeightListPack.loadDataFromString!(PersistenceContext persistenceContext, String data){
+  JSONDoc doc();
+  if(doc.parse(data)){
+    this.loadJSON(persistenceContext, doc.root);
+  }
+  else{
+    setError("ERROR Loading WeightListPack. Saved JSON data is not valid");
+  }
+}
+
+//////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////

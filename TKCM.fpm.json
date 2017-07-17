@@ -16,6 +16,10 @@
     "Exts/Geometry/Curves/Curves.kl",
     //"Exts/Geometry/PolygonMesh/BlendShape.kl",
     "Exts/Geometry/PolygonMesh/MergedMeshArrayModifier.kl",
+    "Exts/Geometry/PolygonMesh/PolygonMeshPortable.kl",
+    "Exts/Geometry/PolygonMesh/EdgeList.kl",
+    "Exts/Geometry/PolygonMesh/CrossData.kl",
+    "Exts/Geometry/PolygonMesh/SplitPolygon2.kl",
 
     "Exts/Util/Valve.kl",
     "Exts/Util/DijkstraAlgorithm.kl"

@@ -1,8 +1,8 @@
 {
   "objectType" : "Graph",
   "metadata" : {
-    "uiGraphZoom" : "{\n  \"value\" : 0.7492632269859314\n  }",
-    "uiGraphPan" : "{\n  \"x\" : 600.66064453125,\n  \"y\" : -27.80119895935059\n  }"
+    "uiGraphZoom" : "{\n  \"value\" : 0.4182599484920502\n  }",
+    "uiGraphPan" : "{\n  \"x\" : 181.27099609375,\n  \"y\" : 78.31428527832031\n  }"
     },
   "title" : "CreateMergeMeshArray",
   "ports" : [
@@ -103,7 +103,7 @@
   "extDeps" : {
     "TKCM" : "*"
     },
-  "presetGUID" : "36627CCCA949A014BE3BAD273D9EE471",
+  "presetGUID" : "F96BA1E8D7DE9A864EF7EC07D9775F51",
   "nodes" : [
     {
       "objectType" : "Inst",
@@ -464,7 +464,7 @@
     {
       "objectType" : "Get",
       "metadata" : {
-        "uiGraphPos" : "{\"x\":-50.0,\"y\":640.0}"
+        "uiGraphPos" : "{\"x\":-640.0,\"y\":840.0}"
         },
       "name" : "get_2",
       "ports" : [
@@ -602,6 +602,11 @@
           "objectType" : "InstPort",
           "name" : "updateXfos",
           "nodePortType" : "Out"
+          },
+        {
+          "objectType" : "InstPort",
+          "name" : "restPoly",
+          "nodePortType" : "In"
           }
         ],
       "definition" : {
@@ -617,7 +622,6 @@
             },
           {
             "objectType" : "ExecPort",
-            "metadata" : {},
             "name" : "source",
             "nodePortType" : "Out",
             "execPortType" : "In",
@@ -713,12 +717,20 @@
             "nodePortType" : "In",
             "execPortType" : "Out",
             "typeSpec" : "Boolean"
+            },
+          {
+            "objectType" : "ExecPort",
+            "metadata" : {},
+            "name" : "restPoly",
+            "nodePortType" : "Out",
+            "execPortType" : "In",
+            "typeSpec" : "PolygonMesh[]"
             }
           ],
         "extDeps" : {},
         "code" : "dfgEntry {
   for(Integer i=0; i<IDs.size(); i++){
-    if(selectSourceMesh == 0 && source.size() <= IDs[i]){
+    if(selectSourceMesh == 0 && source.size() <= IDs[i].toInteger()){
       report(\"!!!!!!Error!!!!!! ::: CreateMergedMeshArray : select mesh ID '\"+IDs[i]+\"' is out of range (\"+source.size()+\")\");
       return;
     }
@@ -729,6 +741,7 @@
     || selectSourceMesh != restSelectMode 
     || seedForRandom != restSeed 
     || transformNormals != restTransformNormals
+    || source.size() != restPoly.size()
     ){
     reMerge = true;
   }else{
@@ -747,6 +760,13 @@
       }
     }
     
+    // update Meshes
+    for(Integer i=0; i<source.size(); i++){
+      if(source[i].pointCount() != restPoly[i].pointCount()){
+        reMerge = true;
+        break;
+      }
+    }
   }
 }
 "
@@ -1212,7 +1232,7 @@
       "imploded_nodes.mergedMesh"
       ],
     "get_2.value" : [
-      "CreateMergeMeshCore.restMeshes"
+      "Chacker.restPoly"
       ],
     "set_3.value" : [
       "clonedSourceMeshIDList",
@@ -1247,6 +1267,9 @@
       ],
     "Chacker.updateXfos" : [
       "If_1.cond"
+      ],
+    "Chacker.restPoly" : [
+      "CreateMergeMeshCore.restMeshes"
       ],
     "set_4.value" : [
       "CreateMergeMeshCore.IDs"
