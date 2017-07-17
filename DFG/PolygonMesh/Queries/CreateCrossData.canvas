@@ -1,0 +1,600 @@
+{
+  "objectType" : "Graph",
+  "metadata" : {
+    "uiGraphZoom" : "{\n  \"value\" : 0.6795535683631897\n  }",
+    "uiGraphPan" : "{\n  \"x\" : -320.4338927388991,\n  \"y\" : 93.3710685220106\n  }"
+    },
+  "title" : "CreateCrossData",
+  "ports" : [
+    {
+      "objectType" : "ExecPort",
+      "name" : "exec",
+      "nodePortType" : "IO",
+      "defaultValues" : {
+        "Execute" : {}
+        },
+      "execPortType" : "IO",
+      "typeSpec" : "Execute"
+      },
+    {
+      "objectType" : "ExecPort",
+      "name" : "meshA",
+      "nodePortType" : "Out",
+      "defaultValues" : {
+        "PolygonMesh" : null
+        },
+      "execPortType" : "In",
+      "typeSpec" : "PolygonMesh"
+      },
+    {
+      "objectType" : "ExecPort",
+      "name" : "meshB",
+      "nodePortType" : "Out",
+      "defaultValues" : {
+        "PolygonMesh" : null
+        },
+      "execPortType" : "In",
+      "typeSpec" : "PolygonMesh"
+      },
+    {
+      "objectType" : "ExecPort",
+      "name" : "result",
+      "nodePortType" : "In",
+      "defaultValues" : {
+        "CrossData" : null
+        },
+      "execPortType" : "Out",
+      "typeSpec" : "CrossData"
+      }
+    ],
+  "extDeps" : {
+    "TKCM" : "*"
+    },
+  "presetGUID" : "369DD36C92B321EF464A243AEEAB85DC",
+  "nodes" : [
+    {
+      "objectType" : "Inst",
+      "metadata" : {
+        "uiGraphPos" : "{\"x\":647.727,\"y\":363.596}"
+        },
+      "name" : "EmptyEdgeList_1",
+      "ports" : [
+        {
+          "objectType" : "InstPort",
+          "name" : "exec",
+          "nodePortType" : "IO"
+          },
+        {
+          "objectType" : "InstPort",
+          "name" : "edgeList",
+          "nodePortType" : "Out"
+          }
+        ],
+      "executable" : "TKCM.PolygonMesh.EdgeList.EmptyEdgeList",
+      "presetGUID" : "4BBC046D459BDB1BB7928438D9A930A4"
+      },
+    {
+      "objectType" : "Inst",
+      "metadata" : {
+        "uiGraphPos" : "{\"x\":647.727,\"y\":453.596}"
+        },
+      "name" : "EmptyEdgeList_2",
+      "ports" : [
+        {
+          "objectType" : "InstPort",
+          "name" : "exec",
+          "nodePortType" : "IO"
+          },
+        {
+          "objectType" : "InstPort",
+          "name" : "edgeList",
+          "nodePortType" : "Out"
+          }
+        ],
+      "executable" : "TKCM.PolygonMesh.EdgeList.EmptyEdgeList",
+      "presetGUID" : "4BBC046D459BDB1BB7928438D9A930A4"
+      },
+    {
+      "objectType" : "Inst",
+      "metadata" : {
+        "uiGraphPos" : "{\"x\":1010.0,\"y\":430.0}"
+        },
+      "name" : "GetCrossDataCore",
+      "ports" : [
+        {
+          "objectType" : "InstPort",
+          "name" : "exec",
+          "nodePortType" : "IO"
+          },
+        {
+          "objectType" : "InstPort",
+          "name" : "targetEdgeList",
+          "nodePortType" : "IO"
+          },
+        {
+          "objectType" : "InstPort",
+          "name" : "cutterEdgeList",
+          "nodePortType" : "IO"
+          },
+        {
+          "objectType" : "InstPort",
+          "name" : "result",
+          "nodePortType" : "Out"
+          }
+        ],
+      "definition" : {
+        "objectType" : "Func",
+        "title" : "func",
+        "ports" : [
+          {
+            "objectType" : "ExecPort",
+            "name" : "exec",
+            "nodePortType" : "IO",
+            "execPortType" : "IO",
+            "typeSpec" : "Execute"
+            },
+          {
+            "objectType" : "ExecPort",
+            "name" : "targetEdgeList",
+            "nodePortType" : "IO",
+            "execPortType" : "IO",
+            "typeSpec" : "EdgeList"
+            },
+          {
+            "objectType" : "ExecPort",
+            "name" : "cutterEdgeList",
+            "nodePortType" : "IO",
+            "execPortType" : "IO",
+            "typeSpec" : "EdgeList"
+            },
+          {
+            "objectType" : "ExecPort",
+            "name" : "result",
+            "nodePortType" : "In",
+            "execPortType" : "Out",
+            "typeSpec" : "CrossData"
+            }
+          ],
+        "extDeps" : {
+          "TKCM" : "*"
+          },
+        "code" : "/*function CrossData.exception!(in EdgeList listA, in EdgeList listB){
+  Integer newChainSub[](this.chain.size());
+  Boolean done[](this.chainSub.size());
+  Integer idA, idB;
+  Vec3 pos[];
+  Size id[];
+  Boolean allDone = false;
+  while(allDone == false){
+    idA = -1;
+    pos.resize(0);
+    id.resize(0);
+    for(Integer i=0; i<this.chainSub.size(); i++){
+      if(!done[i]){
+        idA = this.meshAPolyID[ this.chainSub[i] ];
+        idB = this.meshBPolyID[ this.chainSub[i] ];
+        pos.push(this.crossPos[ this.chainSub[i] ]);
+        id.push(this.chainSub[ i ]);
+        done[i] = true;
+        break;
+      }
+    }
+    if(idA == -1){
+      break;
+    }
+    
+    for(Integer i=0; i<this.chainSub.size(); i++){
+      if(!done[i] && idA == this.meshAPolyID[ this.chainSub[i] ] && idB == this.meshBPolyID[ this.chainSub[i] ]){
+        pos.push(this.crossPos[ this.chainSub[i] ]);
+        id.push(this.chainSub[ i ]);
+        done[i] = true;
+      }
+    }
+    if(pos.size() == 4){
+      Vec3 v = (pos[0]-pos[1]).unit();
+      Vec3 v2 = (pos[2]-pos[3]).unit();   
+      if(v.unitsAngleTo(v2) == 0.0 || v.unitsAngleTo(v2*-1) == 0.0){
+        
+        
+        \"---------------\";
+        
+        
+      }
+    }else{
+      break;
+    }
+  }
+}
+*/
+dfgEntry {
+  CrossData_collectData crossData_collectData();
+  crossData_collectData.set(targetEdgeList, cutterEdgeList);
+  result = crossData_collectData.toCrossData();
+  
+  if(result.chainSub.size() != 0){
+    Size polyIDA = result.meshAPolyID[result.chainSub[0]];
+    Size polyIDB = result.meshBPolyID[result.chainSub[0]];
+    for(Integer i=1; i<result.chainSub.size(); i++){
+      if(polyIDA != result.meshAPolyID[result.chainSub[0]]){
+        polyIDA = result.meshAPolyID[result.chainSub[result.chainSub[i]]];
+      }
+      if(polyIDB != result.meshBPolyID[result.chainSub[0]]){
+        polyIDB = result.meshBPolyID[result.chainSub[result.chainSub[i]]];
+      }
+    }
+    report(\"!!!!!!Error!!!!!! \"+\": mesh A polygonID[\"+polyIDA+\"] to mesh B polygonID[\"+polyIDB+\"], contacted more than once!!!\");
+    
+    result = CrossData();
+    //result.exception(targetEdgeList, cutterEdgeList);
+  }
+}
+"
+        }
+      },
+    {
+      "objectType" : "Inst",
+      "metadata" : {
+        "uiGraphPos" : "{\"x\":837.727,\"y\":343.596}"
+        },
+      "name" : "SetEdgeList_3",
+      "ports" : [
+        {
+          "objectType" : "InstPort",
+          "name" : "exec",
+          "nodePortType" : "IO"
+          },
+        {
+          "objectType" : "InstPort",
+          "name" : "edgeList",
+          "nodePortType" : "IO"
+          },
+        {
+          "objectType" : "InstPort",
+          "name" : "mesh",
+          "nodePortType" : "In"
+          }
+        ],
+      "executable" : "TKCM.PolygonMesh.EdgeList.SetEdgeList",
+      "presetGUID" : "E87D73A289B53522900C66E694C21357"
+      },
+    {
+      "objectType" : "Inst",
+      "metadata" : {
+        "uiGraphPos" : "{\"x\":827.727,\"y\":473.596}"
+        },
+      "name" : "SetEdgeList_4",
+      "ports" : [
+        {
+          "objectType" : "InstPort",
+          "name" : "exec",
+          "nodePortType" : "IO"
+          },
+        {
+          "objectType" : "InstPort",
+          "name" : "edgeList",
+          "nodePortType" : "IO"
+          },
+        {
+          "objectType" : "InstPort",
+          "name" : "mesh",
+          "nodePortType" : "In"
+          }
+        ],
+      "executable" : "TKCM.PolygonMesh.EdgeList.SetEdgeList",
+      "presetGUID" : "E87D73A289B53522900C66E694C21357"
+      },
+    {
+      "objectType" : "Inst",
+      "metadata" : {
+        "uiGraphPos" : "{\"x\":1530.0,\"y\":480.0}"
+        },
+      "name" : "SortByChainID",
+      "ports" : [
+        {
+          "objectType" : "InstPort",
+          "name" : "exec",
+          "nodePortType" : "IO"
+          },
+        {
+          "objectType" : "InstPort",
+          "name" : "source",
+          "nodePortType" : "In"
+          },
+        {
+          "objectType" : "InstPort",
+          "name" : "result",
+          "nodePortType" : "Out"
+          },
+        {
+          "objectType" : "InstPort",
+          "name" : "meshAPolyIDList",
+          "nodePortType" : "In"
+          }
+        ],
+      "definition" : {
+        "objectType" : "Func",
+        "title" : "func",
+        "ports" : [
+          {
+            "objectType" : "ExecPort",
+            "name" : "exec",
+            "nodePortType" : "IO",
+            "execPortType" : "IO",
+            "typeSpec" : "Execute"
+            },
+          {
+            "objectType" : "ExecPort",
+            "name" : "source",
+            "nodePortType" : "Out",
+            "execPortType" : "In",
+            "typeSpec" : "CrossData"
+            },
+          {
+            "objectType" : "ExecPort",
+            "name" : "result",
+            "nodePortType" : "In",
+            "execPortType" : "Out",
+            "typeSpec" : "CrossData"
+            },
+          {
+            "objectType" : "ExecPort",
+            "name" : "meshAPolyIDList",
+            "nodePortType" : "Out",
+            "execPortType" : "In",
+            "typeSpec" : "UInt32Array[]"
+            }
+          ],
+        "extDeps" : {
+          "TKCM" : "*"
+          },
+        "code" : "dfgEntry {
+  if(source.meshAPolyID.size() == 0){
+    result = CrossData();
+    return;
+  }
+  result = source.sortByChainID(meshAPolyIDList);
+  
+}
+"
+        }
+      },
+    {
+      "objectType" : "Inst",
+      "metadata" : {
+        "uiGraphPos" : "{\"x\":1820.0,\"y\":520.0}"
+        },
+      "name" : "Cache_1",
+      "ports" : [
+        {
+          "objectType" : "InstPort",
+          "name" : "exec",
+          "nodePortType" : "IO"
+          },
+        {
+          "objectType" : "InstPort",
+          "name" : "value",
+          "nodePortType" : "In"
+          }
+        ],
+      "executable" : "Fabric.Core.Data.Cache",
+      "presetGUID" : "D903AFD981FE9214C69943F542D5FD60"
+      },
+    {
+      "objectType" : "Inst",
+      "metadata" : {
+        "uiGraphPos" : "{\"x\":1260.0,\"y\":550.0}"
+        },
+      "name" : "speedUp",
+      "ports" : [
+        {
+          "objectType" : "InstPort",
+          "name" : "exec",
+          "nodePortType" : "IO"
+          },
+        {
+          "objectType" : "InstPort",
+          "name" : "source",
+          "nodePortType" : "In"
+          },
+        {
+          "objectType" : "InstPort",
+          "name" : "meshAPolyIDList",
+          "nodePortType" : "Out"
+          }
+        ],
+      "definition" : {
+        "objectType" : "Func",
+        "title" : "func",
+        "ports" : [
+          {
+            "objectType" : "ExecPort",
+            "name" : "exec",
+            "nodePortType" : "IO",
+            "execPortType" : "IO",
+            "typeSpec" : "Execute"
+            },
+          {
+            "objectType" : "ExecPort",
+            "name" : "source",
+            "nodePortType" : "Out",
+            "execPortType" : "In",
+            "typeSpec" : "CrossData"
+            },
+          {
+            "objectType" : "ExecPort",
+            "name" : "meshAPolyIDList",
+            "nodePortType" : "In",
+            "execPortType" : "Out",
+            "typeSpec" : "UInt32Array[]"
+            }
+          ],
+        "extDeps" : {
+          "TKCM" : "*"
+          },
+        "code" : "dfgEntry {
+  Size max = source.meshAPolyID[0];
+  for(Integer i=1; i<source.meshAPolyID.size(); i++){
+    if(source.meshAPolyID[i] != 4294967295){
+      if(max < source.meshAPolyID[i]){
+        max = source.meshAPolyID[i];
+      }
+    }
+  }
+
+  meshAPolyIDList.resize(max+1);
+  for(Integer i=0; i<source.meshAPolyID.size(); i++){
+    Size polyID = source.meshAPolyID[i];
+    if(polyID != 4294967295){
+      meshAPolyIDList[polyID].push(i);
+    }
+  }
+}
+"
+        }
+      }
+    ],
+  "connections" : {
+    "meshA" : [
+      "SetEdgeList_3.mesh"
+      ],
+    "meshB" : [
+      "SetEdgeList_4.mesh"
+      ],
+    "EmptyEdgeList_1.edgeList" : [
+      "SetEdgeList_3.edgeList"
+      ],
+    "EmptyEdgeList_2.edgeList" : [
+      "SetEdgeList_4.edgeList"
+      ],
+    "GetCrossDataCore.result" : [
+      "SortByChainID.source",
+      "speedUp.source"
+      ],
+    "SetEdgeList_3.edgeList" : [
+      "GetCrossDataCore.targetEdgeList"
+      ],
+    "SetEdgeList_4.edgeList" : [
+      "GetCrossDataCore.cutterEdgeList"
+      ],
+    "SortByChainID.result" : [
+      "Cache_1.value"
+      ],
+    "Cache_1.value" : [
+      "result"
+      ],
+    "speedUp.meshAPolyIDList" : [
+      "SortByChainID.meshAPolyIDList"
+      ]
+    },
+  "requiredPresets" : {
+    "TKCM.PolygonMesh.EdgeList.EmptyEdgeList" : {
+      "objectType" : "Func",
+      "title" : "EmptyEdgeList",
+      "ports" : [
+        {
+          "objectType" : "ExecPort",
+          "name" : "exec",
+          "nodePortType" : "IO",
+          "defaultValues" : {
+            "Execute" : {}
+            },
+          "execPortType" : "IO",
+          "typeSpec" : "Execute"
+          },
+        {
+          "objectType" : "ExecPort",
+          "name" : "edgeList",
+          "nodePortType" : "In",
+          "defaultValues" : {
+            "EdgeList" : null
+            },
+          "execPortType" : "Out",
+          "typeSpec" : "EdgeList"
+          }
+        ],
+      "extDeps" : {
+        "TKCM" : "*"
+        },
+      "presetGUID" : "4BBC046D459BDB1BB7928438D9A930A4",
+      "code" : "dfgEntry {
+  edgeList = EdgeList();
+}
+"
+      },
+    "TKCM.PolygonMesh.EdgeList.SetEdgeList" : {
+      "objectType" : "Func",
+      "title" : "SetEdgeList",
+      "ports" : [
+        {
+          "objectType" : "ExecPort",
+          "name" : "exec",
+          "nodePortType" : "IO",
+          "defaultValues" : {
+            "Execute" : {}
+            },
+          "execPortType" : "IO",
+          "typeSpec" : "Execute"
+          },
+        {
+          "objectType" : "ExecPort",
+          "name" : "edgeList",
+          "nodePortType" : "IO",
+          "defaultValues" : {
+            "EdgeList" : null
+            },
+          "execPortType" : "IO",
+          "typeSpec" : "EdgeList"
+          },
+        {
+          "objectType" : "ExecPort",
+          "name" : "mesh",
+          "nodePortType" : "Out",
+          "defaultValues" : {
+            "PolygonMesh" : null
+            },
+          "execPortType" : "In",
+          "typeSpec" : "PolygonMesh"
+          }
+        ],
+      "extDeps" : {
+        "TKCM" : "*"
+        },
+      "presetGUID" : "E87D73A289B53522900C66E694C21357",
+      "code" : "dfgEntry {
+  edgeList.set(mesh);
+}
+"
+      },
+    "Fabric.Core.Data.Cache" : {
+      "objectType" : "Func",
+      "metadata" : {
+        "uiNodeColor" : "{\n  \"r\" : 214,\n  \"g\" : 191,\n  \"b\" : 103\n  }",
+        "uiAlwaysShowDaisyChainPorts" : "true",
+        "uiHeaderColor" : "{\n  \"r\" : 188,\n  \"g\" : 129,\n  \"b\" : 83\n  }"
+        },
+      "title" : "Cache",
+      "cacheRule" : "always",
+      "ports" : [
+        {
+          "objectType" : "ExecPort",
+          "name" : "exec",
+          "nodePortType" : "IO",
+          "execPortType" : "IO",
+          "typeSpec" : "Execute"
+          },
+        {
+          "objectType" : "ExecPort",
+          "name" : "value",
+          "nodePortType" : "Out",
+          "execPortType" : "In",
+          "typeSpec" : "$TYPE$"
+          }
+        ],
+      "extDeps" : {},
+      "presetGUID" : "D903AFD981FE9214C69943F542D5FD60",
+      "code" : "dfgEntry {
+}
+"
+      }
+    }
+  }

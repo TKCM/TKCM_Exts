@@ -1,0 +1,157 @@
+{
+  "objectType" : "Func",
+  "title" : "GetAllCrossPositions",
+  "ports" : [
+    {
+      "objectType" : "ExecPort",
+      "name" : "exec",
+      "nodePortType" : "IO",
+      "defaultValues" : {
+        "Execute" : {}
+        },
+      "execPortType" : "IO",
+      "typeSpec" : "Execute"
+      },
+    {
+      "objectType" : "ExecPort",
+      "name" : "this",
+      "nodePortType" : "Out",
+      "defaultValues" : {
+        "CrossData" : null
+        },
+      "execPortType" : "In",
+      "typeSpec" : "CrossData"
+      },
+    {
+      "objectType" : "ExecPort",
+      "name" : "omitSamePosition",
+      "nodePortType" : "Out",
+      "defaultValues" : {
+        "Boolean" : true
+        },
+      "execPortType" : "In",
+      "typeSpec" : "Boolean"
+      },
+    {
+      "objectType" : "ExecPort",
+      "name" : "split",
+      "nodePortType" : "Out",
+      "defaultValues" : {
+        "Boolean" : true
+        },
+      "execPortType" : "In",
+      "typeSpec" : "Boolean"
+      },
+    {
+      "objectType" : "ExecPort",
+      "name" : "positions",
+      "nodePortType" : "In",
+      "defaultValues" : {
+        "Vec3[]" : []
+        },
+      "execPortType" : "Out",
+      "typeSpec" : "Vec3[]"
+      },
+    {
+      "objectType" : "ExecPort",
+      "name" : "splitIDList",
+      "nodePortType" : "In",
+      "defaultValues" : {
+        "Size[]" : []
+        },
+      "execPortType" : "Out",
+      "typeSpec" : "Size[]"
+      },
+    {
+      "objectType" : "ExecPort",
+      "name" : "splitedPositions",
+      "nodePortType" : "In",
+      "defaultValues" : {
+        "Vec3Array[]" : []
+        },
+      "execPortType" : "Out",
+      "typeSpec" : "Vec3Array[]"
+      }
+    ],
+  "extDeps" : {
+    "TKCM" : "*"
+    },
+  "presetGUID" : "EBCD9152E081B7C8674B7D407F87B26A",
+  "code" : "function Vec3[].omitSamePosition?(out Vec3 positions[], out Size omitCount[], in UInt32 chainPackList[]){
+  positions.push(this[0]);
+  Size s[];
+  Size om;
+  for(Integer i=1; i<this.size(); i++){
+    if(positions[i-1-om] == this[i]){
+      om += 1;
+    }else{
+      positions.push(this[i]);
+    }
+    for(Integer j=0; j<chainPackList.size(); j++){
+      if(chainPackList[j]-1 == i){
+        s.push(om);
+        break;
+      }
+    }
+  }
+  omitCount = s;
+}
+
+operator OmitSamePositionSplitTask<<<index>>>(io Vec3Array[] result, in Vec3[] pos, in UInt32 idList[]){
+  Size arrayID, startCnt;
+  if(index < idList[0]){
+    arrayID = 0;
+    startCnt = 0;
+  }else{
+    for(Integer i=0; i<idList.size(); i++){
+      if(idList[i] <= index){
+        startCnt = idList[i];
+        arrayID = i+1;
+      }
+    }
+  }
+  
+  result[arrayID][index-startCnt] = pos[index];
+}
+
+dfgEntry {
+  if(this.meshAPolyID.size() == 0){
+    return;
+  }
+  
+  if(omitSamePosition){
+    Size omitCount[](this.chainPackList.size());
+      
+    this.crossPos.omitSamePosition(positions, omitCount, this.chainPackList);
+
+    for(Integer i=0; i<this.chainPackList.size(); i++){
+      splitIDList.push(this.chainPackList[i]-omitCount[i]);
+    }
+    
+  }else{
+    positions = this.crossPos;
+    splitIDList = this.chainPackList;
+  }
+
+  if(split){
+    splitedPositions.resize(this.chainPackList.size());
+    for(Integer i=0; i<splitedPositions.size(); i++){
+      if(i==0){
+        splitedPositions[i].resize(splitIDList[i]);
+      }else{
+        splitedPositions[i].resize(splitIDList[i]-splitIDList[i-1]);
+      }
+    }
+    OmitSamePositionSplitTask<<<positions.size()>>>(splitedPositions, positions, splitIDList);
+  }
+
+  for(Integer i=0; i<splitedPositions.size(); i++){
+    if(this.close[i]){
+      Size cnt = splitedPositions[i].size();
+      splitedPositions[i].resize(cnt+1);
+      splitedPositions[i][cnt] = splitedPositions[i][0];
+    }
+  }
+}
+"
+  }

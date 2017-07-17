@@ -1,0 +1,347 @@
+require Geometry;
+require FabricSynchronization;
+require TKCM;	//	EdgeListはTKCMから
+
+
+//////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+//////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+//////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+//////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+//  CrossData_collectData / CrossData_Crumb
+//  CrossDataを構築する際にスレッドセーフで行うための中間データとして使用
+
+object CrossData_Crumb{
+  Size meshAPolyID[];
+  Size meshBPolyID[];
+  Boolean aOrB[];
+  Scalar edgeID[];
+  Vec3 crossPos[];
+};
+
+function CrossData_Crumb(){
+}
+
+object CrossData_collectData{
+  private SimpleLock lock;
+  private Size meshAPolyID[];
+  private Size meshBPolyID[];
+  private Boolean aOrB[];
+  private Size edgeID[];
+  private Vec3 crossPos[];
+  private UInt32 chain[];
+  private UInt32 chainSub[];
+};
+
+function CrossData_collectData(){
+  this.lock = SimpleLock("CrossDataThreadsafeObject");
+}
+
+function CrossData_collectData.resize!(in Integer newCount){
+  this.meshAPolyID.resize(newCount);
+  this.meshBPolyID.resize(newCount);
+  this.aOrB.resize(newCount);
+  this.edgeID.resize(newCount);
+  this.crossPos.resize(newCount);
+  this.chain.resize(newCount);
+  this.chainSub.resize(newCount);
+}
+
+function CrossData_collectData.pushData!(in CrossData_Crumb data){ 
+  AutoLock AL(this.lock);
+  Count oldSize = this.meshAPolyID.size();
+  Count addSize = data.meshAPolyID.size();
+
+  Size cnt = 0;
+  Size inf = 4294967295;
+  for(Integer i=0; i<addSize; i++){
+    if(data.meshAPolyID[i] == inf || data.meshBPolyID[i] == inf){
+      continue; //  エッジがポリゴンボーダー（メッシュの境界線）だった場合はデータを登録しない
+    }
+    this.resize(oldSize+cnt+1);
+    this.meshAPolyID[oldSize+cnt] = data.meshAPolyID[i];
+    this.meshBPolyID[oldSize+cnt] = data.meshBPolyID[i];
+    this.aOrB[oldSize+cnt] = data.aOrB[i];
+    this.edgeID[oldSize+cnt] = data.edgeID[i];
+    this.crossPos[oldSize+cnt] = data.crossPos[i];
+    this.chain[oldSize+cnt] = inf;
+    this.chainSub[oldSize+cnt] = 0;
+
+    // crossPosisionが同じものを検出しchainにお互いのIDを登録しておく
+    Size allCnt = this.chain.size()-1;
+    for(Integer j=0; j<allCnt; j++){
+      if(this.crossPos[j] == data.crossPos[i] && this.chain[j] == inf){ // ”== inf”はchainがまだ未設定であるかというチェック
+        this.chain[j] = allCnt;
+        this.chain[oldSize+cnt] = j;
+        break;
+      }
+    }
+    // polyIDのABのセットが同じものがあれば後に例外処理するためにマーキングしておく
+    Size samePolyIDCnt = 1;
+    Size samePolyID[];
+    for(Integer j=0; j<allCnt; j++){
+      if(this.meshAPolyID[j] == data.meshAPolyID[i] && this.meshBPolyID[j] == data.meshBPolyID[i]){
+        samePolyID.push(j);
+        samePolyIDCnt += 1;
+      }
+    }
+    for(Integer j=0; j<samePolyID.size(); j++){
+      if(2 < samePolyIDCnt){
+        this.chainSub[samePolyID[j]] = 1;
+        this.chainSub[oldSize+cnt] = 1;
+      }
+    }
+    cnt += 1;
+  }
+}
+
+function CrossData_collectDataFunc(
+  io Ref<CrossData_collectData> crossData_C,
+  in Size index,
+  in Ref<EdgeList> edgeList,
+  in Ref<SpatialQueryable> sq,
+  in Ref<PolygonMesh> targetMesh,
+  in Boolean invAB
+  ){
+  CrossData_Crumb result();
+  //  エッジの両端のポジションを取得
+  Vec3 fPos = edgeList.getEdgeFirstPointPosition(index);
+  Vec3 sPos = edgeList.getEdgeSecondPointPosition(index);
+  //  相手メッシュに対して空間分析を実行
+  Ref<SpatialQuery> query = sq.beginSpatialQuery();
+    Size cnt = query.getLineIntersections(fPos, sPos, 2);  //  エッジ上で相手メッシュと何回交差があったかを取得
+    if(0 < cnt){  //  交差があった場合
+      result.meshAPolyID.resize(cnt*2);
+      result.meshBPolyID.resize(cnt*2);
+      result.aOrB.resize(cnt*2);
+      result.edgeID.resize(cnt*2);
+      result.crossPos.resize(cnt*2);
+      //  エッジに隣接するポリゴン番号を取得       
+      Size edgePolyIDs[2];
+      edgeList.getEdgePolygons(index, edgePolyIDs[0], edgePolyIDs[1]);
+      Vec3 firstPoiPos = edgeList.getEdgeFirstPointPosition(index);
+      Vec3 secondPoiPos = edgeList.getEdgeSecondPointPosition(index);
+      
+      for(Integer i=0; i<cnt; i++){ //  交差した回数だけループ
+        GeometryLocation loc = query.getQueriedLocation(i);
+        Size polyID = targetMesh.getLocationPolygon(loc);  //  交差したポリゴン番号を取得
+        //  お互いのメッシュで交差しているポリゴン番号を登録していく
+        //  meshBからmeshAへ検査を行っている場合は、ポリゴン番号の格納先が異なる
+        if(!invAB){
+          result.meshAPolyID[i*2] = edgePolyIDs[0];
+          result.meshBPolyID[i*2] = polyID;
+          result.meshAPolyID[i*2+1] = edgePolyIDs[1];
+          result.meshBPolyID[i*2+1] = polyID;
+          result.aOrB[i*2] = false;
+          result.aOrB[i*2+1] = false;
+        }else{
+          result.meshAPolyID[i*2] = polyID;
+          result.meshBPolyID[i*2] = edgePolyIDs[0];
+          result.meshAPolyID[i*2+1] = polyID;
+          result.meshBPolyID[i*2+1] = edgePolyIDs[1];
+          result.aOrB[i*2] = true;
+          result.aOrB[i*2+1] = true;
+        }
+        //  交差したポジションも併せて格納
+        Vec3 crossPos = targetMesh.getPositionAtLocation(loc); 
+
+        result.crossPos[i*2] = crossPos;
+        result.crossPos[i*2+1] = crossPos;
+
+        result.edgeID[i*2] = index;
+        result.edgeID[i*2+1] = index;
+      }
+      //  crossData_Cに取得したデータを投げ入れていく　（このメソッドはスレッドセーフ）
+      crossData_C.pushData(result);
+    }
+  sq.endSpatialQuery(query);
+}
+
+operator CrossDataSetTask<<<index>>>(
+    io Ref<CrossData_collectData> crossData_C,
+    in Ref<EdgeList> meshAEdgeList,
+    in Ref<EdgeList> meshBEdgeList,
+    in Ref<SpatialQueryable> sqMeshA,
+    in Ref<SpatialQueryable> sqMeshB,
+  ){
+  if(index < meshAEdgeList.edge.size()){  //  indexがmeshAのエッジリストを指す場合（= meshAのエッジからmeshBに対して検査を行う場合）
+    CrossData_collectDataFunc(crossData_C, index,                           meshAEdgeList, sqMeshB, meshBEdgeList.mesh, false);
+  }else{
+    CrossData_collectDataFunc(crossData_C, index-meshAEdgeList.edge.size(), meshBEdgeList, sqMeshA, meshAEdgeList.mesh, true);
+  }
+}
+
+function CrossData CrossData_collectData.toCrossData?(){
+  CrossData result();
+  result.meshAPolyID = this.meshAPolyID;
+  result.meshBPolyID = this.meshBPolyID;
+  result.aOrB = this.aOrB;
+  result.edgeID = this.edgeID;
+  result.crossPos = this.crossPos;
+  result.chain = this.chain;
+  for(Integer i=0; i<this.chainSub.size(); i++){
+    if(this.chainSub[i] == 1){
+      result.chainSub.push(i);
+    }
+  }
+  return result;
+} 
+
+function CrossData_collectData.set!(io EdgeList targetEdgeList, io EdgeList cutterEdgeList){
+  if(targetEdgeList.isInitialized && cutterEdgeList.isInitialized){
+    Size cnt = targetEdgeList.edge.size() + cutterEdgeList.edge.size();
+    Ref<SpatialQueryable> sqMeshA = targetEdgeList.mesh.prepareForSpatialQueries(cutterEdgeList.edge.size(), null );
+    Ref<SpatialQueryable> sqMeshB = cutterEdgeList.mesh.prepareForSpatialQueries(targetEdgeList.edge.size(), null ); 
+
+    if(cnt < 1000){
+      for(Integer i=0; i<cnt; i++){
+        CrossDataSetTask(i, this, targetEdgeList, cutterEdgeList, sqMeshA, sqMeshB);
+      }
+    }else{
+      CrossDataSetTask<<< cnt >>>(this, targetEdgeList, cutterEdgeList, sqMeshA, sqMeshB);
+    }  
+    targetEdgeList.mesh.removeSpatialQueryAcceleration();
+    cutterEdgeList.mesh.removeSpatialQueryAcceleration();
+  }
+}
+//  CrossData_collectData / CrossData_Crumb
+//////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+//////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+//////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+//////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+//////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+//////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+//////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+//////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+// meshAとmeshBとで接触しているポリゴン番号とお互いのメッシュのエッジが相手のメッシュに接触しているポジションを格納
+
+object CrossData{
+  Size meshAPolyID[];
+  Size meshBPolyID[];
+  Boolean aOrB[];
+  Size edgeID[];
+  Vec3 crossPos[];
+  UInt32 chain[]; //  crossPosの値が同じもののIDを格納
+  Integer chainSub[]; //  polyIDABの組み合わせが同じものがあった場合のリンクを格納しておく　*未使用
+  UInt32 chainPackList[]; //  chainの切れ目の配列番号を格納する　例えば[9,15]だった場合、配列0～8,9~14が連続するchainとなる
+  Boolean close[];  //  chainPackListのそれぞれのchainがループラインかラインか
+};
+
+function CrossData(){
+}
+
+
+function CrossData.resize!(in Integer newCount){
+  this.meshAPolyID.resize(newCount);
+  this.meshBPolyID.resize(newCount);
+  this.aOrB.resize(newCount);
+  this.edgeID.resize(newCount);
+  this.crossPos.resize(newCount);
+  this.chain.resize(newCount);
+}
+
+function CrossData.setFromCrassData!(in Size setID, in CrossData other, in Size otherID){
+  this.meshAPolyID[setID] = other.meshAPolyID[otherID];
+  this.meshBPolyID[setID] = other.meshBPolyID[otherID];
+  this.aOrB[setID] = other.aOrB[otherID];
+  this.edgeID[setID] = other.edgeID[otherID];
+  this.crossPos[setID] = other.crossPos[otherID];
+  this.chain[setID] = other.chain[otherID];
+}
+
+//  ポリゴンIDのペア、共通の交差点（=chain）を元にCrossDataの中身を並べ直し、交差箇所をラインで取得できるようにしておく
+function CrossData CrossData.sortByChainID?(in UInt32Array list[]){
+  Size thisCount = this.meshAPolyID.size();
+  Size polyIDA, polyIDB, chain;
+  Boolean done[](thisCount);  //ソート済みのものをマーキングしていく
+  Boolean lineEnd = true;
+  Integer arrayID = -1;
+  
+  CrossData newData();
+  newData.resize(thisCount);
+  
+  Size safety, safety2;
+  Integer first;
+  Integer i, cnt;
+  // ソート開始
+  while(true){
+    //  初回とlineEndがtrueに戻った際は交差点の連続性が途切れるところ（ラインの端）を検索する
+    if(lineEnd){
+      for(Integer j=0; j<thisCount; j++){
+        if(!done[j] && this.chain[j] == 4294967295){
+          newData.setFromCrassData(cnt, this, j);
+          lineEnd = false;
+          first = -1;
+          done[j] = true;       
+          break;
+        }
+      }
+    }
+    //　↑でラインの端が見つからなかった場合は、ループライン上の最も番号の若いものを検索する
+    if(lineEnd){
+      for(Integer j=0; j<thisCount; j++){
+        if(!done[j]){
+          newData.setFromCrassData(cnt, this, j);
+          lineEnd = false;
+          first = j;  //  done[j]をtrueするのではなくfirstにスタート地点のIDを残しておく　←ラインのchain検索をループで戻ってこれるようにするため
+          break;
+        }
+      }
+    }
+    //  ↑2回の検索で何も見つからなかった場合ソートを終了する
+    if(lineEnd){
+      break;
+    }
+
+    Boolean end = false;
+    Boolean reset = true;
+    Size k = 0;
+    while(true){
+      if(reset){
+        k = 0;
+        reset = false;
+      }
+
+      Size id = list[newData.meshAPolyID[cnt]][k];  //  listの配列番号　== meshAのPolyID　　listの各配列内にはmeshAPolyID==list配列番号になるときのindexが格納されている
+      if(first != id && !done[id] && newData.meshBPolyID[cnt] == this.meshBPolyID[id]){
+        cnt += 1;
+        newData.setFromCrassData(cnt, this, id);
+        done[id] = true;
+
+        chain = this.chain[id];
+        if(chain == 4294967295){  //  chainの先がラインの端の場合
+          newData.chainPackList.push(cnt+1);
+          newData.close.push(false);
+          lineEnd = true;
+          end = true;
+          break;
+        }else if(!done[chain] && chain != first){ //  chainが継続する場合
+          newData.setFromCrassData(cnt+1, this, chain);
+          done[chain] = true;
+          reset = true;
+          cnt += 1;
+        }else{  //  chainがループで終わる場合
+          newData.chainPackList.push(cnt+1);
+          newData.close.push(true);
+          done[first] = true;
+          lineEnd = true;
+          end = true;
+          break;
+        }
+      }
+      if(end){
+        break;
+      }else{
+        k += 1;
+      }
+    }
+    
+    cnt += 1;
+  }
+  //  chainが途中で途切れなかった場合に必要な情報を登録しておく
+  if(newData.chainPackList.size() == 0){
+    newData.chainPackList.push(thisCount);
+    newData.close.push(true);
+  }
+  
+  return newData;
+}
