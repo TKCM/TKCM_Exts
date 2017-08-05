@@ -1,0 +1,107 @@
+{
+  "objectType" : "Func",
+  "title" : "GetClosestEdgeFromLocation",
+  "ports" : [
+    {
+      "objectType" : "ExecPort",
+      "name" : "exec",
+      "nodePortType" : "IO",
+      "defaultValues" : {
+        "Execute" : {}
+        },
+      "execPortType" : "IO",
+      "typeSpec" : "Execute"
+      },
+    {
+      "objectType" : "ExecPort",
+      "name" : "mesh",
+      "nodePortType" : "Out",
+      "defaultValues" : {
+        "PolygonMesh" : null
+        },
+      "execPortType" : "In",
+      "typeSpec" : "PolygonMesh"
+      },
+    {
+      "objectType" : "ExecPort",
+      "name" : "location",
+      "nodePortType" : "Out",
+      "defaultValues" : {
+        "GeometryLocation" : {
+          "index" : -1,
+          "subIndex" : 0,
+          "barycentric" : {
+            "x" : 0,
+            "y" : 0,
+            "z" : 0
+            }
+          }
+        },
+      "execPortType" : "In",
+      "typeSpec" : "GeometryLocation"
+      },
+    {
+      "objectType" : "ExecPort",
+      "name" : "polygon",
+      "nodePortType" : "In",
+      "defaultValues" : {
+        "Size" : 0
+        },
+      "execPortType" : "Out",
+      "typeSpec" : "Size"
+      },
+    {
+      "objectType" : "ExecPort",
+      "name" : "edgeFirstPoint",
+      "nodePortType" : "In",
+      "defaultValues" : {
+        "Size" : 0
+        },
+      "execPortType" : "Out",
+      "typeSpec" : "Size"
+      },
+    {
+      "objectType" : "ExecPort",
+      "name" : "ratio",
+      "nodePortType" : "In",
+      "defaultValues" : {
+        "Scalar" : 0
+        },
+      "execPortType" : "Out",
+      "typeSpec" : "Scalar"
+      },
+    {
+      "objectType" : "ExecPort",
+      "name" : "distance",
+      "nodePortType" : "In",
+      "defaultValues" : {
+        "Scalar" : 0
+        },
+      "execPortType" : "Out",
+      "typeSpec" : "Scalar"
+      },
+    {
+      "objectType" : "ExecPort",
+      "name" : "position",
+      "nodePortType" : "In",
+      "defaultValues" : {
+        "Vec3" : {
+          "x" : 0,
+          "y" : 0,
+          "z" : 0
+          }
+        },
+      "execPortType" : "Out",
+      "typeSpec" : "Vec3"
+      }
+    ],
+  "extDeps" : {
+    "TKCM" : "*"
+    },
+  "presetGUID" : "9B3006A4A991B39D04D5296A326ECF0A",
+  "code" : "dfgEntry {
+  mesh.getClosestEdgeFromLocation(location, polygon, edgeFirstPoint, ratio, distance, position);
+  
+}
+"
+  }

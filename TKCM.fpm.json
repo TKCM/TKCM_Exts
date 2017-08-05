@@ -1,25 +1,27 @@
 {
   "code": [
-    "Exts/Manipulation/Painting/MultiCh_CastomCommand.kl",
-  	"Exts/Manipulation/Painting/MultiCh_SurfaceAttributeValuesDrawing.kl",
-    "Exts/Manipulation/Painting/MultiCh_SurfacePaintManipulator.kl",
-	  "Exts/Manipulation/Painting/MultiCh_SurfaceAttributePaintManipulator.kl",
-	  "Exts/Manipulation/Painting/MultiCh_Weightmap.kl",
-    "Exts/Manipulation/Painting/SkinWeightPaintExt.kl",
-    "Exts/Manipulation/Legacy/Gizmos/TransformManipulationCallback2.kl",
-    "Exts/Manipulation/Legacy/ArrayValueManipHandle.kl",
+    //"Exts/Manipulation/Painting/MultiCh_CastomCommand.kl",
+  	//"Exts/Manipulation/Painting/MultiCh_SurfaceAttributeValuesDrawing.kl",
+    //"Exts/Manipulation/Painting/MultiCh_SurfacePaintManipulator.kl",
+	  //"Exts/Manipulation/Painting/MultiCh_SurfaceAttributePaintManipulator.kl",
+	  //"Exts/Manipulation/Painting/MultiCh_Weightmap.kl",
+    //"Exts/Manipulation/Painting/SkinWeightPaintExt.kl",
+    //"Exts/Manipulation/Legacy/Gizmos/TransformManipulationCallback2.kl",
+    //"Exts/Manipulation/Legacy/ArrayValueManipHandle.kl",
 
     "Exts/Math/Util.kl",
     "Exts/Math/Vec3.kl",
     "Exts/Math/Colors.kl",
 
     "Exts/Geometry/Curves/Curves.kl",
+    "Exts/Geometry/PolygonMesh/SpatialQuery.kl",
     //"Exts/Geometry/PolygonMesh/BlendShape.kl",
     "Exts/Geometry/PolygonMesh/MergedMeshArrayModifier.kl",
     "Exts/Geometry/PolygonMesh/PolygonMeshPortable.kl",
     "Exts/Geometry/PolygonMesh/EdgeList.kl",
     "Exts/Geometry/PolygonMesh/CrossData.kl",
     "Exts/Geometry/PolygonMesh/SplitPolygon2.kl",
+    "Exts/Geometry/PolygonMesh/BooleanTool.kl",
 
     "Exts/Util/Valve.kl",
     "Exts/Util/DijkstraAlgorithm.kl"

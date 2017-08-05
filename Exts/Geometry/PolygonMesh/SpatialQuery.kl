@@ -1,0 +1,29 @@
+
+//  ジオメトリロケーションから最も近いポリゴンエッジを取得する
+function PolygonMesh.getClosestEdgeFromLocation(in GeometryLocation loc, out Size polygon, out Size edgeFirstPoi, out Scalar ratio, out Scalar distance, out Vec3 pos){
+  if(!loc.isValid()){
+    return;
+  }
+  //  ジオメトリロケーションのポリゴンID
+  polygon = loc.index;
+  //  ポリゴンのエッジを線分としてジオメトリロケーションとの距離を計算していく
+  //  ポリゴンポイント最終番号と０番との線分の値をスタート値にする
+  Vec3 p0, p1, pA;
+  p0 = this.getPointPosition( this.getPolygonPoint(polygon, this.getPolygonSize(polygon)-1) );
+  p1 = this.getPointPosition( this.getPolygonPoint(polygon, 0) );
+  pA = this.getPositionAtLocation(loc);
+  distance = distFromPointToSegment(pA, p0, p1);
+  edgeFirstPoi = this.getPolygonSize(polygon)-1;
+  pos = closestSegmentPoint(pA, p0, p1, ratio);
+  //  エッジを順番に計算していき線分（エッジ）との距離が短いものがあった場合は各種値（レシオや距離など）を更新する
+  for(Integer i=0; i<this.getPolygonSize(polygon)-1; i++){
+    p0 = this.getPointPosition( this.getPolygonPoint(polygon, i) );
+    p1 = this.getPointPosition( this.getPolygonPoint(polygon, i+1) );
+    Scalar rDist = distFromPointToSegment(pA, p0, p1);
+    if(rDist < distance){
+      distance = rDist;
+      edgeFirstPoi = i;
+      pos = closestSegmentPoint(pA, p0, p1, ratio);
+    }
+  }
+}
