@@ -186,21 +186,21 @@ function CrossData CrossData_collectData.toCrossData?(){
   return result;
 } 
 
-function CrossData_collectData.set!(io EdgeList targetEdgeList, io EdgeList cutterEdgeList){
-  if(targetEdgeList.isInitialized && cutterEdgeList.isInitialized){
-    Size cnt = targetEdgeList.edge.size() + cutterEdgeList.edge.size();
-    Ref<SpatialQueryable> sqMeshA = targetEdgeList.mesh.prepareForSpatialQueries(cutterEdgeList.edge.size(), null );
-    Ref<SpatialQueryable> sqMeshB = cutterEdgeList.mesh.prepareForSpatialQueries(targetEdgeList.edge.size(), null ); 
+function CrossData_collectData.set!(io EdgeList meshAEdgeList, io EdgeList meshBEdgeList){
+  if(meshAEdgeList.isInitialized && meshBEdgeList.isInitialized){
+    Size cnt = meshAEdgeList.edge.size() + meshBEdgeList.edge.size();
+    Ref<SpatialQueryable> sqMeshA = meshAEdgeList.mesh.prepareForSpatialQueries(meshBEdgeList.edge.size(), null );
+    Ref<SpatialQueryable> sqMeshB = meshBEdgeList.mesh.prepareForSpatialQueries(meshAEdgeList.edge.size(), null ); 
 
     if(cnt < 1000){
       for(Integer i=0; i<cnt; i++){
-        CrossDataSetTask(i, this, targetEdgeList, cutterEdgeList, sqMeshA, sqMeshB);
+        CrossDataSetTask(i, this, meshAEdgeList, meshBEdgeList, sqMeshA, sqMeshB);
       }
     }else{
-      CrossDataSetTask<<< cnt >>>(this, targetEdgeList, cutterEdgeList, sqMeshA, sqMeshB);
+      CrossDataSetTask<<< cnt >>>(this, meshAEdgeList, meshBEdgeList, sqMeshA, sqMeshB);
     }  
-    targetEdgeList.mesh.removeSpatialQueryAcceleration();
-    cutterEdgeList.mesh.removeSpatialQueryAcceleration();
+    meshAEdgeList.mesh.removeSpatialQueryAcceleration();
+    meshBEdgeList.mesh.removeSpatialQueryAcceleration();
   }
 }
 //  CrossData_collectData / CrossData_Crumb
@@ -217,12 +217,12 @@ function CrossData_collectData.set!(io EdgeList targetEdgeList, io EdgeList cutt
 object CrossData{
   Size meshAPolyID[];
   Size meshBPolyID[];
-  Boolean aOrB[];
-  Size edgeID[];
+  Boolean aOrB[]; //  false=meshA, true=meshB
+  Size edgeID[];  //  どちらのメッシュのエッジかは↑aOrBで判断できる
   Vec3 crossPos[];
   UInt32 chain[]; //  crossPosの値が同じもののIDを格納
   Integer chainSub[]; //  polyIDABの組み合わせが同じものがあった場合のリンクを格納しておく　*未使用
-  UInt32 chainPackList[]; //  chainの切れ目の配列番号を格納する　例えば[9,15]だった場合、配列0～8,9~14が連続するchainとなる
+  UInt32 chainPackList[]; //  chainの切れ目の配列番号を格納する　例えば配列0～8,9~14がそれぞれ連続するchainの場合[9,15]となる ←使い勝手が悪いのでGetAllCrossPositionsノードで[9,6]となるように修正処理
   Boolean close[];  //  chainPackListのそれぞれのchainがループラインかラインか
 };
 
@@ -344,4 +344,53 @@ function CrossData CrossData.sortByChainID?(in UInt32Array list[]){
   }
   
   return newData;
+}
+
+//  meshAとmeshBとで接触しているポリゴン番号とお互いのメッシュのエッジが相手のメッシュに接触しているポジションを格納
+//////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+//////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+//////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+//////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+//////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+//////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+//////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+//////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+// getAllCrossPositions
+
+//  同じポジション値があった場合は省く
+function Vec3[].omitSamePosition?(out Vec3 positions[], out Size omitCount[], in UInt32 chainPackList[]){
+  positions.push(this[0]);
+  Size s[];
+  Size om;
+  for(Integer i=1; i<this.size(); i++){
+    if(positions[i-1-om] == this[i]){
+      om += 1;
+    }else{
+      positions.push(this[i]);
+    }
+    for(Integer j=0; j<chainPackList.size(); j++){
+      if(chainPackList[j]-1 == i){
+        s.push(om);
+        break;
+      }
+    }
+  }
+  omitCount = s;
+}
+
+operator OmitSamePositionSplitTask<<<index>>>(io Vec3Array[] result, in Vec3[] pos, in UInt32 idList[]){
+  Size arrayID, startCnt;
+  if(index < idList[0]){
+    arrayID = 0;
+    startCnt = 0;
+  }else{
+    for(Integer i=0; i<idList.size(); i++){
+      if(idList[i] <= index){
+        startCnt = idList[i];
+        arrayID = i+1;
+      }
+    }
+  }
+  
+  result[arrayID][index-startCnt] = pos[index];
 }

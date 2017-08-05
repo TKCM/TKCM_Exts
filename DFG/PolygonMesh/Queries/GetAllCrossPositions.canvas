@@ -34,16 +34,6 @@
       },
     {
       "objectType" : "ExecPort",
-      "name" : "split",
-      "nodePortType" : "Out",
-      "defaultValues" : {
-        "Boolean" : true
-        },
-      "execPortType" : "In",
-      "typeSpec" : "Boolean"
-      },
-    {
-      "objectType" : "ExecPort",
       "name" : "positions",
       "nodePortType" : "In",
       "defaultValues" : {
@@ -54,7 +44,7 @@
       },
     {
       "objectType" : "ExecPort",
-      "name" : "splitIDList",
+      "name" : "splitSizes",
       "nodePortType" : "In",
       "defaultValues" : {
         "Size[]" : []
@@ -77,7 +67,7 @@
     "TKCM" : "*"
     },
   "presetGUID" : "EBCD9152E081B7C8674B7D407F87B26A",
-  "code" : "function Vec3[].omitSamePosition?(out Vec3 positions[], out Size omitCount[], in UInt32 chainPackList[]){
+  "code" : "function Vec3[].omitSamePosition2?(out Vec3 positions[], out Size omitCount[], in UInt32 chainPackList[]){
   positions.push(this[0]);
   Size s[];
   Size om;
@@ -97,7 +87,7 @@
   omitCount = s;
 }
 
-operator OmitSamePositionSplitTask<<<index>>>(io Vec3Array[] result, in Vec3[] pos, in UInt32 idList[]){
+operator OmitSamePositionSplitTask2<<<index>>>(io Vec3Array[] result, in Vec3[] pos, in UInt32 idList[]){
   Size arrayID, startCnt;
   if(index < idList[0]){
     arrayID = 0;
@@ -122,28 +112,26 @@ dfgEntry {
   if(omitSamePosition){
     Size omitCount[](this.chainPackList.size());
       
-    this.crossPos.omitSamePosition(positions, omitCount, this.chainPackList);
+    this.crossPos.omitSamePosition2(positions, omitCount, this.chainPackList);
 
     for(Integer i=0; i<this.chainPackList.size(); i++){
-      splitIDList.push(this.chainPackList[i]-omitCount[i]);
+      splitSizes.push(this.chainPackList[i]-omitCount[i]);
     }
     
   }else{
     positions = this.crossPos;
-    splitIDList = this.chainPackList;
+    splitSizes = this.chainPackList;
   }
 
-  if(split){
-    splitedPositions.resize(this.chainPackList.size());
-    for(Integer i=0; i<splitedPositions.size(); i++){
-      if(i==0){
-        splitedPositions[i].resize(splitIDList[i]);
-      }else{
-        splitedPositions[i].resize(splitIDList[i]-splitIDList[i-1]);
-      }
+  splitedPositions.resize(this.chainPackList.size());
+  for(Integer i=0; i<splitedPositions.size(); i++){
+    if(i==0){
+      splitedPositions[i].resize(splitSizes[i]);
+    }else{
+      splitedPositions[i].resize(splitSizes[i]-splitSizes[i-1]);
     }
-    OmitSamePositionSplitTask<<<positions.size()>>>(splitedPositions, positions, splitIDList);
   }
+  OmitSamePositionSplitTask2<<<positions.size()>>>(splitedPositions, positions, splitSizes);
 
   for(Integer i=0; i<splitedPositions.size(); i++){
     if(this.close[i]){
@@ -151,6 +139,11 @@ dfgEntry {
       splitedPositions[i].resize(cnt+1);
       splitedPositions[i][cnt] = splitedPositions[i][0];
     }
+  }
+  
+  // Recreate the splitSizes list for convenience
+  for(Integer i=0; i<splitSizes.size(); i++){
+    splitSizes[i] = splitedPositions[i].size();
   }
 }
 "

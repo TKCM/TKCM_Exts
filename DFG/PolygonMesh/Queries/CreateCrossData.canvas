@@ -2,7 +2,7 @@
   "objectType" : "Graph",
   "metadata" : {
     "uiGraphZoom" : "{\n  \"value\" : 0.6795535683631897\n  }",
-    "uiGraphPan" : "{\n  \"x\" : -320.4338927388991,\n  \"y\" : 93.3710685220106\n  }"
+    "uiGraphPan" : "{\n  \"x\" : -383.4338989257813,\n  \"y\" : 20.37107086181641\n  }"
     },
   "title" : "CreateCrossData",
   "ports" : [
@@ -45,6 +45,26 @@
         },
       "execPortType" : "Out",
       "typeSpec" : "CrossData"
+      },
+    {
+      "objectType" : "ExecPort",
+      "name" : "meshAEdgeList",
+      "nodePortType" : "In",
+      "defaultValues" : {
+        "EdgeList" : null
+        },
+      "execPortType" : "Out",
+      "typeSpec" : "EdgeList"
+      },
+    {
+      "objectType" : "ExecPort",
+      "name" : "meshBEdgeList",
+      "nodePortType" : "In",
+      "defaultValues" : {
+        "EdgeList" : null
+        },
+      "execPortType" : "Out",
+      "typeSpec" : "EdgeList"
       }
     ],
   "extDeps" : {
@@ -108,12 +128,12 @@
           },
         {
           "objectType" : "InstPort",
-          "name" : "targetEdgeList",
+          "name" : "meshAEdgeList",
           "nodePortType" : "IO"
           },
         {
           "objectType" : "InstPort",
-          "name" : "cutterEdgeList",
+          "name" : "meshBEdgeList",
           "nodePortType" : "IO"
           },
         {
@@ -135,14 +155,14 @@
             },
           {
             "objectType" : "ExecPort",
-            "name" : "targetEdgeList",
+            "name" : "meshAEdgeList",
             "nodePortType" : "IO",
             "execPortType" : "IO",
             "typeSpec" : "EdgeList"
             },
           {
             "objectType" : "ExecPort",
-            "name" : "cutterEdgeList",
+            "name" : "meshBEdgeList",
             "nodePortType" : "IO",
             "execPortType" : "IO",
             "typeSpec" : "EdgeList"
@@ -208,7 +228,7 @@
 */
 dfgEntry {
   CrossData_collectData crossData_collectData();
-  crossData_collectData.set(targetEdgeList, cutterEdgeList);
+  crossData_collectData.set(meshAEdgeList, meshBEdgeList);
   result = crossData_collectData.toCrossData();
   
   if(result.chainSub.size() != 0){
@@ -466,15 +486,21 @@ dfgEntry {
     "EmptyEdgeList_2.edgeList" : [
       "SetEdgeList_4.edgeList"
       ],
+    "GetCrossDataCore.meshAEdgeList" : [
+      "meshAEdgeList"
+      ],
+    "GetCrossDataCore.meshBEdgeList" : [
+      "meshBEdgeList"
+      ],
     "GetCrossDataCore.result" : [
       "SortByChainID.source",
       "speedUp.source"
       ],
     "SetEdgeList_3.edgeList" : [
-      "GetCrossDataCore.targetEdgeList"
+      "GetCrossDataCore.meshAEdgeList"
       ],
     "SetEdgeList_4.edgeList" : [
-      "GetCrossDataCore.cutterEdgeList"
+      "GetCrossDataCore.meshBEdgeList"
       ],
     "SortByChainID.result" : [
       "Cache_1.value"

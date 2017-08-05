@@ -1,0 +1,113 @@
+{
+  "objectType" : "Func",
+  "title" : "CrossDataToSplitPolygon2",
+  "ports" : [
+    {
+      "objectType" : "ExecPort",
+      "name" : "exec",
+      "nodePortType" : "IO",
+      "defaultValues" : {
+        "Execute" : {}
+        },
+      "execPortType" : "IO",
+      "typeSpec" : "Execute"
+      },
+    {
+      "objectType" : "ExecPort",
+      "name" : "crossData",
+      "nodePortType" : "Out",
+      "defaultValues" : {
+        "CrossData" : null
+        },
+      "execPortType" : "In",
+      "typeSpec" : "CrossData"
+      },
+    {
+      "objectType" : "ExecPort",
+      "name" : "meshEdgeList",
+      "nodePortType" : "Out",
+      "defaultValues" : {
+        "EdgeList" : null
+        },
+      "execPortType" : "In",
+      "typeSpec" : "EdgeList"
+      },
+    {
+      "objectType" : "ExecPort",
+      "name" : "polygonID",
+      "nodePortType" : "In",
+      "defaultValues" : {
+        "Size[]" : []
+        },
+      "execPortType" : "Out",
+      "typeSpec" : "Size[]"
+      },
+    {
+      "objectType" : "ExecPort",
+      "name" : "polygonPointIndex1",
+      "nodePortType" : "In",
+      "defaultValues" : {
+        "Size[]" : []
+        },
+      "execPortType" : "Out",
+      "typeSpec" : "Size[]"
+      },
+    {
+      "objectType" : "ExecPort",
+      "name" : "edgeSplitRatio1",
+      "nodePortType" : "In",
+      "defaultValues" : {
+        "Scalar[]" : []
+        },
+      "execPortType" : "Out",
+      "typeSpec" : "Scalar[]"
+      },
+    {
+      "objectType" : "ExecPort",
+      "name" : "polygonPointIndex2",
+      "nodePortType" : "In",
+      "defaultValues" : {
+        "Size[]" : []
+        },
+      "execPortType" : "Out",
+      "typeSpec" : "Size[]"
+      },
+    {
+      "objectType" : "ExecPort",
+      "name" : "edgeSplitRatio2",
+      "nodePortType" : "In",
+      "defaultValues" : {
+        "Scalar[]" : []
+        },
+      "execPortType" : "Out",
+      "typeSpec" : "Scalar[]"
+      },
+    {
+      "objectType" : "ExecPort",
+      "name" : "addPointsPosition",
+      "nodePortType" : "In",
+      "defaultValues" : {
+        "Vec3Array[]" : []
+        },
+      "execPortType" : "Out",
+      "typeSpec" : "Vec3Array[]"
+      }
+    ],
+  "extDeps" : {
+    "TKCM" : "*"
+    },
+  "presetGUID" : "AB49622EDFB2D18B39C3ACA676D34F26",
+  "code" : "dfgEntry {
+  crossData.toSplitPolygon2(
+	  meshEdgeList,
+	  polygonID,  
+	  polygonPointIndex1,
+	  edgeSplitRatio1,
+	  polygonPointIndex2,
+	  edgeSplitRatio2,
+	  addPointsPosition,
+	);
+
+}
+"
+  }

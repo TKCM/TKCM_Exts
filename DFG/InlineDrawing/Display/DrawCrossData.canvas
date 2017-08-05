@@ -1,0 +1,971 @@
+{
+  "objectType" : "Graph",
+  "metadata" : {
+    "uiGraphZoom" : "{\n  \"value\" : 0.5825757384300232\n  }",
+    "uiGraphPan" : "{\n  \"x\" : -188.7545266151428,\n  \"y\" : 405.5628824830055\n  }"
+    },
+  "title" : "DrawCrossData",
+  "ports" : [
+    {
+      "objectType" : "ExecPort",
+      "name" : "exec",
+      "nodePortType" : "IO",
+      "defaultValues" : {
+        "Execute" : {}
+        },
+      "execPortType" : "IO",
+      "typeSpec" : "Execute"
+      },
+    {
+      "objectType" : "ExecPort",
+      "name" : "crossData",
+      "nodePortType" : "Out",
+      "defaultValues" : {
+        "CrossData" : null
+        },
+      "execPortType" : "In",
+      "typeSpec" : "CrossData"
+      },
+    {
+      "objectType" : "ExecPort",
+      "name" : "active",
+      "nodePortType" : "Out",
+      "defaultValues" : {
+        "Boolean" : true
+        },
+      "execPortType" : "In",
+      "typeSpec" : "Boolean"
+      },
+    {
+      "objectType" : "ExecPort",
+      "name" : "color",
+      "nodePortType" : "Out",
+      "defaultValues" : {
+        "Color" : {
+          "r" : 1,
+          "g" : 1,
+          "b" : 0,
+          "a" : 1
+          }
+        },
+      "execPortType" : "In",
+      "typeSpec" : "Color"
+      },
+    {
+      "objectType" : "ExecPort",
+      "name" : "pixels",
+      "nodePortType" : "Out",
+      "defaultValues" : {
+        "UInt32" : 5
+        },
+      "execPortType" : "In",
+      "typeSpec" : "UInt32"
+      },
+    {
+      "objectType" : "ExecPort",
+      "name" : "drawThis",
+      "nodePortType" : "In",
+      "defaultValues" : {
+        "DrawingHandle" : null
+        },
+      "execPortType" : "Out",
+      "typeSpec" : "DrawingHandle"
+      }
+    ],
+  "extDeps" : {},
+  "presetGUID" : "103806AF6124EDF48417319C22809DA7",
+  "nodes" : [
+    {
+      "objectType" : "Inst",
+      "metadata" : {
+        "uiGraphPos" : "{\"x\":384.0,\"y\":258.0}"
+        },
+      "name" : "GetAllCrossPositions_1",
+      "ports" : [
+        {
+          "objectType" : "InstPort",
+          "name" : "exec",
+          "nodePortType" : "IO"
+          },
+        {
+          "objectType" : "InstPort",
+          "name" : "this",
+          "nodePortType" : "In"
+          },
+        {
+          "objectType" : "InstPort",
+          "name" : "omitSamePosition",
+          "nodePortType" : "In"
+          },
+        {
+          "objectType" : "InstPort",
+          "name" : "positions",
+          "nodePortType" : "Out"
+          },
+        {
+          "objectType" : "InstPort",
+          "name" : "splitSizes",
+          "nodePortType" : "Out"
+          },
+        {
+          "objectType" : "InstPort",
+          "name" : "splitedPositions",
+          "nodePortType" : "Out"
+          }
+        ],
+      "executable" : "TKCM.PolygonMesh.Queries.GetAllCrossPositions",
+      "presetGUID" : "EBCD9152E081B7C8674B7D407F87B26A"
+      },
+    {
+      "objectType" : "Inst",
+      "metadata" : {
+        "uiGraphPos" : "{\"x\":430.0,\"y\":140.0}"
+        },
+      "name" : "Curves_1",
+      "ports" : [
+        {
+          "objectType" : "InstPort",
+          "name" : "exec",
+          "nodePortType" : "IO"
+          },
+        {
+          "objectType" : "InstPort",
+          "name" : "float64Positions",
+          "nodePortType" : "In"
+          },
+        {
+          "objectType" : "InstPort",
+          "name" : "result",
+          "nodePortType" : "Out"
+          }
+        ],
+      "executable" : "Fabric.Exts.Geometry.Curves.Curves",
+      "presetGUID" : "8D837E16321EB6D04CE004745760033C"
+      },
+    {
+      "objectType" : "Inst",
+      "metadata" : {
+        "uiGraphPos" : "{\"x\":710.0,\"y\":189.5}"
+        },
+      "name" : "AddMultipleLinearCurve_1",
+      "ports" : [
+        {
+          "objectType" : "InstPort",
+          "name" : "exec",
+          "nodePortType" : "IO"
+          },
+        {
+          "objectType" : "InstPort",
+          "name" : "this",
+          "nodePortType" : "IO"
+          },
+        {
+          "objectType" : "InstPort",
+          "name" : "CurvePositions",
+          "nodePortType" : "In"
+          },
+        {
+          "objectType" : "InstPort",
+          "name" : "isClosed",
+          "nodePortType" : "In"
+          }
+        ],
+      "executable" : "TKCM.Curves.AddMultipleLinearCurve",
+      "presetGUID" : "ED6C3B9A96A93D71A80FD5123DAC1B75"
+      },
+    {
+      "objectType" : "Inst",
+      "metadata" : {
+        "uiGraphPos" : "{\"x\":1436.0,\"y\":142.0}"
+        },
+      "name" : "DrawCurves",
+      "ports" : [
+        {
+          "objectType" : "InstPort",
+          "name" : "exec",
+          "nodePortType" : "IO"
+          },
+        {
+          "objectType" : "InstPort",
+          "name" : "this",
+          "nodePortType" : "IO"
+          },
+        {
+          "objectType" : "InstPort",
+          "name" : "name",
+          "nodePortType" : "In"
+          },
+        {
+          "objectType" : "InstPort",
+          "name" : "color",
+          "nodePortType" : "In"
+          },
+        {
+          "objectType" : "InstPort",
+          "name" : "specular",
+          "nodePortType" : "In",
+          "defaultValues" : {
+            "Color" : {
+              "r" : 0,
+              "g" : 0,
+              "b" : 0,
+              "a" : 1
+              }
+            }
+          },
+        {
+          "objectType" : "InstPort",
+          "name" : "specFactor",
+          "nodePortType" : "In",
+          "defaultValues" : {
+            "Float32" : 100
+            }
+          },
+        {
+          "objectType" : "InstPort",
+          "name" : "transform",
+          "nodePortType" : "In"
+          },
+        {
+          "objectType" : "InstPort",
+          "name" : "curves",
+          "nodePortType" : "In"
+          },
+        {
+          "objectType" : "InstPort",
+          "name" : "instance",
+          "nodePortType" : "Out"
+          }
+        ],
+      "executable" : "Fabric.Exts.InlineDrawing.DrawingHandle.DrawCurves",
+      "presetGUID" : "2A74C12EA0FA19E009583E558FDAC2EE"
+      },
+    {
+      "objectType" : "Inst",
+      "metadata" : {
+        "uiGraphPos" : "{\"x\":980.0,\"y\":-11.0}"
+        },
+      "name" : "EmptyDrawingHandle",
+      "ports" : [
+        {
+          "objectType" : "InstPort",
+          "name" : "exec",
+          "nodePortType" : "IO"
+          },
+        {
+          "objectType" : "InstPort",
+          "name" : "handle",
+          "nodePortType" : "Out"
+          }
+        ],
+      "presetGUID" : "2440020BA6A1CAB1CEB690A198F99C70"
+      },
+    {
+      "objectType" : "Inst",
+      "metadata" : {
+        "uiGraphPos" : "{\"x\":1280.0,\"y\":54.0}"
+        },
+      "name" : "SetActive_1",
+      "ports" : [
+        {
+          "objectType" : "InstPort",
+          "name" : "exec",
+          "nodePortType" : "IO"
+          },
+        {
+          "objectType" : "InstPort",
+          "name" : "this",
+          "nodePortType" : "IO"
+          },
+        {
+          "objectType" : "InstPort",
+          "name" : "active",
+          "nodePortType" : "In"
+          }
+        ],
+      "executable" : "Fabric.Exts.InlineDrawing.Func.SetActive",
+      "presetGUID" : "63CF666747969EEF99B85F6A55F07D5F"
+      },
+    {
+      "objectType" : "Inst",
+      "metadata" : {
+        "uiGraphPos" : "{\"x\":1056.0,\"y\":252.0}"
+        },
+      "name" : "SetDrawThickness_1",
+      "ports" : [
+        {
+          "objectType" : "InstPort",
+          "name" : "exec",
+          "nodePortType" : "IO"
+          },
+        {
+          "objectType" : "InstPort",
+          "name" : "this",
+          "nodePortType" : "IO"
+          },
+        {
+          "objectType" : "InstPort",
+          "name" : "pixels",
+          "nodePortType" : "In"
+          }
+        ],
+      "executable" : "Fabric.Exts.Geometry.Curves.SetDrawThickness",
+      "presetGUID" : "685A9EC6E29E0773A91849754DB91220"
+      }
+    ],
+  "connections" : {
+    "crossData" : [
+      "GetAllCrossPositions_1.this"
+      ],
+    "active" : [
+      "SetActive_1.active"
+      ],
+    "color" : [
+      "DrawCurves.color"
+      ],
+    "pixels" : [
+      "SetDrawThickness_1.pixels"
+      ],
+    "GetAllCrossPositions_1.splitedPositions" : [
+      "AddMultipleLinearCurve_1.CurvePositions"
+      ],
+    "Curves_1.result" : [
+      "AddMultipleLinearCurve_1.this"
+      ],
+    "AddMultipleLinearCurve_1.this" : [
+      "SetDrawThickness_1.this"
+      ],
+    "DrawCurves.this" : [
+      "drawThis"
+      ],
+    "EmptyDrawingHandle.handle" : [
+      "SetActive_1.this"
+      ],
+    "SetActive_1.this" : [
+      "DrawCurves.this"
+      ],
+    "SetDrawThickness_1.this" : [
+      "DrawCurves.curves"
+      ]
+    },
+  "requiredPresets" : {
+    "TKCM.PolygonMesh.Queries.GetAllCrossPositions" : {
+      "objectType" : "Func",
+      "title" : "GetAllCrossPositions",
+      "ports" : [
+        {
+          "objectType" : "ExecPort",
+          "name" : "exec",
+          "nodePortType" : "IO",
+          "defaultValues" : {
+            "Execute" : {}
+            },
+          "execPortType" : "IO",
+          "typeSpec" : "Execute"
+          },
+        {
+          "objectType" : "ExecPort",
+          "name" : "this",
+          "nodePortType" : "Out",
+          "defaultValues" : {
+            "CrossData" : null
+            },
+          "execPortType" : "In",
+          "typeSpec" : "CrossData"
+          },
+        {
+          "objectType" : "ExecPort",
+          "name" : "omitSamePosition",
+          "nodePortType" : "Out",
+          "defaultValues" : {
+            "Boolean" : true
+            },
+          "execPortType" : "In",
+          "typeSpec" : "Boolean"
+          },
+        {
+          "objectType" : "ExecPort",
+          "name" : "positions",
+          "nodePortType" : "In",
+          "defaultValues" : {
+            "Vec3[]" : []
+            },
+          "execPortType" : "Out",
+          "typeSpec" : "Vec3[]"
+          },
+        {
+          "objectType" : "ExecPort",
+          "name" : "splitSizes",
+          "nodePortType" : "In",
+          "defaultValues" : {
+            "Size[]" : []
+            },
+          "execPortType" : "Out",
+          "typeSpec" : "Size[]"
+          },
+        {
+          "objectType" : "ExecPort",
+          "name" : "splitedPositions",
+          "nodePortType" : "In",
+          "defaultValues" : {
+            "Vec3Array[]" : []
+            },
+          "execPortType" : "Out",
+          "typeSpec" : "Vec3Array[]"
+          }
+        ],
+      "extDeps" : {
+        "TKCM" : "*"
+        },
+      "presetGUID" : "EBCD9152E081B7C8674B7D407F87B26A",
+      "code" : "function Vec3[].omitSamePosition2?(out Vec3 positions[], out Size omitCount[], in UInt32 chainPackList[]){
+  positions.push(this[0]);
+  Size s[];
+  Size om;
+  for(Integer i=1; i<this.size(); i++){
+    if(positions[i-1-om] == this[i]){
+      om += 1;
+    }else{
+      positions.push(this[i]);
+    }
+    for(Integer j=0; j<chainPackList.size(); j++){
+      if(chainPackList[j]-1 == i){
+        s.push(om);
+        break;
+      }
+    }
+  }
+  omitCount = s;
+}
+
+operator OmitSamePositionSplitTask2<<<index>>>(io Vec3Array[] result, in Vec3[] pos, in UInt32 idList[]){
+  Size arrayID, startCnt;
+  if(index < idList[0]){
+    arrayID = 0;
+    startCnt = 0;
+  }else{
+    for(Integer i=0; i<idList.size(); i++){
+      if(idList[i] <= index){
+        startCnt = idList[i];
+        arrayID = i+1;
+      }
+    }
+  }
+  
+  result[arrayID][index-startCnt] = pos[index];
+}
+
+dfgEntry {
+  if(this.meshAPolyID.size() == 0){
+    return;
+  }
+  
+  if(omitSamePosition){
+    Size omitCount[](this.chainPackList.size());
+      
+    this.crossPos.omitSamePosition2(positions, omitCount, this.chainPackList);
+
+    for(Integer i=0; i<this.chainPackList.size(); i++){
+      splitSizes.push(this.chainPackList[i]-omitCount[i]);
+    }
+    
+  }else{
+    positions = this.crossPos;
+    splitSizes = this.chainPackList;
+  }
+
+  splitedPositions.resize(this.chainPackList.size());
+  for(Integer i=0; i<splitedPositions.size(); i++){
+    if(i==0){
+      splitedPositions[i].resize(splitSizes[i]);
+    }else{
+      splitedPositions[i].resize(splitSizes[i]-splitSizes[i-1]);
+    }
+  }
+  OmitSamePositionSplitTask2<<<positions.size()>>>(splitedPositions, positions, splitSizes);
+
+  for(Integer i=0; i<splitedPositions.size(); i++){
+    if(this.close[i]){
+      Size cnt = splitedPositions[i].size();
+      splitedPositions[i].resize(cnt+1);
+      splitedPositions[i][cnt] = splitedPositions[i][0];
+    }
+  }
+  
+  // Recreate the splitSizes list for convenience
+  for(Integer i=0; i<splitSizes.size(); i++){
+    splitSizes[i] = splitedPositions[i].size();
+  }
+}
+"
+      },
+    "Fabric.Exts.Geometry.Curves.Curves" : {
+      "objectType" : "Func",
+      "metadata" : {
+        "uiDocUrl" : "http://docs.fabric-engine.com/FabricEngine/2.5.0/HTML/KLExtensionsGuide/Geometry/Curves.html",
+        "uiTooltip" : "Constructor.\n\nSupported types:\n  float64Positions: Boolean\n  result: Curves\n"
+        },
+      "title" : "Curves",
+      "ports" : [
+        {
+          "objectType" : "ExecPort",
+          "name" : "exec",
+          "nodePortType" : "IO",
+          "execPortType" : "IO",
+          "typeSpec" : "Execute"
+          },
+        {
+          "objectType" : "ExecPort",
+          "name" : "float64Positions",
+          "nodePortType" : "Out",
+          "execPortType" : "In",
+          "typeSpec" : "Boolean"
+          },
+        {
+          "objectType" : "ExecPort",
+          "metadata" : {
+            "uiColor" : "{\n  \"r\" : 51,\n  \"g\" : 1,\n  \"b\" : 106\n  }"
+            },
+          "name" : "result",
+          "nodePortType" : "In",
+          "execPortType" : "Out",
+          "typeSpec" : "Curves"
+          }
+        ],
+      "extDeps" : {
+        "Geometry" : "*"
+        },
+      "presetGUID" : "8D837E16321EB6D04CE004745760033C",
+      "code" : "require Geometry;
+
+dfgEntry {
+  result = Curves(float64Positions);
+}
+"
+      },
+    "TKCM.Curves.AddMultipleLinearCurve" : {
+      "objectType" : "Func",
+      "title" : "AddMultipleLinearCurve",
+      "ports" : [
+        {
+          "objectType" : "ExecPort",
+          "name" : "exec",
+          "nodePortType" : "IO",
+          "defaultValues" : {
+            "Execute" : {}
+            },
+          "execPortType" : "IO",
+          "typeSpec" : "Execute"
+          },
+        {
+          "objectType" : "ExecPort",
+          "name" : "this",
+          "nodePortType" : "IO",
+          "defaultValues" : {
+            "Curves" : null
+            },
+          "execPortType" : "IO",
+          "typeSpec" : "Curves"
+          },
+        {
+          "objectType" : "ExecPort",
+          "name" : "CurvePositions",
+          "nodePortType" : "Out",
+          "defaultValues" : {
+            "GenericVec3ArrayValue[]" : [],
+            "Vec3Array[]" : []
+            },
+          "execPortType" : "In",
+          "typeSpec" : "Vec3Array[]"
+          },
+        {
+          "objectType" : "ExecPort",
+          "name" : "isClosed",
+          "nodePortType" : "Out",
+          "defaultValues" : {
+            "Boolean" : false
+            },
+          "execPortType" : "In",
+          "typeSpec" : "Boolean"
+          }
+        ],
+      "extDeps" : {},
+      "presetGUID" : "ED6C3B9A96A93D71A80FD5123DAC1B75",
+      "code" : "dfgEntry {
+  if(CurvePositions.size() == 0){  return;  }
+  
+  for(Integer i=0; i<CurvePositions.size(); i++){
+    Vec3 curvePos[];
+    curvePos.resize(CurvePositions[i].size());
+    
+    for(Integer j=0; j<CurvePositions[i].size(); j++){
+      curvePos[j] = CurvePositions[i][j];
+    }
+    this.addLinearCurve(curvePos, isClosed);
+  }
+}
+"
+      },
+    "Fabric.Exts.InlineDrawing.DrawingHandle.DrawCurves" : {
+      "objectType" : "Func",
+      "metadata" : {
+        "uiDocUrl" : "http://docs.fabric-engine.com/FabricEngine/2.5.0/HTML/KLExtensionsGuide/InlineDrawing/DrawingHandle.html",
+        "uiTooltip" : "helper function to draw a curves object given a color + a single transform\n\nSupported types:\n  this: DrawingHandle\n  name: String\n  color: Color\n  specular: Color\n  specFactor: Float32\n  transform: Xfo\n  curves: Curves\n  instance: InlineInstance\n"
+        },
+      "title" : "DrawCurves",
+      "ports" : [
+        {
+          "objectType" : "ExecPort",
+          "name" : "exec",
+          "nodePortType" : "IO",
+          "execPortType" : "IO",
+          "typeSpec" : "Execute"
+          },
+        {
+          "objectType" : "ExecPort",
+          "name" : "this",
+          "nodePortType" : "IO",
+          "execPortType" : "IO",
+          "typeSpec" : "DrawingHandle"
+          },
+        {
+          "objectType" : "ExecPort",
+          "name" : "name",
+          "nodePortType" : "Out",
+          "execPortType" : "In",
+          "typeSpec" : "String"
+          },
+        {
+          "objectType" : "ExecPort",
+          "metadata" : {
+            "uiColor" : "{\n  \"r\" : 255,\n  \"g\" : 0,\n  \"b\" : 0\n  }"
+            },
+          "name" : "color",
+          "nodePortType" : "Out",
+          "defaultValues" : {
+            "Color" : {
+              "r" : 0,
+              "g" : 1,
+              "b" : 0,
+              "a" : 1
+              }
+            },
+          "execPortType" : "In",
+          "typeSpec" : "Color"
+          },
+        {
+          "objectType" : "ExecPort",
+          "metadata" : {
+            "uiColor" : "{\n  \"r\" : 255,\n  \"g\" : 0,\n  \"b\" : 0\n  }"
+            },
+          "name" : "specular",
+          "nodePortType" : "Out",
+          "defaultValues" : {
+            "Color" : {
+              "r" : 0.2000000029802322,
+              "g" : 0.2000000029802322,
+              "b" : 0.2000000029802322,
+              "a" : 1
+              }
+            },
+          "execPortType" : "In",
+          "typeSpec" : "Color"
+          },
+        {
+          "objectType" : "ExecPort",
+          "metadata" : {
+            "uiHardRange" : "(2, 1000)",
+            "uiRange" : "(2, 100)"
+            },
+          "name" : "specFactor",
+          "nodePortType" : "Out",
+          "defaultValues" : {
+            "Float32" : 16
+            },
+          "execPortType" : "In",
+          "typeSpec" : "Float32"
+          },
+        {
+          "objectType" : "ExecPort",
+          "metadata" : {
+            "uiColor" : "{\n  \"r\" : 249,\n  \"g\" : 157,\n  \"b\" : 28\n  }"
+            },
+          "name" : "transform",
+          "nodePortType" : "Out",
+          "execPortType" : "In",
+          "typeSpec" : "Xfo"
+          },
+        {
+          "objectType" : "ExecPort",
+          "metadata" : {
+            "uiColor" : "{\n  \"r\" : 51,\n  \"g\" : 1,\n  \"b\" : 106\n  }"
+            },
+          "name" : "curves",
+          "nodePortType" : "Out",
+          "execPortType" : "In",
+          "typeSpec" : "Curves"
+          },
+        {
+          "objectType" : "ExecPort",
+          "name" : "instance",
+          "nodePortType" : "In",
+          "execPortType" : "Out",
+          "typeSpec" : "InlineInstance"
+          }
+        ],
+      "extDeps" : {
+        "InlineDrawing" : "*"
+        },
+      "presetGUID" : "2A74C12EA0FA19E009583E558FDAC2EE",
+      "code" : "require InlineDrawing;
+
+dfgEntry {
+  this.drawCurves(name, color, specular, specFactor, transform, curves, instance);
+}
+"
+      },
+    "GUID:2440020BA6A1CAB1CEB690A198F99C70" : {
+      "objectType" : "Graph",
+      "title" : "EmptyDrawingHandle",
+      "cacheRule" : "never",
+      "ports" : [
+        {
+          "objectType" : "ExecPort",
+          "name" : "exec",
+          "nodePortType" : "IO",
+          "execPortType" : "IO",
+          "typeSpec" : "Execute"
+          },
+        {
+          "objectType" : "ExecPort",
+          "name" : "handle",
+          "nodePortType" : "In",
+          "execPortType" : "Out",
+          "typeSpec" : "DrawingHandle"
+          }
+        ],
+      "extDeps" : {},
+      "presetGUID" : "2440020BA6A1CAB1CEB690A198F99C70",
+      "nodes" : [
+        {
+          "objectType" : "Inst",
+          "metadata" : {
+            "uiGraphPos" : "{\"x\": 894, \"y\": 100}"
+            },
+          "name" : "Clear",
+          "ports" : [
+            {
+              "objectType" : "InstPort",
+              "name" : "exec",
+              "nodePortType" : "IO"
+              },
+            {
+              "objectType" : "InstPort",
+              "name" : "this",
+              "nodePortType" : "IO"
+              }
+            ],
+          "cacheRule" : "never",
+          "executable" : "Fabric.Exts.InlineDrawing.DrawingHandle.Clear",
+          "presetGUID" : "39E8D81FA7C7C4A825877F16EFE3564F"
+          },
+        {
+          "objectType" : "Var",
+          "metadata" : {
+            "uiGraphPos" : "{\"x\":567.0,\"y\":56.0}",
+            "uiCollapsedState" : "0"
+            },
+          "name" : "handleVar",
+          "ports" : [
+            {
+              "objectType" : "VarPort",
+              "name" : "value",
+              "nodePortType" : "IO"
+              }
+            ],
+          "dataType" : "DrawingHandle",
+          "extDep" : "InlineDrawing:*"
+          },
+        {
+          "objectType" : "Inst",
+          "metadata" : {
+            "uiGraphPos" : "{\"x\":287.0,\"y\":56.0}"
+            },
+          "name" : "CreateDrawingHandle",
+          "ports" : [
+            {
+              "objectType" : "InstPort",
+              "name" : "exec",
+              "nodePortType" : "IO"
+              },
+            {
+              "objectType" : "InstPort",
+              "name" : "handle",
+              "nodePortType" : "Out"
+              }
+            ],
+          "definition" : {
+            "objectType" : "Func",
+            "title" : "Create DrawingHandle",
+            "ports" : [
+              {
+                "objectType" : "ExecPort",
+                "name" : "exec",
+                "nodePortType" : "IO",
+                "execPortType" : "IO",
+                "typeSpec" : "Execute"
+                },
+              {
+                "objectType" : "ExecPort",
+                "name" : "handle",
+                "nodePortType" : "In",
+                "execPortType" : "Out",
+                "typeSpec" : "DrawingHandle"
+                }
+              ],
+            "extDeps" : {
+              "InlineDrawing" : "*"
+              },
+            "code" : "dfgEntry {
+  handle = DrawingHandle();
+}
+"
+            }
+          }
+        ],
+      "connections" : {
+        "Clear.this" : [
+          "handle"
+          ],
+        "handleVar.value" : [
+          "Clear.this"
+          ],
+        "CreateDrawingHandle.handle" : [
+          "handleVar.value"
+          ]
+        }
+      },
+    "Fabric.Exts.InlineDrawing.DrawingHandle.Clear" : {
+      "objectType" : "Func",
+      "metadata" : {
+        "uiDocUrl" : "http://docs.fabric-engine.com/FabricEngine/2.5.0/HTML/KLExtensionsGuide/InlineDrawing/DrawingHandle.html",
+        "uiTooltip" : "removes all contents from the DrawingHandle\n\n Supported by DrawingHandle"
+        },
+      "title" : "Clear",
+      "ports" : [
+        {
+          "objectType" : "ExecPort",
+          "name" : "exec",
+          "nodePortType" : "IO",
+          "execPortType" : "IO",
+          "typeSpec" : "Execute"
+          },
+        {
+          "objectType" : "ExecPort",
+          "name" : "this",
+          "nodePortType" : "IO",
+          "execPortType" : "IO",
+          "typeSpec" : "DrawingHandle"
+          }
+        ],
+      "extDeps" : {
+        "InlineDrawing" : "*"
+        },
+      "presetGUID" : "39E8D81FA7C7C4A825877F16EFE3564F",
+      "code" : "require InlineDrawing;
+
+dfgEntry {
+  this.clear();
+}
+"
+      },
+    "Fabric.Exts.InlineDrawing.Func.SetActive" : {
+      "objectType" : "Func",
+      "metadata" : {
+        "uiDocUrl" : "http://docs.fabric-engine.com/FabricEngine/2.5.0/HTML/KLExtensionsGuide/InlineDrawing/InlineInstance.html",
+        "uiTooltip" : "enables or disables this instance\n\n Supported by InlineInstance,DrawingHandle"
+        },
+      "title" : "SetActive",
+      "ports" : [
+        {
+          "objectType" : "ExecPort",
+          "name" : "exec",
+          "nodePortType" : "IO",
+          "execPortType" : "IO",
+          "typeSpec" : "Execute"
+          },
+        {
+          "objectType" : "ExecPort",
+          "name" : "this",
+          "nodePortType" : "IO",
+          "execPortType" : "IO",
+          "typeSpec" : "$TYPE$"
+          },
+        {
+          "objectType" : "ExecPort",
+          "name" : "active",
+          "nodePortType" : "Out",
+          "execPortType" : "In",
+          "typeSpec" : "Boolean"
+          }
+        ],
+      "extDeps" : {
+        "InlineDrawing" : "*"
+        },
+      "presetGUID" : "63CF666747969EEF99B85F6A55F07D5F",
+      "code" : "require InlineDrawing;
+
+dfgEntry {
+ if(this) this.setActive(active);
+}
+"
+      },
+    "Fabric.Exts.Geometry.Curves.SetDrawThickness" : {
+      "objectType" : "Func",
+      "metadata" : {
+        "uiDocUrl" : "http://docs.fabric-engine.com/FabricEngine/2.5.0/HTML/KLExtensionsGuide/Geometry/Curves.html",
+        "uiTooltip" : "Sets the draw thickness, in pixels, to be used by the drawing.\n\nSupported types:\n  this: Curves\n  pixels: UInt32\n"
+        },
+      "title" : "SetDrawThickness",
+      "ports" : [
+        {
+          "objectType" : "ExecPort",
+          "name" : "exec",
+          "nodePortType" : "IO",
+          "execPortType" : "IO",
+          "typeSpec" : "Execute"
+          },
+        {
+          "objectType" : "ExecPort",
+          "metadata" : {
+            "uiColor" : "{\n  \"r\" : 51,\n  \"g\" : 1,\n  \"b\" : 106\n  }"
+            },
+          "name" : "this",
+          "nodePortType" : "IO",
+          "execPortType" : "IO",
+          "typeSpec" : "Curves"
+          },
+        {
+          "objectType" : "ExecPort",
+          "name" : "pixels",
+          "nodePortType" : "Out",
+          "defaultValues" : {
+            "UInt32" : 1
+            },
+          "execPortType" : "In",
+          "typeSpec" : "UInt32"
+          }
+        ],
+      "extDeps" : {
+        "Geometry" : "*"
+        },
+      "presetGUID" : "685A9EC6E29E0773A91849754DB91220",
+      "code" : "require Geometry;
+
+dfgEntry {
+  this.setDrawThickness(pixels);
+}
+"
+      }
+    }
+  }
