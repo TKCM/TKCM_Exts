@@ -3,7 +3,7 @@
 //  ポリゴン分割の際にエッジ分割位置～2つ目のエッジ分割位置までの間に複数の座標を追加することが出来るので、多角形ポリゴンへの分割も可能
 
 //  分割後の新しいポリゴン生成のための情報"polygonSize"と"packedPolygonPoiIDs"を作る
-function PolygonMesh.splitPolygon2Task!(
+function PolygonMesh.splitPolygon2GetValuesTask!(
   in Size polygonID,  
   in Size polygonIDList[],  //  Arrayの際に使用　　マージ候補の隣接ポリゴンIDがスプリット処理を行うポリゴンと重複していないかをチェックするために使用する　＝　スプリット処理を行う全てのポリゴンIDリストが必要
   in Size origPoiCnt, //  Array用にオリジナルメッシュのポリゴンポイント数を外部で管理する　分割処理中に生成される新規ポイントIDの管理で使用
@@ -14,13 +14,16 @@ function PolygonMesh.splitPolygon2Task!(
   in Vec3 addPointsPosition[],
   in Boolean mergeNeighborPoly,
 
+  io Size execPolyID[],
   io Vec3 preparedPoiPos[], //  Arrayの際に使用　　スプリットするエッジの端を別のスプリットエッジの端と継続させれるかをチェックするために使用
   io Size polygonSizes[], 
   io Size packedPolygonPointIndices[],
   io Size nPolygonSizes[], 
   io Size nPackedPolygonPointIndices[],
-  io Integer nPolyID[]
-  ){
+  io Integer nPolyID[],
+  io Size useOrigPointIds[]
+  )
+{
 
   //////////  入力データのチェック
   //  エッジ指定とレシオの値それぞれが同じの場合
@@ -28,21 +31,20 @@ function PolygonMesh.splitPolygon2Task!(
   //  指定したエッジがポリゴン内に無い場合
   //  2回のエッジ分割が同じエッジを使用+追加のポイントも無くポリゴン生成に必要な３頂点が確保できない場合
   if(polygonPointIndex1 == polygonPointIndex2 && edgeSplitRatio1 == edgeSplitRatio2){
-    report("!!!!!!Error!!!!!! "+FUNC+" ::: polygonPointIndex and edgeSplitRatio are same value");
+    report("!!!!!!Error!!!!!! .splitPolygon2() ::: polygonPointIndex and edgeSplitRatio are same value");
     return;
   }else if(this.polygonCount() <= polygonID){ 
-    report("!!!!!!Error!!!!!! "+FUNC+" ::: polygonID is out of lange this polygon count");
+    report("!!!!!!Error!!!!!! .splitPolygon2() ::: polygonID is out of lange this polygon count");
     return;
   }else if(this.getPolygonSize(polygonID) <= polygonPointIndex1 || this.getPolygonSize(polygonID) <= polygonPointIndex2){ 
-    report("!!!!!!Error!!!!!! "+FUNC+" ::: polygonPointIndex is out of lange this polygon point count");
+    report("!!!!!!Error!!!!!! .splitPolygon2() ::: polygonPointIndex is out of lange this polygon point count");
     return;
   }else if(polygonPointIndex1 == polygonPointIndex2 && addPointsPosition.size() == 0){  //  
-    report("!!!!!!Error!!!!!! "+FUNC+" ::: ");
+    report("!!!!!!Error!!!!!! .splitPolygon2() ::: ");
     return;
   }
   
   //////////  エッジ分割のレシオを”0～1”の範囲にクランプする
-  ////////// clamp ratio values
   Scalar edgeSplitRatio[2];
     edgeSplitRatio[0] = Scalar(Math_clamp(edgeSplitRatio1, 0.0, 1.0));
     edgeSplitRatio[1] = Scalar(Math_clamp(edgeSplitRatio2, 0.0, 1.0));
@@ -53,7 +55,6 @@ function PolygonMesh.splitPolygon2Task!(
     polygonPointIndex[1] = polygonPointIndex2;
 
   //////////  編集前のメッシュの情報を一時保存しておく
-  ////////// rest original values
   Size origMeshPolyCount = this.polygonCount(); //  分割後に出来上がるポリゴンのIDの取得で使用
   Size thisPoiCnt = this.pointCount();
   Size origPoi[](this.getPolygonSize(polygonID)*3);{  //  ターゲットとなるポリゴンの頂点IDを格納しておく　2回ループさせてリスト化しておく　例：4角形ポリゴンの場合=[0,2,5,8,0,2,5,8,0,2,5,8]
@@ -100,39 +101,37 @@ function PolygonMesh.splitPolygon2Task!(
   }
 
   //////////  分割用の頂点を生成
-  //////////  add points
   Integer useOrigPolyPoi[](2);  //  エッジ分割のレシオが0.0か1.0の場合は新頂点を作らずに既存の頂点を利用する　その際にどの頂点を利用するのかポリゴンポイントで格納しておくためのもの
     useOrigPolyPoi[0] = -1;
     useOrigPolyPoi[1] = -1;
   Vec3 edgeSplitPos[2]; //  エッジ分割を行うポジション値を格納しておくためのもの
-  Size addPointCount = addPointsPosition.size();  //  合計で何個の頂点を追加することになるかをカウントするためのもの　このメソッドに入力されている追加頂点位置”addPointsPosition”の個数をあらかじめカウントしておく
+  Size addPointCount = addPointsPosition.size();//  合計で何個の頂点を追加することになるかをカウントするためのもの　このメソッドに入力されている追加頂点位置”addPointsPosition”の個数をあらかじめカウントしておく
+    
   //  レシオが0.0の場合　"useOrigPolyPoi"に"polygonPointIndex"を格納
   //  レシオが1.0の場合　"useOrigPolyPoi"に"polygonPointIndex+1"を格納　ただしポリゴンの頂点数を超える数字になる場合は0番からリセットしておく
   //  どちらでもない場合はスプリット位置を"edgeSplitPos"に格納し、"addPointCount"のカウントを追加しておく
   if(edgeSplitRatio[0] == 0){
-    useOrigPolyPoi[0] = polygonPointIndex[0]; 
+    useOrigPolyPoi[0] = polygonPointIndex[0];
+    useOrigPointIds.push( this.getPolygonPoint(polygonID, useOrigPolyPoi[0]) );
   }else if(edgeSplitRatio[0] == 1.0){
     useOrigPolyPoi[0] = polygonPointIndex[0]+1;
-//    if(this.getPolygonSize(polygonID) <= useOrigPolyPoi[0]){
-//      useOrigPolyPoi[0] = useOrigPolyPoi[0] - this.getPolygonSize(polygonID);
-//    }
+    useOrigPointIds.push( this.getPolygonPoint(polygonID, useOrigPolyPoi[0]) );
   }else{
     edgeSplitPos[0] = this.getPointPosition(origPoi[polygonPointIndex[0]]).linearInterpolate(this.getPointPosition(origPoi[polygonPointIndex[0]+1]), edgeSplitRatio[0]);
     addPointCount += 1;
   }
   if(edgeSplitRatio[1] == 0){
     useOrigPolyPoi[1] = polygonPointIndex[1];
+    useOrigPointIds.push( this.getPolygonPoint(polygonID, useOrigPolyPoi[1]) );
   }else if(edgeSplitRatio[1] == 1.0){
     useOrigPolyPoi[1] = polygonPointIndex[1]+1;
-//    if(this.getPolygonSize(polygonID) <= useOrigPolyPoi[1]){
-//      useOrigPolyPoi[1] = useOrigPolyPoi[1] - this.getPolygonSize(polygonID);
-//    }
+    useOrigPointIds.push( this.getPolygonPoint(polygonID, useOrigPolyPoi[1]) );
   }else{
     edgeSplitPos[1] = this.getPointPosition(origPoi[polygonPointIndex[1]]).linearInterpolate(this.getPointPosition(origPoi[polygonPointIndex[1]+1]), edgeSplitRatio[1]);
     addPointCount += 1;
   }
   if(useOrigPolyPoi[0] != -1 && useOrigPolyPoi[1] != -1 && origPoi[useOrigPolyPoi[0]] == origPoi[useOrigPolyPoi[1]]){
-    report("!!!!!!Error!!!!!! "+FUNC+" ::: select same pointID");
+    report("!!!!!!Error!!!!!! .splitPolygon2() ::: select same pointID");
     return;
   }
   //  エッジ分割と同じポジション値がpreparePos[]内に無いか検索する
@@ -152,7 +151,6 @@ function PolygonMesh.splitPolygon2Task!(
   this.createPoints(addPointCount); //  追加数"addPointCount"で頂点を追加する
 
   //////////  エッジ分割の2点がポリゴン内での左回りの順で生成されるかをチェックし、逆だった場合はポリゴンの分割で必要な素材の並び順を逆転させておく
-  //////////  chack input value
   Boolean reverse;
   if(polygonPointIndex[1] < polygonPointIndex[0]){
     reverse = true;
@@ -161,6 +159,8 @@ function PolygonMesh.splitPolygon2Task!(
       reverse = true;
     }
   }
+
+  Vec3 addPointsPosition2[] = addPointsPosition.clone();  //  追加ポイントの情報を逆転させる場合のための受け皿
   if(reverse){  //  ポリゴンを分割するエッジのスタート・エンドに関する情報を逆転させておく
     Integer restInt;
     restInt = useOrigPolyPoi[0];
@@ -178,19 +178,23 @@ function PolygonMesh.splitPolygon2Task!(
     Size restSize = polygonPointIndex[0];
     polygonPointIndex[0] = polygonPointIndex[1];
     polygonPointIndex[1] = restSize;
+    //  追加ポイントだけは配列数が予測できないため、逆転の場合の対応を別処理で行う
+    addPointsPosition2.resize(addPointsPosition.size());
+    for(Size i=0; i<addPointsPosition.size(); i++){
+      addPointsPosition2[i] = addPointsPosition[addPointsPosition.size()-1-i];
+    }
   }
 
   //////////  追加した分割用の頂点に位置情報を与えていく
-  //////////  set new point position
   Integer s;
   if(useOrigPolyPoi[0] == -1  && usePreparePosID[0] == -1){  //  一つ目のエッジの分割が行われている場合は追加頂点の最初に分割位置"edgeSplitPos"の情報を渡す
     this.setPointPosition(thisPoiCnt, edgeSplitPos[0]);
     preparedPoiPos.push(edgeSplitPos[0]);
     s += 1;
   }
-  for(Integer i=0; i<addPointsPosition.size(); i++){
-    this.setPointPosition(thisPoiCnt+s, addPointsPosition[i]);
-    preparedPoiPos.push(addPointsPosition[i]);
+  for(Integer i=0; i<addPointsPosition2.size(); i++){
+    this.setPointPosition(thisPoiCnt+s, addPointsPosition2[i]);
+    preparedPoiPos.push(addPointsPosition2[i]);
     s += 1;
   }
   if(useOrigPolyPoi[1] == -1 && usePreparePosID[1] == -1){  //  2つ目のエッジの分割が行われている場合は追加頂点の最後に分割位置"edgeSplitPos"の情報を渡す　エッジ分割が行われていない+レシオが0.0の場合は↓頂点リスト生成のスタートIDを1減らす
@@ -201,12 +205,9 @@ function PolygonMesh.splitPolygon2Task!(
   }
 
   //////////  ポリゴンを生成する頂点番号リストを作る
-  //////////  make new Polygon's pointID list
   Integer ss = addPointCount-1;
-  //  first polygon
   {
     //  1つ目のポリゴン　最初のポイントIDをリストに登録する　  
-    //  first polygon's first pointID
     if(usePreparePosID[1] != -1){  //  エッジ分割と同じポジション値がpreparePos[]にあった場合
       packedPolygonPointIndices.push(origPoiCnt+usePreparePosID[1]);
     }else if(useOrigPolyPoi[1] != -1){  //  既存の頂点だった場合
@@ -216,11 +217,7 @@ function PolygonMesh.splitPolygon2Task!(
       ss -= 1;
     }
     //  1つ目のポリゴン　分割エッジの途中に頂点を追加する場合
-    //  first polygon's split pointID
     if(0 < addPointCount){
-      if(edgeSplitRatio[1] == 1.0){
-//        ss -= 1;
-      }
       if(0 <= ss){
         while(true){
           packedPolygonPointIndices.push(thisPoiCnt+ss);
@@ -234,7 +231,6 @@ function PolygonMesh.splitPolygon2Task!(
       }
     }
     //  1つ目のポリゴン　最後のポイントIDをリストに登録する　既存の頂点やpreparePos[]内のポジションを使用する場合のみ実行（新規頂点の場合は↑のwhile内で既に登録されている）
-    //  first polygon's　pointID
     if(usePreparePosID[0] != -1){  //  エッジ分割と同じポジション値がpreparePos[]にあった場合
       packedPolygonPointIndices.push(origPoiCnt+usePreparePosID[0]);
     }else if(useOrigPolyPoi[0] != -1){
@@ -242,7 +238,6 @@ function PolygonMesh.splitPolygon2Task!(
     } 
     
     //  1つ目のポリゴン　元のポリゴンの頂点IDを登録していく
-    //  first polygon, add origPolygon pointID
     Scalar cnt = 1;
     Scalar cnt2 = 0;
       if(edgeSplitRatio[0] == 1.0){
@@ -259,7 +254,6 @@ function PolygonMesh.splitPolygon2Task!(
       cnt += 1;
     }
     //  1つ目のポリゴン　ポリゴンの角数を登録
-    //  first polygon's polygonSizes
     if(polygonSizes.size() == 0){
       polygonSizes.push(packedPolygonPointIndices.size());
     }else{
@@ -270,10 +264,14 @@ function PolygonMesh.splitPolygon2Task!(
       polygonSizes.push(packedPolygonPointIndices.size() - sub);
     }
   }
-  //  second polygon
+
   {
-    //  2つ目のポリゴン　最初のポイントIDをリストに登録する 
-    //  second polygon's first pointID
+    //  2つ目のポリゴン　最初のポイントIDをリストに登録する
+    if(usePreparePosID[1] != -1){
+      s = Math_max(s-1, 0);
+      ss = Math_max(ss-1, 0);
+    }
+    
     if(usePreparePosID[0] != -1){  //  エッジ分割と同じポジション値がpreparePos[]にあった場合
       packedPolygonPointIndices.push(origPoiCnt+usePreparePosID[0]);
     }else if(useOrigPolyPoi[0] != -1){  //  既存の頂点だった場合
@@ -283,7 +281,6 @@ function PolygonMesh.splitPolygon2Task!(
       ss += 1;
     }
     //  2つ目のポリゴン 分割エッジの途中に頂点を追加する場合
-    //  second polygon's split pointID
     if(0 < addPointCount){
       while(true){
         if(s < ss){ //  1つめのエッジを分割+2つめは分割無し+追加頂点も無しの場合
@@ -300,14 +297,12 @@ function PolygonMesh.splitPolygon2Task!(
       }
     }
     //  2つ目のポリゴン　最後のポイントIDをリストに登録する　既存の頂点やpreparePos[]内のポジションを使用する場合のみ実行（新規頂点の場合は↑のwhile内で既に登録されている）
-    //  second polygon's　pointID
     if(usePreparePosID[1] != -1){  //  エッジ分割と同じポジション値がpreparePos[]にあった場合
       packedPolygonPointIndices.push(origPoiCnt+usePreparePosID[1]);
     }else if(useOrigPolyPoi[1] != -1){
       packedPolygonPointIndices.push(origPoi[useOrigPolyPoi[1]]);
     }
     //  2つ目のポリゴン　元のポリゴンの頂点IDを登録していく
-    //  set2 origPolygon pointID
     Scalar cnt = 1;
     Scalar cnt2 = 0;
       if(edgeSplitRatio[1] == 1.0){
@@ -333,7 +328,6 @@ function PolygonMesh.splitPolygon2Task!(
       }
     }
     //  2つ目のポリゴン　ポリゴンの角数を登録
-    //  second polygon's polygonSizes
     Size sub;
     for(Integer i=0; i<polygonSizes.size(); i++){
       sub += polygonSizes[i];
@@ -342,7 +336,6 @@ function PolygonMesh.splitPolygon2Task!(
   }
 
   //////////  分割処理をしたエッジに隣り合うポリゴンにも頂点を追加する場合は隣接ポリゴンのリストも作る
-  //////////  merge with neighbor polygon
   if(mergeNeighborPoly){
     //  隣接マージを行うポリゴンがスプリット処理候補のポリゴンIDリスト内に無いか検索する　　存在した場合はIDに”-1”をセットして隣接マージ処理を行わないようにする
     for(Integer i=0; i<polygonIDList.size(); i++){
@@ -388,17 +381,23 @@ function PolygonMesh.splitPolygon2Task!(
       nPolyID.push(neighborPolyID[1]);
     }
   }
+  execPolyID.push(polygonID);
 }
 
 //  リストを整理し直してからターゲットポリゴンのスプリットと隣接ポリゴンのマージを行う
-function PolygonMesh.splitPolygon2Task2!(
+function PolygonMesh.splitPolygon2ApplayTask!(
   in Size polygonIDs[],
   in Integer nPolyID[],
   in Size polygonSizes[],
   io Size nPolygonSizes[],
   in Size packedPolygonPointIndices[],
   io Size nPackedPolygonPointIndices[]
-  ){
+  )
+{
+  if(polygonIDs.size() == 0 || polygonSizes.size() == 0 || packedPolygonPointIndices.size() == 0){
+    return;
+  }
+  
   // delete target & neighbor polygon
   for(Integer i=0; i<nPolyID.size(); i++){
     if(nPolyID[i] != -1){
@@ -427,12 +426,15 @@ function PolygonMesh.splitPolygon2!(
   in Size polygonPointIndex2,
   in Scalar edgeSplitRatio2,
   in Vec3 addPointsPosition[],
-  in Boolean mergeNeighborPoly
-  ){
-  Size polygonSizes[], packedPolygonPointIndices[], nPolygonSizes[], nPackedPolygonPointIndices[], dummy[];
+  in Boolean mergeNeighborPoly,
+  out Size pointIds[],
+  )
+{
+  Size polygonSizes[], packedPolygonPointIndices[], nPolygonSizes[], nPackedPolygonPointIndices[], useOrigPointIds[], dummy[], dummy2[];
   Integer nPolyID[];
   Vec3 preparePoiPos[];
-  this.splitPolygon2Task(
+  Size origPoiCnt = this.pointCount();
+  this.splitPolygon2GetValuesTask(
     polygonID,
     dummy,
     this.pointCount(),
@@ -442,17 +444,19 @@ function PolygonMesh.splitPolygon2!(
     edgeSplitRatio2, 
     addPointsPosition, 
     mergeNeighborPoly,
+    dummy2,
     preparePoiPos,
     polygonSizes, 
     packedPolygonPointIndices, 
     nPolygonSizes, 
     nPackedPolygonPointIndices, 
-    nPolyID
+    nPolyID,
+    useOrigPointIds
   );
 
   Size polygonIDs[](1);
-    polygonIDs[0] = polygonID;
-  this.splitPolygon2Task2(
+  polygonIDs[0] = polygonID;
+  this.splitPolygon2ApplayTask(
     polygonIDs,
     nPolyID,
     polygonSizes,
@@ -460,6 +464,132 @@ function PolygonMesh.splitPolygon2!(
     packedPolygonPointIndices,
     nPackedPolygonPointIndices
   );
+
+  pointIds = useOrigPointIds;
+  for(Integer i=origPoiCnt; i<this.pointCount(); i++){
+    pointIds.push(i);
+  }
+}
+
+function PolygonMesh.splitPolygon2ArrayLoopTask!(
+  in Size polygonID[],
+  in Size polygonPointIndex1[],
+  in Size origPoiCnt,
+  in Scalar edgeSplitRatio1[],
+  in Size polygonPointIndex2[],
+  in Scalar edgeSplitRatio2[],
+  in Vec3Array addPointsPosition[],
+  in Boolean mergeNeighborPoly,
+  io Vec3 preparePoiPos[],
+  out Size holdOrigIDs[],
+  out Vec3 holdSplitPos1[],
+  out Vec3 holdSplitPos2[],
+  io Size useOrigPointIds[]
+  )
+{
+  if(polygonID.size() != polygonPointIndex1.size() ||
+     polygonID.size() != edgeSplitRatio1.size() ||
+     polygonID.size() != polygonPointIndex2.size() ||
+     polygonID.size() != edgeSplitRatio2.size() 
+     ){
+    report("!!!!!!Error!!!!!! .splitPolygon2() ::: array size is not same");
+    return;
+  }
+
+  Size polygonSizes[], 
+       packedPolygonPointIndices[], 
+       nPolygonSizes[], 
+       nPackedPolygonPointIndices[], 
+       dummy[],
+       rest[],
+       holdID[],
+       execID[],
+       execPolyID[];
+  Integer nPolyID[];
+  Vec3Array restAddPointsPosition[] = addPointsPosition.clone();
+  if(addPointsPosition.size() == polygonID.size()){
+    restAddPointsPosition.resize(polygonID.size());
+  }
+
+  //  同じポリゴンを分割しようとしている場合は２回目以降をholdIDに溜めて保留しておく
+  for(Integer i=0; i<polygonID.size(); i++){
+    Boolean same = false;
+    for(Integer j=0; j<i; j++){
+      if(polygonID[i] == polygonID[j]){
+        same = true;
+        j=i;
+      }
+    }
+    if(same){
+      rest.push(holdOrigIDs[i]);
+      holdID.push(i);
+    }else{
+      execID.push(i);
+      execPolyID.push(polygonID[i]);
+    }
+  }
+  holdOrigIDs = rest;
+
+  holdSplitPos1.resize(holdID.size());
+  holdSplitPos2.resize(holdID.size());
+  //  保留がある場合はエッジの分割座標を取得してholdSplitPosに溜めておく
+  for(Integer i=0; i<holdID.size(); i++){
+    Size id, id11, id12, id21, id22;
+    id = holdID[i];
+    id11 = this.getPolygonPoint(polygonID[id], polygonPointIndex1[id]);
+    if(polygonPointIndex1[id] == this.getPolygonSize(polygonID[id])-1){
+      id12 = this.getPolygonPoint(polygonID[id], 0);
+    }else{
+      id12 = this.getPolygonPoint(polygonID[id], polygonPointIndex1[id]+1);
+    }
+    holdSplitPos1[i] = this.getPointPosition(id11).linearInterpolate(this.getPointPosition(id12), edgeSplitRatio1[id]);
+
+    id21 = this.getPolygonPoint(polygonID[id], polygonPointIndex2[id]);
+    if(polygonPointIndex2[id] == this.getPolygonSize(polygonID[id])-1){
+      id22 = this.getPolygonPoint(polygonID[id], 0);
+    }else{
+      id22 = this.getPolygonPoint(polygonID[id], polygonPointIndex2[id]+1);
+    }
+    holdSplitPos2[i] = this.getPointPosition(id21).linearInterpolate(this.getPointPosition(id22), edgeSplitRatio2[id]);
+  }
+
+  Size execPolyID2[](0);
+  //  分割するすべてのポリゴンに対して必要な情報を集めていく
+  for(Integer i=0; i<execID.size(); i++){
+    Size id = execID[i];
+    this.splitPolygon2GetValuesTask(
+      execPolyID[i],
+      execPolyID,
+      origPoiCnt,
+      polygonPointIndex1[id], 
+      edgeSplitRatio1[id], 
+      polygonPointIndex2[id], 
+      edgeSplitRatio2[id], 
+      restAddPointsPosition[id], 
+      mergeNeighborPoly,
+      execPolyID2,
+      preparePoiPos,
+      polygonSizes, 
+      packedPolygonPointIndices, 
+      nPolygonSizes, 
+      nPackedPolygonPointIndices, 
+      nPolyID,
+      useOrigPointIds
+    );
+  }
+  //  集めた情報を元にすべてのポリゴンに対して分割処理を実行する
+  this.beginStructureChanges();
+  {
+    this.splitPolygon2ApplayTask(
+      execPolyID2,
+      nPolyID,
+      polygonSizes,
+      nPolygonSizes,
+      packedPolygonPointIndices,
+      nPackedPolygonPointIndices
+    );
+  }
+  this.endStructureChanges();
 }
 
 function PolygonMesh.splitPolygon2Array!(
@@ -469,52 +599,113 @@ function PolygonMesh.splitPolygon2Array!(
   in Size polygonPointIndex2[],
   in Scalar edgeSplitRatio2[],
   in Vec3Array addPointsPosition[],
-  in Boolean mergeNeighborPoly
-  ){
-  if(polygonID.size() != polygonPointIndex1.size() ||
-     polygonID.size() != edgeSplitRatio1.size() ||
-     polygonID.size() != polygonPointIndex2.size() ||
-     polygonID.size() != edgeSplitRatio2.size() 
-     ){
-    report("!!!!!!Error!!!!!! "+FUNC+" ::: array size is not same");
-    return;
-  }
+  in Boolean mergeNeighborPoly,
+  out Size usePointIds[],
+  )
+{
+  Size polygonID_in[] = polygonID.clone();
+  Size polygonPointIndex1_in[] = polygonPointIndex1.clone();
+  Scalar edgeSplitRatio1_in[] = edgeSplitRatio1.clone();
+  Size polygonPointIndex2_in[] = polygonPointIndex2.clone();
+  Scalar edgeSplitRatio2_in[] = edgeSplitRatio2.clone();
+  Vec3Array addPointsPosition_in[] = addPointsPosition.clone();
 
-  Size polygonSizes[], packedPolygonPointIndices[], nPolygonSizes[], nPackedPolygonPointIndices[], dummy[];
-  Integer nPolyID[];
-  Vec3 preparePoiPos[];
   Size origPoiCnt = this.pointCount();
-  Vec3Array restAddPointsPosition[] = addPointsPosition;
-  if(addPointsPosition.size() == polygonID.size()){
-    restAddPointsPosition.resize(polygonID.size());
-  }
+  Vec3 holdSplitPos1[], holdSplitPos2[], preparePoiPos[];
+  Size holdOrigIDs[](polygonID.size());
   for(Integer i=0; i<polygonID.size(); i++){
-    this.splitPolygon2Task(
-      polygonID[i],
-      polygonID,
+    holdOrigIDs[i] = i;
+  }
+  Boolean w = true;
+  while(w){
+    holdSplitPos1.resize(0);
+    holdSplitPos2.resize(0);
+
+    this.splitPolygon2ArrayLoopTask(
+      polygonID_in, 
+      polygonPointIndex1_in, 
       origPoiCnt,
-      polygonPointIndex1[i], 
-      edgeSplitRatio1[i], 
-      polygonPointIndex2[i], 
-      edgeSplitRatio2[i], 
-      restAddPointsPosition[i], 
+      edgeSplitRatio1_in, 
+      polygonPointIndex2_in,
+      edgeSplitRatio2_in,
+      addPointsPosition_in,
       mergeNeighborPoly,
       preparePoiPos,
-      polygonSizes, 
-      packedPolygonPointIndices, 
-      nPolygonSizes, 
-      nPackedPolygonPointIndices, 
-      nPolyID
+      holdOrigIDs,
+      holdSplitPos1,
+      holdSplitPos2,
+      usePointIds
     );
+
+    if(holdOrigIDs.size() == 0){
+      w = false;
+    }else{  
+      polygonID_in.resize(0);
+      polygonPointIndex1_in.resize(0); 
+      polygonPointIndex2_in.resize(0);
+      edgeSplitRatio1_in.resize(0);
+      edgeSplitRatio2_in.resize(0);
+      addPointsPosition_in.resize(0);
+
+      //  ポリゴン分割処理後の新しいメッシュに対してポリゴン（エッジ）IDや分割レシオを再計算する
+      for(Integer i=0; i<holdOrigIDs.size(); i++){
+        Size id = holdOrigIDs[i];
+        
+        Size polyID1, polyID2, polpoi1, polpoi2;
+        Scalar ratio1, ratio2, dumS;
+        Vec3 dumV;
+        
+        //  エッジ分割したかったポジションが新メッシュではどのポリゴン番号とエッジに所属するかを検索
+        //  検索スタートポジションはエッジ上に存在するので、Lerp（）で少しだけ内側にずらして検索スタート
+        GeometryLocation loc1, loc2;
+        if(0<addPointsPosition[id].size()){
+          loc1 = this.getClosest(holdSplitPos1[i].linearInterpolate(addPointsPosition[id][0], 0.001), Vec3(1.0), 1.0);
+          loc2 = this.getClosest(holdSplitPos2[i].linearInterpolate(addPointsPosition[id][0], 0.001), Vec3(1.0), 1.0);
+        }else{
+          loc1 = this.getClosest(holdSplitPos1[i].linearInterpolate(holdSplitPos2[i], 0.001), Vec3(1.0), 1.0);
+          loc2 = this.getClosest(holdSplitPos1[i].linearInterpolate(holdSplitPos2[i], 0.999), Vec3(1.0), 1.0);
+        }
+        if(loc1.isValid() && loc2.isValid()){
+          this.getClosestEdgeFromLocation(loc1, polyID1, polpoi1, ratio1, dumS, dumV);
+          this.getClosestEdgeFromLocation(loc2, polyID2, polpoi2, ratio2, dumS, dumV);
+        }else{
+          polyID1 = 0; polyID2 = 1;
+        }
+
+        if(polyID1 == polyID2){
+          Size poi11, poi12, poi21, poi22;
+          //  ↑で取得しているratioはLerpの際にずらしたポジション値からの結果なので使用できない
+          //  本来のポジションんを使用し再計算する
+          poi11 = this.getPolygonPoint(polyID1, polpoi1);
+          if(polpoi1 == this.getPolygonSize(polyID1)-1){
+            poi12 = this.getPolygonPoint(polyID1, 0);
+          }else{
+            poi12 = this.getPolygonPoint(polyID1, polpoi1+1);
+          }
+          ratio1 = this.getPointPosition(poi11).distanceTo(holdSplitPos1[i]) / this.getPointPosition(poi11).distanceTo( this.getPointPosition(poi12) );
+          poi21 = this.getPolygonPoint(polyID2, polpoi2);
+          if(polpoi2 == this.getPolygonSize(polyID2)-1){
+            poi22 = this.getPolygonPoint(polyID2, 0);
+          }else{
+            poi22 = this.getPolygonPoint(polyID2, polpoi2+1);
+          }
+          ratio2 = this.getPointPosition(poi21).distanceTo(holdSplitPos2[i]) / this.getPointPosition(poi21).distanceTo( this.getPointPosition(poi22) );
+        
+          polygonID_in.push(polyID1);
+          polygonPointIndex1_in.push(polpoi1); 
+          polygonPointIndex2_in.push(polpoi2);
+          edgeSplitRatio1_in.push(ratio1);
+          edgeSplitRatio2_in.push(ratio2);
+          addPointsPosition_in.push(addPointsPosition[id]);
+        }else{
+          report("!!!!!!SplitPolygon2::: split target polygon is not same one");
+          w = false;
+        }
+      }
+    }
+  }//while() end
+
+  for(Integer i=origPoiCnt; i<this.pointCount(); i++){
+    usePointIds.push(i);
   }
-
-  this.splitPolygon2Task2(
-    polygonID,
-    nPolyID,
-    polygonSizes,
-    nPolygonSizes,
-    packedPolygonPointIndices,
-    nPackedPolygonPointIndices
-  );
-
 }

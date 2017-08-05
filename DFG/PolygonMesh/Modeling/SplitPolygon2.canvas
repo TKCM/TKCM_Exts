@@ -2,7 +2,7 @@
   "objectType" : "Graph",
   "metadata" : {
     "uiGraphZoom" : "{\n  \"value\" : 0.723112940788269\n  }",
-    "uiGraphPan" : "{\n  \"x\" : 141.7297821044922,\n  \"y\" : -20.71410369873047\n  }"
+    "uiGraphPan" : "{\n  \"x\" : -27.27021789550781,\n  \"y\" : -39.71410369873047\n  }"
     },
   "title" : "SplitPolygon2",
   "ports" : [
@@ -18,7 +18,6 @@
       },
     {
       "objectType" : "ExecPort",
-      "metadata" : {},
       "name" : "this",
       "nodePortType" : "IO",
       "defaultValues" : {
@@ -29,7 +28,6 @@
       },
     {
       "objectType" : "ExecPort",
-      "metadata" : {},
       "name" : "polygonID",
       "nodePortType" : "Out",
       "defaultValues" : {
@@ -40,7 +38,6 @@
       },
     {
       "objectType" : "ExecPort",
-      "metadata" : {},
       "name" : "polygonPointIndex1",
       "nodePortType" : "Out",
       "defaultValues" : {
@@ -51,18 +48,16 @@
       },
     {
       "objectType" : "ExecPort",
-      "metadata" : {},
       "name" : "edgeSplitRatio1",
       "nodePortType" : "Out",
       "defaultValues" : {
-        "Scalar" : 0.25
+        "Scalar" : 0.300000011920929
         },
       "execPortType" : "In",
       "typeSpec" : "Scalar"
       },
     {
       "objectType" : "ExecPort",
-      "metadata" : {},
       "name" : "polygonPointIndex2",
       "nodePortType" : "Out",
       "defaultValues" : {
@@ -73,7 +68,6 @@
       },
     {
       "objectType" : "ExecPort",
-      "metadata" : {},
       "name" : "edgeSplitRatio2",
       "nodePortType" : "Out",
       "defaultValues" : {
@@ -84,7 +78,6 @@
       },
     {
       "objectType" : "ExecPort",
-      "metadata" : {},
       "name" : "addPointsPosition",
       "nodePortType" : "Out",
       "defaultValues" : {
@@ -95,14 +88,23 @@
       },
     {
       "objectType" : "ExecPort",
-      "metadata" : {},
       "name" : "mergeWithNeighborPolygon",
       "nodePortType" : "Out",
       "defaultValues" : {
-        "Boolean" : true
+        "Boolean" : false
         },
       "execPortType" : "In",
       "typeSpec" : "Boolean"
+      },
+    {
+      "objectType" : "ExecPort",
+      "name" : "point",
+      "nodePortType" : "In",
+      "defaultValues" : {
+        "Size[]" : []
+        },
+      "execPortType" : "Out",
+      "typeSpec" : "Size[]"
       }
     ],
   "extDeps" : {},
@@ -219,6 +221,11 @@
           "defaultValues" : {
             "Boolean" : true
             }
+          },
+        {
+          "objectType" : "InstPort",
+          "name" : "point",
+          "nodePortType" : "Out"
           }
         ],
       "definition" : {
@@ -314,14 +321,20 @@
               },
             "execPortType" : "In",
             "typeSpec" : "Boolean"
+            },
+          {
+            "objectType" : "ExecPort",
+            "name" : "point",
+            "nodePortType" : "In",
+            "execPortType" : "Out",
+            "typeSpec" : "Size[]"
             }
           ],
         "extDeps" : {
           "TKCM" : "*"
           },
-        "origPresetGUID" : "344858185188A5E9AEA27A6928ACD3A3",
         "code" : "dfgEntry {
-  this.splitPolygon2(polygonID, polygonPointIndex1, edgeSplitRatio1, polygonPointIndex2, edgeSplitRatio2, addPointsPosition, mergeWithNeighborPolygon); 
+  this.splitPolygon2(polygonID, polygonPointIndex1, edgeSplitRatio1, polygonPointIndex2, edgeSplitRatio2, addPointsPosition, mergeWithNeighborPolygon, point); 
 }
 "
         }
@@ -360,6 +373,9 @@
       ],
     "SplitPolygon2_1.this" : [
       "EndStructureChanges_1.this"
+      ],
+    "SplitPolygon2_1.point" : [
+      "point"
       ]
     },
   "requiredPresets" : {
