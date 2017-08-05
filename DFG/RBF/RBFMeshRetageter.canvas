@@ -1,0 +1,945 @@
+{
+  "objectType" : "Graph",
+  "metadata" : {
+    "uiTextColor" : "{\n  \"r\" : 20,\n  \"g\" : 20,\n  \"b\" : 20\n  }",
+    "uiNodeColor" : "{\n  \"r\" : 87,\n  \"g\" : 119,\n  \"b\" : 143\n  }",
+    "uiGraphZoom" : "{\n  \"value\" : 0.816193163394928\n  }",
+    "uiGraphPan" : "{\n  \"x\" : 514.7867431640625,\n  \"y\" : 114.3018493652344\n  }"
+    },
+  "title" : "RBFMeshRetageter",
+  "ports" : [
+    {
+      "objectType" : "ExecPort",
+      "name" : "exec",
+      "nodePortType" : "IO",
+      "defaultValues" : {
+        "Execute" : {}
+        },
+      "execPortType" : "IO",
+      "typeSpec" : "Execute"
+      },
+    {
+      "objectType" : "ExecPort",
+      "name" : "origMesh",
+      "nodePortType" : "Out",
+      "defaultValues" : {
+        "PolygonMesh" : null
+        },
+      "execPortType" : "In",
+      "typeSpec" : "PolygonMesh"
+      },
+    {
+      "objectType" : "ExecPort",
+      "name" : "referencePosition",
+      "nodePortType" : "Out",
+      "defaultValues" : {
+        "Vec3[]" : []
+        },
+      "execPortType" : "In",
+      "typeSpec" : "Vec3[]"
+      },
+    {
+      "objectType" : "ExecPort",
+      "name" : "retargetPosition",
+      "nodePortType" : "Out",
+      "defaultValues" : {
+        "Vec3[]" : []
+        },
+      "execPortType" : "In",
+      "typeSpec" : "Vec3[]"
+      },
+    {
+      "objectType" : "ExecPort",
+      "name" : "result",
+      "nodePortType" : "In",
+      "defaultValues" : {
+        "PolygonMesh" : null
+        },
+      "execPortType" : "Out",
+      "typeSpec" : "PolygonMesh"
+      }
+    ],
+  "extDeps" : {},
+  "presetGUID" : "3468CC402EACB6635F514E07DF0C010B",
+  "nodes" : [
+    {
+      "objectType" : "Inst",
+      "metadata" : {
+        "uiGraphPos" : "{\"x\":-468.5,\"y\":280.0}"
+        },
+      "name" : "Clone_1",
+      "ports" : [
+        {
+          "objectType" : "InstPort",
+          "name" : "exec",
+          "nodePortType" : "IO"
+          },
+        {
+          "objectType" : "InstPort",
+          "name" : "value",
+          "nodePortType" : "In"
+          },
+        {
+          "objectType" : "InstPort",
+          "name" : "clonedValue",
+          "nodePortType" : "Out"
+          }
+        ],
+      "executable" : "Fabric.Core.Data.Clone",
+      "presetGUID" : "30401D7851DEFCFA5C46EB3926DD8BAD"
+      },
+    {
+      "objectType" : "Inst",
+      "metadata" : {
+        "uiGraphPos" : "{\"x\":-448.0,\"y\":630.0}",
+        "uiCollapsedState" : "1"
+        },
+      "name" : "RBFKernel",
+      "ports" : [
+        {
+          "objectType" : "InstPort",
+          "name" : "exec",
+          "nodePortType" : "IO"
+          },
+        {
+          "objectType" : "InstPort",
+          "name" : "rbf",
+          "nodePortType" : "In",
+          "defaultValues" : {
+            "UInt32" : 1
+            }
+          },
+        {
+          "objectType" : "InstPort",
+          "name" : "power",
+          "nodePortType" : "In",
+          "defaultValues" : {
+            "UInt32" : 1
+            }
+          },
+        {
+          "objectType" : "InstPort",
+          "name" : "c",
+          "nodePortType" : "In",
+          "defaultValues" : {
+            "Float32" : 0
+            }
+          },
+        {
+          "objectType" : "InstPort",
+          "name" : "kernel",
+          "nodePortType" : "Out"
+          }
+        ],
+      "executable" : "Fabric.Exts.RBF.RBFKernel",
+      "presetGUID" : "9145D4FFE0EE404784D0939BACD3D11A"
+      },
+    {
+      "objectType" : "Inst",
+      "metadata" : {
+        "uiGraphPos" : "{\"x\":-453.5,\"y\":390.0}"
+        },
+      "name" : "toVecArray_1",
+      "ports" : [
+        {
+          "objectType" : "InstPort",
+          "name" : "exec",
+          "nodePortType" : "IO"
+          },
+        {
+          "objectType" : "InstPort",
+          "name" : "array",
+          "nodePortType" : "In"
+          },
+        {
+          "objectType" : "InstPort",
+          "name" : "vecArray",
+          "nodePortType" : "Out"
+          }
+        ],
+      "executable" : "Fabric.Exts.Math.Conversion.toVecArray",
+      "presetGUID" : "46323DF8F945DAC8483218AFE300BED5"
+      },
+    {
+      "objectType" : "Inst",
+      "metadata" : {
+        "uiGraphPos" : "{\"x\":-452.5,\"y\":500.5}"
+        },
+      "name" : "toVecArray_4",
+      "ports" : [
+        {
+          "objectType" : "InstPort",
+          "name" : "exec",
+          "nodePortType" : "IO"
+          },
+        {
+          "objectType" : "InstPort",
+          "name" : "array",
+          "nodePortType" : "In"
+          },
+        {
+          "objectType" : "InstPort",
+          "name" : "vecArray",
+          "nodePortType" : "Out"
+          }
+        ],
+      "executable" : "Fabric.Exts.Math.Conversion.toVecArray",
+      "presetGUID" : "46323DF8F945DAC8483218AFE300BED5"
+      },
+    {
+      "objectType" : "Inst",
+      "metadata" : {
+        "uiGraphPos" : "{\"x\":-78.0,\"y\":416.5}"
+        },
+      "name" : "RBFSolver_1",
+      "ports" : [
+        {
+          "objectType" : "InstPort",
+          "name" : "exec",
+          "nodePortType" : "IO"
+          },
+        {
+          "objectType" : "InstPort",
+          "name" : "controlPoints",
+          "nodePortType" : "In"
+          },
+        {
+          "objectType" : "InstPort",
+          "name" : "controlValues",
+          "nodePortType" : "In"
+          },
+        {
+          "objectType" : "InstPort",
+          "name" : "lambda",
+          "nodePortType" : "In",
+          "defaultValues" : {
+            "Float32" : 0
+            }
+          },
+        {
+          "objectType" : "InstPort",
+          "name" : "kernel",
+          "nodePortType" : "In"
+          },
+        {
+          "objectType" : "InstPort",
+          "name" : "solver",
+          "nodePortType" : "Out"
+          }
+        ],
+      "executable" : "Fabric.Exts.RBF.RBFSolver",
+      "presetGUID" : "9ACB9E532DC4AE567E0AE48AE4798F9A"
+      },
+    {
+      "objectType" : "Inst",
+      "metadata" : {
+        "uiGraphPos" : "{\"x\":330.0,\"y\":307.0}"
+        },
+      "name" : "RBFDeformer",
+      "ports" : [
+        {
+          "objectType" : "InstPort",
+          "name" : "exec",
+          "nodePortType" : "IO"
+          },
+        {
+          "objectType" : "InstPort",
+          "name" : "mesh",
+          "nodePortType" : "IO"
+          },
+        {
+          "objectType" : "InstPort",
+          "name" : "solver",
+          "nodePortType" : "In",
+          "defaultValues" : {
+            "RBF::Solver" : {
+              "C" : {
+                "rows" : 0,
+                "cols" : 0,
+                "vals" : []
+                },
+              "W" : {
+                "rows" : 0,
+                "cols" : 0,
+                "vals" : []
+                },
+              "V" : {
+                "rows" : 0,
+                "cols" : 0,
+                "vals" : []
+                },
+              "kernel" : {
+                "rbf" : 2,
+                "power" : 2,
+                "c" : -1
+                }
+              }
+            }
+          }
+        ],
+      "definition" : {
+        "objectType" : "Func",
+        "metadata" : {
+          "uiTextColor" : "{\n  \"r\" : 20,\n  \"g\" : 20,\n  \"b\" : 20\n  }",
+          "uiNodeColor" : "{\n  \"r\" : 87,\n  \"g\" : 119,\n  \"b\" : 143\n  }"
+          },
+        "title" : "func",
+        "ports" : [
+          {
+            "objectType" : "ExecPort",
+            "name" : "exec",
+            "nodePortType" : "IO",
+            "execPortType" : "IO",
+            "typeSpec" : "Execute"
+            },
+          {
+            "objectType" : "ExecPort",
+            "name" : "mesh",
+            "nodePortType" : "IO",
+            "execPortType" : "IO",
+            "typeSpec" : "PolygonMesh"
+            },
+          {
+            "objectType" : "ExecPort",
+            "name" : "solver",
+            "nodePortType" : "Out",
+            "execPortType" : "In",
+            "typeSpec" : "RBF::Solver"
+            }
+          ],
+        "extDeps" : {},
+        "code" : "operator DefromTask<<<index>>>(
+  io PolygonMeshTopology mesh,
+  io Vec3 positions[],
+  in RBF::Solver solver,
+  in Vec pos[]
+){
+  Vec3 srcPos = positions[index];
+  Vec value = solver.interpolate(pos[index]);
+  
+  Vec3 position;
+  position.set(value);
+  
+  mesh.setPointAttribute( index, positions, position );
+}
+
+
+dfgEntry {
+  Ref<Vec3Attribute> positionsAttribute = mesh.getAttributes().positionsAttribute;
+  Vec vecArray[];
+  vecArray.resize(0);
+  for(Index i=0; i<positionsAttribute.values.size(); ++i){
+    vecArray.push(positionsAttribute.values[i].toVec());
+  }
+  
+  if(mesh.pointCount()<1000){
+    for(Integer i=0; i<mesh.pointCount(); i++){
+      DefromTask(i, mesh.topology, positionsAttribute.values, solver, vecArray);
+    }
+  }else{
+    DefromTask<<<mesh.pointCount()>>>( mesh.topology, positionsAttribute.values, solver, vecArray);
+  }
+}
+"
+        }
+      }
+    ],
+  "connections" : {
+    "origMesh" : [
+      "Clone_1.value"
+      ],
+    "referencePosition" : [
+      "toVecArray_1.array"
+      ],
+    "retargetPosition" : [
+      "toVecArray_4.array"
+      ],
+    "Clone_1.clonedValue" : [
+      "RBFDeformer.mesh"
+      ],
+    "RBFKernel.kernel" : [
+      "RBFSolver_1.kernel"
+      ],
+    "toVecArray_1.vecArray" : [
+      "RBFSolver_1.controlPoints"
+      ],
+    "toVecArray_4.vecArray" : [
+      "RBFSolver_1.controlValues"
+      ],
+    "RBFSolver_1.solver" : [
+      "RBFDeformer.solver"
+      ],
+    "RBFDeformer.mesh" : [
+      "result"
+      ]
+    },
+  "requiredPresets" : {
+    "Fabric.Core.Data.Clone" : {
+      "objectType" : "Func",
+      "metadata" : {
+        "uiNodeColor" : "{\n  \"r\" : 214,\n  \"g\" : 191,\n  \"b\" : 103\n  }",
+        "uiHeaderColor" : "{\n  \"r\" : 188,\n  \"g\" : 129,\n  \"b\" : 83\n  }"
+        },
+      "title" : "Clone",
+      "ports" : [
+        {
+          "objectType" : "ExecPort",
+          "name" : "exec",
+          "nodePortType" : "IO",
+          "execPortType" : "IO",
+          "typeSpec" : "Execute"
+          },
+        {
+          "objectType" : "ExecPort",
+          "name" : "value",
+          "nodePortType" : "Out",
+          "execPortType" : "In",
+          "typeSpec" : "$TYPE$"
+          },
+        {
+          "objectType" : "ExecPort",
+          "name" : "clonedValue",
+          "nodePortType" : "In",
+          "execPortType" : "Out",
+          "typeSpec" : "$TYPE$"
+          }
+        ],
+      "extDeps" : {},
+      "presetGUID" : "30401D7851DEFCFA5C46EB3926DD8BAD",
+      "tags" : [
+        "aka:DeepCopy"
+        ],
+      "code" : "dfgEntry {
+  clonedValue = value.clone();
+}
+"
+      },
+    "Fabric.Exts.RBF.RBFKernel" : {
+      "objectType" : "Graph",
+      "metadata" : {
+        "uiTextColor" : "{\n  \"r\" : 20,\n  \"g\" : 20,\n  \"b\" : 20\n  }",
+        "uiNodeColor" : "{\n  \"r\" : 87,\n  \"g\" : 119,\n  \"b\" : 143\n  }",
+        "uiGraphZoom" : "{\n  \"value\" : 0.9298843145370483\n  }",
+        "uiTooltip" : "Construct a RBF kernel\n- rbf: gaussian:0, odd_harmonic:1, even_harmonic:2, quadric:3, inv_quadric:4, mquadric:5,  inv_mquadric:6\n- power: Power parameter\n- c: Scalar parameter",
+        "uiGraphPan" : "{\n  \"x\" : -831.8897842094309,\n  \"y\" : -87.0450721169733\n  }"
+        },
+      "title" : "RBFKernel",
+      "ports" : [
+        {
+          "objectType" : "ExecPort",
+          "name" : "exec",
+          "nodePortType" : "IO",
+          "defaultValues" : {
+            "Execute" : {}
+            },
+          "execPortType" : "IO",
+          "typeSpec" : "Execute"
+          },
+        {
+          "objectType" : "ExecPort",
+          "metadata" : {
+            "uiCombo" : "(\"gaussian\", \"odd_harmonic\", \"even_harmonic\", \"quadric\", \"inv_quadric\", \"mquadric\", \"inv_mquadric\")"
+            },
+          "name" : "rbf",
+          "nodePortType" : "Out",
+          "defaultValues" : {
+            "UInt32" : 0
+            },
+          "execPortType" : "In",
+          "typeSpec" : "UInt32"
+          },
+        {
+          "objectType" : "ExecPort",
+          "name" : "power",
+          "nodePortType" : "Out",
+          "defaultValues" : {
+            "UInt32" : 2
+            },
+          "execPortType" : "In",
+          "typeSpec" : "UInt32"
+          },
+        {
+          "objectType" : "ExecPort",
+          "name" : "c",
+          "nodePortType" : "Out",
+          "defaultValues" : {
+            "Float32" : 0.1000000014901161
+            },
+          "execPortType" : "In",
+          "typeSpec" : "Float32"
+          },
+        {
+          "objectType" : "ExecPort",
+          "name" : "kernel",
+          "nodePortType" : "In",
+          "defaultValues" : {
+            "RBF::Kernel" : {
+              "rbf" : 2,
+              "power" : 2,
+              "c" : -1
+              }
+            },
+          "execPortType" : "Out",
+          "typeSpec" : "RBF::Kernel"
+          }
+        ],
+      "extDeps" : {
+        "RBF" : "*"
+        },
+      "presetGUID" : "9145D4FFE0EE404784D0939BACD3D11A",
+      "nodes" : [
+        {
+          "objectType" : "Inst",
+          "metadata" : {
+            "uiGraphPos" : "{\"x\":1200.0,\"y\":410.0}"
+            },
+          "name" : "Kernel",
+          "ports" : [
+            {
+              "objectType" : "InstPort",
+              "name" : "exec",
+              "nodePortType" : "IO"
+              },
+            {
+              "objectType" : "InstPort",
+              "name" : "rbf",
+              "nodePortType" : "In",
+              "defaultValues" : {
+                "UInt32" : 2
+                }
+              },
+            {
+              "objectType" : "InstPort",
+              "name" : "power",
+              "nodePortType" : "In"
+              },
+            {
+              "objectType" : "InstPort",
+              "name" : "c",
+              "nodePortType" : "In",
+              "defaultValues" : {
+                "Float32" : 1
+                }
+              },
+            {
+              "objectType" : "InstPort",
+              "name" : "kernel",
+              "nodePortType" : "Out"
+              }
+            ],
+          "definition" : {
+            "objectType" : "Func",
+            "metadata" : {
+              "uiTextColor" : "{\n  \"r\" : 20,\n  \"g\" : 20,\n  \"b\" : 20\n  }",
+              "uiNodeColor" : "{\n  \"r\" : 121,\n  \"g\" : 134,\n  \"b\" : 143\n  }"
+              },
+            "title" : "RBF",
+            "ports" : [
+              {
+                "objectType" : "ExecPort",
+                "name" : "exec",
+                "nodePortType" : "IO",
+                "execPortType" : "IO",
+                "typeSpec" : "Execute"
+                },
+              {
+                "objectType" : "ExecPort",
+                "name" : "rbf",
+                "nodePortType" : "Out",
+                "execPortType" : "In",
+                "typeSpec" : "UInt32"
+                },
+              {
+                "objectType" : "ExecPort",
+                "name" : "power",
+                "nodePortType" : "Out",
+                "execPortType" : "In",
+                "typeSpec" : "UInt32"
+                },
+              {
+                "objectType" : "ExecPort",
+                "name" : "c",
+                "nodePortType" : "Out",
+                "execPortType" : "In",
+                "typeSpec" : "Float32"
+                },
+              {
+                "objectType" : "ExecPort",
+                "name" : "kernel",
+                "nodePortType" : "In",
+                "execPortType" : "Out",
+                "typeSpec" : "RBF::Kernel"
+                }
+              ],
+            "extDeps" : {
+              "RBF" : "*"
+              },
+            "code" : "
+dfgEntry {
+  kernel = RBF::Kernel(rbf,power, c);
+}
+"
+            }
+          }
+        ],
+      "connections" : {
+        "rbf" : [
+          "Kernel.rbf"
+          ],
+        "power" : [
+          "Kernel.power"
+          ],
+        "c" : [
+          "Kernel.c"
+          ],
+        "Kernel.kernel" : [
+          "kernel"
+          ]
+        }
+      },
+    "Fabric.Exts.Math.Conversion.toVecArray" : {
+      "objectType" : "Func",
+      "metadata" : {
+        "uiTextColor" : "{\n  \"r\" : 20,\n  \"g\" : 20,\n  \"b\" : 20\n  }",
+        "uiNodeColor" : "{\n  \"r\" : 121,\n  \"g\" : 134,\n  \"b\" : 143\n  }"
+        },
+      "title" : "toVec[]",
+      "ports" : [
+        {
+          "objectType" : "ExecPort",
+          "name" : "exec",
+          "nodePortType" : "IO",
+          "defaultValues" : {
+            "Execute" : {}
+            },
+          "execPortType" : "IO",
+          "typeSpec" : "Execute"
+          },
+        {
+          "objectType" : "ExecPort",
+          "name" : "array",
+          "nodePortType" : "Out",
+          "defaultValues" : {
+            "Vec3[]" : []
+            },
+          "execPortType" : "In",
+          "typeSpec" : "$TYPE$[]"
+          },
+        {
+          "objectType" : "ExecPort",
+          "name" : "vecArray",
+          "nodePortType" : "In",
+          "defaultValues" : {
+            "Vec[]" : []
+            },
+          "execPortType" : "Out",
+          "typeSpec" : "Vec[]"
+          }
+        ],
+      "extDeps" : {
+        "Math" : "*"
+        },
+      "presetGUID" : "46323DF8F945DAC8483218AFE300BED5",
+      "code" : "dfgEntry {
+  vecArray.resize(0);
+  for(Index i=0; i<array.size(); ++i)
+    vecArray.push(array[i].toVec());
+}
+"
+      },
+    "Fabric.Exts.RBF.RBFSolver" : {
+      "objectType" : "Graph",
+      "metadata" : {
+        "uiTextColor" : "{\n  \"r\" : 20,\n  \"g\" : 20,\n  \"b\" : 20\n  }",
+        "uiNodeColor" : "{\n  \"r\" : 87,\n  \"g\" : 119,\n  \"b\" : 143\n  }",
+        "uiGraphZoom" : "{\n  \"value\" : 1.0\n  }",
+        "uiTooltip" : "Constructs a RBF::Solver\n- controlPoints: Set of controls points positions (Mat or Vec[])\n- controlvalues: Set of functions values at controls points (Mat or Vec[])\n- kernel: RBF kernel\n- lambda: Regularisation term",
+        "uiGraphPan" : "{\n  \"x\" : 328.0,\n  \"y\" : 3.5\n  }"
+        },
+      "title" : "RBFSolver",
+      "ports" : [
+        {
+          "objectType" : "ExecPort",
+          "name" : "exec",
+          "nodePortType" : "IO",
+          "defaultValues" : {
+            "Execute" : {}
+            },
+          "execPortType" : "IO",
+          "typeSpec" : "Execute"
+          },
+        {
+          "objectType" : "ExecPort",
+          "name" : "controlPoints",
+          "nodePortType" : "Out",
+          "defaultValues" : {
+            "Mat" : {
+              "rows" : 0,
+              "cols" : 0,
+              "vals" : []
+              },
+            "Vec[]" : []
+            },
+          "execPortType" : "In"
+          },
+        {
+          "objectType" : "ExecPort",
+          "name" : "controlValues",
+          "nodePortType" : "Out",
+          "defaultValues" : {
+            "Mat" : {
+              "rows" : 0,
+              "cols" : 0,
+              "vals" : []
+              },
+            "Vec[]" : []
+            },
+          "execPortType" : "In"
+          },
+        {
+          "objectType" : "ExecPort",
+          "name" : "lambda",
+          "nodePortType" : "Out",
+          "defaultValues" : {
+            "Float32" : 0
+            },
+          "execPortType" : "In",
+          "typeSpec" : "Float32"
+          },
+        {
+          "objectType" : "ExecPort",
+          "metadata" : {
+            "uiCombo" : "(\"g\", \"linear\", \"cubic\", \"quintic\", \"tps\", \"gaussian\", \"multiquad\", \"inverse_multiquad\")"
+            },
+          "name" : "kernel",
+          "nodePortType" : "Out",
+          "defaultValues" : {
+            "UInt32" : 0,
+            "RBF::Kernel" : {
+              "rbf" : 2,
+              "power" : 2,
+              "c" : -1
+              }
+            },
+          "execPortType" : "In",
+          "typeSpec" : "RBF::Kernel"
+          },
+        {
+          "objectType" : "ExecPort",
+          "name" : "solver",
+          "nodePortType" : "In",
+          "defaultValues" : {
+            "RBF::Solver" : {
+              "C" : {
+                "rows" : 0,
+                "cols" : 0,
+                "vals" : []
+                },
+              "W" : {
+                "rows" : 0,
+                "cols" : 0,
+                "vals" : []
+                },
+              "V" : {
+                "rows" : 0,
+                "cols" : 0,
+                "vals" : []
+                },
+              "kernel" : {
+                "rbf" : 2,
+                "power" : 2,
+                "c" : -1
+                }
+              }
+            },
+          "execPortType" : "Out",
+          "typeSpec" : "RBF::Solver"
+          }
+        ],
+      "extDeps" : {
+        "RBF" : "*"
+        },
+      "presetGUID" : "9ACB9E532DC4AE567E0AE48AE4798F9A",
+      "nodes" : [
+        {
+          "objectType" : "Inst",
+          "metadata" : {
+            "uiGraphPos" : "{\"x\":1200.0,\"y\":410.0}"
+            },
+          "name" : "Solver",
+          "ports" : [
+            {
+              "objectType" : "InstPort",
+              "name" : "exec",
+              "nodePortType" : "IO"
+              },
+            {
+              "objectType" : "InstPort",
+              "name" : "C",
+              "nodePortType" : "In"
+              },
+            {
+              "objectType" : "InstPort",
+              "name" : "F",
+              "nodePortType" : "In"
+              },
+            {
+              "objectType" : "InstPort",
+              "name" : "kernel",
+              "nodePortType" : "In",
+              "defaultValues" : {
+                "UInt32" : 2
+                }
+              },
+            {
+              "objectType" : "InstPort",
+              "name" : "lambda",
+              "nodePortType" : "In"
+              },
+            {
+              "objectType" : "InstPort",
+              "name" : "solver",
+              "nodePortType" : "Out"
+              }
+            ],
+          "definition" : {
+            "objectType" : "Func",
+            "metadata" : {
+              "uiTextColor" : "{\n  \"r\" : 20,\n  \"g\" : 20,\n  \"b\" : 20\n  }",
+              "uiNodeColor" : "{\n  \"r\" : 121,\n  \"g\" : 134,\n  \"b\" : 143\n  }"
+              },
+            "title" : "RBF",
+            "ports" : [
+              {
+                "objectType" : "ExecPort",
+                "name" : "exec",
+                "nodePortType" : "IO",
+                "execPortType" : "IO",
+                "typeSpec" : "Execute"
+                },
+              {
+                "objectType" : "ExecPort",
+                "name" : "C",
+                "nodePortType" : "Out",
+                "execPortType" : "In",
+                "typeSpec" : "$TYPE$"
+                },
+              {
+                "objectType" : "ExecPort",
+                "name" : "F",
+                "nodePortType" : "Out",
+                "execPortType" : "In",
+                "typeSpec" : "$TYPE$"
+                },
+              {
+                "objectType" : "ExecPort",
+                "name" : "kernel",
+                "nodePortType" : "Out",
+                "execPortType" : "In",
+                "typeSpec" : "RBF::Kernel"
+                },
+              {
+                "objectType" : "ExecPort",
+                "name" : "lambda",
+                "nodePortType" : "Out",
+                "execPortType" : "In",
+                "typeSpec" : "Float32"
+                },
+              {
+                "objectType" : "ExecPort",
+                "name" : "solver",
+                "nodePortType" : "In",
+                "execPortType" : "Out",
+                "typeSpec" : "RBF::Solver"
+                }
+              ],
+            "extDeps" : {
+              "RBF" : "*"
+              },
+            "code" : "
+dfgEntry {
+
+  if(C.type() != \"Vec[]\" && C.type() != \"Mat\")
+    throw(\"RBFSolver, positions and values must either be 'Vec[]' or 'Mat'\");
+    
+  solver = RBF::Solver(C, F, kernel, lambda);
+}
+"
+            }
+          },
+        {
+          "objectType" : "Inst",
+          "metadata" : {
+            "uiGraphPos" : "{\"x\":1570.0,\"y\":370.0}"
+            },
+          "name" : "Cache_1",
+          "ports" : [
+            {
+              "objectType" : "InstPort",
+              "name" : "exec",
+              "nodePortType" : "IO"
+              },
+            {
+              "objectType" : "InstPort",
+              "name" : "value",
+              "nodePortType" : "In"
+              }
+            ],
+          "executable" : "Fabric.Core.Data.Cache",
+          "presetGUID" : "D903AFD981FE9214C69943F542D5FD60"
+          }
+        ],
+      "connections" : {
+        "controlPoints" : [
+          "Solver.C"
+          ],
+        "controlValues" : [
+          "Solver.F"
+          ],
+        "lambda" : [
+          "Solver.lambda"
+          ],
+        "kernel" : [
+          "Solver.kernel"
+          ],
+        "Solver.solver" : [
+          "Cache_1.value"
+          ],
+        "Cache_1.value" : [
+          "solver"
+          ]
+        }
+      },
+    "Fabric.Core.Data.Cache" : {
+      "objectType" : "Func",
+      "metadata" : {
+        "uiNodeColor" : "{\n  \"r\" : 214,\n  \"g\" : 191,\n  \"b\" : 103\n  }",
+        "uiAlwaysShowDaisyChainPorts" : "true",
+        "uiHeaderColor" : "{\n  \"r\" : 188,\n  \"g\" : 129,\n  \"b\" : 83\n  }"
+        },
+      "title" : "Cache",
+      "cacheRule" : "always",
+      "ports" : [
+        {
+          "objectType" : "ExecPort",
+          "name" : "exec",
+          "nodePortType" : "IO",
+          "execPortType" : "IO",
+          "typeSpec" : "Execute"
+          },
+        {
+          "objectType" : "ExecPort",
+          "name" : "value",
+          "nodePortType" : "Out",
+          "execPortType" : "In",
+          "typeSpec" : "$TYPE$"
+          }
+        ],
+      "extDeps" : {},
+      "presetGUID" : "D903AFD981FE9214C69943F542D5FD60",
+      "code" : "dfgEntry {
+}
+"
+      }
+    }
+  }
