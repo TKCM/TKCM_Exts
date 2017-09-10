@@ -666,7 +666,7 @@ inline ArrayValueManipHandle.loadJSON!(JSONDictValue json){
   report('ArrayValueManipHandle value data loaded from this scean');
 }
 
-function String ArrayValueManipHandle.convertToString!(){
+function String ArrayValueManipHandle.convertToString?(){
   JSONDoc doc();
   if(this.saveEnable){
     if(this.saveExternalFile){

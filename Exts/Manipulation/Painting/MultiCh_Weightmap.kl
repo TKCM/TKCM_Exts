@@ -790,7 +790,7 @@ function MultiChWeightmap.loadDataFromString!(PersistenceContext persistenceCont
   }
 }
 
-function String MultiChWeightmap.convertToString!(){
+function String MultiChWeightmap.convertToString?(){
   JSONDoc doc();
   if(this.saveEnable){
     if(this.saveExternalFile){
