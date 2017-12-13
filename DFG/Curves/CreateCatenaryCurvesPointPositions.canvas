@@ -43,7 +43,7 @@
       "name" : "mode",
       "nodePortType" : "Out",
       "defaultValues" : {
-        "Integer" : 2
+        "Integer" : 1
         },
       "execPortType" : "In",
       "typeSpec" : "Integer"
@@ -53,7 +53,7 @@
       "name" : "W_uniformlyDistributedLoad",
       "nodePortType" : "Out",
       "defaultValues" : {
-        "Scalar" : 5
+        "Scalar" : -0.4000000059604645
         },
       "execPortType" : "In",
       "typeSpec" : "Scalar"
@@ -63,7 +63,7 @@
       "name" : "P_concentratedLoad",
       "nodePortType" : "Out",
       "defaultValues" : {
-        "Scalar" : 10
+        "Scalar" : -9.699999809265137
         },
       "execPortType" : "In",
       "typeSpec" : "Scalar"
@@ -73,7 +73,7 @@
       "name" : "H_tension",
       "nodePortType" : "Out",
       "defaultValues" : {
-        "Scalar" : 5
+        "Scalar" : 7.800000190734863
         },
       "execPortType" : "In",
       "typeSpec" : "Scalar"
@@ -83,7 +83,7 @@
       "name" : "F_sag",
       "nodePortType" : "Out",
       "defaultValues" : {
-        "Scalar" : 3
+        "Scalar" : 13.60000038146973
         },
       "execPortType" : "In",
       "typeSpec" : "Scalar"
@@ -93,7 +93,7 @@
       "name" : "accuracy",
       "nodePortType" : "Out",
       "defaultValues" : {
-        "Integer" : 10
+        "Integer" : 30
         },
       "execPortType" : "In",
       "typeSpec" : "Integer"
@@ -137,7 +137,7 @@
       for(Integer i=1; i<result.size()-1; i++){
         m = 1.0/Scalar(result.size()-1.0) * i;
         catenary = v0.linearInterpolate(v1, m);
-        catenary.y -= W * (m*l) * ((1.0-m)*l) / (2*H);
+        catenary.y -= ( W*pow(W/l, 2) * (m*l) * ((1.0-m)*l) / (2*H) )* W/l;
         result[i] = catenary;
       }
       if(accuracy%2 != 0){
