@@ -26,17 +26,16 @@ function Boolean Curves.hasEmptyCurve?(String functionName){
 //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 //  createNormalsValue //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 function Curves.createNormalsValue(io Vec3 result[], in Integer control, in Vec3 fixValue){
+  if(this.curveCount() <= 1 && control == 6){
+    return;
+  }
+
   result.resize(this.allCurvesPointRange());
   
   Size poiCount = 0;
-  Vec3 curvature;
-  Vec3 tangent;
-  Vec3 fixPosVec;
-  Vec3 cross[];
-  Vec3 crossV0;
-  Vec3 crossV1;
-  Vec3 crossV2;
-  Integer mode;  //  0=default, 1=avoid flip, 2=direction, 3=upvector, 4=direstion pos, 5=upvector pos
+  Vec3 curvature, tangent, fixPosVec;
+  Vec3 cross[], crossV0, crossV1, crossV2;
+  Integer mode;  //  0=default, 1=avoid flip, 2=direction, 3=upvector, 4=direstion pos, 5=upvector pos, 6=nextCurve
   
   for(Integer i=0; i<this.curveCount(); i++){
     cross.resize(this.getCurve(i).pointCount());
@@ -114,6 +113,16 @@ function Curves.createNormalsValue(io Vec3 result[], in Integer control, in Vec3
           fixPosVec = fixValue - this.getPositionAtNormalizedParam(i, nParam);
           Quat q();
           result[poiCount] = q.setFromDirectionAndUpvector(tangent, fixPosVec).getYaxis().unit();
+          break;
+        case 6:
+          Vec3 pos, pos2;
+          pos = this.getPositionAtNormalizedParam( i, nParam );
+          if( i == this.curveCount()-1){
+            pos2 = this.getPositionAtNormalizedParam( i-1, nParam );
+          }else{
+            pos2 = this.getPositionAtNormalizedParam( i+1, nParam );
+          }
+          result[poiCount] = (pos - pos2).unit();
           break;
       }
       
@@ -207,6 +216,7 @@ function Curves.addNormalDirectionAttributeCurves!(Index baseCurveID, Boolean cr
               form = 2;
             }
           }
+          Float32 a[] = this.getNURBSKnots(i); 
           this.addNURBS(addCurvePos, degree, form);
           break;
       }
@@ -300,6 +310,7 @@ function Curves Curves.createNormalDirectionAttributeCurves?(Integer type, Scala
             form = 2;
           }
         }
+        Float32 a[] = this.getNURBSKnots(k); 
         result.addNURBS(addCurvePos, degree, form);  
         break;
     }
@@ -685,7 +696,8 @@ function Curves.getWeightsFromDistanceToCurvesArray(
                 form = 2;
               }
             }
-            normalCurves.addNURBS(addCurvePos, degree, form);  
+            Float32 a[] = this.getNURBSKnots(i); 
+            normalCurves.addNURBS(addCurvePos, degree, form, a);  
             break;
         }
     }
@@ -881,7 +893,8 @@ function Curves.getMultipliedCurvesValueByWeights(
                     form = 2;
                   }
                 }
-                normalCurves.addNURBS(addCurvePos, degree, form); 
+                Float32 a[] = this.getNURBSKnots(i);
+                normalCurves.addNURBS( addCurvePos, degree, form, a ); 
                 break;
             }
         }

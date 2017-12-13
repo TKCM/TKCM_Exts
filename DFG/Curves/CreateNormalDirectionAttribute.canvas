@@ -2,7 +2,7 @@
   "objectType" : "Graph",
   "metadata" : {
     "uiGraphZoom" : "{\n  \"value\" : 0.6069375276565552\n  }",
-    "uiGraphPan" : "{\n  \"x\" : -39.93812561035156,\n  \"y\" : -102.3673858642578\n  }"
+    "uiGraphPan" : "{\n  \"x\" : 239.0618743896484,\n  \"y\" : -49.36738586425781\n  }"
     },
   "title" : "CreateNormalDirectionAttribute",
   "ports" : [
@@ -29,12 +29,12 @@
     {
       "objectType" : "ExecPort",
       "metadata" : {
-        "uiCombo" : "(\"Default\", \"Avoid Flip\", \"Fix Direction\", \"Fix UpVector\", \"Fix Direction Pos\", \"Fix UpVector Pos\")"
+        "uiCombo" : "(\"Default\", \"Avoid Flip\", \"Fix Direction\", \"Fix UpVector\", \"Fix Direction Pos\", \"Fix UpVector Pos\", \"Neighbor Curve\")"
         },
       "name" : "control",
       "nodePortType" : "Out",
       "defaultValues" : {
-        "Integer" : 2
+        "Integer" : 0
         },
       "execPortType" : "In",
       "typeSpec" : "Integer"
@@ -46,8 +46,8 @@
       "defaultValues" : {
         "Vec3" : {
           "x" : 0,
-          "y" : 0,
-          "z" : 1
+          "y" : 1,
+          "z" : 0
           }
         },
       "execPortType" : "In",
@@ -207,7 +207,7 @@
           "nodePortType" : "Out"
           }
         ],
-      "executable" : "TKCM.Curves.CreateAttribute",
+      "executable" : "Shared.TKCM.Curves.CreateAttribute",
       "presetGUID" : "58CD027D51373A2024DCA05A34530489"
       },
     {
@@ -339,7 +339,7 @@
           "nodePortType" : "Out"
           }
         ],
-      "executable" : "Fabric.Compounds.Attributes.SetValueArray",
+      "executable" : "Fabric.Compounds.Attributes.Geometry.Setters.SetValueArray",
       "presetGUID" : "674891D657B6A99F42E798E3527D0F1F"
       },
     {
@@ -493,7 +493,7 @@
       ]
     },
   "requiredPresets" : {
-    "TKCM.Curves.CreateAttribute" : {
+    "Shared.TKCM.Curves.CreateAttribute" : {
       "objectType" : "Func",
       "title" : "CreateAttribute",
       "ports" : [
@@ -607,7 +607,7 @@
 }
 "
       },
-    "Fabric.Compounds.Attributes.SetValueArray" : {
+    "Fabric.Compounds.Attributes.Geometry.Setters.SetValueArray" : {
       "objectType" : "Func",
       "metadata" : {
         "uiTextColor" : "{\n  \"r\" : 20,\n  \"g\" : 20,\n  \"b\" : 20\n  }",

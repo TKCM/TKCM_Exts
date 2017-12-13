@@ -1,8 +1,8 @@
 {
   "objectType" : "Graph",
   "metadata" : {
-    "uiGraphZoom" : "{\n  \"value\" : 0.4182599484920502\n  }",
-    "uiGraphPan" : "{\n  \"x\" : 181.27099609375,\n  \"y\" : 78.31428527832031\n  }"
+    "uiGraphZoom" : "{\n  \"value\" : 0.4551105797290802\n  }",
+    "uiGraphPan" : "{\n  \"x\" : 382.5887029618025,\n  \"y\" : 286.6881649941206\n  }"
     },
   "title" : "CreateMergeMeshArray",
   "ports" : [
@@ -49,12 +49,12 @@
     {
       "objectType" : "ExecPort",
       "metadata" : {
-        "uiCombo" : "(\"ID\", \"Random\")"
+        "uiCombo" : "(\"ID\", \"All\")"
         },
-      "name" : "selectSourceMesh",
+      "name" : "select",
       "nodePortType" : "Out",
       "defaultValues" : {
-        "Integer" : 0
+        "Integer" : 1
         },
       "execPortType" : "In",
       "typeSpec" : "Integer"
@@ -71,7 +71,8 @@
       },
     {
       "objectType" : "ExecPort",
-      "name" : "seedForRandom",
+      "metadata" : {},
+      "name" : "seed",
       "nodePortType" : "Out",
       "defaultValues" : {
         "Scalar" : 7
@@ -428,7 +429,7 @@
           "nodePortType" : "Out"
           }
         ],
-      "executable" : "TKCM.Util.String.SplitAndDeleteBlank",
+      "executable" : "Shared.TKCM.Util.String.SplitAndDeleteBlank",
       "presetGUID" : "F433EE0F045CFB5086821B670F6FEC3D"
       },
     {
@@ -720,7 +721,6 @@
             },
           {
             "objectType" : "ExecPort",
-            "metadata" : {},
             "name" : "restPoly",
             "nodePortType" : "Out",
             "execPortType" : "In",
@@ -1160,7 +1160,7 @@
                 "nodePortType" : "Out"
                 }
               ],
-            "executable" : "TKCM.PolygonMesh.MergeMeshArray.Modifier.UpdataXfos",
+            "executable" : "Shared.TKCM.PolygonMesh.MergeMeshArray.Modifier.UpdataXfos",
             "presetGUID" : "F1392D75090F2B0B126628338F0C691D"
             }
           ],
@@ -1197,13 +1197,13 @@
     "transformNormals" : [
       "Chacker.transformNormals"
       ],
-    "selectSourceMesh" : [
+    "select" : [
       "Chacker.selectSourceMesh"
       ],
     "ID" : [
       "SplitAndDeleteBlank_1.this"
       ],
-    "seedForRandom" : [
+    "seed" : [
       "Chacker.seedForRandom"
       ],
     "CreateMergeMeshCore.source" : [
@@ -1309,7 +1309,7 @@
       ]
     },
   "requiredPresets" : {
-    "TKCM.Util.String.SplitAndDeleteBlank" : {
+    "Shared.TKCM.Util.String.SplitAndDeleteBlank" : {
       "objectType" : "Graph",
       "metadata" : {
         "uiGraphZoom" : "{\n  \"value\" : 1.0\n  }",
@@ -1588,7 +1588,7 @@ dfgEntry {
 }
 "
       },
-    "TKCM.PolygonMesh.MergeMeshArray.Modifier.UpdataXfos" : {
+    "Shared.TKCM.PolygonMesh.MergeMeshArray.Modifier.UpdataXfos" : {
       "objectType" : "Graph",
       "metadata" : {
         "uiGraphZoom" : "{\n  \"value\" : 1.20465362071991\n  }",

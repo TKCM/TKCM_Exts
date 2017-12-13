@@ -1,8 +1,8 @@
 {
   "objectType" : "Graph",
   "metadata" : {
-    "uiGraphZoom" : "{\n  \"value\" : 0.5131358504295349\n  }",
-    "uiGraphPan" : "{\n  \"x\" : -67.91085815429688,\n  \"y\" : 257.1168212890625\n  }"
+    "uiGraphZoom" : "{\n  \"value\" : 0.459810733795166\n  }",
+    "uiGraphPan" : "{\n  \"x\" : 632.2745361328125,\n  \"y\" : 117.4828186035156\n  }"
     },
   "title" : "CurveWrap",
   "ports" : [
@@ -776,7 +776,7 @@ dfgEntry {
     {
       "objectType" : "Inst",
       "metadata" : {
-        "uiGraphPos" : "{\"x\":336.293,\"y\":429.347}",
+        "uiGraphPos" : "{\"x\":320.0,\"y\":416.133}",
         "uiCollapsedState" : "2"
         },
       "name" : "Size_1",
@@ -823,7 +823,7 @@ dfgEntry {
           "nodePortType" : "Out"
           }
         ],
-      "executable" : "TKCM.Curves.GetSegmentCount",
+      "executable" : "Shared.TKCM.Curves.GetSegmentCount",
       "presetGUID" : "32BF9044CD14F2C479972426CFE65D2A"
       },
     {
@@ -888,7 +888,7 @@ dfgEntry {
           "nodePortType" : "Out"
           }
         ],
-      "executable" : "Fabric.Exts.Math.Func.Math_max",
+      "executable" : "Fabric.Exts.Math.Func.Max",
       "presetGUID" : "2BA355E40799979F7BA995D89A07F1A5"
       },
     {
@@ -1156,7 +1156,6 @@ dfgEntry {
           "nodePortType" : "Out"
           }
         ],
-      "executable" : "Fabric.Core.Array.Fill",
       "presetGUID" : "323379311384B0227037BF839A4A49C9"
       },
     {
@@ -1184,6 +1183,180 @@ dfgEntry {
         ],
       "executable" : "Fabric.Core.Array.Size",
       "presetGUID" : "5B186A97C79ACF32526EC844AD805421"
+      },
+    {
+      "objectType" : "Inst",
+      "metadata" : {
+        "uiGraphPos" : "{\"x\":-1013.0,\"y\":995.369}"
+        },
+      "name" : "MakeSegmentsOnCurves_1",
+      "ports" : [
+        {
+          "objectType" : "InstPort",
+          "name" : "exec",
+          "nodePortType" : "IO"
+          },
+        {
+          "objectType" : "InstPort",
+          "name" : "this",
+          "nodePortType" : "In"
+          },
+        {
+          "objectType" : "InstPort",
+          "name" : "souceSegmentValues",
+          "nodePortType" : "In"
+          },
+        {
+          "objectType" : "InstPort",
+          "name" : "onSegment",
+          "nodePortType" : "In"
+          },
+        {
+          "objectType" : "InstPort",
+          "name" : "HowToDivide",
+          "nodePortType" : "In",
+          "defaultValues" : {
+            "Integer" : 0
+            }
+          },
+        {
+          "objectType" : "InstPort",
+          "name" : "segmentLength",
+          "nodePortType" : "In",
+          "defaultValues" : {
+            "Scalar" : 0
+            }
+          },
+        {
+          "objectType" : "InstPort",
+          "name" : "segmentLengthType",
+          "nodePortType" : "In"
+          },
+        {
+          "objectType" : "InstPort",
+          "name" : "divisionValue",
+          "nodePortType" : "In"
+          },
+        {
+          "objectType" : "InstPort",
+          "name" : "intervalLength",
+          "nodePortType" : "In"
+          },
+        {
+          "objectType" : "InstPort",
+          "name" : "intervalLengthType",
+          "nodePortType" : "In"
+          },
+        {
+          "objectType" : "InstPort",
+          "name" : "inverse",
+          "nodePortType" : "In"
+          },
+        {
+          "objectType" : "InstPort",
+          "name" : "segmentValues",
+          "nodePortType" : "Out"
+          }
+        ],
+      "executable" : "Shared.TKCM.Curves.MakeSegmentsOnCurves",
+      "presetGUID" : "917E804EA4295EA0EC3CA051F8B18584"
+      },
+    {
+      "objectType" : "Inst",
+      "metadata" : {
+        "uiGraphPos" : "{\"x\":-1000.0,\"y\":837.5}"
+        },
+      "name" : "Check_2",
+      "ports" : [
+        {
+          "objectType" : "InstPort",
+          "name" : "exec",
+          "nodePortType" : "IO"
+          },
+        {
+          "objectType" : "InstPort",
+          "name" : "segmentValues",
+          "nodePortType" : "In"
+          },
+        {
+          "objectType" : "InstPort",
+          "name" : "cond",
+          "nodePortType" : "Out",
+          "defaultValues" : {
+            "Boolean" : false
+            }
+          }
+        ],
+      "definition" : {
+        "objectType" : "Func",
+        "title" : "func",
+        "ports" : [
+          {
+            "objectType" : "ExecPort",
+            "name" : "exec",
+            "nodePortType" : "IO",
+            "execPortType" : "IO",
+            "typeSpec" : "Execute"
+            },
+          {
+            "objectType" : "ExecPort",
+            "name" : "segmentValues",
+            "nodePortType" : "Out",
+            "execPortType" : "In",
+            "typeSpec" : "Vec2Array[]"
+            },
+          {
+            "objectType" : "ExecPort",
+            "name" : "cond",
+            "nodePortType" : "In",
+            "execPortType" : "Out",
+            "typeSpec" : "Boolean"
+            }
+          ],
+        "extDeps" : {},
+        "code" : "dfgEntry {
+  if( segmentValues.size() == 0 ){
+    cond = true;
+  }
+}
+"
+        }
+      },
+    {
+      "objectType" : "Inst",
+      "metadata" : {
+        "uiGraphPos" : "{\"x\":-659.912,\"y\":903.869}"
+        },
+      "name" : "If_2",
+      "ports" : [
+        {
+          "objectType" : "InstPort",
+          "name" : "exec",
+          "nodePortType" : "IO"
+          },
+        {
+          "objectType" : "InstPort",
+          "name" : "cond",
+          "nodePortType" : "In"
+          },
+        {
+          "objectType" : "InstPort",
+          "name" : "if_true",
+          "nodePortType" : "In"
+          },
+        {
+          "objectType" : "InstPort",
+          "name" : "if_false",
+          "nodePortType" : "In"
+          },
+        {
+          "objectType" : "InstPort",
+          "name" : "result",
+          "nodePortType" : "Out"
+          }
+        ],
+      "executable" : "Fabric.Core.Control.If",
+      "presetGUID" : "3182A478A21643455D549E483D35F831"
       }
     ],
   "connections" : {
@@ -1198,7 +1371,8 @@ dfgEntry {
       ],
     "wrapTargetCurves" : [
       "func.targetCurves",
-      "Check.wrapTargetCurves"
+      "Check.wrapTargetCurves",
+      "MakeSegmentsOnCurves_1.this"
       ],
     "useNormalCurves" : [
       "CurvesWrapCore.useNormalCurves",
@@ -1220,9 +1394,8 @@ dfgEntry {
       "Check.sourceMeshTargetCurves"
       ],
     "segmentValues" : [
-      "func.segmentValues",
-      "GetSegmentCount_1.segmentValues",
-      "Check.segmentValues"
+      "Check_2.segmentValues",
+      "If_2.if_false"
       ],
     "CurvesWrapCore.mergedMesh" : [
       "If_1.if_true"
@@ -1271,6 +1444,17 @@ dfgEntry {
       ],
     "Size_2.count" : [
       "Fill_1.count"
+      ],
+    "MakeSegmentsOnCurves_1.segmentValues" : [
+      "If_2.if_true"
+      ],
+    "Check_2.cond" : [
+      "If_2.cond"
+      ],
+    "If_2.result" : [
+      "GetSegmentCount_1.segmentValues",
+      "func.segmentValues",
+      "Check.segmentValues"
       ]
     },
   "requiredPresets" : {
@@ -1339,7 +1523,7 @@ dfgEntry {
 }
 "
       },
-    "TKCM.Curves.GetSegmentCount" : {
+    "Shared.TKCM.Curves.GetSegmentCount" : {
       "objectType" : "Func",
       "title" : "GetSegmentCount",
       "ports" : [
@@ -1429,13 +1613,13 @@ dfgEntry {
 }
 "
       },
-    "Fabric.Exts.Math.Func.Math_max" : {
+    "Fabric.Exts.Math.Func.Max" : {
       "objectType" : "Func",
       "metadata" : {
         "uiNodeColor" : "{\n  \"r\" : 99,\n  \"g\" : 129,\n  \"b\" : 92\n  }",
         "uiTooltip" : "Returns the maximum of two scalar values\n\n Supported by Scalar,Float64"
         },
-      "title" : "Math_max",
+      "title" : "Max",
       "ports" : [
         {
           "objectType" : "ExecPort",
@@ -1716,7 +1900,7 @@ dfgEntry {
     "Fabric.Exts.Geometry.PolygonMesh.RecomputePointNormals" : {
       "objectType" : "Func",
       "metadata" : {
-        "uiDocUrl" : "http://docs.fabric-engine.com/FabricEngine/2.5.0/HTML/KLExtensionsGuide/Geometry/PolygonMesh.html",
+        "uiDocUrl" : "http://docs.fabric-engine.com/FabricEngine/2.6.0/HTML/KLExtensionsGuide/Geometry/PolygonMesh.html",
         "uiTooltip" : "Recomputes all point normals and introduces normal splits if adjacent polygons' normals differ by more than `hardAngleRadians` radians.\nAll previously stored point normals will be overwritten.\nThe computed normal value is the average of neighbor polygons' :kl-ref:`PolygonMesh.generatePolygonNormal` (or a subset of these if there is a split).\n\n Supported by PolygonMesh"
         },
       "title" : "RecomputePointNormals",
@@ -1878,7 +2062,7 @@ dfgEntry {
     "Fabric.Exts.Geometry.PolygonMesh.PolygonMesh" : {
       "objectType" : "Func",
       "metadata" : {
-        "uiDocUrl" : "http://docs.fabric-engine.com/FabricEngine/2.5.0/HTML/KLExtensionsGuide/Geometry/PolygonMesh.html",
+        "uiDocUrl" : "http://docs.fabric-engine.com/FabricEngine/2.6.0/HTML/KLExtensionsGuide/Geometry/PolygonMesh.html",
         "uiTooltip" : "Constructor.\n\n Supported by PolygonMesh"
         },
       "title" : "PolygonMesh",
@@ -1929,7 +2113,7 @@ dfgEntry {
     "Fabric.Exts.Geometry.Func.Clear" : {
       "objectType" : "Func",
       "metadata" : {
-        "uiDocUrl" : "http://docs.fabric-engine.com/FabricEngine/2.5.0/HTML/KLExtensionsGuide/Geometry/GeometryAttributes.html",
+        "uiDocUrl" : "http://docs.fabric-engine.com/FabricEngine/2.6.0/HTML/KLExtensionsGuide/Geometry/GeometryAttributes.html",
         "uiTooltip" : "Removes all attributes, and resets attribute value array sizes to 0.\n\n Supported by GeometryAttributes,BaseGeometry,Points,Lines,PolygonMesh"
         },
       "title" : "Clear",
@@ -1963,7 +2147,7 @@ dfgEntry {
     "Fabric.Exts.Geometry.PolygonMesh.AddCuboid" : {
       "objectType" : "Func",
       "metadata" : {
-        "uiDocUrl" : "http://docs.fabric-engine.com/FabricEngine/2.5.0/HTML/KLExtensionsGuide/Geometry/PolygonMesh.html",
+        "uiDocUrl" : "http://docs.fabric-engine.com/FabricEngine/2.6.0/HTML/KLExtensionsGuide/Geometry/PolygonMesh.html",
         "uiTooltip" : "Appends a transformed cuboid (cube with specified size) to this mesh.\nBefore applying the transformation, the cuboid is centered at the origin,\nand has a range of [-x/2 .. x/2, -y/2 .. y/2, -z/2 .. z/2].\n\nSet Points Normals\nFace 0 (+Z)\nFace 1 (-Z)\nFace 2 (+Y)\nFace 3 (-Y)\nFace 4 (+X)\nFace 5 (-X)\nSet Uvs\nFace 0 (+Z)\nFace 1 (-Z)\nFace 2 (+Y)\nFace 3 (-Y)\nFace 4 (+X)\nFace 5 (-X)\n\n Supported by PolygonMesh"
         },
       "title" : "AddCuboid",
@@ -2066,7 +2250,7 @@ dfgEntry {
 }
 "
       },
-    "Fabric.Core.Array.Fill" : {
+    "GUID:323379311384B0227037BF839A4A49C9" : {
       "objectType" : "Func",
       "title" : "Fill[]",
       "ports" : [
@@ -2108,6 +2292,695 @@ dfgEntry {
     array[i] = element;
 }
 "
+      },
+    "Shared.TKCM.Curves.MakeSegmentsOnCurves" : {
+      "objectType" : "Graph",
+      "metadata" : {
+        "uiGraphZoom" : "{\n  \"value\" : 1.0\n  }",
+        "uiGraphPan" : "{\n  \"x\" : -986.0,\n  \"y\" : -491.5\n  }"
+        },
+      "title" : "MakeSegmentsOnCurves",
+      "ports" : [
+        {
+          "objectType" : "ExecPort",
+          "name" : "exec",
+          "nodePortType" : "IO",
+          "defaultValues" : {
+            "Execute" : {}
+            },
+          "execPortType" : "IO",
+          "typeSpec" : "Execute"
+          },
+        {
+          "objectType" : "ExecPort",
+          "name" : "this",
+          "nodePortType" : "Out",
+          "defaultValues" : {
+            "Curves" : null
+            },
+          "execPortType" : "In",
+          "typeSpec" : "Curves"
+          },
+        {
+          "objectType" : "ExecPort",
+          "name" : "souceSegmentValues",
+          "nodePortType" : "Out",
+          "defaultValues" : {
+            "Vec2Array[]" : []
+            },
+          "execPortType" : "In",
+          "typeSpec" : "Vec2Array[]"
+          },
+        {
+          "objectType" : "ExecPort",
+          "name" : "onSegment",
+          "nodePortType" : "Out",
+          "defaultValues" : {
+            "Boolean" : false
+            },
+          "execPortType" : "In",
+          "typeSpec" : "Boolean"
+          },
+        {
+          "objectType" : "ExecPort",
+          "metadata" : {
+            "uiCombo" : "(\"Full Range\", \"Start Side\", \"End Side\", \"Both Ends\", \"Evenly Div\", \"Evenly Div Pos Area\", \"Evenly Interval Fix\", \"Evenly Interval Free\")"
+            },
+          "name" : "HowToDivide",
+          "nodePortType" : "Out",
+          "defaultValues" : {
+            "Integer" : 7
+            },
+          "execPortType" : "In",
+          "typeSpec" : "Integer"
+          },
+        {
+          "objectType" : "ExecPort",
+          "name" : "segmentLength",
+          "nodePortType" : "Out",
+          "defaultValues" : {
+            "Scalar" : 1.399999976158142
+            },
+          "execPortType" : "In",
+          "typeSpec" : "Scalar"
+          },
+        {
+          "objectType" : "ExecPort",
+          "metadata" : {
+            "uiCombo" : "(\"Segment Length\", \"Segment Length Ratio\", \"Normalized Param\")"
+            },
+          "name" : "segmentLengthType",
+          "nodePortType" : "Out",
+          "defaultValues" : {
+            "Integer" : 0
+            },
+          "execPortType" : "In",
+          "typeSpec" : "Integer"
+          },
+        {
+          "objectType" : "ExecPort",
+          "name" : "divisionValue",
+          "nodePortType" : "Out",
+          "defaultValues" : {
+            "Integer" : 0
+            },
+          "execPortType" : "In",
+          "typeSpec" : "Integer"
+          },
+        {
+          "objectType" : "ExecPort",
+          "name" : "intervalLength",
+          "nodePortType" : "Out",
+          "defaultValues" : {
+            "Scalar" : 0
+            },
+          "execPortType" : "In",
+          "typeSpec" : "Scalar"
+          },
+        {
+          "objectType" : "ExecPort",
+          "metadata" : {
+            "uiCombo" : "(\"Length\", \"Length Ratio\")"
+            },
+          "name" : "intervalLengthType",
+          "nodePortType" : "Out",
+          "defaultValues" : {
+            "Integer" : 0
+            },
+          "execPortType" : "In",
+          "typeSpec" : "Integer"
+          },
+        {
+          "objectType" : "ExecPort",
+          "name" : "inverse",
+          "nodePortType" : "Out",
+          "defaultValues" : {
+            "Boolean" : false
+            },
+          "execPortType" : "In",
+          "typeSpec" : "Boolean"
+          },
+        {
+          "objectType" : "ExecPort",
+          "name" : "segmentValues",
+          "nodePortType" : "In",
+          "defaultValues" : {
+            "GenericVec2ArrayValue[]" : [],
+            "Vec2Array[]" : []
+            },
+          "execPortType" : "Out",
+          "typeSpec" : "Vec2Array[]"
+          }
+        ],
+      "extDeps" : {
+        "TKCM" : "*"
+        },
+      "presetGUID" : "917E804EA4295EA0EC3CA051F8B18584",
+      "nodes" : [
+        {
+          "objectType" : "Inst",
+          "metadata" : {
+            "uiGraphPos" : "{\"x\":1070.0,\"y\":760.0}"
+            },
+          "name" : "makeSegmentOnCurvesCore",
+          "ports" : [
+            {
+              "objectType" : "InstPort",
+              "name" : "exec",
+              "nodePortType" : "IO"
+              },
+            {
+              "objectType" : "InstPort",
+              "name" : "curves",
+              "nodePortType" : "In"
+              },
+            {
+              "objectType" : "InstPort",
+              "name" : "segmentType",
+              "nodePortType" : "In"
+              },
+            {
+              "objectType" : "InstPort",
+              "name" : "inputType",
+              "nodePortType" : "In"
+              },
+            {
+              "objectType" : "InstPort",
+              "name" : "inputParam",
+              "nodePortType" : "In"
+              },
+            {
+              "objectType" : "InstPort",
+              "name" : "segmentLength",
+              "nodePortType" : "In"
+              },
+            {
+              "objectType" : "InstPort",
+              "name" : "divisionNumber",
+              "nodePortType" : "In"
+              },
+            {
+              "objectType" : "InstPort",
+              "name" : "intervalDistance",
+              "nodePortType" : "In"
+              },
+            {
+              "objectType" : "InstPort",
+              "name" : "segmentInverse",
+              "nodePortType" : "In"
+              },
+            {
+              "objectType" : "InstPort",
+              "name" : "segmentOnCurves",
+              "nodePortType" : "Out"
+              },
+            {
+              "objectType" : "InstPort",
+              "name" : "intervalLengthType",
+              "nodePortType" : "In"
+              },
+            {
+              "objectType" : "InstPort",
+              "name" : "souceSegmentValues",
+              "nodePortType" : "In"
+              },
+            {
+              "objectType" : "InstPort",
+              "name" : "onSegment",
+              "nodePortType" : "In"
+              }
+            ],
+          "definition" : {
+            "objectType" : "Func",
+            "title" : "func",
+            "ports" : [
+              {
+                "objectType" : "ExecPort",
+                "name" : "exec",
+                "nodePortType" : "IO",
+                "execPortType" : "IO",
+                "typeSpec" : "Execute"
+                },
+              {
+                "objectType" : "ExecPort",
+                "name" : "curves",
+                "nodePortType" : "Out",
+                "execPortType" : "In",
+                "typeSpec" : "Curves"
+                },
+              {
+                "objectType" : "ExecPort",
+                "name" : "segmentType",
+                "nodePortType" : "Out",
+                "execPortType" : "In",
+                "typeSpec" : "Integer"
+                },
+              {
+                "objectType" : "ExecPort",
+                "name" : "inputType",
+                "nodePortType" : "Out",
+                "execPortType" : "In",
+                "typeSpec" : "Integer"
+                },
+              {
+                "objectType" : "ExecPort",
+                "name" : "inputParam",
+                "nodePortType" : "Out",
+                "execPortType" : "In",
+                "typeSpec" : "Scalar"
+                },
+              {
+                "objectType" : "ExecPort",
+                "name" : "segmentLength",
+                "nodePortType" : "Out",
+                "execPortType" : "In",
+                "typeSpec" : "Scalar"
+                },
+              {
+                "objectType" : "ExecPort",
+                "name" : "divisionNumber",
+                "nodePortType" : "Out",
+                "execPortType" : "In",
+                "typeSpec" : "Integer"
+                },
+              {
+                "objectType" : "ExecPort",
+                "name" : "intervalDistance",
+                "nodePortType" : "Out",
+                "execPortType" : "In",
+                "typeSpec" : "Scalar"
+                },
+              {
+                "objectType" : "ExecPort",
+                "name" : "segmentInverse",
+                "nodePortType" : "Out",
+                "execPortType" : "In",
+                "typeSpec" : "Boolean"
+                },
+              {
+                "objectType" : "ExecPort",
+                "name" : "segmentOnCurves",
+                "nodePortType" : "In",
+                "execPortType" : "Out",
+                "typeSpec" : "Vec2Array[]"
+                },
+              {
+                "objectType" : "ExecPort",
+                "name" : "intervalLengthType",
+                "nodePortType" : "Out",
+                "execPortType" : "In",
+                "typeSpec" : "Integer"
+                },
+              {
+                "objectType" : "ExecPort",
+                "name" : "souceSegmentValues",
+                "nodePortType" : "Out",
+                "execPortType" : "In",
+                "typeSpec" : "Vec2Array[]"
+                },
+              {
+                "objectType" : "ExecPort",
+                "name" : "onSegment",
+                "nodePortType" : "Out",
+                "execPortType" : "In",
+                "typeSpec" : "Boolean"
+                }
+              ],
+            "extDeps" : {},
+            "code" : "dfgEntry {
+  if(curves.curveCount() == 0){  return;  }
+  if(onSegment && souceSegmentValues.size() != curves.curveCount()){
+    report(\"!!!!!!Error!!!!!! ::: makeSegmentOnCurvesCore : segment value array size don't same a curve count\");
+    return;
+  }
+  
+  if(onSegment){
+    segmentOnCurves = souceSegmentValues.clone();
+  }else{
+    segmentOnCurves.resize(curves.curveCount());
+    for(Integer i=0; i<curves.curveCount(); i++){
+      segmentOnCurves[i].resize(1);
+      segmentOnCurves[i][0] = Vec2(0.0, 1.0);
+    }
+  }
+  
+  Scalar valX, valY, val, val2;
+  
+  switch(segmentType){
+    case 0:  //  full range
+      if(segmentInverse){  
+        report(\"!!!!!!Error!!!!!! ::: makeSegmentOnCurvesCore : when segment type is FullRange 'segmentInverse' don't work on\");  
+        return;
+      }
+      break;
+    case 1:  //  start side
+      if(inputParam <= 0){
+        report(\"!!!!!!Error!!!!!! ::: makeSegmentOnCurvesCore : segment param is less than 0 or equal 0\");
+        return;
+      }
+      for(Integer i=0; i<curves.curveCount(); i++){
+        for(Integer j=0; j<segmentOnCurves[i].size(); j++){
+          valX = segmentOnCurves[i][j].x;
+          valY = segmentOnCurves[i][j].y;
+          val = 0.0;
+          switch(inputType){
+            case 0:  // length
+              val = inputParam / curves.getCurveLength(i) + valX;
+              break;
+            case 1:  // length ratio
+              val = Math_min(inputParam, 1.0) + valX;
+              break;
+            case 2:  // normalized param
+              val = Math_min( curves.getLengthRatioFromNormalizedParameter(i, inputParam), 1.0) + valX;
+              break;
+          }
+          val = Math_min(val, valY);
+          segmentOnCurves[i][j] = Vec2(valX, val);
+
+          if(segmentInverse){  
+            segmentOnCurves[i][j] = Vec2(val, valY);  
+          }
+        }
+      }
+      break;
+    case 2:  //  end side
+      if(inputParam <= 0){
+        report(\"!!!!!!Error!!!!!! ::: makesegmentOnCurves : segment length is less than 0 or equal 0\");
+        return;
+      }
+      for(Integer i=0; i<curves.curveCount(); i++){
+        for(Integer j=0; j<segmentOnCurves[i].size(); j++){
+          valX = segmentOnCurves[i][j].x;
+          valY = segmentOnCurves[i][j].y;
+          val = 0.0;
+          switch(inputType){
+            case 0:  // length
+              val = valY - inputParam / curves.getCurveLength(i);
+              break;
+            case 1:  // length ratio
+              val = Math_max(valY-inputParam, 0.0);
+              break;
+            case 2:  // normalized param
+              val = Math_max( curves.getLengthRatioFromNormalizedParameter(i, valY-inputParam), 0.0);
+              break;
+          }
+          val = Math_max(val, valX);
+          segmentOnCurves[i][j] = Vec2(val, valY);
+
+          if(segmentInverse){  
+            segmentOnCurves[i][j] = Vec2(valX, val);  
+          }
+        }
+      }
+      break;
+    case 3:  //  both ends
+      if(inputParam <= 0){
+        report(\"!!!!!!Error!!!!!! ::: makesegmentOnCurves : segment param is less than 0 or equal 0\");
+        return;
+      }
+      for(Integer i=0; i<curves.curveCount(); i++){
+        Size loopCnt = segmentOnCurves[i].size();
+        if(!segmentInverse){ 
+          segmentOnCurves[i].resize( segmentOnCurves[i].size()*2 );
+        }
+        for(Integer j=0; j<loopCnt; j++){
+          valX = segmentOnCurves[i][j].x;
+          valY = segmentOnCurves[i][j].y;
+          val = 0.0;
+          val2 = 0.0;
+          switch(inputType){
+            case 0:  // length
+              Scalar lenRatio = inputParam / curves.getCurveLength(i);
+              val = valX + lenRatio;
+              val2 = valY - lenRatio;
+              break;
+            case 1:  // length ratio
+              val = valX + inputParam;
+              val2 =  valY - inputParam;
+              break;
+            case 2:  // normalized param
+              val = curves.getLengthRatioFromNormalizedParameter(i,valX+inputParam);
+              val2 = curves.getLengthRatioFromNormalizedParameter(i,valY-inputParam);
+              break;
+          }
+          val = Math_min(val, valY);
+          val2 = Math_max(val2, valX);
+        
+          if(segmentInverse){  
+            segmentOnCurves[i][j] = Vec2(val, val2);  
+          }else{
+            segmentOnCurves[i][j] = Vec2(valX, val);
+            segmentOnCurves[i][loopCnt+j] = Vec2(val2, valY);
+          }
+        }
+      }
+      
+      break;
+    case 4:  //  Evenly Divid
+      Vec2 rest[][];
+      rest.resize(curves.curveCount());
+      for(Integer i=0; i<curves.curveCount(); i++){
+        rest[i].resize( segmentOnCurves[i].size()*divisionNumber );
+        for(Integer j=0; j<segmentOnCurves[i].size(); j++){
+          valX = segmentOnCurves[i][j].x;
+          valY = segmentOnCurves[i][j].y;
+          Scalar lenRatio = (valY-valX) / Scalar(divisionNumber);
+          val = valX + lenRatio;
+          val2 = valY - lenRatio;
+          rest[i][divisionNumber*j] = Vec2(valX, val);
+          rest[i][divisionNumber*j+1] = Vec2(val2, valY);
+          for(Integer k=0; k<divisionNumber-2; k++){
+            val = valX + lenRatio*(k+1);
+            val2 = val + lenRatio;
+            rest[i][divisionNumber*j+2+k] = Vec2(val,val2);
+          }
+        }
+      }
+      segmentOnCurves = rest;
+      if(segmentInverse){
+        report(\"!!!!!!Error!!!!!! ::: makesegmentOnCurvesCore : when segment type is EvenlyDiv, 'segmentInverse' don't work on\");  
+        return;
+      }
+      break;
+    case 5:  //  Evenly Divid Position segment
+      if(segmentLength <= 0){
+        report(\"!!!!!!Error!!!!!! ::: makesegmentOnCurves : segment length is less than 0 or equal 0\");
+        return;
+      }
+      Vec2 rest[][];
+      rest.resize(curves.curveCount());
+      Scalar length;
+      for(Integer i=0; i<curves.curveCount(); i++){
+        switch(inputType){
+          case 0:  // length
+            length = segmentLength;
+            break;
+          case 1:  // length Ratio
+            length = Math_min( segmentLength, 1.0)  * curves.getCurveLength(i);
+            break;
+          case 2:  // Normalized Param
+            length = curves.getLengthRatioFromNormalizedParameter(i, segmentLength) * curves.getCurveLength(i);
+            break;
+        }
+        if(segmentInverse){
+          rest[i].resize(segmentOnCurves[i].size() * (divisionNumber+1));
+        }else{
+          rest[i].resize(segmentOnCurves[i].size() * divisionNumber);
+        }
+        Vec2 rest2[];
+        rest2.resize(segmentOnCurves[i].size() * (divisionNumber+1));
+        for(Integer j=0; j<segmentOnCurves[i].size(); j++){
+          valX = segmentOnCurves[i][j].x;
+          valY = segmentOnCurves[i][j].y;
+          Scalar baseSegmentlength = curves.getCurveLength(i) * (valY-valX);
+          Scalar len = (baseSegmentlength+length) / (divisionNumber+1);
+          for(Integer k=0; k<divisionNumber; k++){ 
+            Scalar lenS = len * (k+1) - length;
+            Scalar lenE = len * (k+1);
+            Scalar lenRatioS = valX + lenS / curves.getCurveLength(i);
+            Scalar lenRatioE = valX +  lenE / curves.getCurveLength(i);
+            rest[i][divisionNumber*j+k] = Vec2(lenRatioS,lenRatioE);
+          }
+          if(segmentInverse){
+            rest2[(divisionNumber+1)*j] = Vec2(valX, rest[i][divisionNumber*j].x);
+            rest2[(divisionNumber+1)*j+1] = Vec2(rest[i][divisionNumber*j + divisionNumber-1].y, valY);
+            for(Integer k=0; k<divisionNumber-1; k++){
+              rest2[(divisionNumber+1)*j+2+k] = Vec2(rest[i][divisionNumber*j+k].y, rest[i][divisionNumber*j+k+1].x);
+            }
+          }
+        }
+        if(segmentInverse){
+          rest[i] = rest2;
+        }   
+      }
+      segmentOnCurves = rest;
+      break;
+    case 6:  //  Evenly interval
+      if(intervalDistance < 0){
+        report(\"!!!!!!Error!!!!!! ::: makesegmentOnCurves : interval value is less than 0\");
+        return;
+      }
+      Vec2 rest[][];
+      rest.resize(curves.curveCount());
+      if(segmentInverse){
+        for(Integer i=0; i<curves.curveCount(); i++){
+          for(Integer j=0; j<segmentOnCurves[i].size(); j++){
+            valX = segmentOnCurves[i][j].x;
+            valY = segmentOnCurves[i][j].y;
+            Scalar baseSegmentlength = curves.getCurveLength(i) * (valY-valX);
+            Index quotient = baseSegmentlength / (segmentLength + intervalDistance);
+            Scalar lenE = 0.0;
+            for(Integer k=0; k<quotient; k++){
+              Scalar lenRatioS = segmentOnCurves[i][j].x + (lenE + segmentLength) / curves.getCurveLength(i);
+              Scalar lenRatioE = segmentOnCurves[i][j].x + (lenE + segmentLength + intervalDistance) / curves.getCurveLength(i);
+              rest[i].push( Vec2(lenRatioS,lenRatioE) );
+              lenE = lenE + intervalDistance + segmentLength;
+            }
+          }
+        }
+      }else{
+        for(Integer i=0; i<curves.curveCount(); i++){
+          for(Integer j=0; j<segmentOnCurves[i].size(); j++){
+            valX = segmentOnCurves[i][j].x;
+            valY = segmentOnCurves[i][j].y;
+            Scalar baseSegmentlength = curves.getCurveLength(i) * (valY-valX);
+            Index quotient = (baseSegmentlength - segmentLength) / (intervalDistance + segmentLength);
+            Scalar lenRatio = segmentLength / curves.getCurveLength(i);          
+            rest[i].push( Vec2(valX,valX+lenRatio) );
+            Scalar lenE = segmentLength;
+            for(Integer k=0; k<quotient; k++){
+              Scalar lenRatioS = valX + (lenE + intervalDistance) / curves.getCurveLength(i);
+              Scalar lenRatioE = valX + (lenE + intervalDistance + segmentLength) / curves.getCurveLength(i);
+              rest[i].push( Vec2(lenRatioS,lenRatioE) );
+              lenE = lenE + intervalDistance + segmentLength;
+            }
+          }
+        }
+      }
+      segmentOnCurves = rest;
+      break;
+    case 7:
+      if(intervalDistance < 0){
+        report(\"!!!!!!Error!!!!!! ::: makesegmentOnCurves : interval value is less than 0\");
+        return;
+      }
+      Vec2 rest[][];
+      rest.resize(curves.curveCount());
+      if(segmentInverse){
+        for(Integer i=0; i<curves.curveCount(); i++){
+          for(Integer j=0; j<segmentOnCurves[i].size(); j++){
+            valX = segmentOnCurves[i][j].x;
+            valY = segmentOnCurves[i][j].y;
+            Scalar baseSegmentlength = curves.getCurveLength(i) * (valY-valX);
+            Index quotient = baseSegmentlength / (segmentLength + intervalDistance);
+            Scalar divRest = baseSegmentlength % (segmentLength + intervalDistance);
+            if(segmentLength + intervalDistance < divRest){
+              quotient += 1;
+            }
+            Scalar addLength;
+            addLength = divRest / quotient;
+            Scalar lenE = 0.0;
+            for(Integer k=0; k<quotient; k++){
+              Scalar lenRatioS = segmentOnCurves[i][j].x + (lenE + segmentLength + addLength) / curves.getCurveLength(i);
+              Scalar lenRatioE = segmentOnCurves[i][j].x + (lenE + segmentLength + intervalDistance + addLength) / curves.getCurveLength(i);
+              rest[i].push( Vec2(lenRatioS,lenRatioE) );
+              lenE = lenE + intervalDistance + segmentLength + addLength;
+            }
+          }
+        }
+      }else{
+        for(Integer i=0; i<curves.curveCount(); i++){
+          for(Integer j=0; j<segmentOnCurves[i].size(); j++){
+            valX = segmentOnCurves[i][j].x;
+            valY = segmentOnCurves[i][j].y;
+            Scalar baseSegmentlength = curves.getCurveLength(i) * (valY-valX);
+            Index quotient = (baseSegmentlength - segmentLength) / (intervalDistance + segmentLength);
+            Scalar divRest = (baseSegmentlength - segmentLength) % (intervalDistance + segmentLength);
+            if(intervalDistance + segmentLength < divRest){
+              quotient += 1;
+            }
+            Scalar addLength;
+            addLength = divRest / quotient;
+            Scalar lenRatio = (segmentLength+addLength) / curves.getCurveLength(i);          
+            rest[i].push( Vec2(valX,valX+lenRatio) );
+            Scalar lenE = segmentLength+addLength;
+            for(Integer k=0; k<quotient; k++){
+              Scalar lenRatioS = valX + (lenE + intervalDistance) / curves.getCurveLength(i);
+              Scalar lenRatioE = valX + (lenE + intervalDistance + segmentLength + addLength) / curves.getCurveLength(i);
+              rest[i].push( Vec2(lenRatioS,lenRatioE) );
+              lenE = lenE + intervalDistance + segmentLength + addLength;
+            }
+          }
+        }
+      }
+      segmentOnCurves = rest;
+      break; 
+  }
+}
+"
+            }
+          },
+        {
+          "objectType" : "Inst",
+          "metadata" : {
+            "uiGraphPos" : "{\n  \"x\" : 1370.0,\n  \"y\" : 960.0\n  }"
+            },
+          "name" : "Cache_1",
+          "ports" : [
+            {
+              "objectType" : "InstPort",
+              "name" : "exec",
+              "nodePortType" : "IO"
+              },
+            {
+              "objectType" : "InstPort",
+              "name" : "value",
+              "nodePortType" : "In"
+              }
+            ],
+          "executable" : "Fabric.Core.Data.Cache",
+          "presetGUID" : "D903AFD981FE9214C69943F542D5FD60"
+          }
+        ],
+      "connections" : {
+        "this" : [
+          "makeSegmentOnCurvesCore.curves"
+          ],
+        "souceSegmentValues" : [
+          "makeSegmentOnCurvesCore.souceSegmentValues"
+          ],
+        "onSegment" : [
+          "makeSegmentOnCurvesCore.onSegment"
+          ],
+        "HowToDivide" : [
+          "makeSegmentOnCurvesCore.segmentType"
+          ],
+        "segmentLength" : [
+          "makeSegmentOnCurvesCore.inputParam",
+          "makeSegmentOnCurvesCore.segmentLength"
+          ],
+        "segmentLengthType" : [
+          "makeSegmentOnCurvesCore.inputType"
+          ],
+        "divisionValue" : [
+          "makeSegmentOnCurvesCore.divisionNumber"
+          ],
+        "intervalLength" : [
+          "makeSegmentOnCurvesCore.intervalDistance"
+          ],
+        "intervalLengthType" : [
+          "makeSegmentOnCurvesCore.intervalLengthType"
+          ],
+        "inverse" : [
+          "makeSegmentOnCurvesCore.segmentInverse"
+          ],
+        "makeSegmentOnCurvesCore.segmentOnCurves" : [
+          "Cache_1.value"
+          ],
+        "Cache_1.value" : [
+          "segmentValues"
+          ]
+        }
       }
     }
   }

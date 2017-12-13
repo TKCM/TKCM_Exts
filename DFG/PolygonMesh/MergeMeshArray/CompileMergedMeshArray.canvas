@@ -50,13 +50,13 @@
   "code" : "require Geometry;
 
 dfgEntry {
-  if(base.size() != source.size()){
-    report(\"!!!!!!Error!!!!!! ::: MergeMeshArray : this.size \" +base.size() +\" != source.size\" + source.size());
-    return;
-  }
-  for(Integer i=0; i<base.size(); i++){
-    Ref<PolygonMesh> source_ref = source[i];
-    base[i].mergeMesh(source_ref);
+  Size cnt = Math_min( base.size(), source.size() );
+
+  for(Integer i=0; i<cnt; i++){
+    if( source[i].pointCount() != 0 ){
+      Ref<PolygonMesh> source_ref = source[i];
+      base[i].mergeMesh(source_ref);
+    }
   }
 }
 "
