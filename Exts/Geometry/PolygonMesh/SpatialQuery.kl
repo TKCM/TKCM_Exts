@@ -4,6 +4,7 @@ function PolygonMesh.getClosestEdgeFromLocation(in GeometryLocation loc, out Siz
   if(!loc.isValid()){
     return;
   }
+
   //  ジオメトリロケーションのポリゴンID
   polygon = loc.index;
   //  ポリゴンのエッジを線分としてジオメトリロケーションとの距離を計算していく
@@ -25,5 +26,76 @@ function PolygonMesh.getClosestEdgeFromLocation(in GeometryLocation loc, out Siz
       edgeFirstPoi = i;
       pos = closestSegmentPoint(pA, p0, p1, ratio);
     }
+  } 
+}
+
+function Boolean PolygonMesh.onEdgeOrPoint?(in GeometryLocation loc, out Size point[]){
+  Boolean result;
+
+  if(!loc.isValid()){
+    return result;
   }
+
+  UInt32 poi[3];
+  Scalar weights[3];
+  this.getLocationPointsAndWeights( loc, poi, weights );
+
+  // weight値が0のものがあるかチェック
+  Size nonZero[];
+  for(Size i=0; i<3; i++){
+    if(abs(weights[i]) < PRECISION){
+      result = true;
+    }else{
+      nonZero.push(poi[i]);
+    }
+  }
+
+  if(result){
+    point = nonZero;
+  }
+
+  return result;
+}
+
+//////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+//////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+//////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+//////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+//  GeometryLocationがメッシュのエッジ或いはポイント上に重なっていないかをチェックする
+//  重なっていない場合はfalseを返す
+//  エッジ上にある場合は、エッジのファーストポリゴンポイントとファーストポリゴンポイントへのウェイト値を返す
+//  ポイント上にある場合は、ポリゴンポイントとウェイト値（1.0）を返す
+function Boolean GeometryLocation.isOnEdgeOrPoint?(in PolygonMesh mesh, out Integer firstPolyPoint, out Scalar weight){
+  Boolean result, needAdjust = true;
+
+  Scalar weights[3];
+  UInt32 points[3];
+  mesh.getLocationPolygonPointIndicesAndWeights( this, points, weights );
+
+  //  ウェイトを参照して値が0でないポリゴンポイントをリスト化する
+  Size usePoi[];
+  for(Integer i=0; i<3; i++){
+    if(abs(weights[i]) < PRECISION == false){
+      usePoi.push(i);
+      //  後処理*Aのためにマーキングしておく
+      if(i==1){
+        needAdjust = false;
+      }
+    }
+  }
+
+  //  リストの数が3でない場合はオンエッジ或いはオンポイントであると判断できる
+  if(usePoi.size() != 3){
+    result = true;
+    weight = weights[ usePoi[0] ];
+    firstPolyPoint = points[ usePoi[0] ];
+  }
+  
+  //  *A　オンエッジかつエッジのポリゴンポイントが[0,3]の場合の処理
+  //  polyPointの出力を0ではなく3にする
+  if(needAdjust && usePoi.size() == 2){
+    weight = weights[ usePoi[1] ];
+    firstPolyPoint = points[ usePoi[1] ];
+  }
+  return result;
 }

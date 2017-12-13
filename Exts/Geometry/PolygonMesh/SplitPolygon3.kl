@@ -1,0 +1,463 @@
+//////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+//////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+//////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+//////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+//  指定した番号のポリゴンをそれぞれ別メッシュに切り分ける
+function PolygonMesh[] PolygonMesh.pickOutPolygon?(Size targetPolyID[]){
+  PolygonMesh result[];
+  result.resize( targetPolyID.size() );
+  
+  for(Integer j=0; j<targetPolyID.size(); j++){
+    result[j] = PolygonMesh();
+    result[j].createPoints( this.getPolygonSize(targetPolyID[j]) );
+      
+    Size packedPolygonPointIndices[], polygonSizes[];
+    for(Integer k=0; k<result[j].pointCount(); k++){
+      packedPolygonPointIndices.push(k);
+        
+      Size origPoi = this.getPolygonPoint( targetPolyID[j], k);        
+      result[j].setPointPosition( k, this.getPointPosition(origPoi) );
+    }
+      
+    polygonSizes.push( result[j].pointCount() );
+    result[j].addPolygons( polygonSizes, packedPolygonPointIndices );
+  }
+  
+  return result;
+}
+//////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+//////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+//////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+//////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+//  座標がポリゴンのエッジ・ポイント上に重なるかをチェックする
+//  正確なチェックのためにメッシュは１ポリゴンでなければならない
+function Boolean Vec3.sp3_isOnEdgeOrPoint?(in PolygonMesh mesh, out Integer firstPolyPoint, out Scalar weight, out GeometryLocation loc){
+  Boolean result;
+  if(mesh.polygonCount() != 1){
+    return result;
+  }
+  
+  //  ポリゴンの各辺（線分・セグメントライン）と座標とを比べる
+  for(Integer i=0; i<mesh.pointCount(); i++){
+    Vec3 p0 = mesh.getPointPosition(i);
+    Vec3 p1 = mesh.getPointPosition( NextOff( i, mesh.pointCount()) );
+    Scalar ratio;
+    Vec3 locPos = closestSegmentPoint( this, p0, p1, ratio);
+    
+    //  座標から線分への最近を取得し、その位置が座標と同じ場合オンエッジ・ポイントとなり、線分上での最近位置のレシオが１．０の場合オンポイントとなる
+    if(this.almostEqual(locPos)){
+      if(ratio.almostEqual(1.0)){
+        firstPolyPoint = NextOff( i, mesh.pointCount());
+        weight = 1.0;
+      }else{
+        firstPolyPoint = i;
+        weight = 1.0 - ratio;
+      }
+      result = true;
+    }
+  }
+  
+  //  オンエッジ・ポイントでなかった場合はロケーションを返しておく　（ロケーションのウェイト値を見れば座標はポリゴン内か外かを判別できる）
+  if( !result ){
+    loc = mesh.getClosest( this, Vec3(1.0), 1.0 );
+  }
+  
+  return result;
+}
+
+//////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+//////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+//////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+//////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+//  ポリゴンに穴を開ける際にポリゴンの２頂点と穴を結ぶ必要があるので、穴の頂点とポリゴンの頂点とで最も距離の近い組み合わせの上位二つを取得するためのもの
+function PolygonMesh.sp3_getClosestPolyPoints(in Size polygon, in Vec3 splitPos[], out Size polyPoint[2], out Size splitPosID[2]){
+  Size polySize = this.getPolygonSize(polygon);
+  Size allPolyPoint[],  splitPosIDList[];
+  Scalar allDistance[];
+  
+  for(Integer i=0; i<polySize; i++){
+    for(Integer j=0; j<splitPos.size(); j++){
+      allDistance.push( this.getPointPosition(this.getPolygonPoint(polygon, i)).distanceTo( splitPos[j] ) );
+      splitPosIDList.push(j);
+      allPolyPoint.push(i);
+    }
+  }
+  Size origArrayID[];
+  sort( allDistance, origArrayID, false);
+
+  polyPoint[0] = allPolyPoint[ origArrayID[0] ];
+  splitPosID[0] = splitPosIDList[ origArrayID[0] ];
+  for(Integer i=1; i<allDistance.size(); i++){
+    if(polyPoint[0] != allPolyPoint[ origArrayID[i] ] && splitPosID[0] != splitPosIDList[ origArrayID[i] ]){
+      polyPoint[1] = allPolyPoint[ origArrayID[i] ];
+      splitPosID[1] = splitPosIDList[ origArrayID[i] ];
+      break;
+    }
+  }
+}
+//////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+//////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+//////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+//////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+//  ポリゴンに穴を開ける処理
+function Boolean PolygonMesh.sp3_polyHall!(in Size polygon, in Vec3 splitPosition[], out Integer newPoint[]){
+  Boolean done;
+  if(splitPosition.size() < 3){
+    return done;
+  
+  }
+  //  メッシュ全体の初期ポイント数を記録しておく　　穴開けで使用する頂点は全て新規制作になる
+  Size origSize = this.pointCount(),  packedPolygonPointIndices[],  polygonSizes[];
+  Vec3 rSplitPosition[] = splitPosition,  origNormal = this.generatePolygonNormal(polygon);;
+  //  穴の頂点座標の配列が左回り順かをチェックするためのダミーメッシュ
+  PolygonMesh normalChakeMesh();
+  
+  this.beginStructureChanges();
+    //  穴用の頂点を追加し座標を設定していく  チェック用メッシュにも同じ処理
+    this.createPoints( splitPosition.size() );
+    normalChakeMesh.createPoints( splitPosition.size() );
+    for(Integer i=0; i<splitPosition.size();  i++){
+      this.setPointPosition( origSize + i, rSplitPosition[i] );
+      normalChakeMesh.setPointPosition( i, rSplitPosition[i] );
+    }
+    
+    //  左回りチェック
+    //  チェック用メッシュの法線が分割対象のポリゴンの法線と同じ方向になるかチェックし、違う場合は分割位置のリストを左回り順になるように整理する
+    while(true){
+      for(Integer i=splitPosition.size()-1; 0<=i; i--){
+        packedPolygonPointIndices.push( i );
+      }
+      polygonSizes.push( splitPosition.size() );
+      normalChakeMesh.addPolygons( polygonSizes, packedPolygonPointIndices );
+      if( 0 < origNormal.dot(normalChakeMesh.generatePolygonNormal(0)) ){
+        break;
+      }
+      reverse(rSplitPosition);
+    }
+
+    //  変数をリセットしておき、本番の穴あけで再利用する
+    packedPolygonPointIndices.resize(0);
+    polygonSizes.resize(0);
+    
+    //  分割位置から分割ポリゴンの頂点に対して、距離の近い組み合わせ上位2位までを取得する
+    Size splitPosId[2], rPolyPoi[2];
+    this.sp3_getClosestPolyPoints( polygon, rSplitPosition, rPolyPoi, splitPosId );
+    
+    //  穴の周りのポリゴンIDリストを準備する
+    for(Integer i=0; i<2; i++){
+      Size j = abs(i-1); 
+      Size restID = rPolyPoi[ i ];
+      while(true){
+        packedPolygonPointIndices.push( this.getPolygonPoint(polygon,restID));
+        if(restID==rPolyPoi[ j ]){
+          break;
+        }
+        restID = NextOff( restID, this.getPolygonSize(polygon) );
+      }
+      restID = splitPosId[j];
+      while(true){
+        packedPolygonPointIndices.push(origSize + restID);
+        if(restID==splitPosId[i]){
+          break;
+        }
+        restID = NextOff( restID, splitPosition.size() );
+      }
+      polygonSizes.push( packedPolygonPointIndices.size() );
+    }
+    polygonSizes[1] = polygonSizes[1] - polygonSizes[0];
+    //  穴部分のポリゴンIDリストの制作
+    for(Integer i=splitPosition.size()-1; 0<=i; i--){
+      packedPolygonPointIndices.push( origSize+i );
+      newPoint.push( origSize+i );
+    }
+    polygonSizes.push( splitPosition.size() );
+
+    //  分割対象のポリゴンを削除し、準備しておいたポリゴンIDリストで新規ポリゴンを3枚作る
+    this.deletePolygon( polygon, false, false );
+    this.addPolygons( polygonSizes, packedPolygonPointIndices );
+
+  this.endStructureChanges();
+  
+  return done;
+}
+//////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+//////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+//////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+//////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+//  任意の場所に新規ポイントを作ってポリゴンを複数に分割する
+//  polygonIDで指定したポリゴンに対しSplitPositionの座標を順に繋いでエッジにして分割を行う
+//  splitPosから分割対象となるポリゴン番号は割りだせないためポリゴン番号は必須
+
+////////////処理の流れ
+//  分割するポリゴン番号を正確に取得するために
+//    1:分割候補となるポリゴンをメッシュから抜き出す　（対象となるポリゴンがすでに分割されている場合、新規生成されたポリゴンも候補に含まれるようになっている）
+//    2:splitPosの配列の最初と最後の座標が1で抽出したポリゴンのオンエッジorポイントであるか検査する
+//    3:両点がオンエッジorポイントであれば検査で使用したポリゴンが分割対象のポリゴンであると判断する
+//      *例外　候補ポリゴンに対してオンエッジorポイントが2回検出された場合
+//            追加分割がなければスルー、ある場合はエッジの両端と分割位置との外積によってどちらのポリゴンを分割対象にするか判別する
+//  分割処理
+//    オンポイントのエッジで分割を行うと全てのポリゴン番号が大きく変更される可能性が高いため、オンポイントではない分割を1週目に行い2週目にオンポイントとポリホールの分割を実行する
+//    1：分割のスタートエンドがオンポイントの場合は分割を行うとポリゴン番号が大きく変更される可能性が高いため2週目の分割処理へ残す
+//    2:分割のスタートエンドが異なるエッジで行われている場合はその2点を結ぶようにポリゴンを分割し、追加の分割位置があればポリゴン分割でできた新規エッジを更に分割し指定されたポジションに頂点を移動させる
+//    3：分割のスタートエンドが同じエッジで行われている場合は2点間のエッジを分割し追加の分割位置へ移動させる。移動によって隣接するポリゴンも変形するので追加の分割位置[0][ラスト]の2点で分割する
+//    4：分割のスタートエンドの片方がオンエッジ・ポイントでない場合はその分割は実行しない
+//    5：分割のスタートエンドが共にオンエッジ・ポイントでない場合はPolyHallの処理へまわす
+
+function PolygonMesh.splitPolygon3!(
+  in Size polygonIDs[],
+  in Vec3 splitPositionOrig[][],
+  in Scalar accuracy
+  ){
+  //  チェック
+  if(this.isNull() || polygonIDs.size() != splitPositionOrig.size() ){
+    return;
+  }
+
+  Vec3 splitPosition[][] = splitPositionOrig;
+  if( 1.0<accuracy ){
+    Xfo accuracyXfo1 = Xfo( Vec3(), Quat(), Vec3(1/accuracy) );
+    this.applyTransform( accuracyXfo1 );
+    for(Integer i=0; i<splitPosition.size(); i++){
+      for(Integer j=0; j<splitPosition[i].size(); j++){
+        splitPosition[i][j] *= Vec3(1/accuracy);
+      }
+    }
+  }
+
+  //  polygonIDで同じポリゴンを複数回指定している場合、すでに分割によって新規生成されたポリゴンを元ポリゴンに紐づけておくためのリストを準備しておく
+  Size candidatePolyID[][](this.polygonCount());
+  //  restID = 1巡目で分割処理を行わなかったpolygonIDsの配列番号を格納するためのリスト  例：[1,5]だとpolygonIDs[1],polygonIDs[5]を2巡目で処理する
+  Size restID[](polygonIDs.size()),  restPoly[];
+  
+  this.beginStructureChanges();
+  for(Integer g=0; g<2; g++){
+    //  cnt = ループ回数　：　1巡目はpolygonIDsの配列数と同じ数を取得しrestIDをリセットする、2巡目はrestIDに残されたIDの配列数を取得しrestIDはリセットしない
+    Size cnt = restID.size();
+    restID.resize( restID.size()*g );
+   
+    for(Integer h=0; h<cnt; h++){
+      //  i = 1巡目はループのカウント数、2巡目はrestIDに残された配列番号を取得
+      Size i = h;
+      if(g==1){
+        i = restID[h];
+      }
+
+      //  分割位置が2つ以上無い場合はスルー
+      if(splitPosition[i].size() < 2){
+        continue;
+      } 
+
+      ////////////  分割対象となるポリゴンを検索する　（分割によって対象となるポリゴン番号が変わり続けるため都度検索する必要がある）
+      //  targetPolygonIDに分割対象の候補（polygonIDs[i]とcandidatePolyID[i]）を集めて、それぞれ別ポリゴンとしてtargetPolygonに切り出す
+      Size targetPolyID[]( candidatePolyID[polygonIDs[i]].size()+1 );
+      targetPolyID[0] = polygonIDs[i];
+      for(Integer j=1; j<targetPolyID.size(); j++){
+        targetPolyID[j] = candidatePolyID[ polygonIDs[i] ][j-1];
+      }
+      PolygonMesh targetPolygon[] = this.pickOutPolygon(targetPolyID);
+
+      //  分割位置の配列の頭尾を抜き出す　＝　ポリゴンを分割するエッジのスタート・エンド
+      Vec3 startPos[2];
+      startPos[0] = splitPosition[i][0];
+      startPos[1] = splitPosition[i][ splitPosition[i].size() -1 ];
+      
+      Integer locFirstPolyPoint[2], newPoint[], splitPoly, sameEdgeFPoi;
+      Boolean onEdgeOrPoi[2], order, sameEdge, done, hall=true, opPoint;
+      Scalar locWeights[2];
+      
+      //  分割候補を順番に検査していく
+      for(Integer k=0; k<targetPolygon.size(); k++){
+        GeometryLocation loc[](2);
+        for(Integer j=0; j<2; j++){
+          //  分割のスタート・エンド位置が分割候補のポリゴンに対してオンエッジ・ポイントであるかをチェック
+          onEdgeOrPoi[j] = startPos[j].sp3_isOnEdgeOrPoint( targetPolygon[k], locFirstPolyPoint[j], locWeights[j], loc[j] );
+        }
+
+        //  片方だけがオンエッジ・ポイントだった場合はこの分割処理を終了 (オンエッジ・ポイントでなかった位置がポリゴン範囲内か外かは関係無しに分割処理を中止)
+        if( onEdgeOrPoi[0] != onEdgeOrPoi[1] ){
+//          restID.resize(0);
+          break;
+        }
+        
+        //  分割位置がオンポイントであれば２巡目の分割処理へ残し、この処理を終了
+        if(g==0){
+          if(locWeights[0].almostEqual(1.0) || locWeights[1].almostEqual(1.0)){
+            opPoint = true;
+            restID.push(i);
+            restPoly.push(polygonIDs[i]);
+            break;
+          }
+        }      
+        
+        //  分割位置のスタート・エンドが共にオンエッジ・ポイントだった場合　（１巡目のオンポイントは↑で２巡目送りになっている）
+        if( onEdgeOrPoi[0] && onEdgeOrPoi[1] ){
+          if(done){
+            continue;
+          }
+          
+          splitPoly = targetPolyID[k];  //  分割対象となるポリゴン番号
+
+          //  分割位置のスタート・エンドが同じエッジ上に存在するかをチェック
+          if(locFirstPolyPoint[0] == locFirstPolyPoint[1]){
+            sameEdge = true; sameEdgeFPoi = locFirstPolyPoint[0];
+          }else if(locWeights[0].almostEqual(1.0) && locFirstPolyPoint[0] == NextOff(locFirstPolyPoint[1], targetPolygon[k].pointCount()) ){
+            sameEdge = true; sameEdgeFPoi = locFirstPolyPoint[1];
+          }else if(locWeights[1].almostEqual(1.0) && locFirstPolyPoint[1] == NextOff(locFirstPolyPoint[0], targetPolygon[k].pointCount()) ){
+            sameEdge = true; sameEdgeFPoi = locFirstPolyPoint[0];
+          }
+          
+          //  ここまで使用してきた分割位置のスタート・エンド[0]と[1]が、分割対象のポリゴン内で左回り順になっているかをチェック
+          order = (locFirstPolyPoint[0] < locFirstPolyPoint[1]) 
+                  || (locFirstPolyPoint[0] == locFirstPolyPoint[1] && locWeights[1] < locWeights[0]) 
+                  || ((locFirstPolyPoint[1] == 0 && locWeights[1] == 1.0 ) && locFirstPolyPoint[0] == targetPolygon[k].pointCount()-1);
+          
+          //////////////////////////////////////////////////////////オンエッジ（・ポイント）だった場合にエッジを分割
+          //  *A　：　分割後のポリゴン番号の乱れを軽減するために、ポリゴンポイントインデックスが奥の方からエッジ分割を行う
+          //  分割のスタート・エンドが異なるエッジにある場合
+          if(!sameEdge){
+            for(Integer l=0; l<2; l++){
+              //  *Aの理由により、左周りだった場合はstartPos[1],[0]の順で分割する
+              //  新規の頂点番号をnewPointに格納しておく
+              Integer j = abs( Integer(order) - l );
+              if( !locWeights[j].almostEqual(1.0) ){ 
+                newPoint.push( this.splitEdge( splitPoly, locFirstPolyPoint[j], 1.0-locWeights[j] ));
+                targetPolygon[k].splitEdge( 0, locFirstPolyPoint[j], 1.0-locWeights[j] ); 
+              }else{
+                newPoint.push( this.getPolygonPoint( splitPoly, locFirstPolyPoint[j] ) );
+              }
+            } 
+          //  分割のスタート・エンドが同じエッジにある場合
+          }else{
+            //  分割処理が進むとオンポイントだった場合、次の工程を経ると頂点番号の取得が面倒になるので予め一時保存しておく
+            Size rest[2];
+            rest[0] = this.getPolygonPoint( splitPoly, locFirstPolyPoint[0] );
+            rest[1] = this.getPolygonPoint( splitPoly, locFirstPolyPoint[1] );
+            
+            for(Integer l=0; l<splitPosition[i].size(); l++){
+              //  分割のスタート・エンドが所属するエッジのファーストポイント（ポリゴンポイントインデックス）が  [0],[ラスト]という組み合わせになっていないかチェック
+              Boolean flip = locFirstPolyPoint[0] == 0 && locFirstPolyPoint[1] == targetPolygon[k].pointCount()-1;
+
+              //  ↑分割位置が左回り順ではなかった場合は、 ”ｊ”は降順になり分割位置の情報を配列の後ろから取得していくことになる
+              Integer j = abs( (1-Integer(order))*(splitPosition[i].size()-1) - l);
+              Size s = Math_min(j,1);
+              if(flip){
+                s = abs(s-1);
+              }
+
+              //  分割位置の配列の最初と最後（＝これまで使用してきた分割エッジのスタート・エンド）がオンポイントの場合
+              if(l==0 && locWeights[s].almostEqual(1.0)  ||   l==splitPosition[i].size()-1 && locWeights[s].almostEqual(1.0)){ 
+                sameEdgeFPoi = locFirstPolyPoint[s];  //  splitEdge用にポイントインデックスを一時保存しておく
+                newPoint.push( rest[s] ); //  分割エッジ用の頂点リストにオンポイントの頂点番号を追記する
+              //  スタート・エンド以外に追加の分割がある場合
+              }else{
+                //  スタート・エンド間のエッジに頂点を追加して位置を合わせていく　　分割ニよって生成された頂点の番号を次のエッジ分割処理（頂点追加）のためにsameEdgeFPoiに一時保存しておく
+                sameEdgeFPoi = this.splitEdge( splitPoly, sameEdgeFPoi, 0.1 );
+                if(l==0 && flip){
+                  this.setPointPosition( sameEdgeFPoi, splitPosition[i][splitPosition[i].size()-1] );
+                }else{
+                  this.setPointPosition( sameEdgeFPoi, splitPosition[i][j] );
+                }
+                sameEdgeFPoi = this.getPolygonPointIndex(splitPoly, sameEdgeFPoi);
+                newPoint.push( this.getPolygonPoint( splitPoly, sameEdgeFPoi ) );
+              }
+            }
+          }
+
+          done = true;
+          hall = false;
+        }else if( loc[0].barycentric.x*loc[0].barycentric.y*loc[0].barycentric.z != 0.0  &&  loc[1].barycentric.x*loc[1].barycentric.y*loc[1].barycentric.z != 0.0){
+          //  分割のスタート・エンドは検索したポリゴンのオンエッジ・ポイントではなかったが、両方ともポリゴンの範囲内に存在する場合はポリホールだと判断する
+          //  ポリホールは２巡目で処理するのでスルー
+          if(g==0){
+            restID.push(i);
+            restPoly.push(polygonIDs[i]);
+            break;
+          }
+          //  ２巡目で回ってきた場合、穴を開けるポリゴン番号を保持して次の工程へ進む
+          splitPoly = targetPolyID[k];
+        }
+      }
+      
+      Size newPoly, newPolygonEdgeStartPointIndex;
+      //  分割のスタート・エンドが異なる場合
+      if(!sameEdge && !hall && newPoint.size() == 2){
+        //  スタート・エンドの二点でポリゴンを分割する　　新しく出来たポリゴンの番号を分割候補のポリゴンリストに入れておく
+        this.splitPolygon( splitPoly, this.getPolygonPointIndex(splitPoly, newPoint[0]), this.getPolygonPointIndex(splitPoly, newPoint[1]), newPoly, newPolygonEdgeStartPointIndex );
+        candidatePolyID[polygonIDs[i]].push(newPoly);
+       
+        //  追加の分割がある場合、↑の分割で新規生成されたエッジに頂点を追加して座標を設定していく
+        for(Integer l=1; l<splitPosition[i].size()-1; l++){
+          Integer j = abs( (1-Integer(order))*(splitPosition[i].size()-1) - l);
+          newPolygonEdgeStartPointIndex = this.splitEdge( newPoly, newPolygonEdgeStartPointIndex, 0.1 );
+          this.setPointPosition( newPolygonEdgeStartPointIndex, splitPosition[i][j] );
+          newPolygonEdgeStartPointIndex = this.getPolygonPointIndex( newPoly, newPolygonEdgeStartPointIndex );
+        }
+      }
+
+      //  分割のスタート・エンドが同じエッジの場合
+      //  ポリゴン分割方法１：　エッジに隣接するポリゴンがあった場合、隣接ポリゴンが分割頂点の箇所だけ変形しているような状態になっている　　分割のスタートエンドをつなぐことで変形箇所（ポリゴン分割箇所）を隣接ポリゴンから切り分ける
+      //  ポリゴン分割方法2：　エッジに隣接するポリゴンが無い場合、凹み部分を埋めるように新規でポリゴンを生成する
+      if( sameEdge  &&  2<splitPosition[i].size()  &&  !hall ){
+        if(g == 0 && !opPoint  || g == 1){
+          //  エッジに隣接するポリゴンがあるかチェック
+          Boolean isBorder = this.isPolygonBorder( splitPoly, this.getPolygonPointIndex(splitPoly, newPoint[1]) );
+          
+          //  隣接ポリゴンの有無で上記の分割方法を使い分ける
+          //  どちらも分割によって新規生成されたポリゴンの番号は分割候補のポリゴンリストに入れておく
+          if(!isBorder){
+            PolygonMeshEdge edge = this.getEdgeFromPoints( newPoint[1], newPoint[2] );
+            splitPoly = this.getEdgeLeftPolygon( edge ) + this.getEdgeRightPolygon( edge ) - splitPoly;
+     
+            this.splitPolygon( splitPoly, this.getPolygonPointIndex(splitPoly, newPoint[newPoint.size()-1]), this.getPolygonPointIndex(splitPoly, newPoint[0]), newPoly, newPolygonEdgeStartPointIndex );
+            candidatePolyID[polygonIDs[i]].push(newPoly);
+          }else{
+            Size packedPolygonPointIndices[];
+            for(Integer j=newPoint.size()-1; -1<j; j--){
+              packedPolygonPointIndices.push( newPoint[j] );
+            }
+            Size polygonSizes[](1);
+            polygonSizes[0] = packedPolygonPointIndices.size();
+            this.addPolygons( polygonSizes, packedPolygonPointIndices );
+            candidatePolyID[polygonIDs[i]].push(this.polygonCount()-1);
+          }
+        } 
+      } 
+
+      //  新規追加した頂点のポリゴンポイントインデックスを更新しておく
+      for(Integer j=0; j<newPoint.size(); j++){
+        this.updatePointPolygonOrder(newPoint[j]);
+      }
+
+      //  ポリゴンホール
+      if( g != 0  &&  restID.size()!=0  &&  hall){
+        this.endStructureChanges();
+//        this.sp3_polyHall( splitPoly, splitPosition[i], newPoint );
+        this.beginStructureChanges();
+      }
+    }
+
+    //  ２巡目に持ち越したID群の整理
+    //  ２巡目ではオンポイントでのポリゴン分割処理を行うためメッシュ全体のポリゴン番号が再計算される可能性が高くなるので、ポリゴン番号が大きいものから処理していくようにリストを並び替えておく
+    if( 0 < restID.size() ){
+      Size sortID[], r[];
+      sort( restPoly, sortID, true);
+      for(Integer i=0; i<restPoly.size(); i++){
+        r.push( restID[sortID[i]] );
+      }
+      restID = r;
+    }
+  }
+  this.endStructureChanges();
+
+  if( 1.0<accuracy ){
+    Xfo accuracyXfo2 = Xfo( Vec3(), Quat(), Vec3(accuracy) );
+    this.applyTransform( accuracyXfo2 );
+  }
+}
+
+function PolygonMesh.splitPolygon3!(
+  in Size polygonIDs[],
+  in Vec3 splitPosition[][],
+  ){
+  this.splitPolygon3( polygonIDs, splitPosition, 1.0 );
+}

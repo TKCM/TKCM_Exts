@@ -151,17 +151,17 @@ function PolygonMesh.splitPolygon2GetValuesTask!(
   this.createPoints(addPointCount); //  追加数"addPointCount"で頂点を追加する
 
   //////////  エッジ分割の2点がポリゴン内での左回りの順で生成されるかをチェックし、逆だった場合はポリゴンの分割で必要な素材の並び順を逆転させておく
-  Boolean reverse;
+  Boolean chakeReverse;
   if(polygonPointIndex[1] < polygonPointIndex[0]){
-    reverse = true;
+    chakeReverse = true;
   }else if(polygonPointIndex[0] == polygonPointIndex[1]){
     if(edgeSplitRatio[1] < edgeSplitRatio[0]){
-      reverse = true;
+      chakeReverse = true;
     }
   }
 
   Vec3 addPointsPosition2[] = addPointsPosition.clone();  //  追加ポイントの情報を逆転させる場合のための受け皿
-  if(reverse){  //  ポリゴンを分割するエッジのスタート・エンドに関する情報を逆転させておく
+  if(chakeReverse){  //  ポリゴンを分割するエッジのスタート・エンドに関する情報を逆転させておく
     Integer restInt;
     restInt = useOrigPolyPoi[0];
     useOrigPolyPoi[0] = useOrigPolyPoi[1];
@@ -347,7 +347,7 @@ function PolygonMesh.splitPolygon2GetValuesTask!(
       }
     }
     //  リバース処理　
-    if(reverse){
+    if(chakeReverse){
       Size restSize = neighborPolyID[0];
       neighborPolyID[0] = neighborPolyID[1];
       neighborPolyID[1] = restSize;
