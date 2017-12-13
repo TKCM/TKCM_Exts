@@ -2,7 +2,7 @@
   "objectType" : "Graph",
   "metadata" : {
     "uiGraphZoom" : "{\n  \"value\" : 1.0\n  }",
-    "uiGraphPan" : "{\n  \"x\" : -954.6500244140625,\n  \"y\" : -304.239990234375\n  }"
+    "uiGraphPan" : "{\n  \"x\" : -1269.900024414063,\n  \"y\" : -396.739990234375\n  }"
     },
   "title" : "RadianToAngleArray",
   "ports" : [
@@ -18,18 +18,18 @@
       },
     {
       "objectType" : "ExecPort",
-      "metadata" : {},
       "name" : "radian",
       "nodePortType" : "Out",
       "defaultValues" : {
-        "Scalar[]" : []
+        "Scalar[]" : [
+          1
+          ]
         },
       "execPortType" : "In",
       "typeSpec" : "Scalar[]"
       },
     {
       "objectType" : "ExecPort",
-      "metadata" : {},
       "name" : "angle",
       "nodePortType" : "In",
       "defaultValues" : {
@@ -45,7 +45,7 @@
     {
       "objectType" : "Inst",
       "metadata" : {
-        "uiGraphPos" : "{\"x\":1600.9,\"y\":756.24}"
+        "uiGraphPos" : "{\"x\":1400.9,\"y\":756.24}"
         },
       "name" : "PI_1",
       "ports" : [
@@ -62,43 +62,6 @@
         ],
       "executable" : "Fabric.Exts.Math.Constants.PI",
       "presetGUID" : "2439046A695C7016D8B6A4D249388C2B"
-      },
-    {
-      "objectType" : "Inst",
-      "metadata" : {
-        "uiGraphPos" : "{\"x\":1165.65,\"y\":577.24}"
-        },
-      "name" : "Div_3",
-      "ports" : [
-        {
-          "objectType" : "InstPort",
-          "name" : "exec",
-          "nodePortType" : "IO"
-          },
-        {
-          "objectType" : "InstPort",
-          "name" : "lhs",
-          "nodePortType" : "In"
-          },
-        {
-          "objectType" : "InstPort",
-          "name" : "rhs",
-          "nodePortType" : "In",
-          "defaultValues" : {
-            "Scalar" : 1,
-            "Scalar[]" : [
-              1
-              ]
-            }
-          },
-        {
-          "objectType" : "InstPort",
-          "name" : "result",
-          "nodePortType" : "Out"
-          }
-        ],
-      "executable" : "Fabric.Core.Array.Div",
-      "presetGUID" : "FC014DC00A1006C51787F41FF2DFA99B"
       },
     {
       "objectType" : "Inst",
@@ -123,7 +86,7 @@
           "nodePortType" : "Out"
           }
         ],
-      "executable" : "Fabric.Core.Array.Asin",
+      "executable" : "Fabric.Core.Math.Trigonometry.Array.Asin",
       "presetGUID" : "2BDA301EE8C218A3D9C79CAEFCFDA8FB"
       },
     {
@@ -159,13 +122,13 @@
           "nodePortType" : "Out"
           }
         ],
-      "executable" : "Fabric.Core.Array.Mul",
+      "executable" : "Fabric.Core.Math.Array.Mul",
       "presetGUID" : "C0B53D37DF91FC2E341F4B7B848BDB6F"
       },
     {
       "objectType" : "Inst",
       "metadata" : {
-        "uiGraphPos" : "{\"x\":1908.65,\"y\":647.24}"
+        "uiGraphPos" : "{\"x\":1708.65,\"y\":647.24}"
         },
       "name" : "Div_4",
       "ports" : [
@@ -190,46 +153,41 @@
           "nodePortType" : "Out"
           }
         ],
-      "executable" : "Fabric.Core.Array.Div",
+      "executable" : "Fabric.Core.Math.Array.Div",
       "presetGUID" : "FC014DC00A1006C51787F41FF2DFA99B"
       },
     {
       "objectType" : "Inst",
       "metadata" : {
-        "uiGraphPos" : "{\"x\":1735.65,\"y\":782.24}"
+        "uiGraphPos" : "{\"x\":1530.0,\"y\":730.74}"
         },
-      "name" : "Fill_2",
+      "name" : "Push_1",
       "ports" : [
         {
           "objectType" : "InstPort",
           "name" : "exec",
+          "nodePortType" : "IO"
+          },
+        {
+          "objectType" : "InstPort",
+          "name" : "array",
           "nodePortType" : "IO"
           },
         {
           "objectType" : "InstPort",
           "name" : "element",
           "nodePortType" : "In"
-          },
-        {
-          "objectType" : "InstPort",
-          "name" : "count",
-          "nodePortType" : "In"
-          },
-        {
-          "objectType" : "InstPort",
-          "name" : "array",
-          "nodePortType" : "Out"
           }
         ],
-      "executable" : "Fabric.Core.Array.Fill",
-      "presetGUID" : "323379311384B0227037BF839A4A49C9"
+      "executable" : "Fabric.Core.Array.Push",
+      "presetGUID" : "572880BF96ACC34D6987BE3333715F52"
       },
     {
       "objectType" : "Inst",
       "metadata" : {
-        "uiGraphPos" : "{\"x\":1588.65,\"y\":836.24}"
+        "uiGraphPos" : "{\"x\":1470.0,\"y\":457.0}"
         },
-      "name" : "Size_1",
+      "name" : "RadToDegArray_1",
       "ports" : [
         {
           "objectType" : "InstPort",
@@ -238,44 +196,37 @@
           },
         {
           "objectType" : "InstPort",
-          "name" : "array",
+          "name" : "val",
           "nodePortType" : "In"
           },
         {
           "objectType" : "InstPort",
-          "name" : "count",
+          "name" : "result",
           "nodePortType" : "Out"
           }
         ],
-      "executable" : "Fabric.Core.Array.Size",
-      "presetGUID" : "5B186A97C79ACF32526EC844AD805421"
+      "executable" : "Fabric.Exts.Math.Constants.RadToDegArray",
+      "presetGUID" : "96151D6E8755E9D10C7AABD6AB96AE96"
       }
     ],
   "connections" : {
     "radian" : [
-      "Div_3.lhs"
+      "RadToDegArray_1.val"
       ],
     "PI_1.value" : [
-      "Fill_2.element"
-      ],
-    "Div_3.result" : [
-      "Asin_2.array"
+      "Push_1.element"
       ],
     "Asin_2.result" : [
       "Mul_2.lhs"
       ],
     "Mul_2.result" : [
-      "Div_4.lhs",
-      "Size_1.array"
+      "Div_4.lhs"
       ],
-    "Div_4.result" : [
-      "angle"
-      ],
-    "Fill_2.array" : [
+    "Push_1.array" : [
       "Div_4.rhs"
       ],
-    "Size_1.count" : [
-      "Fill_2.count"
+    "RadToDegArray_1.result" : [
+      "angle"
       ]
     },
   "requiredPresets" : {
@@ -312,65 +263,7 @@ dfgEntry {
 }
 "
       },
-    "Fabric.Core.Array.Div" : {
-      "objectType" : "Func",
-      "title" : "Div[]",
-      "ports" : [
-        {
-          "objectType" : "ExecPort",
-          "name" : "exec",
-          "nodePortType" : "IO",
-          "execPortType" : "IO",
-          "typeSpec" : "Execute"
-          },
-        {
-          "objectType" : "ExecPort",
-          "name" : "lhs",
-          "nodePortType" : "Out",
-          "execPortType" : "In",
-          "typeSpec" : "$TYPE$"
-          },
-        {
-          "objectType" : "ExecPort",
-          "name" : "rhs",
-          "nodePortType" : "Out",
-          "execPortType" : "In",
-          "typeSpec" : "$TYPE$"
-          },
-        {
-          "objectType" : "ExecPort",
-          "name" : "result",
-          "nodePortType" : "In",
-          "execPortType" : "Out",
-          "typeSpec" : "$TYPE$"
-          }
-        ],
-      "extDeps" : {},
-      "presetGUID" : "FC014DC00A1006C51787F41FF2DFA99B",
-      "code" : "
-operator core_array_div_task<<<index>>>($TYPE$ lhs, $TYPE$ rhs, io $TYPE$ result) {
-  result[index] = lhs[index < lhs.size() ? index : lhs.size() - 1] / rhs[index < rhs.size() ? index : rhs.size() - 1];
-}
-
-dfgEntry {
-  if(lhs.size() == 0) return;
-  if(rhs.size() == 0) return;
-  Size size = lhs.size() > rhs.size() ? lhs.size() : rhs.size();
-  result.resize(size);
-
-  if(size < 10000)
-  {
-    for(Size i=0;i<size;i++)
-      core_array_div_task(i, lhs, rhs, result);
-  }
-  else
-  {
-    core_array_div_task<<<size>>>(lhs, rhs, result);
-  }
-}
-"
-      },
-    "Fabric.Core.Array.Asin" : {
+    "Fabric.Core.Math.Trigonometry.Array.Asin" : {
       "objectType" : "Func",
       "title" : "Asin[]",
       "ports" : [
@@ -419,7 +312,7 @@ dfgEntry {
 }
 "
       },
-    "Fabric.Core.Array.Mul" : {
+    "Fabric.Core.Math.Array.Mul" : {
       "objectType" : "Func",
       "title" : "Mul[]",
       "ports" : [
@@ -477,9 +370,9 @@ dfgEntry {
 }
 "
       },
-    "Fabric.Core.Array.Fill" : {
+    "Fabric.Core.Math.Array.Div" : {
       "objectType" : "Func",
-      "title" : "Fill[]",
+      "title" : "Div[]",
       "ports" : [
         {
           "objectType" : "ExecPort",
@@ -487,6 +380,71 @@ dfgEntry {
           "nodePortType" : "IO",
           "execPortType" : "IO",
           "typeSpec" : "Execute"
+          },
+        {
+          "objectType" : "ExecPort",
+          "name" : "lhs",
+          "nodePortType" : "Out",
+          "execPortType" : "In",
+          "typeSpec" : "$TYPE$"
+          },
+        {
+          "objectType" : "ExecPort",
+          "name" : "rhs",
+          "nodePortType" : "Out",
+          "execPortType" : "In",
+          "typeSpec" : "$TYPE$"
+          },
+        {
+          "objectType" : "ExecPort",
+          "name" : "result",
+          "nodePortType" : "In",
+          "execPortType" : "Out",
+          "typeSpec" : "$TYPE$"
+          }
+        ],
+      "extDeps" : {},
+      "presetGUID" : "FC014DC00A1006C51787F41FF2DFA99B",
+      "code" : "
+operator core_array_div_task<<<index>>>($TYPE$ lhs, $TYPE$ rhs, io $TYPE$ result) {
+  result[index] = lhs[index < lhs.size() ? index : lhs.size() - 1] / rhs[index < rhs.size() ? index : rhs.size() - 1];
+}
+
+dfgEntry {
+  if(lhs.size() == 0) return;
+  if(rhs.size() == 0) return;
+  Size size = lhs.size() > rhs.size() ? lhs.size() : rhs.size();
+  result.resize(size);
+
+  if(size < 10000)
+  {
+    for(Size i=0;i<size;i++)
+      core_array_div_task(i, lhs, rhs, result);
+  }
+  else
+  {
+    core_array_div_task<<<size>>>(lhs, rhs, result);
+  }
+}
+"
+      },
+    "Fabric.Core.Array.Push" : {
+      "objectType" : "Func",
+      "title" : "Push[]",
+      "ports" : [
+        {
+          "objectType" : "ExecPort",
+          "name" : "exec",
+          "nodePortType" : "IO",
+          "execPortType" : "IO",
+          "typeSpec" : "Execute"
+          },
+        {
+          "objectType" : "ExecPort",
+          "name" : "array",
+          "nodePortType" : "IO",
+          "execPortType" : "IO",
+          "typeSpec" : "$TYPE$[]"
           },
         {
           "objectType" : "ExecPort",
@@ -494,35 +452,23 @@ dfgEntry {
           "nodePortType" : "Out",
           "execPortType" : "In",
           "typeSpec" : "$TYPE$"
-          },
-        {
-          "objectType" : "ExecPort",
-          "name" : "count",
-          "nodePortType" : "Out",
-          "execPortType" : "In",
-          "typeSpec" : "SInt32"
-          },
-        {
-          "objectType" : "ExecPort",
-          "name" : "array",
-          "nodePortType" : "In",
-          "execPortType" : "Out",
-          "typeSpec" : "$TYPE$[]"
           }
         ],
       "extDeps" : {},
-      "presetGUID" : "323379311384B0227037BF839A4A49C9",
+      "presetGUID" : "572880BF96ACC34D6987BE3333715F52",
       "code" : "
 dfgEntry {
-	array.resize(count);
-  for(Size i=0;i<count;i++)
-    array[i] = element;
+	array.push(element);
 }
 "
       },
-    "Fabric.Core.Array.Size" : {
+    "Fabric.Exts.Math.Constants.RadToDegArray" : {
       "objectType" : "Func",
-      "title" : "Size[]",
+      "metadata" : {
+        "uiNodeColor" : "{\n  \"r\" : 99,\n  \"g\" : 129,\n  \"b\" : 92\n  }",
+        "uiTooltip" : "Converts radians to degrees\n\n Supported by Scalar"
+        },
+      "title" : "RadToDeg[]",
       "ports" : [
         {
           "objectType" : "ExecPort",
@@ -533,24 +479,49 @@ dfgEntry {
           },
         {
           "objectType" : "ExecPort",
-          "name" : "array",
+          "name" : "val",
           "nodePortType" : "Out",
+          "defaultValues" : {
+            "Scalar[]" : [
+              -0.300000011920929
+              ]
+            },
           "execPortType" : "In",
-          "typeSpec" : "$TYPE$"
+          "typeSpec" : "Scalar[]"
           },
         {
           "objectType" : "ExecPort",
-          "name" : "count",
+          "name" : "result",
           "nodePortType" : "In",
           "execPortType" : "Out",
-          "typeSpec" : "UInt32"
+          "typeSpec" : "Scalar[]"
           }
         ],
-      "extDeps" : {},
-      "presetGUID" : "5B186A97C79ACF32526EC844AD805421",
-      "code" : "
+      "extDeps" : {
+        "Math" : "*"
+        },
+      "presetGUID" : "96151D6E8755E9D10C7AABD6AB96AE96",
+      "code" : "require Math;
+
+operator Math_Math_radToDeg_task<<<index>>>(
+  io Scalar[] result
+, in Scalar[] val
+) {
+  result[index] = Math_radToDeg(val[index < val.size() ? index : val.size() - 1]);
+}
+
 dfgEntry {
-	count = array.size();
+  if( val.size() == 0) return;
+  Size task_size = 0;
+  if(task_size < val.size()) task_size = val.size();
+  result.resize(task_size);
+  if(task_size < 10000 /* pex margin */) {
+    for(Size index = 0; index < task_size; index++) {
+      Math_Math_radToDeg_task(index, result, val);
+    }
+  } else {
+    Math_Math_radToDeg_task<<<task_size>>>(result, val);
+  }
 }
 "
       }

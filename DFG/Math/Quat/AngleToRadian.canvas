@@ -129,7 +129,7 @@
     {
       "objectType" : "Inst",
       "metadata" : {
-        "uiGraphPos" : "{\"x\":490.0,\"y\":1290.0}"
+        "uiGraphPos" : "{\"x\":486.0,\"y\":1465.78}"
         },
       "name" : "Sin_1",
       "ports" : [
@@ -149,13 +149,39 @@
           "nodePortType" : "Out"
           }
         ],
-      "executable" : "Fabric.Core.Trigonometry.Sin",
+      "executable" : "Fabric.Core.Math.Trigonometry.Sin",
       "presetGUID" : "770343876572443C9B4721A66A428C2D"
+      },
+    {
+      "objectType" : "Inst",
+      "metadata" : {
+        "uiGraphPos" : "{\"x\":278.0,\"y\":1183.5}"
+        },
+      "name" : "DegToRad_1",
+      "ports" : [
+        {
+          "objectType" : "InstPort",
+          "name" : "exec",
+          "nodePortType" : "IO"
+          },
+        {
+          "objectType" : "InstPort",
+          "name" : "val",
+          "nodePortType" : "In"
+          },
+        {
+          "objectType" : "InstPort",
+          "name" : "result",
+          "nodePortType" : "Out"
+          }
+        ],
+      "executable" : "Fabric.Exts.Math.Constants.DegToRad",
+      "presetGUID" : "6BC97C4D61BFC82DBF0660BAD1104520"
       }
     ],
   "connections" : {
     "angle" : [
-      "Mul_1.lhs"
+      "DegToRad_1.val"
       ],
     "PI_1.value" : [
       "Mul_1.rhs"
@@ -166,7 +192,7 @@
     "Div_2.result" : [
       "Sin_1.value"
       ],
-    "Sin_1.result" : [
+    "DegToRad_1.result" : [
       "radian"
       ]
     },
@@ -239,6 +265,9 @@ dfgEntry {
         ],
       "extDeps" : {},
       "presetGUID" : "CC951B43BB879483B46EFF7965692350",
+      "tags" : [
+        "aka:*"
+        ],
       "code" : "
 dfgEntry {
 	result = lhs * rhs;
@@ -280,13 +309,16 @@ dfgEntry {
         ],
       "extDeps" : {},
       "presetGUID" : "695E8145F8F42293FBC88BD348869892",
+      "tags" : [
+        "aka:/"
+        ],
       "code" : "
 dfgEntry {
 	result = lhs / rhs;
 }
 "
       },
-    "Fabric.Core.Trigonometry.Sin" : {
+    "Fabric.Core.Math.Trigonometry.Sin" : {
       "objectType" : "Func",
       "title" : "Sin",
       "ports" : [
@@ -317,6 +349,47 @@ dfgEntry {
       "code" : "
 dfgEntry {
 	result = sin(value);
+}
+"
+      },
+    "Fabric.Exts.Math.Constants.DegToRad" : {
+      "objectType" : "Func",
+      "metadata" : {
+        "uiNodeColor" : "{\n  \"r\" : 99,\n  \"g\" : 129,\n  \"b\" : 92\n  }",
+        "uiTooltip" : "Converts degrees to radians\n\n Supported by Scalar"
+        },
+      "title" : "DegToRad",
+      "ports" : [
+        {
+          "objectType" : "ExecPort",
+          "name" : "exec",
+          "nodePortType" : "IO",
+          "execPortType" : "IO",
+          "typeSpec" : "Execute"
+          },
+        {
+          "objectType" : "ExecPort",
+          "name" : "val",
+          "nodePortType" : "Out",
+          "execPortType" : "In",
+          "typeSpec" : "Scalar"
+          },
+        {
+          "objectType" : "ExecPort",
+          "name" : "result",
+          "nodePortType" : "In",
+          "execPortType" : "Out",
+          "typeSpec" : "Scalar"
+          }
+        ],
+      "extDeps" : {
+        "Math" : "*"
+        },
+      "presetGUID" : "6BC97C4D61BFC82DBF0660BAD1104520",
+      "code" : "require Math;
+
+dfgEntry {
+  result = Math_degToRad(val);
 }
 "
       }
