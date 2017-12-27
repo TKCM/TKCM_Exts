@@ -364,11 +364,9 @@ function MultiChWeightmap.setLimit!(Scalar min, Scalar max){
 }
 
 function MultiChWeightmap.lock!(Boolean weightLock[]){
-  if(this.weightLock.size() == weightLock.size()){
-    this.weightLock = weightLock;
-  }else{
-    setError("lock count is not same joint count : lock = "+weightLock.size()+" , joint count = "+this.weightLock.size());
-  }
+  Boolean rest[] = weightLock;
+  rest.resize( this.chCount );
+  this.weightLock = weightLock;
 }
 //
 ///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
