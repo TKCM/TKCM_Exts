@@ -316,28 +316,28 @@ function GetWeightsFromAngleDifferenceArray(
 //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-// getMultipliedVec3ValueByWeights ///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-operator MulWeightArrayTask<<<i>>>(io Vec3 result[], in Vec3 target[], in LocalL4UInt32Array indexList[], in LocalL4ScalarArray weights[]){
+// getMultipliedValueByWeights ///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+operator MulWeightVec3ArrayTask<<<i>>>(io Vec3 result[], in Vec3 values[], in LocalL4UInt32Array indexList[], in LocalL4ScalarArray weights[]){
   for(Integer j=0; j<weights[i].count; j++){
-    result[i] += target[indexList[i].first4[j]] * weights[i].first4[j];
+    result[i] += values[indexList[i].first4[j]] * weights[i].first4[j];
   }
 }
 
-function Vec3[].getMultipliedVec3ValueByWeights!(Vec3 target[], LocalL4UInt32Array indexList[], LocalL4ScalarArray weights[]){
+function Vec3[].getMultipliedVec3ValueByWeights!(Vec3 values[], LocalL4UInt32Array indexList[], LocalL4ScalarArray weights[]){
   //  リストを制作した際のターゲット数と今回参照するターゲット数に不足がないかを確認する
   //  indexList[0].others[0]にターゲット数が格納されているためcountの数が実際のターゲット数とは異なるので、ループではweightsのサイズを使用する
-  if(indexList[0].others[0] > target.size()){
-    setError("Vec3.MulWeight node : IndexList require count = "+indexList[0].others[0]+". But target count = "+target.size());
+  if(indexList[0].others[0] > values.size()){
+    return;
   }else{
     this.resize(weights.size());
     if(weights.size() > 300){
-      MulWeightArrayTask<<<weights.size()>>>(this, target, indexList, weights);
+      MulWeightVec3ArrayTask<<<weights.size()>>>(this, values, indexList, weights);
     }else{
       for(Integer i=0; i<weights.size(); i++){
-        MulWeightArrayTask(i, this, target, indexList, weights);
+        MulWeightVec3ArrayTask(i, this, values, indexList, weights);
       }
     }
   }
 }
 
-// getMultipliedVec3ValueByWeights ///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+// getMultipliedValueByWeights ///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////

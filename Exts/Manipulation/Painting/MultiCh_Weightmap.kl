@@ -1,5 +1,5 @@
 //"2.4.0対策"　シーンロード時に何故かconvertToStringでセーブが走るため、ロードが必要なデータを改めてセーブしデータが保持されるように対応
- 
+
 require InlineDrawing;
 require FileIO;
 require JSON;

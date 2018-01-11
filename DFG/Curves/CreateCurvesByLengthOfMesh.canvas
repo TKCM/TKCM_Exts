@@ -17,7 +17,6 @@
       },
     {
       "objectType" : "ExecPort",
-      "metadata" : {},
       "name" : "mesh",
       "nodePortType" : "Out",
       "defaultValues" : {
@@ -29,7 +28,7 @@
     {
       "objectType" : "ExecPort",
       "metadata" : {},
-      "name" : "createCurvePos",
+      "name" : "createCurveXfos",
       "nodePortType" : "Out",
       "defaultValues" : {
         "Vec3[]" : [],
@@ -336,7 +335,7 @@
     "mesh" : [
       "CreateCurvesByLengthOfMeshCore.mesh"
       ],
-    "createCurvePos" : [
+    "createCurveXfos" : [
       "DecomposeXfoArray_2.value"
       ],
     "directionOfMeasure" : [
@@ -363,7 +362,7 @@
       "objectType" : "Func",
       "metadata" : {
         "uiNodeColor" : "{\n  \"r\" : 99,\n  \"g\" : 129,\n  \"b\" : 92\n  }",
-        "uiDocUrl" : "http://docs.fabric-engine.com/FabricEngine/2.5.0/HTML/KLExtensionsGuide/Math/Xfo.html"
+        "uiDocUrl" : "http://docs.fabric-engine.com/FabricEngine/2.6.0/HTML/KLExtensionsGuide/Math/Xfo.html"
         },
       "title" : "Xfo[] ->",
       "ports" : [

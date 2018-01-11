@@ -1,16 +1,92 @@
 //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-// sort //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-function sort(io Scalar scalarArray[]){
-  Scalar tmpS;
-  for(Integer i=0; i<scalarArray.size(); i++){
-    for(Integer j=i+1; j<scalarArray.size(); j++) {
-      if (scalarArray[i] > scalarArray[j]) {
-        tmpS =  scalarArray[i];
-        scalarArray[i] = scalarArray[j];
-        scalarArray[j] = tmpS;
+// sort 
+function sort(io Float32 arrayValue[], out Index origId[], in Boolean descendingOrder){
+  origId.resize(arrayValue.size());
+  for(Integer i=0; i<arrayValue.size(); i++){
+    origId[i] = i;
+  }
+ 
+  Float32 tmpF;
+  Index tmpI;  
+  for(Integer i=0; i<arrayValue.size(); i++){
+    for(Integer j=i+1; j<arrayValue.size(); j++) {
+      if(!descendingOrder && arrayValue[j] < arrayValue[i] || descendingOrder && arrayValue[i] < arrayValue[j]) {
+        tmpF =  arrayValue[i];
+        arrayValue[i] = arrayValue[j];
+        arrayValue[j] = tmpF;
+        
+        tmpI = origId[i];
+        origId[i] = origId[j];
+        origId[j] = tmpI;
       }
     }
+  }
+}
+
+function sort(io Float32 arrayValue[]){
+  Index origId[];
+  Boolean descendingOrder;
+  sort( arrayValue, origId, descendingOrder );
+}
+
+function sort(io UInt32 arrayValue[], out Index origId[], in Boolean descendingOrder){
+  origId.resize(arrayValue.size());
+  for(Integer i=0; i<arrayValue.size(); i++){
+    origId[i] = i;
+  }
+ 
+  UInt32 tmpS;
+  Index tmpI;  
+  for(Integer i=0; i<arrayValue.size(); i++){
+    for(Integer j=i+1; j<arrayValue.size(); j++) {
+      if(!descendingOrder && arrayValue[j] < arrayValue[i] || descendingOrder && arrayValue[i] < arrayValue[j]) {
+        tmpS =  arrayValue[i];
+        arrayValue[i] = arrayValue[j];
+        arrayValue[j] = tmpS;
+        
+        tmpI = origId[i];
+        origId[i] = origId[j];
+        origId[j] = tmpI;
+      }
+    }
+  }
+}
+
+function sort(io UInt32 arrayValue[]){
+  Index origId[];
+  Boolean descendingOrder;
+  sort( arrayValue, origId, descendingOrder );
+}
+
+//////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+//////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+//////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+// reverse
+function reverse(io Float32 arrayValue[]){
+  Size cnt = arrayValue.size();
+  for(Integer j=0; j<cnt/2; j++){
+    Float32 t = arrayValue[j];
+    arrayValue[j] = arrayValue[cnt - j - 1];
+    arrayValue[cnt - j - 1] = t;
+  }
+}
+
+function reverse(io UInt32 arrayValue[]){
+  Size cnt = arrayValue.size();
+  for(Integer j=0; j<cnt/2; j++){
+    UInt32 t = arrayValue[j];
+    arrayValue[j] = arrayValue[cnt - j - 1];
+    arrayValue[cnt - j - 1] = t;
+  }
+}
+
+function reverse(io Vec3 arrayValue[]){
+  Size cnt = arrayValue.size();
+  for(Integer j=0; j<cnt/2; j++){
+    Vec3 t = arrayValue[j];
+    arrayValue[j] = arrayValue[cnt - j - 1];
+    arrayValue[cnt - j - 1] = t;
   }
 }

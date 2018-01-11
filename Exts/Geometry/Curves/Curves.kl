@@ -396,7 +396,7 @@ function Curves.getEvenlyDividXfos(
   in Integer directionType,
   in Boolean addStartPosition,
   in Boolean addEndPosition,
-  in Vec2Array[] segmentValues,
+  in Vec2Array segmentValues[],
   in Boolean onSegment
   ){
   result.resize(this.curveCount());
@@ -519,6 +519,36 @@ function Curves.getEvenlyDividXfos(
       }    
     }
   }
+}
+
+// support old node
+function Curves.GetEvenlyDividXfos?(
+  io XfoArray result[], 
+  io Xfo result2[],
+  in Curves normalCurve,
+  in Integer mode,
+  in Integer divisionValue,
+  in Integer intervalValueType,
+  in Scalar intervalValue,
+  in Integer directionType,
+  in Boolean addStartPosition,
+  in Boolean addEndPosition,
+){
+  Vec2Array segmentValues[](1);
+
+  this.getEvenlyDividXfos( 
+    result, 
+    result2,
+    normalCurve,
+    mode,
+    divisionValue,
+    intervalValueType,
+    intervalValue,
+    directionType,
+    addStartPosition,
+    addEndPosition,
+    segmentValues,
+    false);
 }
 
 //  GetEvenlyDividXfos ///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -910,7 +940,6 @@ function Curves.getMultipliedCurvesValueByWeights(
 //  inverseSegment ///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 //  セグメント情報を反転する
 //  MakeSegmentOnCurveの使用回数を減らす目的
-
 function Vec2Array[].inverseSegment?(io Vec2Array[] result){
   if(this.size() == 0){
     return;
@@ -922,23 +951,29 @@ function Vec2Array[].inverseSegment?(io Vec2Array[] result){
     for(Integer j=0; j<this[i].size(); j++){
       Vec2 invSeg;
       if(this[i][j] == Vec2(0.0, 1.0)){
-        report("!!!!!!Error!!!!!! InverseSegment: segmentValues["+i+"]["+j+"] is full range");
-        continue;
+        break;
       }
       //  segmentの情報はカーブの両端の後に間の分割という流れの配列なため、前から順番に反転するだけでは正確な値が取得できない
       //  0.0,1.0以外の全ての値を一旦restに格納していき、ソートした後に前から順にVec2にしていく
+      if(j == 0 && this[i][j].x != 0.0){
+        rest.push(0.0);
+      }
       if(this[i][j].x != 0.0){
         rest.push(this[i][j].x);
       }
       if(this[i][j].y != 1.0){
         rest.push(this[i][j].y);
       }
-      if(j == this[i].size()-1 || this[i][j].y != 1.0){
+      if(j == this[i].size()-1 && this[i][j].y != 1.0){
         rest.push(1.0);
       }
       sort(rest);
     }
+
     for(Integer j=0; j<rest.size()/2; j++){
+      if( rest[j*2]<0.0 || rest[j*2+1]<0.0 || 1.0<rest[j*2] || 1.0<rest[j*2+1] || rest[j*2+1] < rest[j*2] || rest[j*2].almostEqual(rest[j*2+1]) ){
+        continue;
+      }
       result[i].push( Vec2(rest[j*2], rest[j*2+1]) );
     }
   }
